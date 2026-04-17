@@ -1,0 +1,40 @@
+{
+	"name": "frontend",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "bun run lint && react-router build",
+		"dev": "react-router dev",
+		"lint": "eslint . && prettier . --check",
+		"start": "react-router-serve ./build/server/index.js",
+		"typecheck": "react-router typegen && tsc"
+	},
+	"dependencies": {
+		"@react-router/node": "7.14.0",
+		"@react-router/serve": "7.14.0",
+		"isbot": "^5.1.36",
+		"react": "^19.2.4",
+		"react-dom": "^19.2.4",
+		"react-router": "7.14.0"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@eslint/json": "^1.2.0",
+		"@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+		"@react-router/dev": "7.14.0",
+		"@tailwindcss/vite": "^4.2.2",
+		"@types/node": "^22",
+		"@types/react": "^19.2.14",
+		"@types/react-dom": "^19.2.3",
+		"eslint": "^10.2.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-react": "^7.37.5",
+		"globals": "^17.5.0",
+		"prettier": "^3.8.3",
+		"prettier-plugin-packagejson": "^3.0.2",
+		"tailwindcss": "^4.2.2",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.58.2",
+		"vite": "^8.0.3"
+	}
+}
