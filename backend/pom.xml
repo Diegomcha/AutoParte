@@ -30,6 +30,8 @@
 		<java.version>21</java.version>
 		<sentry.version>8.27.0</sentry.version>
 		<spring-modulith.version>2.0.5</spring-modulith.version>
+		<frontend-maven-plugin.version>2.0.0</frontend-maven-plugin.version>
+		<frontend-maven-plugin.bun.version>v1.3.12</frontend-maven-plugin.bun.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -168,9 +170,67 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>${frontend-maven-plugin.version}</version>
+				<configuration>
+					<workingDirectory>${project.basedir}/../frontend</workingDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>install-bun</id>
+						<goals>
+							<goal>install-bun</goal>
+						</goals>
+						<configuration>
+							 <bunVersion>${frontend-maven-plugin.bun.version}</bunVersion>
+						</configuration>
+					</execution>
+					<execution>
+						<id>install-pkgs</id>
+						<goals>
+							<goal>bun</goal>
+						</goals>
+						<configuration>
+							<arguments>ci</arguments>
+						</configuration>
+					</execution>
+					<execution>
+						<id>build</id>
+						<goals>
+							<goal>bun</goal>
+						</goals>
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>move-assets</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${project.basedir}/../frontend/build/client</directory>
+									<filtering>false</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
