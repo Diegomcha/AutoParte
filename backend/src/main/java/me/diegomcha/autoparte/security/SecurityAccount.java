@@ -1,0 +1,40 @@
+package me.diegomcha.autoparte.security;
+
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import me.diegomcha.autoparte.model.Account;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+
+@RequiredArgsConstructor
+public class SecurityAccount implements UserDetails {
+
+    @NonNull
+    private final Account account;
+
+    @Override
+    public String getUsername() {
+        return this.account.getUsername();
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return this.account.getHashedPassword();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.account.getRoles().stream()
+                .map(SimpleGrantedAuthority::new)
+                .toList();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.account.isEnabled();
+    }
+}
