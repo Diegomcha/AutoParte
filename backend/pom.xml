@@ -28,12 +28,12 @@
         <url/>
     </scm>
     <properties>
+        <sonar.organization>diegomcha</sonar.organization>
         <java.version>21</java.version>
         <sentry-build.version>0.11.0</sentry-build.version>
         <sentry.version>8.27.0</sentry.version>
         <frontend-maven-plugin.version>2.0.0</frontend-maven-plugin.version>
-        <frontend-maven-plugin.bun.version>v1.3.12
-        </frontend-maven-plugin.bun.version>
+        <frontend-maven-plugin.bun.version>v1.3.12</frontend-maven-plugin.bun.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <commons-text.version>1.10.0</commons-text.version>
@@ -154,6 +154,11 @@
             <artifactId>spring-boot-starter-webservices-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -174,6 +179,7 @@
                 <version>${sentry-build.version}</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <skipTelemetry>true</skipTelemetry>
                     <org>diegomcha</org>
                     <project>auto-parte</project>
                     <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
@@ -299,6 +305,11 @@
                                 <path>
                                     <groupId>org.projectlombok</groupId>
                                     <artifactId>lombok</artifactId>
+                                </path>
+                                <path>
+                                    <groupId>org.mapstruct</groupId>
+                                    <artifactId>mapstruct-processor</artifactId>
+                                    <version>${mapstruct.version}</version>
                                 </path>
                             </annotationProcessorPaths>
                         </configuration>

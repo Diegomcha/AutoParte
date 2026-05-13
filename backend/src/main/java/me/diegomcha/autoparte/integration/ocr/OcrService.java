@@ -28,14 +28,14 @@ public class OcrService {
     }
 
     // TODO: Remove this test method
-    @Bean
-    CommandLineRunner testOcr() {
-        return args -> {
-            Resource image = new FileSystemResource("D:/dni.jpg");
-            var response = convertImageToMrz(image);
-            System.out.println(response);
-        };
-    }
+//    @Bean
+//    CommandLineRunner testOcr() {
+//        return args -> {
+//            Resource image = new FileSystemResource("D:/dni.jpg");
+//            var response = convertImageToMrz(image);
+//            System.out.println(response);
+//        };
+//    }
 
     public MrzDto convertImageToMrz(Resource image) throws ServiceUnavailable, ResourceUnprocessableException {
         // Create the multipart request body
