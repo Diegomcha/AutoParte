@@ -1,0 +1,15 @@
+{
+	"files.exclude": {
+		".react-router": true,
+		"build": true,
+		"node_modules": true,
+		"bun": true
+	},
+	"cssVariables.lookupFiles": [
+		"**/*.css",
+		"**/*.scss",
+		"**/*.sass",
+		"**/*.less",
+		"node_modules/@mantine/core/styles.css"
+	]
+}

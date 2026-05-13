@@ -1,0 +1,7 @@
+{
+  "conventionalCommits.scopes": ["ocr", "backend", "frontend", "docs"],
+  "sonarlint.connectedMode.project": {
+    "connectionId": "diegomcha",
+    "projectKey": "Diegomcha_AutoParte"
+  }
+}

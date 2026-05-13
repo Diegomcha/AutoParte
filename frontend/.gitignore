@@ -1,6 +1,9 @@
 .DS_Store
 .env
 /node_modules/
+bun
+coverage
+eslint-report.json
 
 # React Router
 /.react-router/
