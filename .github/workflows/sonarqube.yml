@@ -60,6 +60,10 @@ jobs:
         run: bun run test --coverage
 
       # BACKEND
+      - name: Copy dependencies for SonarQube
+        working-directory: backend
+        run: mvn -B dependency:copy-dependencies
+
       - name: Build backend
         working-directory: backend
         run: mvn -B compile
