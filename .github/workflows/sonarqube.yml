@@ -70,7 +70,7 @@ jobs:
 
       - name: Run tests and generate reports
         working-directory: backend
-        run: mvn -B test
+        run: mvn -B verify
 
       # SCAN
       - name: Analyze with SonarQube
