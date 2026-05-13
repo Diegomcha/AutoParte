@@ -47,6 +47,8 @@ jobs:
       - name: Build backend
         working-directory: backend
         run: mvn -B clean compile
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       # TODO: Add tests and coverage for backend
 
