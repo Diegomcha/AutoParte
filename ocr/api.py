@@ -12,7 +12,13 @@ async def root():
     return {"healthy": True}
 
 
-@app.post("/mrz")
+@app.post(
+    "/mrz",
+    responses={
+        400: {"description": "Bad Request"},
+        500: {"description": "Internal Server Error"},
+    },
+)
 def mrz_route(image: Annotated[bytes, File()]):
     try:
         # Perform OCR and MRZ parsing
@@ -31,5 +37,5 @@ def mrz_route(image: Annotated[bytes, File()]):
         print("Unexpected error while processing image")
         print(e)
         raise HTTPException(
-            status_code=500, detail=f"Unexpected error while processing image"
+            status_code=500, detail="Unexpected error while processing image"
         )

@@ -7,7 +7,7 @@ from mrz.checker.td3 import TD3CodeChecker
 from rapidocr import RapidOCR
 from rapidocr.utils.output import RapidOCROutput
 
-engine = RapidOCR()
+engine = RapidOCR(config_path="./rapidocr_config.yaml")
 
 
 def sanitize_mrz_line(line: str) -> str:
