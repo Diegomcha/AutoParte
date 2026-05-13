@@ -8,7 +8,13 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig([
 	{
-		ignores: ['node_modules', 'build', 'coverage', '.react-router'],
+		ignores: [
+			'node_modules',
+			'build',
+			'coverage',
+			'.react-router',
+			'eslint-report.json',
+		],
 	},
 	{
 		files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
