@@ -46,7 +46,7 @@ jobs:
       # BACKEND
       - name: Build backend
         working-directory: backend
-        run: ./mvnw -B clean compile
+        run: mvn -B clean compile
 
       # TODO: Add tests and coverage for backend
 
