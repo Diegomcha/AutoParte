@@ -8,13 +8,13 @@ import lombok.RequiredArgsConstructor;
 import tools.jackson.databind.annotation.JsonDeserialize;
 
 import java.time.LocalDate;
-
+import java.util.Collection;
 
 public record MrzDto(
         boolean valid,
         String raw,
-        String[] errors,
-        String[] warnings,
+        Collection<String> errors,
+        Collection<String> warnings,
         MrzData data
 ) {
     public record MrzData(
