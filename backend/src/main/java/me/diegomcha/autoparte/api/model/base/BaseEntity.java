@@ -1,10 +1,10 @@
 package me.diegomcha.autoparte.api.model.base;
 
+import com.fasterxml.uuid.Generators;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Generated;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -17,8 +17,7 @@ import java.util.UUID;
 public abstract class BaseEntity {
 
     @EqualsAndHashCode.Include
-    @Generated
-    private UUID id;
+    private final UUID id = Generators.timeBasedEpochRandomGenerator().generate();
 
     private long version;
 

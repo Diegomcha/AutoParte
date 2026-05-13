@@ -19,8 +19,8 @@
     <mapped-superclass class="me.diegomcha.autoparte.api.model.base.BaseEntity">
         <attributes>
             <id name="id">
-                <column insertable="false"
-                        column-definition="uuid default uuidv7()"/>
+                <column nullable="false"
+                        updatable="false"/>
             </id>
             <basic name="createdAt">
                 <column nullable="false"
@@ -36,7 +36,7 @@
     </mapped-superclass>
 
     <entity class="me.diegomcha.autoparte.api.model.Account">
-        <inheritance strategy="JOINED" />
+        <inheritance strategy="JOINED"/>
         <attributes>
             <basic name="username">
                 <column nullable="false"

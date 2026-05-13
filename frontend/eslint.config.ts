@@ -8,17 +8,16 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig([
 	{
-		files: [
-			'app/**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
-			'*.config.ts',
-			'*.setup.ts',
-		],
+		ignores: ['node_modules', 'build', 'coverage', '.react-router'],
+	},
+	{
+		files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
 		plugins: { js },
 		extends: ['js/recommended'],
 		languageOptions: { globals: { ...globals.browser, ...globals.node } },
 	},
 	{
-		files: ['app/**/*.{ts,tsx,mts,cts}', '*.config.ts', '*.setup.ts'],
+		files: ['**/*.{ts,tsx,mts,cts}'],
 		extends: [
 			tseslint.configs.strictTypeChecked,
 			tseslint.configs.stylisticTypeChecked,
@@ -30,11 +29,7 @@ export default defineConfig([
 		},
 	},
 	{
-		files: [
-			'app/**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}',
-			'*.config.ts',
-			'*.setup.ts',
-		],
+		files: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}'],
 		...pluginReact.configs.flat.recommended,
 		rules: {
 			...pluginReact.configs.flat.recommended.rules,
@@ -48,7 +43,7 @@ export default defineConfig([
 		},
 	},
 	{
-		files: ['app/**/*.json', 'package.json', 'tsconfig.json'],
+		files: ['**/*.json'],
 		plugins: { json },
 		language: 'json/json',
 		extends: ['json/recommended'],

@@ -62,11 +62,11 @@ jobs:
       # BACKEND
       - name: Build backend
         working-directory: backend
-        run: mvn -B clean compile
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: mvn -B compile
 
-      # TODO: Add tests and coverage for backend
+      - name: Run tests and generate reports
+        working-directory: backend
+        run: mvn -B test
 
       # SCAN
       - name: Analyze with SonarQube

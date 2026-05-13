@@ -32,12 +32,11 @@
         <java.version>21</java.version>
         <sentry-build.version>0.11.0</sentry-build.version>
         <sentry.version>8.27.0</sentry.version>
-        <frontend-maven-plugin.version>2.0.0</frontend-maven-plugin.version>
-        <frontend-maven-plugin.bun.version>v1.3.12</frontend-maven-plugin.bun.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <commons-text.version>1.10.0</commons-text.version>
-    </properties>
+        <uuid-generator.version>5.2.0</uuid-generator.version>
+        <jacoco.version>0.8.12</jacoco.version></properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -118,6 +117,11 @@
             <version>${commons-text.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.uuid</groupId>
+            <artifactId>java-uuid-generator</artifactId>
+            <version>${uuid-generator.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -173,26 +177,6 @@
     </dependencyManagement>
     <build>
         <plugins>
-            <plugin>
-                <groupId>io.sentry</groupId>
-                <artifactId>sentry-maven-plugin</artifactId>
-                <version>${sentry-build.version}</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <skipTelemetry>true</skipTelemetry>
-                    <org>diegomcha</org>
-                    <project>auto-parte</project>
-                    <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>validateSdkDependencyVersions</goal>
-                            <goal>uploadSourceBundle</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.5.0</version>
@@ -274,6 +258,38 @@
                                 </path>
                             </annotationProcessorPaths>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <!-- Attach the JaCoCo agent before tests run -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Generate the report in the “prepare-package” phase -->
+                    <execution>
+                        <id>report</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- (Optional) re-run report during “verify” -->
+                    <execution>
+                        <id>post-test-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
