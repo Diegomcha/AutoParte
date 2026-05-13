@@ -1,5 +1,5 @@
 import { AppShell } from '@mantine/core';
-import NavBar from '~/components/Navbar';
+import NavBar from '~/components/NavBar';
 import { Outlet } from 'react-router';
 
 export default function Dashboard() {
