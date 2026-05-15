@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.api.validation;
+package me.diegomcha.autoparte.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

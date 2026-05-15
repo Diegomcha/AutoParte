@@ -7,7 +7,7 @@ import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreatedResponse;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoResponse;
-import me.diegomcha.autoparte.api.model.Employee;
+import me.diegomcha.autoparte.model.Employee;
 import me.diegomcha.autoparte.util.exception.ResourceConflictException;
 import me.diegomcha.autoparte.util.exception.ResourceNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;

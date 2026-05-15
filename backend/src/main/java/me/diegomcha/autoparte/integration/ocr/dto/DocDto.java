@@ -1,5 +1,8 @@
 package me.diegomcha.autoparte.integration.ocr.dto;
 
+import me.diegomcha.autoparte.model.person.document.Document;
+import me.diegomcha.autoparte.model.Person;
+
 import java.time.LocalDate;
 
 public record DocDto(
@@ -8,23 +11,11 @@ public record DocDto(
         String secondSurname,
         LocalDate birthDate,
         String nationality,
-        Gender gender,
-        DocumentType documentType,
+        Person.PersonGender gender,
+        Document.DocumentType documentType,
         String documentNumber,
         String documentSupportNumber,
 
         String country
 ) {
-    public enum Gender {
-        MALE,
-        FEMALE,
-        OTHER
-    }
-
-   public enum DocumentType {
-        NIE,
-        NIF,
-        PASSPORT,
-        OTHER
-    }
 }

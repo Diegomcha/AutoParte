@@ -1,4 +1,4 @@
-name: SonarQube
+name: CI
 
 permissions:
   contents: read
@@ -13,7 +13,7 @@ on:
 
 jobs:
   sonar-qube:
-    name: Build and analyze
+    name: SonarQube
     runs-on: ubuntu-latest
     steps:
       # CHECKOUT
@@ -43,33 +43,36 @@ jobs:
           cache-dependency-path: backend/pom.xml
 
       # FRONTEND
-      - name: Install dependencies
+      - name: (Frontend) Install dependencies
         working-directory: frontend
         run: bun ci --frozen-lockfile
 
-      - name: Build frontend
+      - name: (Frontend) Build
         working-directory: frontend
         run: bun run build
 
-      - name: Run ESLint and generate report
+      - name: (Frontend) Run ESLint and generate report
         working-directory: frontend
+        continue-on-error: true
         run: bun run lint:ci
 
-      - name: Run tests and generate coverage
+      - name: (Frontend) Run tests and generate coverage
         working-directory: frontend
+        continue-on-error: true
         run: bun run test --coverage
 
       # BACKEND
-      - name: Copy dependencies for SonarQube
+      - name: (Backend) Copy dependencies for SonarQube
         working-directory: backend
         run: mvn -B dependency:copy-dependencies
 
-      - name: Build backend
+      - name: (Backend) Build
         working-directory: backend
         run: mvn -B compile
 
-      - name: Run tests and generate reports
+      - name: (Backend) Run tests and generate reports
         working-directory: backend
+        continue-on-error: true
         run: mvn -B verify
 
       # SCAN

@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.api.model.base;
+package me.diegomcha.autoparte.model.base;
 
 import com.fasterxml.uuid.Generators;
 import lombok.AccessLevel;

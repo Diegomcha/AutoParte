@@ -16,7 +16,7 @@
     <package>me.diegomcha.autoparte.api.model</package>
     <access>FIELD</access>
 
-    <mapped-superclass class="me.diegomcha.autoparte.api.model.base.BaseEntity">
+    <mapped-superclass class="me.diegomcha.autoparte.model.base.BaseEntity">
         <attributes>
             <id name="id">
                 <column nullable="false"
@@ -35,7 +35,7 @@
         </attributes>
     </mapped-superclass>
 
-    <entity class="me.diegomcha.autoparte.api.model.Account">
+    <entity class="me.diegomcha.autoparte.model.Account">
         <inheritance strategy="JOINED"/>
         <attributes>
             <basic name="username">
@@ -54,7 +54,7 @@
         </attributes>
     </entity>
 
-    <entity class="me.diegomcha.autoparte.api.model.Employee">
+    <entity class="me.diegomcha.autoparte.model.Employee">
         <attributes>
             <basic name="name">
                 <column nullable="false"/>
