@@ -1,9 +1,10 @@
-package me.diegomcha.autoparte.validation;
+package me.diegomcha.autoparte.validation.validators;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
+import me.diegomcha.autoparte.validation.annotations.NullableNotBlank;
 
 @SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)
 public class NullableNotBlankValidator implements ConstraintValidator<NullableNotBlank, CharSequence> {

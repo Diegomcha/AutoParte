@@ -1,13 +1,10 @@
-package me.diegomcha.autoparte.validation;
+package me.diegomcha.autoparte.validation.annotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import me.diegomcha.autoparte.validation.validators.NullableNotBlankValidator;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 @Constraint(validatedBy = NullableNotBlankValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
