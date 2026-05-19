@@ -13,10 +13,10 @@
         </persistence-unit-defaults>
     </persistence-unit-metadata>
 
-    <package>me.diegomcha.autoparte.api.model</package>
+    <package>me.diegomcha.autoparte.domain</package>
     <access>FIELD</access>
 
-    <mapped-superclass class="me.diegomcha.autoparte.model.base.BaseEntity">
+    <mapped-superclass class="me.diegomcha.autoparte.domain.base.BaseEntity">
         <attributes>
             <id name="id">
                 <column nullable="false"
@@ -35,7 +35,7 @@
         </attributes>
     </mapped-superclass>
 
-    <entity class="me.diegomcha.autoparte.model.Account">
+    <entity class="me.diegomcha.autoparte.domain.Account">
         <inheritance strategy="JOINED"/>
         <attributes>
             <basic name="username">
@@ -54,7 +54,7 @@
         </attributes>
     </entity>
 
-    <entity class="me.diegomcha.autoparte.model.Employee">
+    <entity class="me.diegomcha.autoparte.domain.Employee">
         <attributes>
             <basic name="name">
                 <column nullable="false"/>
@@ -62,8 +62,123 @@
             <basic name="surname">
                 <column nullable="false"/>
             </basic>
+            <many-to-many name="establishments" mapped-by="employees"/>
         </attributes>
     </entity>
+
+    <entity class="me.diegomcha.autoparte.domain.Establishment">
+        <attributes>
+            <basic name="name">
+                <column nullable="false"/>
+            </basic>
+            <basic name="sesCode">
+                <column nullable="false"
+                        unique="true"/>
+            </basic>
+            <one-to-many name="bookings" mapped-by="establishment"/>
+            <many-to-many name="employees"/>
+        </attributes>
+    </entity>
+
+    <entity class="me.diegomcha.autoparte.domain.Booking">
+        <attributes>
+            <basic name="startTime">
+                <column nullable="false"/>
+            </basic>
+            <basic name="endTime">
+                <column nullable="false"/>
+            </basic>
+            <basic name="numberOfPeople">
+                <column nullable="false"/>
+            </basic>
+            <many-to-one name="establishment"/>
+            <one-to-many name="people" mapped-by="booking"/>
+            <element-collection name="people"/>
+        </attributes>
+    </entity>
+
+    <entity class="me.diegomcha.autoparte.domain.Person">
+        <attributes>
+            <basic name="name">
+                <column nullable="false"/>
+            </basic>
+            <basic name="firstSurname">
+                <column nullable="false"/>
+            </basic>
+            <many-to-one name="booking"/>
+            <many-to-one name="address"/>
+        </attributes>
+    </entity>
+
+    <entity
+            class="me.diegomcha.autoparte.domain.address.Address">
+        <inheritance strategy="SINGLE_TABLE"/>
+        <attributes>
+            <basic name="addressLine1">
+                <column nullable="false"/>
+            </basic>
+            <basic name="municipality">
+                <column nullable="false"/>
+            </basic>
+            <basic name="postalCode">
+                <column nullable="false"/>
+            </basic>
+            <basic name="country">
+                <column nullable="false"/>
+            </basic>
+        </attributes>
+    </entity>
+    <entity
+            class="me.diegomcha.autoparte.domain.address.SpanishAddress"/>
+
+    <embeddable class="me.diegomcha.autoparte.domain.booking.payment.Payment">
+        <attributes>
+            <basic name="type">
+                <column name="payment_type" nullable="false"/>
+            </basic>
+            <basic name="mean">
+                <column name="payment_mean"/>
+            </basic>
+            <basic name="holder">
+                <column name="payment_holder"/>
+            </basic>
+            <basic name="date">
+                <column name="payment_date"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    <embeddable
+            class="me.diegomcha.autoparte.domain.booking.payment.CreditCardPayment">
+        <attributes>
+            <basic name="expiryDate">
+                <column name="payment_expiry_date"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <embeddable
+            class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
+
+    <embeddable
+            class="me.diegomcha.autoparte.domain.person.document.Document">
+        <attributes>
+            <basic name="type">
+                <column name="document_type" nullable="false"/>
+            </basic>
+            <basic name="number">
+                <column name="document_number" nullable="false"/>
+            </basic>
+        </attributes>
+    </embeddable>
+
+    <embeddable
+            class="me.diegomcha.autoparte.domain.person.document.DniDocument">
+        <attributes>
+            <basic name="supportNumber">
+                <column name="document_support_number" nullable="false"/>
+            </basic>
+        </attributes>
+    </embeddable>
 
 
 </entity-mappings>

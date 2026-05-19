@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.model.booking.payment;
+package me.diegomcha.autoparte.domain.booking.payment;
 
 import lombok.*;
 

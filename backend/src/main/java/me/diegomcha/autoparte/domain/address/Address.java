@@ -1,22 +1,19 @@
-package me.diegomcha.autoparte.model.person.address;
+package me.diegomcha.autoparte.domain.address;
 
 import lombok.*;
-
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
+import me.diegomcha.autoparte.domain.base.BaseEntity;
+import me.diegomcha.autoparte.validation.Validations;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@EqualsAndHashCode
-public class Address {
-
-    public static final Set<String> VALID_COUNTRIES = Set.copyOf(Locale.getISOCountries(Locale.IsoCountryCode.PART1_ALPHA3));
-
-//    public static Address of(String addressLine1, String addressLine2, String postalCode, String country) {
-// TODO: ...
-//    }
+public class Address extends BaseEntity {
+    public static Address of(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {
+        if ("ESP".equals(country))
+            return new SpanishAddress(addressLine1, addressLine2, municipality, postalCode, country);
+        return new Address(addressLine1, addressLine2, municipality, postalCode, country);
+    }
 
     private @NonNull String addressLine1;
     private String addressLine2;
@@ -25,7 +22,7 @@ public class Address {
     private @NonNull String country;
 
     protected Address(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {
-        this.addressLine1 = Objects.requireNonNull(addressLine1);
+        this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
         this.setMunicipality(municipality);
         this.setPostalCode(postalCode);
@@ -33,18 +30,17 @@ public class Address {
     }
 
     protected void setMunicipality(@NonNull String municipality) {
-        this.municipality = Objects.requireNonNull(municipality);
+        this.municipality = municipality;
     }
 
     protected void setPostalCode(@NonNull String postalCode) {
-        this.postalCode = Objects.requireNonNull(postalCode);
+        this.postalCode = postalCode;
     }
 
     private void setCountry(@NonNull String country) {
-        if (!VALID_COUNTRIES.contains(Objects.requireNonNull(country)))
+        if (!Validations.isValidCountry(country))
             throw new IllegalArgumentException("Invalid country code: " + country);
 
         this.country = country;
     }
-
 }

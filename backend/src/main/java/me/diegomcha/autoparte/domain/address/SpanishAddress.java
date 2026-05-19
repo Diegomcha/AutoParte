@@ -1,11 +1,12 @@
-package me.diegomcha.autoparte.model.person.address;
+package me.diegomcha.autoparte.domain.address;
 
 import lombok.*;
+import me.diegomcha.autoparte.validation.Validations;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@EqualsAndHashCode(callSuper = true)
 public class SpanishAddress extends Address {
 
     protected SpanishAddress(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {
@@ -14,13 +15,15 @@ public class SpanishAddress extends Address {
 
     @Override
     protected void setPostalCode(@NonNull String postalCode) {
-        // TODO: validation...
+        if (!Validations.isValidSpanishPostalCode(postalCode, this.getMunicipality()))
+            throw new IllegalArgumentException("Invalid postal code");
         super.setPostalCode(postalCode);
     }
 
     @Override
     protected void setMunicipality(@NonNull String municipality) {
-        // TODO: validation & conversion to INE municipality code...
+        if (!Validations.isValidSpanishMunicipalityCode(municipality))
+            throw new IllegalArgumentException("Invalid municipality code");
         super.setMunicipality(municipality);
     }
 }

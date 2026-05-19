@@ -1,8 +1,6 @@
-package me.diegomcha.autoparte.model.person.document;
+package me.diegomcha.autoparte.domain.person.document;
 
 import lombok.*;
-
-import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,7 +15,7 @@ public class Document {
         OTHER // OTRO
     }
 
-    public static Document create(@NonNull DocumentType type, @NonNull String number, String supportNumber) {
+    public static Document of(@NonNull DocumentType type, @NonNull String number, String supportNumber) {
         if (type == DocumentType.NIE || type == DocumentType.NIF)
             return new DniDocument(type, number, supportNumber);
         return new Document(type, number);
@@ -28,17 +26,20 @@ public class Document {
 
     protected Document(@NonNull DocumentType type, @NonNull String number) {
         this.setType(type);
-        this.setNumber(number);
+        this.number = number;
     }
 
     protected void setType(@NonNull DocumentType type) {
         if (type == DocumentType.NIE || type == DocumentType.NIF)
             throw new IllegalArgumentException("Use DniDocument for NIF and NIE documents");
-        this.type = Objects.requireNonNull(type);
+        this.type = type;
     }
 
     protected void setNumber(@NonNull String number) {
-        this.number = Objects.requireNonNull(number);
+        this.number = number;
     }
 
+    public boolean requiresSecondSurname() {
+        return false;
+    }
 }

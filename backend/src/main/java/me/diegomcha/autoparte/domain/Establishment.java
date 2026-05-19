@@ -1,7 +1,7 @@
-package me.diegomcha.autoparte.model;
+package me.diegomcha.autoparte.domain;
 
 import lombok.*;
-import me.diegomcha.autoparte.model.base.BaseEntity;
+import me.diegomcha.autoparte.domain.base.BaseEntity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +20,12 @@ public class Establishment extends BaseEntity {
     private @NonNull Set<@NonNull Employee> employees = new HashSet<>();
     @Getter(AccessLevel.NONE)
     private @NonNull Set<@NonNull Booking> bookings = new HashSet<>();
+
+    public Establishment(String name, String sesCode, Boolean internetConnection) {
+        this.setName(name);
+        this.setSesCode(sesCode);
+        this.setInternetConnection(internetConnection);
+    }
 
     public Set<Employee> getEmployees() {
         return Set.copyOf(this.employees);

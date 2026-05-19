@@ -36,7 +36,9 @@
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <commons-text.version>1.10.0</commons-text.version>
         <uuid-generator.version>5.2.0</uuid-generator.version>
-        <jacoco.version>0.8.12</jacoco.version></properties>
+        <jacoco.version>0.8.12</jacoco.version>
+        <libphonenumber.version>9.0.30</libphonenumber.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -121,6 +123,12 @@
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
             <version>${uuid-generator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.libphonenumber</groupId>
+            <artifactId>libphonenumber</artifactId>
+            <version>${libphonenumber.version}</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>

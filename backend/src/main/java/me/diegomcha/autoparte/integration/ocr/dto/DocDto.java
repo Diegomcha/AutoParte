@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.integration.ocr.dto;
 
-import me.diegomcha.autoparte.model.person.document.Document;
-import me.diegomcha.autoparte.model.Person;
+import me.diegomcha.autoparte.domain.person.document.Document;
+import me.diegomcha.autoparte.domain.Person;
 
 import java.time.LocalDate;
 

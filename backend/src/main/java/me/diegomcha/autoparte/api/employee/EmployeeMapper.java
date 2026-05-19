@@ -4,7 +4,7 @@ import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreatedResponse;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoResponse;
-import me.diegomcha.autoparte.model.Employee;
+import me.diegomcha.autoparte.domain.Employee;
 import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 

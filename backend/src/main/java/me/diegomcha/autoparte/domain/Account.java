@@ -1,7 +1,7 @@
-package me.diegomcha.autoparte.model;
+package me.diegomcha.autoparte.domain;
 
 import lombok.*;
-import me.diegomcha.autoparte.model.base.BaseEntity;
+import me.diegomcha.autoparte.domain.base.BaseEntity;
 
 import java.time.Instant;
 import java.util.Set;

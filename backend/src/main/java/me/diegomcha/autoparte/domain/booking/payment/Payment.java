@@ -1,9 +1,8 @@
-package me.diegomcha.autoparte.model.booking.payment;
+package me.diegomcha.autoparte.domain.booking.payment;
 
 import lombok.*;
 
 import java.time.Instant;
-import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -22,7 +21,7 @@ public class Payment {
         OTHER // OTRO
     }
 
-    public static Payment create(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
+    public static Payment of(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
         if (type == PaymentType.CREDIT_CARD)
             return new CreditCardPayment(mean, holder, date, expiryDate);
         return new Payment(type, mean, holder, date);
@@ -37,7 +36,7 @@ public class Payment {
         if (type == PaymentType.CREDIT_CARD)
             throw new IllegalArgumentException("Use CreditCardPayment for credit card payments");
 
-        this.type = Objects.requireNonNull(type);
+        this.type = type;
         this.mean = mean;
         this.holder = holder;
         this.date = date;

@@ -1,7 +1,7 @@
-package me.diegomcha.autoparte.model;
+package me.diegomcha.autoparte.domain;
 
-import jakarta.persistence.Transient;
 import lombok.*;
+import me.diegomcha.autoparte.validation.Validations;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,20 +18,25 @@ public class Employee extends Account {
     @Setter(AccessLevel.NONE)
     private @NonNull Set<@NonNull Establishment> establishments = new HashSet<>();
 
-    // TODO: validacion de formato de email
     public Employee(@NonNull String name, @NonNull String surname, @NonNull String email, @NonNull String hashedPassword) {
         super(email, hashedPassword, Set.of("ROLE_EMPLOYEE"));
         this.setName(name);
         this.setSurname(surname);
     }
 
-    @Transient
     public String getEmail() {
         return this.getUsername();
     }
 
     public void setEmail(@NonNull String email) {
         this.setUsername(email);
+    }
+
+    @Override
+    public void setUsername(@NonNull String username) {
+        if (!Validations.isValidEmail(username))
+            throw new IllegalArgumentException("Invalid email format");
+        super.setUsername(username);
     }
 
     Set<Establishment> _getEstablishments() {

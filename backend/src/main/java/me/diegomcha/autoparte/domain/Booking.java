@@ -1,12 +1,11 @@
-package me.diegomcha.autoparte.model;
+package me.diegomcha.autoparte.domain;
 
 import lombok.*;
-import me.diegomcha.autoparte.model.base.BaseEntity;
-import me.diegomcha.autoparte.model.booking.payment.Payment;
+import me.diegomcha.autoparte.domain.base.BaseEntity;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,22 +16,20 @@ import java.util.Set;
 public class Booking extends BaseEntity {
 
     private boolean cancelled = false;
+    private @NonNull Instant startTime;
+    private @NonNull Instant endTime;
+    private short numberOfPeople;
+    private Short numberOfRooms;
+    private Payment payment;
+    private Boolean internetConnection;
 
     @Setter(AccessLevel.PACKAGE)
     private Establishment establishment;
     @Setter(AccessLevel.NONE)
-    private Set<Person> people = new HashSet<>();
-    private Payment payment;
-
-    private @NonNull Instant startTime;
-    private @NonNull Instant endTime;
-
-    private short numberOfPeople;
-    private Short numberOfRooms;
-    private Boolean internetConnection;
+    private @NonNull Set<@NonNull Person> people = new HashSet<>();
 
     public Booking(@NonNull Instant startTime, @NonNull Instant endTime, short numberOfPeople, Short numberOfRooms, Payment payment, Boolean internetConnection) {
-        this.startTime = Objects.requireNonNull(startTime);
+        this.startTime = startTime;
         this.setEndTime(endTime);
         this.setNumberOfPeople(numberOfPeople);
         this.setNumberOfRooms(numberOfRooms);
@@ -50,13 +47,13 @@ public class Booking extends BaseEntity {
     }
 
     public void setStartTime(@NonNull Instant startTime) {
-        if (!Objects.requireNonNull(startTime).isBefore(endTime))
+        if (!startTime.isBefore(endTime))
             throw new IllegalArgumentException("Start time must be before end time");
         this.startTime = startTime;
     }
 
     public void setEndTime(@NonNull Instant endTime) {
-        if (!startTime.isBefore(Objects.requireNonNull(endTime)))
+        if (!startTime.isBefore(endTime))
             throw new IllegalArgumentException("End time must be after start time");
         this.endTime = endTime;
     }
