@@ -67,7 +67,7 @@ class AuthService {
 	 * @param request The request containing the URL with potential "redirectTo" query parameter.
 	 * @returns A redirect response to the specified URL or "/" if not specified.
 	 */
-	getSuccessRedirection(request: Request) {
+	getSuccessRedirection(request: Request): ReturnType<typeof redirect> {
 		return redirect(new URL(request.url).searchParams.get('redirect') ?? '/');
 	}
 
@@ -76,7 +76,7 @@ class AuthService {
 	 * @param request The request containing the URL of the current page to redirect back to after login.
 	 * @returns A redirect response to the login page with the appropriate "redirectTo" query parameter.
 	 */
-	getLoginRedirection(request: Request) {
+	getLoginRedirection(request: Request): ReturnType<typeof redirect> {
 		return redirect(
 			'/auth/login?redirectTo=' +
 				encodeURIComponent(new URL(request.url).pathname)

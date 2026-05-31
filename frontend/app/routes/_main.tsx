@@ -1,5 +1,4 @@
-import { AppShell, Box, NavLink, Select } from '@mantine/core';
-import NavBar from '~/components/NavBar';
+import { AppShell, Box, NavLink } from '@mantine/core';
 import { Outlet, NavLink as RouterNavLink } from 'react-router';
 
 // Ensure the user is authenticated before allowing access to any protected routes.
@@ -8,7 +7,7 @@ export { clientLoader } from './auth.logout';
 
 export default function ProtectedLayout() {
 	return (
-		<AppShell>
+		<AppShell navbar={{ width: 100, breakpoint: 'sm' }}>
 			{/* <AppShell.Header>AutoParte!</AppShell.Header> */}
 			<AppShell.Navbar>
 				{/* <Select

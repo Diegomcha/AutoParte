@@ -14,6 +14,7 @@ import { Link, useNavigate } from 'react-router';
 import type {
 	EmployeeDtoCreate,
 	EmployeeDtoCreatedResponse,
+	ProblemDetail,
 } from '~/@types/api';
 
 export default function NewEmployee() {
@@ -41,7 +42,7 @@ export default function NewEmployee() {
 			body: values,
 		});
 
-		if (error) {
+		if (!response.ok) {
 			if (response.status === 409) {
 				form.setFieldError(
 					'email',
@@ -49,7 +50,7 @@ export default function NewEmployee() {
 				);
 				return;
 			}
-			throw new Error(error.detail);
+			throw new Error((error as ProblemDetail).detail);
 		}
 
 		setCreated(data);
@@ -87,21 +88,23 @@ export default function NewEmployee() {
 					<Button type="submit">{t(($) => $.employees.new.form.submit)}</Button>
 				</form>
 			</Modal>
-			<Modal
-				{...stack.register('created')}
-				onClose={() => void navigate('/employees')}
-				title={t(($) => $.employees.new.created.title)}
-			>
-				<Text>{t(($) => $.employees.new.created.description)}</Text>
-				<Text>{t(($) => $.employees.new.created.credentials.email)}</Text>
-				<Code block>{created?.email}</Code>
-				<Text>{t(($) => $.employees.new.created.credentials.password)}</Text>
-				<Code block>{created?.password}</Code>
-				<Text>{t(($) => $.employees.new.created.warning)}</Text>
-				<Link to={`/employees/${created?.id}`}>
-					<Button>{t(($) => $.employees.new.created.view)}</Button>
-				</Link>
-			</Modal>
+			{created && (
+				<Modal
+					{...stack.register('created')}
+					onClose={() => void navigate('/employees')}
+					title={t(($) => $.employees.new.created.title)}
+				>
+					<Text>{t(($) => $.employees.new.created.description)}</Text>
+					<Text>{t(($) => $.employees.new.created.credentials.email)}</Text>
+					<Code block>{created.email}</Code>
+					<Text>{t(($) => $.employees.new.created.credentials.password)}</Text>
+					<Code block>{created.password}</Code>
+					<Text>{t(($) => $.employees.new.created.warning)}</Text>
+					<Link to={`/employees/${created.id}`}>
+						<Button>{t(($) => $.employees.new.created.view)}</Button>
+					</Link>
+				</Modal>
+			)}
 		</Modal.Stack>
 	);
 }

@@ -284,13 +284,13 @@ export interface components {
             authority?: string;
         };
         UserDetails: {
-            authorities?: components["schemas"]["GrantedAuthority"][];
-            credentialsNonExpired?: boolean;
-            accountNonExpired?: boolean;
-            accountNonLocked?: boolean;
-            password?: string;
             enabled?: boolean;
+            password?: string;
             username?: string;
+            authorities?: components["schemas"]["GrantedAuthority"][];
+            accountNonExpired?: boolean;
+            credentialsNonExpired?: boolean;
+            accountNonLocked?: boolean;
         };
     };
     responses: never;
