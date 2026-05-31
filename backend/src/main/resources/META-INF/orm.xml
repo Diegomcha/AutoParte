@@ -42,7 +42,7 @@
                 <column nullable="false"
                         unique="true"/>
             </basic>
-            <basic name="hashedPassword">
+            <basic name="hashedPassword" fetch="LAZY">
                 <column nullable="false"/>
             </basic>
             <basic name="enabled">

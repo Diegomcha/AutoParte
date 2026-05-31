@@ -1,6 +1,6 @@
 //package me.diegomcha.autoparte.config.security;
 //
-//import me.diegomcha.autoparte.api.model.Account;
+//import me.diegomcha.autoparte.domain.Account;
 //import org.springframework.data.repository.CrudRepository;
 //
 //import java.util.UUID;

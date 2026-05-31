@@ -2,7 +2,8 @@
 //
 //import lombok.NonNull;
 //import lombok.RequiredArgsConstructor;
-//import me.diegomcha.autoparte.api.model.Account;
+//
+//import me.diegomcha.autoparte.domain.Account;
 //import org.jspecify.annotations.Nullable;
 //import org.springframework.security.core.GrantedAuthority;
 //import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -36,5 +37,10 @@
 //    @Override
 //    public boolean isEnabled() {
 //        return this.account.isEnabled();
+//    }
+//
+//    @Override
+//    public boolean isCredentialsNonExpired() {
+//        return !this.account.isRequiresReset();
 //    }
 //}

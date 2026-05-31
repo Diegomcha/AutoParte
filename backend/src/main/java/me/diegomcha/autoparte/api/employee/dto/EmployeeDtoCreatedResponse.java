@@ -1,16 +1,18 @@
 package me.diegomcha.autoparte.api.employee.dto;
 
+import jakarta.annotation.Nonnull;
+
 import java.time.Instant;
 import java.util.UUID;
 
 public record EmployeeDtoCreatedResponse(
-        UUID id,
-        Instant createdAt,
+        @Nonnull UUID id,
+        @Nonnull Instant createdAt,
 
-        String name,
-        String surname,
-        String email,
-        String password
+        @Nonnull String name,
+        @Nonnull String surname,
+        @Nonnull String email,
+        @Nonnull String password
 ) {
 
 }

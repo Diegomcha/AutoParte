@@ -24,10 +24,10 @@ public class LocationCatalogueService {
     protected LocationCatalogueService(AutoparteProperties config, ResourceLoader loader) throws IOException {
         this.countries = loadCountries();
 
-        String separator = config.getMunicipalities().getSeparator();
-        this.spanishProvinces = parseSpanishProvinces(loader, config.getMunicipalities().getProvincesPath(), separator);
-        this.spanishMunicipalities = parseSpanishMunicipalities(loader, config.getMunicipalities().getMunicipalitiesPath(), separator);
-        this.spanishPostalCodes = parseSpanishPostalCodes(loader, config.getMunicipalities().getPostalCodesPath(), separator);
+        String separator = config.getLocationCatalogue().getSeparator();
+        this.spanishProvinces = parseSpanishProvinces(loader, config.getLocationCatalogue().getProvincesPath(), separator);
+        this.spanishMunicipalities = parseSpanishMunicipalities(loader, config.getLocationCatalogue().getMunicipalitiesPath(), separator);
+        this.spanishPostalCodes = parseSpanishPostalCodes(loader, config.getLocationCatalogue().getPostalCodesPath(), separator);
     }
 
     private Set<Locale> loadCountries() {

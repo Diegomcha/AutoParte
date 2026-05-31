@@ -2,12 +2,9 @@ package me.diegomcha.autoparte.integration.ocr;
 
 import io.sentry.Sentry;
 import me.diegomcha.autoparte.config.AutoparteProperties;
-import me.diegomcha.autoparte.util.exception.ResourceUnprocessableException;
-import me.diegomcha.autoparte.util.exception.ServiceUnavailable;
 import me.diegomcha.autoparte.integration.ocr.dto.MrzDto;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.FileSystemResource;
+import me.diegomcha.autoparte.util.exception.ResourceUnprocessableException;
+import me.diegomcha.autoparte.util.exception.ServiceUnavailableException;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -37,7 +34,7 @@ public class OcrService {
 //        };
 //    }
 
-    public MrzDto convertImageToMrz(Resource image) throws ServiceUnavailable, ResourceUnprocessableException {
+    public MrzDto convertImageToMrz(Resource image) throws ServiceUnavailableException, ResourceUnprocessableException {
         // Create the multipart request body
         MultiValueMap<String, Resource> body = new LinkedMultiValueMap<>();
         body.add("image", image);
@@ -54,7 +51,7 @@ public class OcrService {
             throw new ResourceUnprocessableException("Unable to process the provided image");
         } catch (HttpServerErrorException e) {
             Sentry.captureException(e);
-            throw new ServiceUnavailable("MRZ service is unavailable");
+            throw new ServiceUnavailableException("MRZ service is unavailable");
         }
     }
 }
