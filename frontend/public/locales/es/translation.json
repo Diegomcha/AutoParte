@@ -1,0 +1,54 @@
+{
+    "employees": {
+        "title": "Empleados",
+        "properties": {
+            "status": {
+                "title": "Estado",
+                "options": {
+                    "active": "Activo",
+                    "inactive": "Inactivo"
+                }
+            },
+            "name": "Nombre",
+            "surname": "Apellidos",
+            "email": "Correo electrónico",
+            "createdAt": "Fecha de creación",
+            "updatedAt": "Fecha de actualización"
+        },
+        "new": {
+            "button": "Nuevo empleado",
+            "title": "Añadir nuevo empleado",
+            "form": {
+                "name": "Nombre",
+                "surname": "Apellidos",
+                "email": "Correo electrónico",
+                "submit": "Crear",
+                "errors": {
+                    "noName": "El nombre es obligatorio",
+                    "noSurname": "Los apellidos son obligatorios",
+                    "invalidEmail": "El correo electrónico no es válido",
+                    "emailInUse": "El correo electrónico ya está registrado"
+                }
+            }
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Iniciar sesión",
+            "form": {
+                "username": "Nombre de usuario",
+                "password": "Contraseña",
+                "rememberMe": "Mantener sesión iniciada",
+                "submit": "Iniciar sesión",
+                "errors": {
+                    "noUsername": "El nombre de usuario es obligatorio",
+                    "noPassword": "La contraseña es obligatoria",
+                    "invalidCredentials": "Nombre de usuario o contraseña incorrectos"
+                }
+            }
+        },
+        "logout": {
+            "button": "Cerrar sesión"
+        }
+    }
+}

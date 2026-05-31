@@ -1,3 +1,9 @@
+import * as Sentry from "@sentry/react-router";
+import {
+	ColorSchemeScript,
+	mantineHtmlProps,
+	MantineProvider,
+} from '@mantine/core';
 import {
 	isRouteErrorResponse,
 	Links,
@@ -7,15 +13,13 @@ import {
 	ScrollRestoration,
 } from 'react-router';
 import type { Route } from './+types/root';
-import '@mantine/core/styles.css';
-import {
-	ColorSchemeScript,
-	mantineHtmlProps,
-	MantineProvider,
-} from '@mantine/core';
+//
+// Internationalization
+import './i18n';
+// Styles
 import './app.css';
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" {...mantineHtmlProps}>
 			<head>
@@ -39,11 +43,11 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-	let message = 'Oops!';
-	let details = 'An unexpected error occurred.';
-	let stack: string | undefined;
+    let message = 'Oops!';
+    let details = 'An unexpected error occurred.';
+    let stack: string | undefined;
 
-	if (isRouteErrorResponse(error)) {
+    if (isRouteErrorResponse(error)) {
 		message = error.status === 404 ? '404' : 'Error';
 		details =
 			error.status === 404
@@ -54,7 +58,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 		stack = error.stack;
 	}
 
-	return (
+    if (error && error instanceof Error) {
+      Sentry.captureException(error);
+    }
+
+    return (
 		<main className="pt-16 p-4 container mx-auto">
 			<h1>{message}</h1>
 			<p>{details}</p>

@@ -1,5 +1,7 @@
 export default {
 	plugins: {
+		// TODO: Enable
+		// '@tailwindcss/postcss': {},
 		'postcss-preset-mantine': {},
 		'postcss-simple-vars': {
 			variables: {
