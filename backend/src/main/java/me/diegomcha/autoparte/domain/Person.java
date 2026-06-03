@@ -1,11 +1,11 @@
 package me.diegomcha.autoparte.domain;
 
 import lombok.*;
+import me.diegomcha.autoparte.core.validation.Validations;
 import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.document.Document;
-import me.diegomcha.autoparte.validation.Validations;
 
 import java.time.Instant;
 
@@ -54,16 +54,22 @@ public class Person extends BaseEntity {
     private PersonRelationship relationship;
 
     public Person(@NonNull String name, @NonNull String firstSurname, String secondSurname, String nationality, Instant birthDate, Document document, PersonGender gender, Address address, ContactInfo contactInfo, PersonRelationship relationship) {
-        this.name = name;
-        this.firstSurname = firstSurname;
+        this.setName(name);
+        this.setFirstSurname(firstSurname);
         this.setSecondSurname(secondSurname);
         this.setNationality(nationality);
         this.setBirthDate(birthDate);
-        this.document = document;
-        this.gender = gender;
+        this.setDocument(document);
+        this.setGender(gender);
+        this.setAddress(address);
+        this.setContactInfo(contactInfo);
+        this.setRelationship(relationship);
+    }
+
+    public void setAddress(Address address) {
+        if (this.address != null) address._getPeople().remove(this);
+        if (address != null) address._getPeople().add(this);
         this.address = address;
-        this.contactInfo = contactInfo;
-        this.relationship = relationship;
     }
 
     public void setSecondSurname(String secondSurname) {

@@ -4,10 +4,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.NonNull;
-import me.diegomcha.autoparte.util.exception.ResourceConflictException;
-import me.diegomcha.autoparte.util.exception.ResourceNotFoundException;
-import me.diegomcha.autoparte.util.exception.ResourceUnprocessableException;
-import me.diegomcha.autoparte.util.exception.ServiceUnavailableException;
+import me.diegomcha.autoparte.core.exception.*;
 import org.springframework.http.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -42,6 +39,12 @@ class ExceptionTranslator extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ProblemDetail handleServiceUnavailableException(ServiceUnavailableException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ProblemDetail handleUnauthorizedException(UnauthorizedException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
     @Override

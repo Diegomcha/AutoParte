@@ -1,8 +1,8 @@
-package me.diegomcha.autoparte.validation.annotations;
+package me.diegomcha.autoparte.core.validation.annotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import me.diegomcha.autoparte.validation.validators.ProvinceMunicipalityCodesValidator;
+import me.diegomcha.autoparte.core.validation.validators.ProvinceMunicipalityCodesValidator;
 
 import java.lang.annotation.*;
 

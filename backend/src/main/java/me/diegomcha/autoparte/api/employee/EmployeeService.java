@@ -7,9 +7,9 @@ import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreatedResponse;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoResponse;
+import me.diegomcha.autoparte.core.exception.ResourceConflictException;
+import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.domain.Employee;
-import me.diegomcha.autoparte.util.exception.ResourceConflictException;
-import me.diegomcha.autoparte.util.exception.ResourceNotFoundException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,14 +55,14 @@ class EmployeeService {
     @Transactional
     public EmployeeDtoCreatedResponse createEmployee(@NonNull EmployeeDtoCreate dto) throws ResourceConflictException {
         // Create random password (to be reset on first login)
-        String password = RandomStringUtils.secureStrong().nextAlphanumeric(12);
+        String password = RandomStringUtils.secureStrong().nextAlphanumeric(16);
         Employee newEmployee = employeeMapper.fromCreate(dto, passwordEncoder.encode(password));
 
         // Ensure email is unique
-        if (employeeRepo.existsByUsername(newEmployee.getEmail()))
+        if (employeeRepo.existsByEmail(newEmployee.getEmail()))
             throw SAME_EMAIL_EXCEPTION.get();
 
-        employeeRepo.save(newEmployee);
+        newEmployee = employeeRepo.save(newEmployee);
         return employeeMapper.toCreated(newEmployee, password);
     }
 
@@ -98,10 +98,11 @@ class EmployeeService {
         // Ensure email is unique
         if (patch.email() != null) {
             String email = employeeMapper.normalizeEmail(patch.email());
-            if (!employee.getEmail().equals(email) && employeeRepo.existsByUsername(email))
+            if (!employee.getEmail().equals(email) && employeeRepo.existsByEmail(email))
                 throw SAME_EMAIL_EXCEPTION.get();
         }
 
+        employee = employeeRepo.save(employee);
         employeeMapper.patchEmployee(patch, employee);
     }
 }

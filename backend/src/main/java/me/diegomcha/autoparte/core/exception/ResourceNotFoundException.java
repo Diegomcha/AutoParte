@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.util.exception;
+package me.diegomcha.autoparte.core.exception;
 
 public class ResourceNotFoundException extends Exception {
     public ResourceNotFoundException(String message) {

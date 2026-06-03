@@ -62,14 +62,14 @@ public class Booking extends BaseEntity {
         return Set.copyOf(this.people);
     }
 
-    public void addPerson(Person person) {
+    public void addPerson(@NonNull Person person) {
         if (this.people.size() >= this.numberOfPeople)
             throw new IllegalStateException("Cannot add more people than the number specified in the booking");
         this.people.add(person);
         person.setBooking(this);
     }
 
-    public void removePerson(Person person) {
+    public void removePerson(@NonNull Person person) {
         this.people.remove(person);
         person.setBooking(null);
     }

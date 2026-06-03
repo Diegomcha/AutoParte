@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.validation;
+package me.diegomcha.autoparte.core.validation;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;

@@ -39,7 +39,13 @@ public class Payment {
         this.type = type;
         this.mean = mean;
         this.holder = holder;
-        this.date = date;
+        this.setDate(date);
     }
 
+    private void setDate(Instant date) {
+        if (date != null && date.isAfter(Instant.now()))
+            throw new IllegalArgumentException("Payment date cannot be in the future");
+
+        this.date = date;
+    }
 }

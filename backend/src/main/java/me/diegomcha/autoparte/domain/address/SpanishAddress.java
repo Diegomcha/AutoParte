@@ -1,12 +1,13 @@
 package me.diegomcha.autoparte.domain.address;
 
-import lombok.*;
-import me.diegomcha.autoparte.validation.Validations;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.ToString;
+import me.diegomcha.autoparte.core.validation.Validations;
 
-@Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@ToString(callSuper = true)
 public class SpanishAddress extends Address {
 
     protected SpanishAddress(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {

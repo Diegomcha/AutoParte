@@ -1,0 +1,90 @@
+package me.diegomcha.autoparte.core.security;
+
+import lombok.RequiredArgsConstructor;
+import me.diegomcha.autoparte.core.event.UpdatePasswordSuccessEvent;
+import me.diegomcha.autoparte.core.exception.UnauthorizedException;
+import me.diegomcha.autoparte.domain.Account;
+import org.jspecify.annotations.Nullable;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
+
+@Service
+@RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+public class SecurityService {
+
+    private final AccountRepo accountRepo;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final ApplicationEventPublisher eventPublisher;
+
+    /**
+     * Updates the password of the user with the given username, if the current password matches.
+     *
+     * @param username    The username of the account for which to update the password
+     * @param oldPassword The current password of the account, used for authentication before updating the password
+     * @param newPassword The new password to set for the account if authentication is successful
+     * @param details     The details of the current authentication, used for logging the password change event
+     * @throws UnauthorizedException if the username is not found or the current password does not match
+     */
+    public void updatePassword(String username, String oldPassword, String newPassword, Object details) throws UnauthorizedException {
+        Authentication authentication = this.checkCredentials(username, oldPassword, details);
+        Account account = this.getAccountFromAuthentication(authentication);
+
+        assert account != null;
+
+        account.setHashedPassword(Objects.requireNonNull(passwordEncoder.encode(newPassword)));
+        eventPublisher.publishEvent(new UpdatePasswordSuccessEvent(authentication));
+    }
+
+    private Authentication checkCredentials(String username, String password, Object details) throws UnauthorizedException {
+        // Create an unauthenticated token with the credentials to be checked & details
+        UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(username, password);
+        authentication.setDetails(details);
+
+        // Attempt authentication
+        try {
+            return authenticationManager.authenticate(authentication);
+        } catch (AuthenticationException e) {
+            throw new UnauthorizedException("Unauthorized");
+        }
+    }
+
+    /**
+     * Extracts the Account from the given Authentication object if possible, fetching it from the database to ensure it is up-to-date.
+     *
+     * @param authentication The Authentication object from which to extract the Account. Can be null.
+     * @return The Account associated with the given Authentication, or null.
+     */
+    public @Nullable Account getAccountFromAuthentication(@Nullable Authentication authentication) {
+        return this.getAccountFromAuthentication(authentication, true);
+    }
+
+    /**
+     * Extracts the Account from the given Authentication object if possible.
+     *
+     * @param authentication The Authentication object from which to extract the Account. Can be null.
+     * @param persistent     If true, the method will attempt to fetch the Account from the database to ensure it is up-to-date.
+     *                       If false, it will return the Account directly from the Authentication principal if it is of type UserAccount.
+     * @return The Account associated with the given Authentication, or null.
+     */
+    public @Nullable Account getAccountFromAuthentication(@Nullable Authentication authentication, boolean persistent) {
+        return Optional.ofNullable(authentication).map(Authentication::getPrincipal).filter(principal -> !"anonymousUser".equals(principal)).map(principal -> switch (principal) {
+            case UserAccount userAccount -> persistent
+                    ? accountRepo.findByUsername(userAccount.getUsername()).orElseThrow(() -> new IllegalStateException("Authenticated user not found in database: " + userAccount.getUsername()))
+                    : userAccount.getAccount();
+            case String username ->
+                    accountRepo.findByUsername(username).orElse(null);
+            default ->
+                    throw new IllegalStateException("Authentication principal cannot be parsed: " + principal);
+        }).orElse(null);
+    }
+
+}

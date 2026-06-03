@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.domain.person;
 
 import lombok.*;
-import me.diegomcha.autoparte.validation.Validations;
+import me.diegomcha.autoparte.core.validation.Validations;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

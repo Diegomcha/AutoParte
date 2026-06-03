@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.catalogue.dto.ProvinceMunicipalityCodesDto;
 import me.diegomcha.autoparte.api.catalogue.services.CatalogueService;
 import me.diegomcha.autoparte.api.catalogue.services.LocationCatalogueService;
-import me.diegomcha.autoparte.validation.annotations.ProvinceCode;
+import me.diegomcha.autoparte.core.validation.annotations.ProvinceCode;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

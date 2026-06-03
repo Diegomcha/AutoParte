@@ -6,8 +6,8 @@ import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreatedResponse;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoResponse;
-import me.diegomcha.autoparte.util.exception.ResourceConflictException;
-import me.diegomcha.autoparte.util.exception.ResourceNotFoundException;
+import me.diegomcha.autoparte.core.exception.ResourceConflictException;
+import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +16,7 @@ import java.util.UUID;
 // TODO: ....
 @Tag(name = "Employees", description = "Operations related to employees")
 @SuppressWarnings("unused")
-public interface EmployeeAPI {
+interface EmployeeAPI {
 
     @Operation(summary = "List employees")
     Page<EmployeeDtoResponse> getEmployees(Pageable pageable);

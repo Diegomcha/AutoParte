@@ -31,12 +31,13 @@ public class Establishment extends BaseEntity {
         return Set.copyOf(this.employees);
     }
 
-    public void addEmployee(Employee employee) {
+    public void addEmployee(@NonNull Employee employee) {
         employee._getEstablishments().add(this);
         this.employees.add(employee);
     }
 
-    public void removeEmployee(Employee employee) {
+    public void removeEmployee(@NonNull Employee employee) {
+        employee._getEstablishments().remove(this);
         this.employees.remove(employee);
     }
 
@@ -44,12 +45,12 @@ public class Establishment extends BaseEntity {
         return Set.copyOf(this.bookings);
     }
 
-    public void addBooking(Booking booking) {
+    public void addBooking(@NonNull Booking booking) {
         this.bookings.add(booking);
         booking.setEstablishment(this);
     }
 
-    public void removeBooking(Booking booking) {
+    public void removeBooking(@NonNull Booking booking) {
         this.bookings.remove(booking);
         booking.setEstablishment(null);
     }

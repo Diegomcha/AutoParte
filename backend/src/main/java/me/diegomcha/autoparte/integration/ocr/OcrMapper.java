@@ -10,13 +10,13 @@ import org.mapstruct.Named;
 
 
 @Mapper(componentModel = "spring")
-public abstract class OcrMapper {
+abstract class OcrMapper {
     @Mapping(target = "documentType", qualifiedByName = "mapDocumentType")
     @Mapping(target = "gender", qualifiedByName = "mapGender")
     @Mapping(target = "firstSurname", expression = "java(mrzData.firstSurname())")
     @Mapping(target = "secondSurname", expression = "java(mrzData.secondSurname())")
     @Mapping(target = "documentSupportNumber", expression = "java(mrzData.documentSupportNumber())")
-    public abstract DocDto toDocument(MrzData mrzData);
+    abstract DocDto toDocument(MrzData mrzData);
 
     @Named("mapDocumentType")
     protected Document.DocumentType mapDocumentType(MrzData.DocumentType documentType) {

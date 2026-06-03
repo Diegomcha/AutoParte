@@ -26,7 +26,7 @@ public class Document {
 
     protected Document(@NonNull DocumentType type, @NonNull String number) {
         this.setType(type);
-        this.number = number;
+        this.setNumber(number);
     }
 
     protected void setType(@NonNull DocumentType type) {

@@ -2,9 +2,9 @@ package me.diegomcha.autoparte.integration.ocr;
 
 import io.sentry.Sentry;
 import me.diegomcha.autoparte.config.AutoparteProperties;
+import me.diegomcha.autoparte.core.exception.ResourceUnprocessableException;
+import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.integration.ocr.dto.MrzDto;
-import me.diegomcha.autoparte.util.exception.ResourceUnprocessableException;
-import me.diegomcha.autoparte.util.exception.ServiceUnavailableException;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -23,16 +23,6 @@ public class OcrService {
                 .baseUrl(properties.getOcrUrl())
                 .build();
     }
-
-    // TODO: Remove this test method
-//    @Bean
-//    CommandLineRunner testOcr() {
-//        return args -> {
-//            Resource image = new FileSystemResource("D:/dni.jpg");
-//            var response = convertImageToMrz(image);
-//            System.out.println(response);
-//        };
-//    }
 
     public MrzDto convertImageToMrz(Resource image) throws ServiceUnavailableException, ResourceUnprocessableException {
         // Create the multipart request body

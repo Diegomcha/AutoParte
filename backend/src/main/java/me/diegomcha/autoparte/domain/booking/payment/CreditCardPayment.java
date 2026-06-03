@@ -6,7 +6,7 @@ import java.time.Instant;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class CreditCardPayment extends Payment {
 
@@ -17,7 +17,7 @@ public class CreditCardPayment extends Payment {
         this.setExpiryDate(expiryDate);
     }
 
-    public void setExpiryDate(Instant expiryDate) {
+    private void setExpiryDate(Instant expiryDate) {
         if (expiryDate != null && this.getDate() != null && expiryDate.isBefore(this.getDate()))
             throw new IllegalArgumentException("Expiry date must be after payment date");
 

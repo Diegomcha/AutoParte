@@ -1,11 +1,11 @@
 package me.diegomcha.autoparte.domain.person.document;
 
 import lombok.*;
-import me.diegomcha.autoparte.validation.Validations;
+import me.diegomcha.autoparte.core.validation.Validations;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@ToString
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class DniDocument extends Document {
 

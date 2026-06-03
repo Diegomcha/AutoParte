@@ -9,7 +9,7 @@ import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring")
-public abstract class EmployeeMapper {
+abstract class EmployeeMapper {
 
     public abstract EmployeeDtoResponse toResponse(Employee employee);
 
