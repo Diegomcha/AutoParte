@@ -183,7 +183,7 @@
             class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
 
     <embeddable
-            class="me.diegomcha.autoparte.domain.person.document.Document">
+            class="me.diegomcha.autoparte.domain.person.document.DocumentInfo">
         <attributes>
             <basic name="type">
                 <column name="document_type" nullable="false"/>

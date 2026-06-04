@@ -7,20 +7,13 @@ import me.diegomcha.autoparte.core.validation.Validations;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class DniDocument extends Document {
+public class DniDocument extends DocumentInfo {
 
     private @NonNull String supportNumber;
 
     protected DniDocument(@NonNull DocumentType type, @NonNull String nif, @NonNull String supportNumber) {
         super(type, nif);
         this.supportNumber = supportNumber;
-    }
-
-    @Override
-    protected void setType(@NonNull DocumentType type) {
-        if (type != DocumentType.NIE && type != DocumentType.NIF)
-            throw new IllegalArgumentException("DniDocument type must be NIF or NIE");
-        this.type = type;
     }
 
     @Override

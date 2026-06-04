@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.integration.ocr.dto;
 
-import me.diegomcha.autoparte.domain.person.document.Document;
-import me.diegomcha.autoparte.domain.Person;
+import me.diegomcha.autoparte.domain.person.PersonalInfo;
+import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
 
 import java.time.LocalDate;
 
@@ -11,8 +11,8 @@ public record DocDto(
         String secondSurname,
         LocalDate birthDate,
         String nationality,
-        Person.PersonGender gender,
-        Document.DocumentType documentType,
+        PersonalInfo.PersonalInfoGender gender,
+        DocumentInfo.DocumentType documentType,
         String documentNumber,
         String documentSupportNumber,
 

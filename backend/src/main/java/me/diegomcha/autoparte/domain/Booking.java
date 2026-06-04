@@ -15,20 +15,23 @@ import java.util.Set;
 @ToString
 public class Booking extends BaseEntity {
 
-    private boolean cancelled = false;
     private @NonNull Instant startTime;
     private @NonNull Instant endTime;
-    private short numberOfPeople;
-    private Short numberOfRooms;
+    private int numberOfPeople;
+    private Integer numberOfRooms;
     private Payment payment;
     private Boolean internetConnection;
 
-    @Setter(AccessLevel.PACKAGE)
-    private Establishment establishment;
+    private @NonNull Establishment establishment;
     @Setter(AccessLevel.NONE)
     private @NonNull Set<@NonNull Person> people = new HashSet<>();
 
-    public Booking(@NonNull Instant startTime, @NonNull Instant endTime, short numberOfPeople, Short numberOfRooms, Payment payment, Boolean internetConnection) {
+    public Booking(@NonNull Establishment establishment, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople) {
+        this(establishment, startTime, endTime, numberOfPeople, null, null, null);
+    }
+
+    public Booking(@NonNull Establishment establishment, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, Integer numberOfRooms, Payment payment, Boolean internetConnection) {
+        this.setEstablishment(establishment);
         this.startTime = startTime;
         this.setEndTime(endTime);
         this.setNumberOfPeople(numberOfPeople);
@@ -37,13 +40,16 @@ public class Booking extends BaseEntity {
         this.setInternetConnection(internetConnection);
     }
 
+    public void setEstablishment(@NonNull Establishment establishment) {
+        if (this.establishment != null) this.establishment._getBookings().remove(this);
+        this.establishment = establishment;
+        this.establishment._getBookings().add(this);
+    }
+
     public Boolean getInternetConnection() {
         return Optional
                 .ofNullable(this.internetConnection)
-                .orElse(Optional
-                        .ofNullable(this.establishment)
-                        .map(Establishment::getInternetConnection)
-                        .orElse(null));
+                .orElse(this.establishment.getInternetConnection());
     }
 
     public void setStartTime(@NonNull Instant startTime) {
@@ -58,19 +64,30 @@ public class Booking extends BaseEntity {
         this.endTime = endTime;
     }
 
+    public void setNumberOfPeople(int numberOfPeople) {
+        if (numberOfPeople <= 0)
+            throw new IllegalArgumentException("Number of people must be greater than 0");
+        this.numberOfPeople = numberOfPeople;
+    }
+
+    public void setNumberOfRooms(Integer numberOfRooms) {
+        if (numberOfRooms != null && numberOfRooms <= 0)
+            throw new IllegalArgumentException("Number of rooms must be greater than 0");
+        this.numberOfRooms = numberOfRooms;
+    }
+
     public Set<Person> getPeople() {
         return Set.copyOf(this.people);
     }
 
-    public void addPerson(@NonNull Person person) {
+    void _addPerson(@NonNull Person person) {
         if (this.people.size() >= this.numberOfPeople)
             throw new IllegalStateException("Cannot add more people than the number specified in the booking");
+
         this.people.add(person);
-        person.setBooking(this);
     }
 
-    public void removePerson(@NonNull Person person) {
+    void _removePerson(@NonNull Person person) {
         this.people.remove(person);
-        person.setBooking(null);
     }
 }

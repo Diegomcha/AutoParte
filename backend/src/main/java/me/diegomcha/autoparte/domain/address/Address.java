@@ -21,14 +21,16 @@ public class Address extends BaseEntity {
     
     private @NonNull String addressLine1;
     private String addressLine2;
+    @Setter(AccessLevel.PROTECTED)
     private @NonNull String municipality;
+    @Setter(AccessLevel.PROTECTED)
     private @NonNull String postalCode;
     private @NonNull String country;
 
     @Setter(AccessLevel.NONE)
     private @NonNull Set<@NonNull Person> people = new HashSet<>();
 
-    public Address(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {
+    protected Address(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {
         this.setCountry(country);
 
         this.setMunicipality(municipality);
@@ -43,14 +45,6 @@ public class Address extends BaseEntity {
             throw new IllegalArgumentException("Invalid country code: " + country);
 
         this.country = country;
-    }
-
-    protected void setPostalCode(@NonNull String postalCode) {
-        this.postalCode = postalCode;
-    }
-
-    protected void setMunicipality(@NonNull String municipality) {
-        this.municipality = municipality;
     }
 
     public Set<Person> _getPeople() {

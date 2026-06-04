@@ -18,10 +18,14 @@ public class Establishment extends BaseEntity {
 
     @Setter(AccessLevel.NONE)
     private @NonNull Set<@NonNull Employee> employees = new HashSet<>();
-    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private @NonNull Set<@NonNull Booking> bookings = new HashSet<>();
 
-    public Establishment(String name, String sesCode, Boolean internetConnection) {
+    public Establishment(@NonNull String name, @NonNull String sesCode) {
+        this(name, sesCode, null);
+    }
+
+    public Establishment(@NonNull String name, @NonNull String sesCode, Boolean internetConnection) {
         this.setName(name);
         this.setSesCode(sesCode);
         this.setInternetConnection(internetConnection);
@@ -41,17 +45,12 @@ public class Establishment extends BaseEntity {
         this.employees.remove(employee);
     }
 
+    Set<Booking> _getBookings() {
+        return this.bookings;
+    }
+
     public Set<Booking> getBookings() {
         return Set.copyOf(this.bookings);
     }
 
-    public void addBooking(@NonNull Booking booking) {
-        this.bookings.add(booking);
-        booking.setEstablishment(this);
-    }
-
-    public void removeBooking(@NonNull Booking booking) {
-        this.bookings.remove(booking);
-        booking.setEstablishment(null);
-    }
 }
