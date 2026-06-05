@@ -19,7 +19,39 @@ public class Validations {
     private static final Pattern POSTAL_CODE_PATTERN = Pattern.compile("^\\d{5}$");
     private static final PhoneNumberUtil PHONE_UTIL = PhoneNumberUtil.getInstance();
 
-    public static boolean isValidNif(@NonNull String nif) {
+    public static void ensureValidNif(@NonNull String nif) {
+        if (!isValidNif(nif))
+            throw new IllegalArgumentException("Invalid NIF format");
+    }
+
+    public static void ensureValidEmail(@NonNull String email) {
+        if (!EMAIL_PATTERN.matcher(email).matches())
+            throw new IllegalArgumentException("Invalid email format");
+    }
+
+    public static void ensureValidPhone(@NonNull String phone) {
+        if (!isValidPhone(phone))
+            throw new IllegalArgumentException("Invalid phone number format");
+    }
+
+    public static void ensureValidSpanishMunicipalityCode(@NonNull String municipalityCode) {
+        if (!MUNICIPALITY_CODE_PATTERN.matcher(municipalityCode).matches())
+            throw new IllegalArgumentException("Invalid Spanish municipality code format");
+    }
+
+    public static void ensureValidSpanishPostalCode(@NonNull String postalCode, @NonNull String municipalityCode) {
+        if (!POSTAL_CODE_PATTERN.matcher(postalCode).matches())
+            throw new IllegalArgumentException("Invalid Spanish postal code format");
+        if (!postalCode.startsWith(municipalityCode.substring(0, 2)))
+            throw new IllegalArgumentException("Postal code does not match municipality code");
+    }
+
+    public static void ensureValidCountry(@NonNull String country) {
+        if (!VALID_COUNTRIES.contains(country))
+            throw new IllegalArgumentException("Invalid country code");
+    }
+
+    private static boolean isValidNif(@NonNull String nif) {
         // Check the format of the NIF
         if (!NIF_PATTERN.matcher(nif).matches() && !NIE_PATTERN.matcher(nif).matches())
             return false;
@@ -36,34 +68,13 @@ public class Validations {
         return "TRWAGMYFPDXBNJZSQVHLCKE".charAt(number % 23) == nif.charAt(8);
     }
 
-    public static boolean isValidEmail(@NonNull String email) {
-        return EMAIL_PATTERN.matcher(email).matches();
-    }
-
-    public static boolean isValidPhone(@NonNull String phone) {
+    private static boolean isValidPhone(@NonNull String phone) {
         try {
             var number = PHONE_UTIL.parse(phone, "ES");
             return PHONE_UTIL.isValidNumber(number);
         } catch (NumberParseException e) {
             return false;
         }
-    }
-
-    public static boolean isValidSpanishMunicipalityCode(@NonNull String municipalityCode) {
-        return MUNICIPALITY_CODE_PATTERN.matcher(municipalityCode).matches();
-    }
-
-    public static boolean isValidSpanishPostalCode(@NonNull String postalCode, @NonNull String municipalityCode) {
-        // Check if the postal code matches the expected format
-        if (POSTAL_CODE_PATTERN.matcher(postalCode).matches())
-            return false;
-
-        // Check if the postal code starts with the municipality code
-        return postalCode.startsWith(municipalityCode.substring(0, 2));
-    }
-
-    public static boolean isValidCountry(@NonNull String country) {
-        return VALID_COUNTRIES.contains(country);
     }
 
     private Validations() {

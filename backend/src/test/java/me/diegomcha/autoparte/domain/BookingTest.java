@@ -1,11 +1,10 @@
 package me.diegomcha.autoparte.domain;
 
+import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.Instant;
 
 class BookingTest {
 
@@ -15,7 +14,7 @@ class BookingTest {
     @BeforeEach
     void setUp() {
         this.establishment = new Establishment("Test", "SESCODE");
-        this.booking = new Booking(establishment, Instant.now(), Instant.now().plusSeconds(3600), 1);
+        this.booking = new Booking(establishment, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1);
     }
 
     @Test

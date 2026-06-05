@@ -16,9 +16,10 @@
     <package>me.diegomcha.autoparte.domain</package>
     <access>FIELD</access>
 
+    <!-- TODO: Most likely update this file! -->
     <mapped-superclass class="me.diegomcha.autoparte.domain.base.BaseEntity">
         <post-persist method-name="markNotNew"/>
-        <post-load method-name="markNotNew" />
+        <post-load method-name="markNotNew"/>
         <attributes>
             <id name="id">
                 <column nullable="false"
@@ -194,7 +195,7 @@
         </attributes>
     </embeddable>
     <embeddable
-            class="me.diegomcha.autoparte.domain.person.document.DniDocument">
+            class="me.diegomcha.autoparte.domain.person.document.DniDocumentInfo">
         <attributes>
             <basic name="supportNumber">
                 <column name="document_support_number" nullable="false"/>

@@ -1,13 +1,12 @@
 package me.diegomcha.autoparte.domain;
 
+import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
 import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.Instant;
 
 class PersonTest {
 
@@ -19,7 +18,7 @@ class PersonTest {
     @BeforeEach
     void setUp() {
         this.establishment = new Establishment("Test", "SESCODE");
-        this.booking = new Booking(establishment, Instant.now(), Instant.now().plusSeconds(3600), 1);
+        this.booking = new Booking(establishment, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1);
         this.personalInfo = new PersonalInfo("Name", "Surname");
         this.person = new Person(booking, personalInfo);
     }
@@ -29,7 +28,7 @@ class PersonTest {
         Assertions.assertEquals(this.booking, this.person.getBooking());
         Assertions.assertTrue(this.booking.getPeople().contains(this.person));
 
-        var newBooking = new Booking(this.establishment, Instant.now().plusSeconds(7200), Instant.now().plusSeconds(10800), 1);
+        var newBooking = new Booking(this.establishment, TestingUtils.INSTANT.plusSeconds(7200), TestingUtils.INSTANT.plusSeconds(10800), 1);
         this.person.setBooking(newBooking);
 
         Assertions.assertEquals(newBooking, this.person.getBooking());

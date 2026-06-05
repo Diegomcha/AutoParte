@@ -37,11 +37,17 @@ public class SecurityEvent extends BaseEntity {
     private Account account;
 
     public SecurityEvent(@NonNull Instant timestamp, @NonNull String remoteAddress, @NonNull SecurityEventType type, @NonNull SecurityEventMethod method, Account account) {
-        this.timestamp = timestamp;
+        this.setTimestamp(timestamp);
         this.remoteAddress = remoteAddress;
         this.type = type;
         this.method = method;
         this.setAccount(account);
+    }
+
+    private void setTimestamp(@NonNull Instant timestamp) {
+        if (timestamp.isAfter(Instant.now()))
+            throw new IllegalArgumentException("Timestamp cannot be in the future");
+        this.timestamp = timestamp;
     }
 
     private void setAccount(@Nullable Account account) {

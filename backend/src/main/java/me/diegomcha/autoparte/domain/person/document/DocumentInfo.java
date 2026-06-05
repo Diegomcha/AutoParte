@@ -15,9 +15,13 @@ public class DocumentInfo {
         OTHER // OTRO
     }
 
+    public static DocumentInfo of(@NonNull DocumentType type, @NonNull String number) {
+        return of(type, number, null);
+    }
+
     public static DocumentInfo of(@NonNull DocumentType type, @NonNull String number, String supportNumber) {
         if (type == DocumentType.NIE || type == DocumentType.NIF)
-            return new DniDocument(type, number, supportNumber);
+            return new DniDocumentInfo(type, number, supportNumber);
         return new DocumentInfo(type, number);
     }
 

@@ -23,20 +23,17 @@ public class ContactInfo {
     }
 
     public void setPhoneNumber1(String phoneNumber1) {
-        if (phoneNumber1 != null && !Validations.isValidPhone(phoneNumber1))
-            throw new IllegalArgumentException("Invalid phone number format");
+        if (phoneNumber1 != null) Validations.ensureValidPhone(phoneNumber1);
         this.phoneNumber1 = phoneNumber1;
     }
 
     public void setPhoneNumber2(String phoneNumber2) {
-        if (phoneNumber2 != null && !Validations.isValidPhone(phoneNumber2))
-            throw new IllegalArgumentException("Invalid phone number format");
+        if (phoneNumber2 != null) Validations.ensureValidPhone(phoneNumber2);
         this.phoneNumber2 = phoneNumber2;
     }
 
     public void setEmail(String email) {
-        if (email != null && !Validations.isValidEmail(email))
-            throw new IllegalArgumentException("Invalid email format");
+        if (email != null) Validations.ensureValidEmail(email);
         this.email = email;
     }
 }

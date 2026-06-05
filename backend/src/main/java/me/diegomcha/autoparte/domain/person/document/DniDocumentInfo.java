@@ -7,20 +7,18 @@ import me.diegomcha.autoparte.core.validation.Validations;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class DniDocument extends DocumentInfo {
+public class DniDocumentInfo extends DocumentInfo {
 
     private @NonNull String supportNumber;
 
-    protected DniDocument(@NonNull DocumentType type, @NonNull String nif, @NonNull String supportNumber) {
+    protected DniDocumentInfo(@NonNull DocumentType type, @NonNull String nif, @NonNull String supportNumber) {
         super(type, nif);
         this.supportNumber = supportNumber;
     }
 
     @Override
     protected void setNumber(@NonNull String nif) {
-        nif = nif.toUpperCase();
-        if (!Validations.isValidNif(nif))
-            throw new IllegalArgumentException("Invalid NIF number");
+        Validations.ensureValidNif(nif);
         super.setNumber(nif);
     }
 

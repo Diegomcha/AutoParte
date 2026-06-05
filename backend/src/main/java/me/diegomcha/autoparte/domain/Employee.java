@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.domain;
 
 import lombok.*;
+import me.diegomcha.autoparte.core.validation.Validations;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 
 import java.util.HashSet;
@@ -24,6 +25,8 @@ public class Employee extends BaseEntity {
         this.account = new Account(email, hashedPassword, Set.of("ROLE_EMPLOYEE"));
         this.setName(name);
         this.setSurname(surname);
+        // Run email validations
+        this.setEmail(email);
     }
 
     public String getEmail() {
@@ -31,6 +34,7 @@ public class Employee extends BaseEntity {
     }
 
     public void setEmail(@NonNull String email) {
+        Validations.ensureValidEmail(email);
         this.account.setUsername(email);
     }
 

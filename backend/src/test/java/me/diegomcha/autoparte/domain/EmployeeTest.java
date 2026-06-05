@@ -24,4 +24,11 @@ class EmployeeTest {
         employee.setEmail("other@email.com");
         Assertions.assertEquals(employee.getEmail(), employee.getAccount().getUsername());
     }
+
+    @Test
+    void testEmailValidation() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> employee.setEmail("invalid-email"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Employee("Name", "Surname", "invalid-email", "hashedpassword"));
+        Assertions.assertDoesNotThrow(() -> employee.setEmail("t@t.io"));
+    }
 }

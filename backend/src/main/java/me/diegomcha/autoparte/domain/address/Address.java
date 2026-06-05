@@ -41,9 +41,7 @@ public class Address extends BaseEntity {
     }
 
     private void setCountry(@NonNull String country) {
-        if (!Validations.isValidCountry(country))
-            throw new IllegalArgumentException("Invalid country code: " + country);
-
+        Validations.ensureValidCountry(country);
         this.country = country;
     }
 

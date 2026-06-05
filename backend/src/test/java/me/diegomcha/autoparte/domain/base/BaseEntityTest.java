@@ -31,7 +31,6 @@ class BaseEntityTest {
         Assertions.assertTrue(entity.isNew());
     }
 
-    // TODO: Move to other class
     @ParameterizedTest
     @MethodSource("subclasses")
     void testSubclassesHaveProtectedNoArgsConstructor(Class<?> clazz) throws NoSuchMethodException {

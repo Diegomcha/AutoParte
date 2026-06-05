@@ -42,9 +42,6 @@ class Config implements WebMvcConfigurer {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-//        configurer.addPathPrefix("/api/v{version}", handlerType ->
-//                handlerType.isAnnotationPresent(RestController.class)
-//        );
         configurer.addPathPrefix("/api", handlerType ->
                 handlerType.isAnnotationPresent(RestController.class)
         );

@@ -42,9 +42,7 @@ public class PersonalInfo {
     }
 
     private void setNationality(String nationality) {
-        if (nationality != null && !Validations.isValidCountry(nationality))
-            throw new IllegalArgumentException("Invalid nationality: " + nationality);
-
+        if (nationality != null) Validations.ensureValidCountry(nationality);
         this.nationality = nationality;
     }
 

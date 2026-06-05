@@ -16,15 +16,13 @@ public class SpanishAddress extends Address {
 
     @Override
     protected void setPostalCode(@NonNull String postalCode) {
-        if (!Validations.isValidSpanishPostalCode(postalCode, this.getMunicipality()))
-            throw new IllegalArgumentException("Invalid postal code");
+        Validations.ensureValidSpanishPostalCode(postalCode, this.getMunicipality());
         super.setPostalCode(postalCode);
     }
 
     @Override
     protected void setMunicipality(@NonNull String municipality) {
-        if (!Validations.isValidSpanishMunicipalityCode(municipality))
-            throw new IllegalArgumentException("Invalid municipality code");
+        Validations.ensureValidSpanishMunicipalityCode(municipality);
         super.setMunicipality(municipality);
     }
 }

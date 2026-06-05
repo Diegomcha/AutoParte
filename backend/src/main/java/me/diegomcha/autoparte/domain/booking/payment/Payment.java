@@ -21,6 +21,10 @@ public class Payment {
         OTHER // OTRO
     }
 
+    public static Payment of(@NonNull PaymentType type) {
+        return of(type, null, null, null, null);
+    }
+
     public static Payment of(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
         if (type == PaymentType.CREDIT_CARD)
             return new CreditCardPayment(mean, holder, date, expiryDate);
@@ -33,9 +37,6 @@ public class Payment {
     private Instant date;
 
     protected Payment(@NonNull PaymentType type, String mean, String holder, Instant date) {
-        if (type == PaymentType.CREDIT_CARD)
-            throw new IllegalArgumentException("Use CreditCardPayment for credit card payments");
-
         this.type = type;
         this.mean = mean;
         this.holder = holder;
