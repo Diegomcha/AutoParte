@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class AutoparteProperties {
     private String ocrUrl;
     private LocationCatalogueProperties locationCatalogue = new LocationCatalogueProperties();
+    private SecurityProperties security = new SecurityProperties();
 
     @Data
     public static class LocationCatalogueProperties {
@@ -17,5 +18,11 @@ public class AutoparteProperties {
         private String municipalitiesPath = "classpath:ine/municipios.csv";
         private String postalCodesPath = "classpath:ine/codigos_postales.csv";
         private String separator = ";";
+    }
+
+    @Data
+    public static class SecurityProperties {
+        private String initialAdminPassword;
+        private String rememberMeKey;
     }
 }

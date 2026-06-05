@@ -16,7 +16,6 @@
     <package>me.diegomcha.autoparte.domain</package>
     <access>FIELD</access>
 
-    <!-- TODO: Most likely update this file! -->
     <mapped-superclass class="me.diegomcha.autoparte.domain.base.BaseEntity">
         <post-persist method-name="markNotNew"/>
         <post-load method-name="markNotNew"/>
@@ -48,10 +47,13 @@
             <basic name="hashedPassword">
                 <column nullable="false"/>
             </basic>
+            <basic name="roles">
+                <column nullable="false"/>
+            </basic>
             <basic name="enabled">
                 <column nullable="false"/>
             </basic>
-            <basic name="roles">
+            <basic name="requiresReset">
                 <column nullable="false"/>
             </basic>
             <one-to-many name="securityLog" mapped-by="account"/>
@@ -97,6 +99,9 @@
             <basic name="endTime">
                 <column nullable="false"/>
             </basic>
+            <basic name="numberOfPeople">
+                <column nullable="false"/>
+            </basic>
             <many-to-one name="establishment" optional="false"/>
             <one-to-many name="people" mapped-by="booking"/>
         </attributes>
@@ -104,12 +109,6 @@
 
     <entity class="me.diegomcha.autoparte.domain.Person">
         <attributes>
-            <basic name="name">
-                <column nullable="false"/>
-            </basic>
-            <basic name="firstSurname">
-                <column nullable="false"/>
-            </basic>
             <many-to-one name="booking" optional="false"/>
             <many-to-one name="address"/>
         </attributes>
@@ -151,11 +150,12 @@
             <basic name="method">
                 <column nullable="false"/>
             </basic>
-            <many-to-one name="account"/>
+            <many-to-one name="account" fetch="LAZY"/>
         </attributes>
     </entity>
 
-    <embeddable class="me.diegomcha.autoparte.domain.booking.payment.Payment">
+    <embeddable
+            class="me.diegomcha.autoparte.domain.booking.payment.PaymentInfo">
         <attributes>
             <basic name="type">
                 <column name="payment_type" nullable="false"/>
@@ -172,7 +172,7 @@
         </attributes>
     </embeddable>
     <embeddable
-            class="me.diegomcha.autoparte.domain.booking.payment.CreditCardPayment">
+            class="me.diegomcha.autoparte.domain.booking.payment.CreditCardPaymentInfo">
         <attributes>
             <basic name="expiryDate">
                 <column name="payment_expiry_date"/>
@@ -182,6 +182,8 @@
 
     <embeddable
             class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
+
+    <embeddable class="me.diegomcha.autoparte.domain.person.PersonalInfo"/>
 
     <embeddable
             class="me.diegomcha.autoparte.domain.person.document.DocumentInfo">

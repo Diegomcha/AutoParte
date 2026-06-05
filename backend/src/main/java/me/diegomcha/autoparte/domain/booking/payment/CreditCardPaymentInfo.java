@@ -8,11 +8,11 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class CreditCardPayment extends Payment {
+public class CreditCardPaymentInfo extends PaymentInfo {
 
     private Instant expiryDate;
 
-    protected CreditCardPayment(String mean, String holder, Instant date, Instant expiryDate) {
+    protected CreditCardPaymentInfo(String mean, String holder, Instant date, Instant expiryDate) {
         super(PaymentType.CREDIT_CARD, mean, holder, date);
         this.setExpiryDate(expiryDate);
     }

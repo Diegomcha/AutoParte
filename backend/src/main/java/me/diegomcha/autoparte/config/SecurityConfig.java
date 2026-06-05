@@ -1,6 +1,5 @@
 package me.diegomcha.autoparte.config;
 
-import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.core.security.AccountRepo;
 import me.diegomcha.autoparte.core.security.SecurityHandlers;
 import me.diegomcha.autoparte.core.security.SecurityService;
@@ -34,13 +33,10 @@ import java.util.Set;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 class SecurityConfig {
 
-    private final SecurityHandlers securityHandlers;
-
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    SecurityFilterChain securityFilterChain(AutoparteProperties properties, HttpSecurity http, SecurityHandlers securityHandlers) {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/api/auth/**", "/api/docs/**").permitAll()
@@ -59,7 +55,7 @@ class SecurityConfig {
                 )
                 .rememberMe(rMe -> rMe
                         .rememberMeParameter("rememberMe")
-                        .key("test") // TODO: REMOVE KEY FROM HERE!
+                        .key(properties.getSecurity().getRememberMeKey())
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
@@ -69,14 +65,12 @@ class SecurityConfig {
     }
 
     @Bean
-    CommandLineRunner init(AccountRepo accountRepo, PasswordEncoder passwordEncoder) {
+    CommandLineRunner defaultAdminAccountCreator(AutoparteProperties properties, AccountRepo accountRepo, PasswordEncoder passwordEncoder) {
         return args -> {
-            // TODO: TEMPORAL
-            // Create default admin account if it doesn't exist
             if (!accountRepo.existsByUsername("admin")) {
                 Account admin = new Account(
                         "admin",
-                        Objects.requireNonNull(passwordEncoder.encode("admin")),
+                        Objects.requireNonNull(passwordEncoder.encode(properties.getSecurity().getInitialAdminPassword())),
                         Set.of("ROLE_ADMIN")
                 );
                 admin.setRequiresReset(false);

@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.domain;
 
 import lombok.*;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
-import me.diegomcha.autoparte.domain.booking.payment.Payment;
+import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -19,7 +19,7 @@ public class Booking extends BaseEntity {
     private @NonNull Instant endTime;
     private int numberOfPeople;
     private Integer numberOfRooms;
-    private Payment payment;
+    private PaymentInfo payment;
     private Boolean internetConnection;
 
     private @NonNull Establishment establishment;
@@ -30,7 +30,7 @@ public class Booking extends BaseEntity {
         this(establishment, startTime, endTime, numberOfPeople, null, null, null);
     }
 
-    public Booking(@NonNull Establishment establishment, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, Integer numberOfRooms, Payment payment, Boolean internetConnection) {
+    public Booking(@NonNull Establishment establishment, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, Integer numberOfRooms, PaymentInfo payment, Boolean internetConnection) {
         this.setEstablishment(establishment);
         this.startTime = startTime;
         this.setEndTime(endTime);

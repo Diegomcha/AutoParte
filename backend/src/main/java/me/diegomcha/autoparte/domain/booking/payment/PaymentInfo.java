@@ -8,7 +8,7 @@ import java.time.Instant;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @EqualsAndHashCode
-public class Payment {
+public class PaymentInfo {
 
     public enum PaymentType {
         CASH, // EFECT
@@ -21,14 +21,14 @@ public class Payment {
         OTHER // OTRO
     }
 
-    public static Payment of(@NonNull PaymentType type) {
+    public static PaymentInfo of(@NonNull PaymentType type) {
         return of(type, null, null, null, null);
     }
 
-    public static Payment of(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
+    public static PaymentInfo of(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
         if (type == PaymentType.CREDIT_CARD)
-            return new CreditCardPayment(mean, holder, date, expiryDate);
-        return new Payment(type, mean, holder, date);
+            return new CreditCardPaymentInfo(mean, holder, date, expiryDate);
+        return new PaymentInfo(type, mean, holder, date);
     }
 
     private @NonNull PaymentType type;
@@ -36,7 +36,7 @@ public class Payment {
     private String holder;
     private Instant date;
 
-    protected Payment(@NonNull PaymentType type, String mean, String holder, Instant date) {
+    protected PaymentInfo(@NonNull PaymentType type, String mean, String holder, Instant date) {
         this.type = type;
         this.mean = mean;
         this.holder = holder;

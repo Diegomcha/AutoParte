@@ -30,7 +30,18 @@ class AuthEventsListener {
     @EventListener
     @Transactional
     public void onAuthEvent(AbstractAuthenticationEvent event) {
-        logger.warn("{}", event); // TODO: Change this!
+        switch (event) {
+            case InteractiveAuthenticationSuccessEvent ev ->
+                    logger.info("User {} logged in successfully", ev.getAuthentication().getName());
+            case LogoutSuccessEvent ev ->
+                    logger.info("User {} logged out successfully", ev.getAuthentication().getName());
+            case UpdatePasswordSuccessEvent ev ->
+                    logger.info("User {} changed password successfully", ev.getAuthentication().getName());
+            case AbstractAuthenticationFailureEvent ev ->
+                    logger.warn("Authentication failure for user {}: {}", ev.getAuthentication().getName(), ev.getException().getMessage());
+            default ->
+                    throw new IllegalArgumentException("Received unexpected authentication event type: " + event.getClass().getSimpleName());
+        }
 
         SecurityEvent.SecurityEventType type = switch (event) {
             case InteractiveAuthenticationSuccessEvent ignored ->
