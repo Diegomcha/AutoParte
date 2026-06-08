@@ -26,6 +26,12 @@ abstract class EmployeeMapper {
     @Mapping(target = "email", qualifiedByName = "normalizeEmail")
     public abstract void patchEmployee(EmployeeDtoPatch patch, @MappingTarget Employee employee);
 
+    @AfterMapping
+    protected void updateAccountEnabled(EmployeeDtoPatch patch, @MappingTarget Employee employee) {
+        if (patch.enabled() != null)
+            employee.getAccount().setEnabled(patch.enabled());
+    }
+
     @Named("normalizeEmail")
     public String normalizeEmail(String email) {
         return email == null ? null : email.toLowerCase().trim();

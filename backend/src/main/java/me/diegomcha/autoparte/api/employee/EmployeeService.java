@@ -40,7 +40,7 @@ class EmployeeService {
      * @param pageable Pagination information (page number, size, sorting)
      * @return A page of employees
      */
-    public Page<EmployeeDtoResponse> getEmployees(Pageable pageable) {
+    public Page<EmployeeDtoResponse> getEmployees(@NonNull Pageable pageable) {
         return employeeMapper.toResponse(employeeRepo.findAll(pageable));
     }
 
@@ -72,7 +72,7 @@ class EmployeeService {
      * @param id The ID of the employee to retrieve
      * @return The employee with the given ID, or empty if it does not exist
      */
-    public EmployeeDtoResponse getEmployee(UUID id) throws ResourceNotFoundException {
+    public EmployeeDtoResponse getEmployee(@NonNull UUID id) throws ResourceNotFoundException {
         return employeeRepo
                 .findById(id)
                 .map(employeeMapper::toResponse)
@@ -89,7 +89,7 @@ class EmployeeService {
      * @throws ResourceConflictException If the new email is already used by another employee
      */
     @Transactional
-    public void updateEmployee(UUID id, EmployeeDtoPatch patch) throws ResourceConflictException, ResourceNotFoundException {
+    public void updateEmployee(@NonNull UUID id, @NonNull EmployeeDtoPatch patch) throws ResourceConflictException, ResourceNotFoundException {
         // Get employee to patch
         Employee employee = employeeRepo
                 .findById(id)

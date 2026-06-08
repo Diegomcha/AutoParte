@@ -5,7 +5,6 @@ import me.diegomcha.autoparte.core.validation.annotations.NullableNotBlank;
 
 public record EmployeeDtoPatch(
         Boolean enabled,
-
         @NullableNotBlank String name,
         @NullableNotBlank String surname,
         @Email String email

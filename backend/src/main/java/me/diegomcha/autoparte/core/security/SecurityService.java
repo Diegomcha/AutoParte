@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -71,20 +72,26 @@ public class SecurityService {
      * Extracts the Account from the given Authentication object if possible.
      *
      * @param authentication The Authentication object from which to extract the Account. Can be null.
-     * @param persistent     If true, the method will attempt to fetch the Account from the database to ensure it is up-to-date.
+     * @param updated        If true, the method will attempt to fetch the Account from the database to ensure it is up-to-date.
      *                       If false, it will return the Account directly from the Authentication principal if it is of type UserAccount.
      * @return The Account associated with the given Authentication, or null.
      */
-    public @Nullable Account getAccountFromAuthentication(@Nullable Authentication authentication, boolean persistent) {
-        return Optional.ofNullable(authentication).map(Authentication::getPrincipal).filter(principal -> !"anonymousUser".equals(principal)).map(principal -> switch (principal) {
-            case UserAccount userAccount -> persistent
-                    ? accountRepo.findByUsername(userAccount.getUsername()).orElseThrow(() -> new IllegalStateException("Authenticated user not found in database: " + userAccount.getUsername()))
-                    : userAccount.getAccount();
-            case String username ->
-                    accountRepo.findByUsername(username).orElse(null);
-            default ->
-                    throw new IllegalStateException("Authentication principal cannot be parsed: " + principal);
-        }).orElse(null);
+    public @Nullable Account getAccountFromAuthentication(@Nullable Authentication authentication, boolean updated) {
+        return Optional
+                .ofNullable(authentication)
+                .map(Authentication::getPrincipal)
+                .filter(principal -> !"anonymousUser".equals(principal))
+                .filter(principal -> updated || principal instanceof UserAccount)
+                .map(principal -> switch (principal) {
+                    case UserAccount userAccount -> updated
+                            ? accountRepo.findByUsername(userAccount.getUsername()).orElse(null)
+                            : userAccount.getAccount();
+                    case User user ->
+                            accountRepo.findByUsername(user.getUsername()).orElse(null);
+                    case String username ->
+                            accountRepo.findByUsername(username).orElse(null);
+                    default -> null;
+                })
+                .orElse(null);
     }
-
 }
