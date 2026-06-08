@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.api.auth;
 
 import me.diegomcha.autoparte.api.auth.dto.UpdatePasswordDto;
+import me.diegomcha.autoparte.core.event.UpdatePasswordSuccessEvent;
 import me.diegomcha.autoparte.core.exception.UnauthorizedException;
 import me.diegomcha.autoparte.domain.Account;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.event.ApplicationEvents;
+import org.springframework.test.context.event.RecordApplicationEvents;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
@@ -25,6 +28,7 @@ import java.util.Set;
 @Transactional
 @AutoConfigureTestDatabase
 @AutoConfigureTestEntityManager
+@RecordApplicationEvents
 class AuthServiceTest {
 
     @Autowired
@@ -33,6 +37,8 @@ class AuthServiceTest {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private TestEntityManager testEntityManager;
+    @Autowired
+    private ApplicationEvents applicationEvents;
 
     private Account account;
 
@@ -66,6 +72,8 @@ class AuthServiceTest {
 
         Assertions.assertNotNull(dbAccount);
         Assertions.assertTrue(passwordEncoder.matches("newpassword", dbAccount.getHashedPassword()));
+
+        Assertions.assertEquals(1, applicationEvents.stream(UpdatePasswordSuccessEvent.class).count());
     }
 
     @Test
