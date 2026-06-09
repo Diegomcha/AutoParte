@@ -10,4 +10,23 @@ public class AutoparteApplication {
         SpringApplication.run(AutoparteApplication.class, args);
     }
 
+//    @Bean
+//    CommandLineRunner test(WebServiceTemplate sesAPI) {
+//        return args -> {
+//            try {
+//                var objectFactory = new ObjectFactory();
+//                var catalogo = objectFactory.createCatalogoRequestType();
+//                catalogo.setCatalogo("SEXO");
+//                var request = objectFactory.createCatalogoRequest();
+//                request.setPeticion(catalogo);
+//
+//                var response = (CatalogoResponse) sesAPI
+//                        .marshalSendAndReceive(request);
+//
+//                System.out.println(response);
+//            } catch (Exception ex) {
+//                ex.printStackTrace();
+//            }
+//        };
+//    }
 }
