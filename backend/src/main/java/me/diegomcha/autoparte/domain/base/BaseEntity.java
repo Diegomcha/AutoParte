@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Getter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseEntity implements Persistable<UUID> {
     @EqualsAndHashCode.Include

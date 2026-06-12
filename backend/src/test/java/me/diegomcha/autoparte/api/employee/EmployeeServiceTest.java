@@ -4,6 +4,7 @@ import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
+import me.diegomcha.autoparte.core.security.AccountRepo;
 import me.diegomcha.autoparte.domain.Employee;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,33 +12,32 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.FieldSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jpa.test.autoconfigure.AutoConfigureTestEntityManager;
-import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
-import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
 @Transactional
-@AutoConfigureTestEntityManager
+@AutoConfigureTestDatabase
 class EmployeeServiceTest {
     @Autowired
     private EmployeeService employeeService;
     @Autowired
-    private TestEntityManager entityManager;
-    @Autowired
     private EmployeeRepo employeeRepo;
+    @Autowired
+    private AccountRepo accountRepo;
 
     private Employee employee;
 
     @BeforeEach
     void setUp() {
-        this.employee = entityManager.persist(new Employee("Name", "Surname", "email@email.com", "hashedpassword"));
+        this.employee = employeeRepo.save(new Employee("Name", "Surname", "email@email.com", "hashedpassword"));
     }
 
     @Test
@@ -49,7 +49,7 @@ class EmployeeServiceTest {
         Assertions.assertEquals(employee.getId(), employeesPage.getContent().getFirst().id());
 
         // No employees in the database
-        entityManager.remove(employee);
+        employeeRepo.delete(employee);
         employeesPage = employeeService.getEmployees(Pageable.unpaged());
 
         Assertions.assertEquals(0, employeesPage.getTotalElements());
@@ -61,9 +61,11 @@ class EmployeeServiceTest {
         var employeeResponse = employeeService.getEmployee(employee.getId());
 
         Assertions.assertEquals(employee.getId(), employeeResponse.id());
-        Assertions.assertEquals(employee.getName(), employeeResponse.name());
-        Assertions.assertEquals(employee.getSurname(), employeeResponse.surname());
-        Assertions.assertEquals(employee.getEmail(), employeeResponse.email());
+
+        Assertions.assertEquals(employee.getAccount().isEnabled(), employeeResponse.enabled());
+        Assertions.assertEquals(employee.getAccount().getDisabledAt(), employeeResponse.disabledAt());
+
+        Assertions.assertNotNull(employeeResponse.accommodations());
 
         // Non-existing employee
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
@@ -76,14 +78,30 @@ class EmployeeServiceTest {
         var createdEmployee = employeeService.createEmployee(new EmployeeDtoCreate("Name1", "Surname1", "email1@email.com"));
 
         Assertions.assertEquals("email1@email.com", createdEmployee.email());
-        Assertions.assertNotNull(createdEmployee.id());
-        Assertions.assertNotNull(createdEmployee.createdAt());
         Assertions.assertNotNull(createdEmployee.password());
 
-        var dbEmployee = entityManager.find(Employee.class, createdEmployee.id());
+        var dbEmployee = employeeRepo.findByEmail("email1@email.com");
 
-        Assertions.assertNotNull(dbEmployee);
-        Assertions.assertEquals("email1@email.com", dbEmployee.getEmail());
+        Assertions.assertTrue(dbEmployee.isPresent());
+        Assertions.assertEquals("email1@email.com", dbEmployee.get().getEmail());
+    }
+
+    @Test
+    void testResetEmployeePassword() throws ResourceNotFoundException {
+        Assertions.assertNotNull(employee.getId());
+
+        var credentials = employeeService.resetEmployeePassword(employee.getId());
+
+        Assertions.assertNotNull(credentials.password());
+        Assertions.assertNotEquals("hashedpassword", employee.getAccount().getHashedPassword());
+    }
+
+    @Test
+    void testResetEmployeePasswordFailed() {
+        // Non-existing employee
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                employeeService.resetEmployeePassword(UUID.randomUUID())
+        );
     }
 
     @Test
@@ -92,7 +110,7 @@ class EmployeeServiceTest {
                 employeeService.createEmployee(new EmployeeDtoCreate("Name2", "Surname2", "email@email.com"))
         );
 
-        Assertions.assertEquals(1, Stream.of(employeeRepo.findAll()).count());
+        Assertions.assertEquals(1, StreamSupport.stream(employeeRepo.findAll().spliterator(), false).count());
     }
 
     private static final EmployeeDtoPatch[][] UPDATE_PATCHES = new EmployeeDtoPatch[][]{
@@ -125,13 +143,13 @@ class EmployeeServiceTest {
 
         employeeService.updateEmployee(employee.getId(), patch);
 
-        var employeeDb = entityManager.find(Employee.class, employee.getId());
+        var employeeDb = employeeRepo.findById(employee.getId());
 
-        Assertions.assertNotNull(employeeDb);
-        Assertions.assertEquals(expected.enabled(), employeeDb.getAccount().isEnabled());
-        Assertions.assertEquals(expected.name(), employeeDb.getName());
-        Assertions.assertEquals(expected.surname(), employeeDb.getSurname());
-        Assertions.assertEquals(expected.email(), employeeDb.getEmail());
+        Assertions.assertTrue(employeeDb.isPresent());
+        Assertions.assertEquals(expected.enabled(), employeeDb.get().getAccount().isEnabled());
+        Assertions.assertEquals(expected.name(), employeeDb.get().getName());
+        Assertions.assertEquals(expected.surname(), employeeDb.get().getSurname());
+        Assertions.assertEquals(expected.email(), employeeDb.get().getEmail());
     }
 
     @Test
@@ -142,7 +160,7 @@ class EmployeeServiceTest {
         );
 
         // Same email as another employee
-        entityManager.persist(new Employee("Name1", "Surname1", "email1@email.com", "hashedpassword"));
+        employeeRepo.save(new Employee("Name1", "Surname1", "email1@email.com", "hashedpassword"));
 
         Assertions.assertNotNull(employee.getId());
         Assertions.assertThrows(ResourceConflictException.class, () ->
@@ -150,9 +168,32 @@ class EmployeeServiceTest {
         );
 
         Assertions.assertNotNull(employee.getId());
-        var employeeDb = entityManager.find(Employee.class, employee.getId());
+        var employeeDb = employeeRepo.findById(employee.getId());
 
-        Assertions.assertNotNull(employeeDb);
-        Assertions.assertEquals("email@email.com", employeeDb.getEmail());
+        Assertions.assertTrue(employeeDb.isPresent());
+        Assertions.assertEquals("email@email.com", employeeDb.get().getEmail());
+    }
+
+    @Test
+    void testDeleteEmployee() throws ResourceNotFoundException {
+        Assertions.assertNotNull(employee.getId());
+        Assertions.assertNotNull(employee.getAccount().getId());
+
+        employeeService.deleteEmployee(employee.getId());
+
+        Assertions.assertFalse(employeeRepo.existsById(employee.getId()));
+        Assertions.assertFalse(accountRepo.existsById(employee.getAccount().getId()));
+    }
+
+    @Test
+    void testDeleteEmployeeFailed() {
+        Assertions.assertNotNull(employee.getId());
+
+        // Non-existing employee
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                employeeService.deleteEmployee(UUID.randomUUID())
+        );
+
+        Assertions.assertTrue(employeeRepo.existsById(employee.getId()));
     }
 }

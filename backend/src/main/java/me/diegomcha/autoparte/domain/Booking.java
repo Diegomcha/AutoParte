@@ -3,6 +3,8 @@ package me.diegomcha.autoparte.domain;
 import lombok.*;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -22,16 +24,23 @@ public class Booking extends BaseEntity {
     private PaymentInfo payment;
     private Boolean internetConnection;
 
-    private @NonNull Establishment establishment;
+    @CreatedBy
+    @Setter(AccessLevel.NONE)
+    private @NonNull Account createdBy;
+    @LastModifiedBy
+    @Setter(AccessLevel.NONE)
+    private @NonNull Account lastModifiedBy;
+
+    private @NonNull Accommodation accommodation;
     @Setter(AccessLevel.NONE)
     private @NonNull Set<@NonNull Person> people = new HashSet<>();
 
-    public Booking(@NonNull Establishment establishment, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople) {
-        this(establishment, startTime, endTime, numberOfPeople, null, null, null);
+    public Booking(@NonNull Accommodation accommodation, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople) {
+        this(accommodation, startTime, endTime, numberOfPeople, null, null, null);
     }
 
-    public Booking(@NonNull Establishment establishment, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, Integer numberOfRooms, PaymentInfo payment, Boolean internetConnection) {
-        this.setEstablishment(establishment);
+    public Booking(@NonNull Accommodation accommodation, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, Integer numberOfRooms, PaymentInfo payment, Boolean internetConnection) {
+        this.setAccommodation(accommodation);
         this.startTime = startTime;
         this.setEndTime(endTime);
         this.setNumberOfPeople(numberOfPeople);
@@ -40,16 +49,16 @@ public class Booking extends BaseEntity {
         this.setInternetConnection(internetConnection);
     }
 
-    public void setEstablishment(@NonNull Establishment establishment) {
-        if (this.establishment != null) this.establishment._getBookings().remove(this);
-        this.establishment = establishment;
-        this.establishment._getBookings().add(this);
+    public void setAccommodation(@NonNull Accommodation accommodation) {
+        if (this.accommodation != null) this.accommodation._getBookings().remove(this);
+        this.accommodation = accommodation;
+        this.accommodation._getBookings().add(this);
     }
 
     public Boolean getInternetConnection() {
         return Optional
                 .ofNullable(this.internetConnection)
-                .orElse(this.establishment.getInternetConnection());
+                .orElse(this.accommodation.getInternetConnection());
     }
 
     public void setStartTime(@NonNull Instant startTime) {

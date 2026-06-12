@@ -10,15 +10,15 @@ import org.junit.jupiter.api.Test;
 
 class PersonTest {
 
-    private Establishment establishment;
+    private Accommodation accommodation;
     private Booking booking;
     private PersonalInfo personalInfo;
     private Person person;
 
     @BeforeEach
     void setUp() {
-        this.establishment = new Establishment("Test", "SESCODE");
-        this.booking = new Booking(establishment, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1);
+        this.accommodation = new Accommodation("Test", "SESCODE", null);
+        this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1);
         this.personalInfo = new PersonalInfo("Name", "Surname");
         this.person = new Person(booking, personalInfo);
     }
@@ -28,7 +28,7 @@ class PersonTest {
         Assertions.assertEquals(this.booking, this.person.getBooking());
         Assertions.assertTrue(this.booking.getPeople().contains(this.person));
 
-        var newBooking = new Booking(this.establishment, TestingUtils.INSTANT.plusSeconds(7200), TestingUtils.INSTANT.plusSeconds(10800), 1);
+        var newBooking = new Booking(this.accommodation, TestingUtils.INSTANT.plusSeconds(7200), TestingUtils.INSTANT.plusSeconds(10800), 1);
         this.person.setBooking(newBooking);
 
         Assertions.assertEquals(newBooking, this.person.getBooking());

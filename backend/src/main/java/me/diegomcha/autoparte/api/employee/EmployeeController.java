@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
-import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreatedResponse;
+import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCredentialsResponse;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoResponse;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
@@ -33,8 +33,14 @@ class EmployeeController implements EmployeeAPI {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Override
-    public EmployeeDtoCreatedResponse createEmployee(@Valid @RequestBody EmployeeDtoCreate employee) throws ResourceConflictException {
+    public EmployeeDtoCredentialsResponse createEmployee(@Valid @RequestBody EmployeeDtoCreate employee) throws ResourceConflictException {
         return employeeService.createEmployee(employee);
+    }
+
+    @PostMapping("/{id}/reset-password")
+    @Override
+    public EmployeeDtoCredentialsResponse resetEmployeePassword(@PathVariable UUID id) throws ResourceNotFoundException {
+        return employeeService.resetEmployeePassword(id);
     }
 
     @GetMapping("/{id}")
@@ -48,5 +54,12 @@ class EmployeeController implements EmployeeAPI {
     @Override
     public void updateEmployee(@PathVariable UUID id, @Valid @RequestBody EmployeeDtoPatch employee) throws ResourceNotFoundException, ResourceConflictException {
         employeeService.updateEmployee(id, employee);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Override
+    public void deleteEmployee(@PathVariable UUID id) throws ResourceNotFoundException {
+        employeeService.deleteEmployee(id);
     }
 }

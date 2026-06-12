@@ -52,5 +52,4 @@ public class Address extends BaseEntity {
     public Set<Person> getPeople() {
         return Set.copyOf(this.people);
     }
-
 }

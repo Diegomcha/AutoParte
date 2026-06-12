@@ -19,12 +19,14 @@ class AuthController implements AuthAPI {
     private final AuthService service;
 
     @GetMapping("/me")
+    @Override
     public AccountDto me() {
         return service.getLoggedInAccount();
     }
 
     @PostMapping("/update-password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Override
     public void updatePassword(@Valid @RequestBody UpdatePasswordDto dto, HttpServletRequest context) throws UnauthorizedException {
         service.updatePassword(dto, new WebAuthenticationDetails(context));
     }

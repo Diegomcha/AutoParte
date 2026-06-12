@@ -8,26 +8,26 @@ import org.junit.jupiter.api.Test;
 
 class BookingTest {
 
-    private Establishment establishment;
+    private Accommodation accommodation;
     private Booking booking;
 
     @BeforeEach
     void setUp() {
-        this.establishment = new Establishment("Test", "SESCODE");
-        this.booking = new Booking(establishment, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1);
+        this.accommodation = new Accommodation("Test", "SESCODE", null);
+        this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1);
     }
 
     @Test
-    void testEstablishmentAssociation() {
-        Assertions.assertEquals(this.establishment, this.booking.getEstablishment());
-        Assertions.assertTrue(this.establishment.getBookings().contains(this.booking));
+    void testAccommodationAssociation() {
+        Assertions.assertEquals(this.accommodation, this.booking.getAccommodation());
+        Assertions.assertTrue(this.accommodation.getBookings().contains(this.booking));
 
-        Establishment newEstablishment = new Establishment("New Test", "NEWSESCODE");
-        this.booking.setEstablishment(newEstablishment);
+        Accommodation newAccommodation = new Accommodation("New Test", "NEWSESCODE", null);
+        this.booking.setAccommodation(newAccommodation);
 
-        Assertions.assertEquals(newEstablishment, this.booking.getEstablishment());
-        Assertions.assertFalse(this.establishment.getBookings().contains(this.booking));
-        Assertions.assertTrue(newEstablishment.getBookings().contains(this.booking));
+        Assertions.assertEquals(newAccommodation, this.booking.getAccommodation());
+        Assertions.assertFalse(this.accommodation.getBookings().contains(this.booking));
+        Assertions.assertTrue(newAccommodation.getBookings().contains(this.booking));
     }
 
     @Test
@@ -47,7 +47,7 @@ class BookingTest {
         var evenEarlierTime = earlierTime.minusSeconds(3600);
         var evenLaterTime = laterTime.plusSeconds(3600);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new Booking(this.establishment, laterTime, earlierTime, 1));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Booking(this.accommodation, laterTime, earlierTime, 1));
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setStartTime(laterTime));
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setEndTime(earlierTime));
@@ -74,13 +74,13 @@ class BookingTest {
 
     @Test
     void testInternetConnection() {
-        Assertions.assertNull(this.establishment.getInternetConnection());
+        Assertions.assertNull(this.accommodation.getInternetConnection());
         Assertions.assertNull(this.booking.getInternetConnection());
 
-        this.establishment.setInternetConnection(true);
+        this.accommodation.setInternetConnection(true);
         Assertions.assertTrue(this.booking.getInternetConnection());
 
-        this.establishment.setInternetConnection(false);
+        this.accommodation.setInternetConnection(false);
         Assertions.assertFalse(this.booking.getInternetConnection());
 
         this.booking.setInternetConnection(true);

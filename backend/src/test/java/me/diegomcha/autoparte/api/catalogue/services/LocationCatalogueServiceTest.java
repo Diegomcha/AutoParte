@@ -13,7 +13,6 @@ class LocationCatalogueServiceTest {
     @Autowired
     private LocationCatalogueService locationCatalogueService;
 
-
     @Test
     void testGetCountries() {
         var countries = locationCatalogueService.getCountries();

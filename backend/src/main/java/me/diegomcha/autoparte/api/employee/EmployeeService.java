@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
-import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreatedResponse;
+import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCredentialsResponse;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoResponse;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -45,28 +46,6 @@ class EmployeeService {
     }
 
     /**
-     * Creates a new employee with the given information.
-     * The email must be unique, and a random password will be generated for the employee (to be reset on first login).
-     *
-     * @param dto The information of the employee to create
-     * @return The created employee, including the generated password
-     * @throws ResourceConflictException If an employee with the same email already exists
-     */
-    @Transactional
-    public EmployeeDtoCreatedResponse createEmployee(@NonNull EmployeeDtoCreate dto) throws ResourceConflictException {
-        // Create random password (to be reset on first login)
-        String password = RandomStringUtils.secureStrong().nextAlphanumeric(16);
-        Employee newEmployee = employeeMapper.fromCreate(dto, passwordEncoder.encode(password));
-
-        // Ensure email is unique
-        if (employeeRepo.existsByEmail(newEmployee.getEmail()))
-            throw SAME_EMAIL_EXCEPTION.get();
-
-        newEmployee = employeeRepo.save(newEmployee);
-        return employeeMapper.toCreated(newEmployee, password);
-    }
-
-    /**
      * Returns the employee with the given ID, if it exists.
      *
      * @param id The ID of the employee to retrieve
@@ -79,6 +58,29 @@ class EmployeeService {
                 .orElseThrow(NOT_FOUND_EXCEPTION);
     }
 
+    /**
+     * Creates a new employee with the given information.
+     * The email must be unique, and a random password will be generated for the employee (to be reset on first login).
+     *
+     * @param dto The information of the employee to create
+     * @return The created employee, including the generated password
+     * @throws ResourceConflictException If an employee with the same email already exists
+     */
+    @Transactional
+    public EmployeeDtoCredentialsResponse createEmployee(@NonNull EmployeeDtoCreate dto) throws ResourceConflictException {
+        // Generate random secure password
+        String password = this.getRandomSecurePassword();
+        Employee newEmployee = employeeMapper.fromCreate(dto, passwordEncoder.encode(password));
+
+        // Ensure email is unique
+        if (employeeRepo.existsByEmail(newEmployee.getEmail()))
+            throw SAME_EMAIL_EXCEPTION.get();
+
+        // TODO: Send credentials via email
+
+        newEmployee = employeeRepo.save(newEmployee);
+        return employeeMapper.toCredentials(newEmployee, password);
+    }
 
     /**
      * Updates the employee with the given ID using the provided patch data.
@@ -96,13 +98,52 @@ class EmployeeService {
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
         // Ensure email is unique
-        if (patch.email() != null) {
-            String email = employeeMapper.normalizeEmail(patch.email());
-            if (!employee.getEmail().equals(email) && employeeRepo.existsByEmail(email))
-                throw SAME_EMAIL_EXCEPTION.get();
-        }
+        String email = employeeMapper.normalizeEmail(patch.email());
+        if (email != null && !employee.getEmail().equals(email) && employeeRepo.existsByEmail(email))
+            throw SAME_EMAIL_EXCEPTION.get();
 
-        employee = employeeRepo.save(employee);
         employeeMapper.patchEmployee(patch, employee);
+    }
+
+    /**
+     * Resets the password of the employee with the given ID, generating a new random password and returning it in the response.
+     *
+     * @param id The ID of the employee whose password will be reset
+     * @return The employee with the new password
+     * @throws ResourceNotFoundException If no employee with the given ID exists
+     */
+    @Transactional
+    public EmployeeDtoCredentialsResponse resetEmployeePassword(@NonNull UUID id) throws ResourceNotFoundException {
+        // Get employee whose credentials will be reset
+        Employee employee = employeeRepo
+                .findById(id)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        // Generate new random password and update employee account
+        String password = this.getRandomSecurePassword();
+        employee.getAccount().resetPassword(Objects.requireNonNull(passwordEncoder.encode(password)));
+
+        // TODO: Send credentials via email
+
+        return employeeMapper.toCredentials(employee, password);
+    }
+
+    /**
+     * Deletes the employee with the given ID.
+     *
+     * @param id The ID of the employee to delete
+     * @throws ResourceNotFoundException If no employee with the given ID exists
+     */
+    @Transactional
+    public void deleteEmployee(@NonNull UUID id) throws ResourceNotFoundException {
+        // Ensure employee exists
+        if (!employeeRepo.existsById(id))
+            throw NOT_FOUND_EXCEPTION.get();
+
+        employeeRepo.deleteById(id);
+    }
+
+    private String getRandomSecurePassword() {
+        return RandomStringUtils.secureStrong().nextAlphanumeric(16);
     }
 }

@@ -10,6 +10,7 @@ public class AutoparteApplication {
         SpringApplication.run(AutoparteApplication.class, args);
     }
 
+    // TODO: Uncomment this code to test the SOAP API connection
 //    @Bean
 //    CommandLineRunner test(WebServiceTemplate sesAPI) {
 //        return args -> {

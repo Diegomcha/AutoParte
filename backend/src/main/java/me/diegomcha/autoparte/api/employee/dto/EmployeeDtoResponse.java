@@ -3,6 +3,7 @@ package me.diegomcha.autoparte.api.employee.dto;
 import jakarta.annotation.Nonnull;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 public record EmployeeDtoResponse(
@@ -15,7 +16,9 @@ public record EmployeeDtoResponse(
 
         @Nonnull String name,
         @Nonnull String surname,
-        @Nonnull String email
-) {
+        @Nonnull String email,
+
+        @Nonnull Set<UUID> accommodations
+        ) {
 
 }

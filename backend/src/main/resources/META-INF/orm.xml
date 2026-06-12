@@ -41,8 +41,7 @@
     <entity class="me.diegomcha.autoparte.domain.Account">
         <attributes>
             <basic name="username">
-                <column nullable="false"
-                        unique="true"/>
+                <column nullable="false"/>
             </basic>
             <basic name="hashedPassword">
                 <column nullable="false"/>
@@ -55,6 +54,9 @@
             </basic>
             <basic name="requiresReset">
                 <column nullable="false"/>
+            </basic>
+            <basic name="deletedAt">
+                <column name="deleted_at" insertable="false" updatable="false"/>
             </basic>
             <one-to-many name="securityLog" mapped-by="account"/>
         </attributes>
@@ -71,22 +73,25 @@
             <one-to-one name="account" optional="false" fetch="LAZY">
                 <cascade>
                     <cascade-persist/>
+                    <cascade-remove/>
                 </cascade>
             </one-to-one>
-            <many-to-many name="establishments" mapped-by="employees"/>
+            <many-to-many name="accommodations" mapped-by="employees"/>
         </attributes>
     </entity>
 
-    <entity class="me.diegomcha.autoparte.domain.Establishment">
+    <entity class="me.diegomcha.autoparte.domain.Accommodation">
         <attributes>
             <basic name="name">
                 <column nullable="false"/>
             </basic>
             <basic name="sesCode">
-                <column nullable="false"
-                        unique="true"/>
+                <column nullable="false"/>
             </basic>
-            <one-to-many name="bookings" mapped-by="establishment"/>
+            <basic name="deletedAt">
+                <column insertable="false" updatable="false"/>
+            </basic>
+            <one-to-many name="bookings" mapped-by="accommodation"/>
             <many-to-many name="employees"/>
         </attributes>
     </entity>
@@ -102,8 +107,14 @@
             <basic name="numberOfPeople">
                 <column nullable="false"/>
             </basic>
-            <many-to-one name="establishment" optional="false"/>
-            <one-to-many name="people" mapped-by="booking"/>
+            <many-to-one name="createdBy" optional="false"/>
+            <many-to-one name="lastModifiedBy" optional="false"/>
+            <many-to-one name="accommodation" optional="false"/>
+            <one-to-many name="people" mapped-by="booking">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
         </attributes>
     </entity>
 

@@ -22,7 +22,7 @@ public class LocationCatalogueService {
     // Province code -> (Municipality code -> Postal codes)
     private final Map<String, Map<String, Set<String>>> spanishPostalCodes;
 
-    // TODO: MAYBE move this!
+    // FIXME: MAYBE move this!
 
     protected LocationCatalogueService(AutoparteProperties config, ResourceLoader loader) throws IOException {
         String separator = config.getLocationCatalogue().getSeparator();

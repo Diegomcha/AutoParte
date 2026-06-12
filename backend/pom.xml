@@ -329,7 +329,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <schemaLanguage>WSDL</schemaLanguage>
                     <wsdlDirectory>${project.basedir}/src/main/resources/ses</wsdlDirectory>
                     <packageName>me.diegomcha.autoparte.integration.ses.wsdl</packageName>
                 </configuration>
