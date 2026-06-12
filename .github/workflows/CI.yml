@@ -84,6 +84,8 @@ jobs:
 
   build: # TODO: add frontend and backend images
     name: Build images
+    # Only build on push to main or workflow dispatch
+    if: ${{ github.event_name != 'pull_request' }}
     needs: sonar-qube
     runs-on: ubuntu-latest
     strategy:
