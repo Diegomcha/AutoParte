@@ -82,18 +82,25 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  build:
+  build: # TODO: add frontend and backend images
     name: Build images
-    # needs: sonar-qube # TODO: Uncomment
+    needs: sonar-qube
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
+          # OCR
+          # - cpu version
           - context: ./ocr
             dockerfile: ./ocr/docker/cpu.Dockerfile
             module: ocr
             suffix: cpu
+          # - gpu version
+          - context: ./ocr
+            dockerfile: ./ocr/docker/gpu.Dockerfile
+            module: ocr
+            suffix: gpu
     permissions:
       contents: read
       packages: write
