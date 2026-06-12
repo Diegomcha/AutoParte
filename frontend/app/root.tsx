@@ -1,4 +1,10 @@
 import {
+	ColorSchemeScript,
+	mantineHtmlProps,
+	MantineProvider,
+} from '@mantine/core';
+import * as Sentry from '@sentry/react-router';
+import {
 	isRouteErrorResponse,
 	Links,
 	Meta,
@@ -7,15 +13,13 @@ import {
 	ScrollRestoration,
 } from 'react-router';
 import type { Route } from './+types/root';
-import '@mantine/core/styles.css';
-import {
-	ColorSchemeScript,
-	mantineHtmlProps,
-	MantineProvider,
-} from '@mantine/core';
+//
+// Internationalization
+import './i18n';
+// Styles
 import './app.css';
 
-export function Layout({ children }: { children: React.ReactNode }) {
+export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" {...mantineHtmlProps}>
 			<head>
@@ -52,6 +56,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	} else if (import.meta.env.DEV && error && error instanceof Error) {
 		details = error.message;
 		stack = error.stack;
+	}
+
+	if (error && error instanceof Error) {
+		Sentry.captureException(error);
 	}
 
 	return (

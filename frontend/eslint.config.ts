@@ -14,6 +14,7 @@ export default defineConfig([
 			'coverage',
 			'.react-router',
 			'eslint-report.json',
+			'app/@types',
 		],
 	},
 	{
@@ -33,12 +34,21 @@ export default defineConfig([
 				projectService: true,
 			},
 		},
+		rules: {
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_',
+				},
+			],
+		},
 	},
 	{
 		files: ['**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx}'],
 		...pluginReact.configs.flat.recommended,
 		rules: {
-			...pluginReact.configs.flat.recommended.rules,
+			...pluginReact.configs.flat.recommended?.rules,
 			'react/react-in-jsx-scope': 'off',
 			'react/jsx-uses-react': 'off',
 		},

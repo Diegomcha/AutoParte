@@ -4,22 +4,14 @@ import lombok.*;
 import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
-import me.diegomcha.autoparte.domain.person.document.Document;
-import me.diegomcha.autoparte.validation.Validations;
-
-import java.time.Instant;
+import me.diegomcha.autoparte.domain.person.PersonalInfo;
+import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class Person extends BaseEntity {
-
-    public enum PersonGender {
-        MALE, // H
-        FEMALE, // M
-        OTHER // O
-    }
 
     public enum PersonRelationship {
         GRANDPARENT, // AB
@@ -39,50 +31,45 @@ public class Person extends BaseEntity {
         OTHER // OT
     }
 
-    @Setter(AccessLevel.PACKAGE)
-    private Booking booking;
+    private @NonNull Booking booking;
 
-    private @NonNull String name;
-    private @NonNull String firstSurname;
-    private String secondSurname;
-    private String nationality;
-    private Instant birthDate;
-    private Document document;
-    private PersonGender gender;
-    private Address address;
+    private @NonNull PersonalInfo personalInfo;
     private ContactInfo contactInfo;
+    private DocumentInfo documentInfo;
+    private Address address;
     private PersonRelationship relationship;
 
-    public Person(@NonNull String name, @NonNull String firstSurname, String secondSurname, String nationality, Instant birthDate, Document document, PersonGender gender, Address address, ContactInfo contactInfo, PersonRelationship relationship) {
-        this.name = name;
-        this.firstSurname = firstSurname;
-        this.setSecondSurname(secondSurname);
-        this.setNationality(nationality);
-        this.setBirthDate(birthDate);
-        this.document = document;
-        this.gender = gender;
+    public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo) {
+        this(booking, personalInfo, null, null, null, null);
+    }
+
+    public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo, ContactInfo contactInfo, DocumentInfo documentInfo, Address address, PersonRelationship relationship) {
+        this.setBooking(booking);
+        this.setPersonalInfo(personalInfo);
+
+        this.setContactInfo(contactInfo);
+        this.setDocumentInfo(documentInfo);
+        this.setAddress(address);
+
+        this.setRelationship(relationship);
+    }
+
+    public void setBooking(@NonNull Booking booking) {
+        if (this.booking != null) this.booking._removePerson(this);
+        this.booking = booking;
+        this.booking._addPerson(this);
+    }
+
+    public void setAddress(Address address) {
+        if (this.address != null) this.address._getPeople().remove(this);
         this.address = address;
-        this.contactInfo = contactInfo;
-        this.relationship = relationship;
+        if (this.address != null) this.address._getPeople().add(this);
     }
 
-    public void setSecondSurname(String secondSurname) {
-        if (this.document != null && this.document.requiresSecondSurname() && secondSurname == null)
-            throw new IllegalArgumentException("Second surname is required for document type " + this.document.getType());
-
-        this.secondSurname = secondSurname;
+    public void setDocumentInfo(DocumentInfo documentInfo) {
+        if (documentInfo != null && documentInfo.requiresSecondSurname() && this.personalInfo.getSecondSurname() == null)
+            throw new IllegalStateException("Second surname is required for document type " + documentInfo.getType());
+        this.documentInfo = documentInfo;
     }
 
-    public void setNationality(String nationality) {
-        if (nationality != null && !Validations.isValidCountry(nationality))
-            throw new IllegalArgumentException("Invalid nationality: " + nationality);
-
-        this.nationality = nationality;}
-
-    public void setBirthDate(Instant birthDate) {
-        if (birthDate != null && birthDate.isAfter(Instant.now()))
-            throw new IllegalArgumentException("Birth date cannot be in the future");
-
-        this.birthDate = birthDate;
-    }
 }

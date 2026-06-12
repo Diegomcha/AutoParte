@@ -5,13 +5,12 @@ import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.catalogue.dto.ProvinceMunicipalityCodesDto;
 import me.diegomcha.autoparte.api.catalogue.services.CatalogueService;
 import me.diegomcha.autoparte.api.catalogue.services.LocationCatalogueService;
-import me.diegomcha.autoparte.validation.annotations.ProvinceCode;
+import me.diegomcha.autoparte.core.validation.annotations.ProvinceCode;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,8 +23,8 @@ class CatalogueController {
     private final LocationCatalogueService locationCatalogueService;
 
     @GetMapping("/countries")
-    public Map<String, String> getCountries(Locale locale) {
-        return locationCatalogueService.getCountries(locale);
+    public String[] getCountries() {
+        return locationCatalogueService.getCountries();
     }
 
     @GetMapping("/countries/ESP/provinces")
@@ -44,17 +43,17 @@ class CatalogueController {
     }
 
     @GetMapping("/person/genders")
-    public Map<String, String> getPersonGenders(Locale locale) {
-        return catalogueService.getPersonGenderOptions(locale);
+    public String[] getPersonGenders() {
+        return catalogueService.getPersonGenderOptions();
     }
 
     @GetMapping("/person/relationships")
-    public Map<String, String> getPersonRelationships(Locale locale) {
-        return catalogueService.getPersonRelationshipOptions(locale);
+    public String[] getPersonRelationships() {
+        return catalogueService.getPersonRelationshipOptions();
     }
 
     @GetMapping("/document/types")
-    public Map<String, String> getDocumentTypes(Locale locale) {
-        return catalogueService.getDocumentTypeOptions(locale);
+    public String[] getDocumentTypes() {
+        return catalogueService.getDocumentTypeOptions();
     }
 }

@@ -1,0 +1,37 @@
+package me.diegomcha.autoparte.api.employee;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
+import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCredentialsResponse;
+import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
+import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoResponse;
+import me.diegomcha.autoparte.core.exception.ResourceConflictException;
+import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.UUID;
+
+@Tag(name = "Employees", description = "Operations related to employees")
+@SuppressWarnings("unused")
+interface EmployeeAPI {
+
+    @Operation(summary = "List employees")
+    Page<EmployeeDtoResponse> getEmployees(Pageable pageable);
+
+    @Operation(summary = "Get employee by id")
+    EmployeeDtoResponse getEmployee(UUID id) throws ResourceNotFoundException;
+
+    @Operation(summary = "Create employee")
+    EmployeeDtoCredentialsResponse createEmployee(EmployeeDtoCreate employee) throws ResourceConflictException;
+
+    @Operation(summary = "Reset employee password")
+    EmployeeDtoCredentialsResponse resetEmployeePassword(UUID id) throws ResourceNotFoundException;
+
+    @Operation(summary = "Update employee")
+    void updateEmployee(UUID id, EmployeeDtoPatch employee) throws ResourceNotFoundException, ResourceConflictException;
+
+    @Operation(summary = "Delete employee")
+    void deleteEmployee(UUID id) throws ResourceNotFoundException;
+}

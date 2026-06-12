@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.api.catalogue.services;
 
+import lombok.Getter;
 import lombok.NonNull;
 import me.diegomcha.autoparte.config.AutoparteProperties;
 import org.springframework.core.io.ResourceLoader;
@@ -8,12 +9,12 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 
+@Getter
 @Service
 public class LocationCatalogueService {
 
-    private final Set<Locale> countries;
+    private final String[] countries = Locale.getISOCountries();
 
     private final Map<String, String> spanishProvinces;
     // Province code -> (Municipality code -> Municipality name)
@@ -21,20 +22,13 @@ public class LocationCatalogueService {
     // Province code -> (Municipality code -> Postal codes)
     private final Map<String, Map<String, Set<String>>> spanishPostalCodes;
 
+    // FIXME: MAYBE move this!
+
     protected LocationCatalogueService(AutoparteProperties config, ResourceLoader loader) throws IOException {
-        this.countries = loadCountries();
-
-        String separator = config.getMunicipalities().getSeparator();
-        this.spanishProvinces = parseSpanishProvinces(loader, config.getMunicipalities().getProvincesPath(), separator);
-        this.spanishMunicipalities = parseSpanishMunicipalities(loader, config.getMunicipalities().getMunicipalitiesPath(), separator);
-        this.spanishPostalCodes = parseSpanishPostalCodes(loader, config.getMunicipalities().getPostalCodesPath(), separator);
-    }
-
-    private Set<Locale> loadCountries() {
-        return Arrays
-                .stream(Locale.getISOCountries())
-                .map(code -> new Locale.Builder().setRegion(code).build())
-                .collect(Collectors.toSet());
+        String separator = config.getLocationCatalogue().getSeparator();
+        this.spanishProvinces = parseSpanishProvinces(loader, config.getLocationCatalogue().getProvincesPath(), separator);
+        this.spanishMunicipalities = parseSpanishMunicipalities(loader, config.getLocationCatalogue().getMunicipalitiesPath(), separator);
+        this.spanishPostalCodes = parseSpanishPostalCodes(loader, config.getLocationCatalogue().getPostalCodesPath(), separator);
     }
 
     private Map<String, String> parseSpanishProvinces(ResourceLoader loader, String resourcePath, String separator) throws IOException {
@@ -100,27 +94,7 @@ public class LocationCatalogueService {
         return Map.copyOf(postalCodes);
     }
 
-    /**
-     * Gets the map of ISO3 country codes to country names for all available countries.
-     *
-     * @param locale The locale to use for country name localization.
-     * @return A map of ISO3 country codes to localized country names.
-     */
-    public Map<String, String> getCountries(Locale locale) {
-        return countries.stream()
-                .collect(Collectors.toMap(
-                        Locale::getISO3Country,
-                        c -> c.getDisplayCountry(locale)));
-    }
-
-    /**
-     * Gets the map of province codes to province names in Spain.
-     *
-     * @return An unmodifiable map of province codes to province names for the specified community.
-     */
-    public Map<String, String> getSpanishProvinces() {
-        return spanishProvinces;
-    }
+    // --------------------
 
     /**
      * Gets the map of municipality codes to municipality names for a given province code in Spain.

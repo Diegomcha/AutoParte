@@ -38,6 +38,8 @@
         <uuid-generator.version>5.2.0</uuid-generator.version>
         <jacoco.version>0.8.12</jacoco.version>
         <libphonenumber.version>9.0.30</libphonenumber.version>
+        <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
+        <maven-resources.version>3.5.0</maven-resources.version>
     </properties>
     <dependencies>
         <dependency>
@@ -73,10 +75,14 @@
             <artifactId>sentry-spring-boot-4-starter</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-webauthn</artifactId>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-async-profiler</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -98,10 +104,6 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry-async-profiler</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -129,6 +131,10 @@
             <artifactId>libphonenumber</artifactId>
             <version>${libphonenumber.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
         </dependency>
 
         <dependency>
@@ -187,7 +193,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>${maven-resources.version}</version>
                 <executions>
                     <execution>
                         <id>move-assets</id>
@@ -270,6 +276,17 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        @{argLine}
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                        -Xshare:off
+                    </argLine>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
@@ -300,6 +317,22 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>4.0.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <wsdlDirectory>${project.basedir}/src/main/resources/ses</wsdlDirectory>
+                    <packageName>me.diegomcha.autoparte.integration.ses.wsdl</packageName>
+                </configuration>
             </plugin>
         </plugins>
     </build>

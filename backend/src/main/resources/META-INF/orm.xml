@@ -17,6 +17,8 @@
     <access>FIELD</access>
 
     <mapped-superclass class="me.diegomcha.autoparte.domain.base.BaseEntity">
+        <post-persist method-name="markNotNew"/>
+        <post-load method-name="markNotNew"/>
         <attributes>
             <id name="id">
                 <column nullable="false"
@@ -32,25 +34,31 @@
             <version name="version">
                 <column nullable="false"/>
             </version>
+            <transient name="isNew"/>
         </attributes>
     </mapped-superclass>
 
     <entity class="me.diegomcha.autoparte.domain.Account">
-        <inheritance strategy="JOINED"/>
         <attributes>
             <basic name="username">
-                <column nullable="false"
-                        unique="true"/>
-            </basic>
-            <basic name="hashedPassword">
                 <column nullable="false"/>
             </basic>
-            <basic name="enabled">
+            <basic name="hashedPassword">
                 <column nullable="false"/>
             </basic>
             <basic name="roles">
                 <column nullable="false"/>
             </basic>
+            <basic name="enabled">
+                <column nullable="false"/>
+            </basic>
+            <basic name="requiresReset">
+                <column nullable="false"/>
+            </basic>
+            <basic name="deletedAt">
+                <column name="deleted_at" insertable="false" updatable="false"/>
+            </basic>
+            <one-to-many name="securityLog" mapped-by="account"/>
         </attributes>
     </entity>
 
@@ -62,20 +70,28 @@
             <basic name="surname">
                 <column nullable="false"/>
             </basic>
-            <many-to-many name="establishments" mapped-by="employees"/>
+            <one-to-one name="account" optional="false" fetch="LAZY">
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-remove/>
+                </cascade>
+            </one-to-one>
+            <many-to-many name="accommodations" mapped-by="employees"/>
         </attributes>
     </entity>
 
-    <entity class="me.diegomcha.autoparte.domain.Establishment">
+    <entity class="me.diegomcha.autoparte.domain.Accommodation">
         <attributes>
             <basic name="name">
                 <column nullable="false"/>
             </basic>
             <basic name="sesCode">
-                <column nullable="false"
-                        unique="true"/>
+                <column nullable="false"/>
             </basic>
-            <one-to-many name="bookings" mapped-by="establishment"/>
+            <basic name="deletedAt">
+                <column insertable="false" updatable="false"/>
+            </basic>
+            <one-to-many name="bookings" mapped-by="accommodation"/>
             <many-to-many name="employees"/>
         </attributes>
     </entity>
@@ -91,21 +107,20 @@
             <basic name="numberOfPeople">
                 <column nullable="false"/>
             </basic>
-            <many-to-one name="establishment"/>
-            <one-to-many name="people" mapped-by="booking"/>
-            <element-collection name="people"/>
+            <many-to-one name="createdBy" optional="false"/>
+            <many-to-one name="lastModifiedBy" optional="false"/>
+            <many-to-one name="accommodation" optional="false"/>
+            <one-to-many name="people" mapped-by="booking">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
         </attributes>
     </entity>
 
     <entity class="me.diegomcha.autoparte.domain.Person">
         <attributes>
-            <basic name="name">
-                <column nullable="false"/>
-            </basic>
-            <basic name="firstSurname">
-                <column nullable="false"/>
-            </basic>
-            <many-to-one name="booking"/>
+            <many-to-one name="booking" optional="false"/>
             <many-to-one name="address"/>
         </attributes>
     </entity>
@@ -126,12 +141,32 @@
             <basic name="country">
                 <column nullable="false"/>
             </basic>
+            <one-to-many name="people" mapped-by="address"/>
         </attributes>
     </entity>
     <entity
             class="me.diegomcha.autoparte.domain.address.SpanishAddress"/>
 
-    <embeddable class="me.diegomcha.autoparte.domain.booking.payment.Payment">
+    <entity class="me.diegomcha.autoparte.domain.SecurityEvent">
+        <attributes>
+            <basic name="timestamp">
+                <column nullable="false"/>
+            </basic>
+            <basic name="remoteAddress">
+                <column nullable="false"/>
+            </basic>
+            <basic name="type">
+                <column nullable="false"/>
+            </basic>
+            <basic name="method">
+                <column nullable="false"/>
+            </basic>
+            <many-to-one name="account" fetch="LAZY"/>
+        </attributes>
+    </entity>
+
+    <embeddable
+            class="me.diegomcha.autoparte.domain.booking.payment.PaymentInfo">
         <attributes>
             <basic name="type">
                 <column name="payment_type" nullable="false"/>
@@ -148,7 +183,7 @@
         </attributes>
     </embeddable>
     <embeddable
-            class="me.diegomcha.autoparte.domain.booking.payment.CreditCardPayment">
+            class="me.diegomcha.autoparte.domain.booking.payment.CreditCardPaymentInfo">
         <attributes>
             <basic name="expiryDate">
                 <column name="payment_expiry_date"/>
@@ -159,8 +194,10 @@
     <embeddable
             class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
 
+    <embeddable class="me.diegomcha.autoparte.domain.person.PersonalInfo"/>
+
     <embeddable
-            class="me.diegomcha.autoparte.domain.person.document.Document">
+            class="me.diegomcha.autoparte.domain.person.document.DocumentInfo">
         <attributes>
             <basic name="type">
                 <column name="document_type" nullable="false"/>
@@ -170,9 +207,8 @@
             </basic>
         </attributes>
     </embeddable>
-
     <embeddable
-            class="me.diegomcha.autoparte.domain.person.document.DniDocument">
+            class="me.diegomcha.autoparte.domain.person.document.DniDocumentInfo">
         <attributes>
             <basic name="supportNumber">
                 <column name="document_support_number" nullable="false"/>
@@ -180,6 +216,4 @@
         </attributes>
     </embeddable>
 
-
 </entity-mappings>
-

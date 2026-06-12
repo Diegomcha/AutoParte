@@ -1,0 +1,65 @@
+{
+	"employees": {
+		"title": "Empleados",
+		"properties": {
+			"status": {
+				"title": "Estado",
+				"options": {
+					"active": "Activo",
+					"inactive": "Inactivo"
+				}
+			},
+			"name": "Nombre",
+			"surname": "Apellidos",
+			"email": "Correo electrónico",
+			"createdAt": "Fecha de creación",
+			"updatedAt": "Fecha de actualización"
+		},
+		"new": {
+			"button": "Nuevo empleado",
+			"title": "Añadir nuevo empleado",
+			"form": {
+				"name": "Nombre",
+				"surname": "Apellidos",
+				"email": "Correo electrónico",
+				"submit": "Crear",
+				"errors": {
+					"noName": "El nombre es obligatorio",
+					"noSurname": "Los apellidos son obligatorios",
+					"invalidEmail": "El correo electrónico no es válido",
+					"emailInUse": "El correo electrónico ya está registrado"
+				}
+			},
+			"created": {
+				"title": "Empleado creado",
+				"description": "El empleado se ha creado correctamente.",
+				"credentials": {
+					"email": "Correo electrónico de acceso",
+					"password": "Contraseña temporal"
+				},
+				"warning": "Guarda estas credenciales ahora. No podrás volver a ver la contraseña.",
+				"view": "Ver empleado"
+			}
+		}
+	},
+	"auth": {
+		"login": {
+			"title": "Iniciar sesión",
+			"form": {
+				"username": "Nombre de usuario",
+				"password": "Contraseña",
+				"rememberMe": "Mantener sesión iniciada",
+				"submit": "Iniciar sesión",
+				"errors": {
+					"noUsername": "El nombre de usuario es obligatorio",
+					"noPassword": "La contraseña es obligatoria",
+					"invalidCredentials": "Nombre de usuario o contraseña incorrectos"
+				}
+			}
+		},
+		"logout": {
+			"title": "Cerrar sesión",
+			"button": "Cerrar sesión"
+		}
+	}
+}

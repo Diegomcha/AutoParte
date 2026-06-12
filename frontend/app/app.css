@@ -1,6 +1,2 @@
+@import 'tailwindcss';
 @import '@mantine/core/styles.css';
-
-html,
-body {
-	height: 100%;
-}

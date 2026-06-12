@@ -11,5 +11,10 @@
 		"**/*.sass",
 		"**/*.less",
 		"node_modules/@mantine/core/styles.css"
-	]
+	],
+	"sonarlint.connectedMode.project": {
+		"connectionId": "diegomcha",
+		"projectKey": "Diegomcha_AutoParte"
+	},
+	"conventionalCommits.scopes": ["frontend"]
 }

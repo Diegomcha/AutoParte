@@ -1,7 +1,4 @@
-name: CI
-
-permissions:
-  contents: read
+name: CI-CD
 
 on:
   workflow_dispatch:
@@ -15,6 +12,8 @@ jobs:
   sonar-qube:
     name: SonarQube
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       # CHECKOUT
       - name: Checkout code
@@ -34,7 +33,7 @@ jobs:
           path: ~/.bun/install/cache
           key: bun-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('frontend/bun.lock') }}
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           java-version: 21
@@ -49,6 +48,8 @@ jobs:
 
       - name: (Frontend) Build
         working-directory: frontend
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: bun run build
 
       - name: (Frontend) Run ESLint and generate report
@@ -80,3 +81,74 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@59db25f34e16620e48ab4bb9e4a5dce155cb5432 # v8.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  build: # TODO: add frontend and backend images
+    name: Build images
+    needs: sonar-qube
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # OCR
+          # - cpu version
+          - context: ./ocr
+            dockerfile: ./ocr/docker/cpu.Dockerfile
+            module: ocr
+            suffix: cpu
+          # - gpu version
+          - context: ./ocr
+            dockerfile: ./ocr/docker/gpu.Dockerfile
+            module: ocr
+            suffix: gpu
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    env:
+      REGISTRY: ghcr.io
+      IMAGE_NAME: ${{ github.repository }}
+    steps:
+      # Checkout
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
+
+      # Setup
+      - name: Extract container metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_${{ matrix.module }}
+          flavor: |
+            suffix=-${{ matrix.suffix }},onlatest=true
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+      # Build and push with attestation
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{matrix.module}}
+          cache-to: type=gha,mode=max,scope=${{matrix.module}}
+
+      - name: Generate artifact attestation
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_${{ matrix.module }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true

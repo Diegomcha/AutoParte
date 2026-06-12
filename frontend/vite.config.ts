@@ -1,9 +1,24 @@
 import { reactRouter } from '@react-router/dev/vite';
+import { sentryReactRouter } from '@sentry/react-router';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 import devTools from 'vite-plugin-devtools-json';
 
-export default defineConfig({
-	plugins: [devTools(), reactRouter()],
+export default defineConfig((config) => ({
+	plugins: [
+		devTools(),
+		tailwindcss(),
+		reactRouter(),
+		sentryReactRouter(
+			{
+				org: 'diegomcha',
+				project: 'autoparte-front',
+				authToken: process.env.SENTRY_AUTH_TOKEN,
+				telemetry: false,
+			},
+			config
+		),
+	],
 	resolve: {
 		tsconfigPaths: true,
 	},
@@ -15,4 +30,7 @@ export default defineConfig({
 			},
 		},
 	},
-});
+	optimizeDeps: {
+		exclude: ['@sentry/react-router'],
+	},
+}));
