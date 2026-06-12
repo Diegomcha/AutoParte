@@ -1,4 +1,4 @@
-name: CI/CD
+name: CI-CD
 
 on:
   workflow_dispatch:
@@ -48,6 +48,8 @@ jobs:
 
       - name: (Frontend) Build
         working-directory: frontend
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: bun run build
 
       - name: (Frontend) Run ESLint and generate report
@@ -95,6 +97,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      attestations: write
       id-token: write
     env:
       REGISTRY: ghcr.io
