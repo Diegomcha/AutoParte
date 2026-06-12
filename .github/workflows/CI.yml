@@ -95,6 +95,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      id-token: write
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}
@@ -110,7 +111,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_${{ matrix.module }}
           flavor: |
-            suffix=${{ matrix.suffix }},onlatest=true
+            suffix=-${{ matrix.suffix }},onlatest=true
 
       - name: Log in to the Container registry
         uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
