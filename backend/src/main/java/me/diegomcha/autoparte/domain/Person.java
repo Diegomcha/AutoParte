@@ -34,16 +34,12 @@ public class Person extends BaseEntity {
     private @NonNull Booking booking;
 
     private @NonNull PersonalInfo personalInfo;
-    private ContactInfo contactInfo;
+    private @NonNull ContactInfo contactInfo;
     private DocumentInfo documentInfo;
     private Address address;
     private PersonRelationship relationship;
 
-    public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo) {
-        this(booking, personalInfo, null, null, null, null);
-    }
-
-    public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo, ContactInfo contactInfo, DocumentInfo documentInfo, Address address, PersonRelationship relationship) {
+    public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo, @NonNull ContactInfo contactInfo, DocumentInfo documentInfo, Address address, PersonRelationship relationship) {
         this.setBooking(booking);
         this.setPersonalInfo(personalInfo);
 
@@ -54,8 +50,7 @@ public class Person extends BaseEntity {
         this.setRelationship(relationship);
     }
 
-    public void setBooking(@NonNull Booking booking) {
-        if (this.booking != null) this.booking._removePerson(this);
+    private void setBooking(@NonNull Booking booking) {
         this.booking = booking;
         this.booking._addPerson(this);
     }
@@ -66,10 +61,10 @@ public class Person extends BaseEntity {
         if (this.address != null) this.address._getPeople().add(this);
     }
 
-    public void setDocumentInfo(DocumentInfo documentInfo) {
-        if (documentInfo != null && documentInfo.requiresSecondSurname() && this.personalInfo.getSecondSurname() == null)
-            throw new IllegalStateException("Second surname is required for document type " + documentInfo.getType());
-        this.documentInfo = documentInfo;
+    public boolean isComplete() {
+        return personalInfo.isComplete(this.documentInfo != null && this.documentInfo.requiresSecondSurname()) &&
+                (personalInfo.isAdult() ? this.documentInfo != null : this.relationship != null) &&
+                address != null;
     }
 
 }

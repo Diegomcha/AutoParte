@@ -10,29 +10,28 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor
 @ToString
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 public class Account extends BaseEntity {
 
+    @Setter
     private @NonNull String username;
     @ToString.Exclude
     private @NonNull String hashedPassword;
+    @Setter
     private @NonNull Set<@NonNull String> roles;
 
     @ToString.Exclude
-    @Setter(AccessLevel.NONE)
-    private @NonNull Set<@NonNull SecurityEvent> securityLog = new HashSet<>();
+    private final @NonNull Set<@NonNull SecurityEvent> securityLog = new HashSet<>();
 
     private boolean enabled = true;
-    @Setter(AccessLevel.NONE)
     private Instant disabledAt;
 
-    @Setter(AccessLevel.NONE)
     private Instant deletedAt;
 
+    @Setter
     private boolean requiresReset = true;
 
     public void setEnabled(boolean enabled) {

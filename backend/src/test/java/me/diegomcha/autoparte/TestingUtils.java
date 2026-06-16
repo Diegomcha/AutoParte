@@ -1,9 +1,14 @@
 package me.diegomcha.autoparte;
 
+import com.fasterxml.uuid.Generators;
+import com.fasterxml.uuid.impl.TimeBasedEpochRandomGenerator;
 import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import java.time.Instant;
+import java.util.UUID;
 
+import static org.mockito.Answers.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mockStatic;
 
 public class TestingUtils {
@@ -12,8 +17,19 @@ public class TestingUtils {
     public static final Instant FUTURE_INSTANT = INSTANT.plusSeconds(3600);
 
     public static MockedStatic<Instant> getMockedInstantNow() {
-        var mockedInstant = mockStatic(Instant.class);
+        var mockedInstant = mockStatic(Instant.class, CALLS_REAL_METHODS);
         mockedInstant.when(Instant::now).thenReturn(INSTANT);
         return mockedInstant;
+    }
+
+    public static MockedStatic<Generators> getMockedUuidGenerator() {
+        var generatorMock = Mockito.mock(TimeBasedEpochRandomGenerator.class);
+        Mockito.when(generatorMock.generate()).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+
+        var generatorsMock = mockStatic(Generators.class, CALLS_REAL_METHODS);
+        generatorsMock.when(Generators::timeBasedEpochRandomGenerator)
+                .thenReturn(generatorMock);
+
+        return generatorsMock;
     }
 }

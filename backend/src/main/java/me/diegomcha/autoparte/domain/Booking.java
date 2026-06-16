@@ -3,16 +3,15 @@ package me.diegomcha.autoparte.domain;
 import lombok.*;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import me.diegomcha.autoparte.domain.communication.CancelationCommunication;
+import me.diegomcha.autoparte.domain.communication.Communication;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class Booking extends BaseEntity {
@@ -20,26 +19,24 @@ public class Booking extends BaseEntity {
     private @NonNull Instant startTime;
     private @NonNull Instant endTime;
     private int numberOfPeople;
+    @Setter
+    private @NonNull PaymentInfo payment;
     private Integer numberOfRooms;
-    private PaymentInfo payment;
+    @Setter
     private Boolean internetConnection;
 
     @CreatedBy
-    @Setter(AccessLevel.NONE)
     private @NonNull Account createdBy;
     @LastModifiedBy
-    @Setter(AccessLevel.NONE)
     private @NonNull Account lastModifiedBy;
 
     private @NonNull Accommodation accommodation;
-    @Setter(AccessLevel.NONE)
-    private @NonNull Set<@NonNull Person> people = new HashSet<>();
+    @ToString.Exclude
+    private final @NonNull List<@NonNull Person> people = new ArrayList<>();
+    @ToString.Exclude
+    private final @NonNull Set<@NonNull Communication> communications = new HashSet<>();
 
-    public Booking(@NonNull Accommodation accommodation, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople) {
-        this(accommodation, startTime, endTime, numberOfPeople, null, null, null);
-    }
-
-    public Booking(@NonNull Accommodation accommodation, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, Integer numberOfRooms, PaymentInfo payment, Boolean internetConnection) {
+    public Booking(@NonNull Accommodation accommodation, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, @NonNull PaymentInfo payment, Integer numberOfRooms, Boolean internetConnection) {
         this.setAccommodation(accommodation);
         this.startTime = startTime;
         this.setEndTime(endTime);
@@ -49,8 +46,7 @@ public class Booking extends BaseEntity {
         this.setInternetConnection(internetConnection);
     }
 
-    public void setAccommodation(@NonNull Accommodation accommodation) {
-        if (this.accommodation != null) this.accommodation._getBookings().remove(this);
+    private void setAccommodation(@NonNull Accommodation accommodation) {
         this.accommodation = accommodation;
         this.accommodation._getBookings().add(this);
     }
@@ -85,18 +81,66 @@ public class Booking extends BaseEntity {
         this.numberOfRooms = numberOfRooms;
     }
 
-    public Set<Person> getPeople() {
-        return Set.copyOf(this.people);
+    public List<Person> getPeople() {
+        return List.copyOf(this.people);
     }
 
     void _addPerson(@NonNull Person person) {
         if (this.people.size() >= this.numberOfPeople)
             throw new IllegalStateException("Cannot add more people than the number specified in the booking");
-
         this.people.add(person);
     }
 
-    void _removePerson(@NonNull Person person) {
-        this.people.remove(person);
+    public boolean canBeConfirmed() {
+        return !this.people.isEmpty();
+    }
+
+    public boolean canBeCheckedIn() {
+        return this.people.size() == this.numberOfPeople &&
+                this.people.stream().allMatch(Person::isComplete);
+    }
+
+    public void confirm() {
+        if (!this.canBeConfirmed())
+            throw new IllegalStateException("Booking cannot be confirmed");
+        this.addCommunication(Communication.CommunicationType.BOOKING);
+    }
+
+    public void checkIn() {
+        if (!this.canBeCheckedIn())
+            throw new IllegalStateException("Booking cannot be checked-in");
+        this.addCommunication(Communication.CommunicationType.CHECKIN);
+    }
+
+    public void cancel() {
+        var communication = (CancelationCommunication) this.addCommunication(Communication.CommunicationType.CANCELLATION);
+
+        // Mark all other communications as voided if they are pending or failed (not in SES)
+        this.communications.stream()
+                .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION)
+                .filter(c -> c.getStatus() == Communication.CommunicationStatus.PENDING || c.getStatus() == Communication.CommunicationStatus.FAILED)
+                .forEach(Communication::markVoided);
+
+        // If all other communications are voided, mark the cancellation communication as finished successfully
+        if (this.communications.stream()
+                .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION)
+                .allMatch(c -> c.getStatus() == Communication.CommunicationStatus.VOIDED))
+            communication.markFinishedSuccessfully();
+    }
+
+    public Set<Communication> getCommunications() {
+        return Set.copyOf(this.communications);
+    }
+
+    private Communication addCommunication(@NonNull Communication.CommunicationType type) {
+        if (this.communications.stream().anyMatch(c -> c.getType() == Communication.CommunicationType.CANCELLATION))
+            throw new IllegalStateException("Cannot make any communication to a cancelled booking");
+
+        if (this.communications.stream().anyMatch(c -> c.getType() == type))
+            throw new IllegalStateException("Communication of type " + type + " already exists for this booking");
+
+        var communication = Communication._of(this, type);
+        this.communications.add(communication);
+        return communication;
     }
 }

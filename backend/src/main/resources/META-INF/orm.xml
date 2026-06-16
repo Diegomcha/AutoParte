@@ -115,6 +115,23 @@
                     <cascade-all/>
                 </cascade>
             </one-to-many>
+            <one-to-many name="communications" mapped-by="booking">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-many>
+        </attributes>
+    </entity>
+
+    <entity class="me.diegomcha.autoparte.domain.communication.Communication">
+        <attributes>
+            <basic name="type">
+                <column nullable="false"/>
+            </basic>
+            <basic name="status">
+                <column nullable="false" />
+            </basic>
+            <many-to-one name="booking" optional="false"/>
         </attributes>
     </entity>
 

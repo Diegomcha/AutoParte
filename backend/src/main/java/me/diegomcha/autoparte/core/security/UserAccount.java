@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.core.security;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import me.diegomcha.autoparte.domain.Account;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,6 +8,7 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.stream.Collectors;
 
+@EqualsAndHashCode(callSuper = true)
 public class UserAccount extends User {
 
     @Getter

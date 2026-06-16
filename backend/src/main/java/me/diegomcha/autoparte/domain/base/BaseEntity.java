@@ -1,10 +1,7 @@
 package me.diegomcha.autoparte.domain.base;
 
 import com.fasterxml.uuid.Generators;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
@@ -17,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseEntity implements Persistable<UUID> {
     @EqualsAndHashCode.Include
-    private final UUID id = Generators.timeBasedEpochRandomGenerator().generate();
+    private final @NonNull UUID id = Generators.timeBasedEpochRandomGenerator().generate();
     private long version;
 
     @CreatedDate

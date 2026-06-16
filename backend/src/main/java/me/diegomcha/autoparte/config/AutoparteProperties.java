@@ -31,7 +31,7 @@ public class AutoparteProperties {
 
     @Data
     public static class SecurityProperties {
-        private String initialAdminPassword;
-        private String rememberMeKey;
+        private String initialAdminPassword = "admin";
+        private String rememberMeKey = "default-key";
     }
 }

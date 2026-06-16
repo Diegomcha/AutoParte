@@ -12,13 +12,18 @@ import org.springframework.ws.transport.http.HttpComponents5ClientFactory;
 import org.springframework.ws.transport.http.SimpleHttpComponents5MessageSender;
 
 @Configuration
-public class SesClientConfig {
+class SesClientConfig {
     @Bean
-    public WebServiceTemplate sesClient(WebServiceTemplateBuilder builder, AutoparteProperties autoparteProperties, SslBundles sslBundles) {
-        // Create marshaller
+    Jaxb2Marshaller marshaller() {
         var marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("me.diegomcha.autoparte.integration.ses.wsdl");
+        marshaller.setPackagesToScan(
+                "es.mir.hospedajes.servicios.soap.comunicacion",
+                "es.mir.hospedajes.servicios.soap.tipocomunicacion");
+        return marshaller;
+    }
 
+    @Bean
+    WebServiceTemplate sesClient(WebServiceTemplateBuilder builder, AutoparteProperties autoparteProperties, SslBundles sslBundles, Jaxb2Marshaller marshaller) {
         // Create HTTP client factory with custom TLS strategy and basic auth
         var clientFactory = HttpComponents5ClientFactory.withDefaults();
         clientFactory.addConnectionManagerBuilderCustomizer(b ->

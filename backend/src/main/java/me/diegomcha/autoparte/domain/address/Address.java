@@ -27,8 +27,8 @@ public class Address extends BaseEntity {
     private @NonNull String postalCode;
     private @NonNull String country;
 
-    @Setter(AccessLevel.NONE)
-    private @NonNull Set<@NonNull Person> people = new HashSet<>();
+    @ToString.Exclude
+    private final @NonNull Set<@NonNull Person> people = new HashSet<>();
 
     protected Address(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {
         this.setCountry(country);

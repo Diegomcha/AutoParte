@@ -10,23 +10,24 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
 public class Accommodation extends BaseEntity {
 
+    @Setter
     private @NonNull String name;
+    @Setter
     private @NonNull String sesCode;
+    @Setter
     private Boolean internetConnection;
 
-    @Setter(AccessLevel.NONE)
     private Instant deletedAt;
 
-    @Setter(AccessLevel.NONE)
-    private @NonNull Set<@NonNull Employee> employees = new HashSet<>();
-    @Setter(AccessLevel.NONE)
-    private @NonNull Set<@NonNull Booking> bookings = new HashSet<>();
+    @ToString.Exclude
+    private final @NonNull Set<@NonNull Employee> employees = new HashSet<>();
+    @ToString.Exclude
+    private final @NonNull Set<@NonNull Booking> bookings = new HashSet<>();
 
     public Accommodation(@NonNull String name, @NonNull String sesCode, Boolean internetConnection) {
         this.setName(name);

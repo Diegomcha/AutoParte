@@ -3,6 +3,7 @@ package me.diegomcha.autoparte.domain.person;
 import lombok.*;
 import me.diegomcha.autoparte.core.validation.Validations;
 
+import java.time.Duration;
 import java.time.Instant;
 
 @Getter
@@ -10,6 +11,8 @@ import java.time.Instant;
 @ToString
 @EqualsAndHashCode
 public class PersonalInfo {
+
+    private static final int SPAIN_ADULT_AGE = 18;
 
     public enum PersonalInfoGender {
         MALE, // H
@@ -51,5 +54,15 @@ public class PersonalInfo {
             throw new IllegalArgumentException("Birth date cannot be in the future");
 
         this.birthDate = birthDate;
+    }
+
+    public boolean isComplete(boolean requiresSecondSurname) {
+        return !(requiresSecondSurname && (this.secondSurname == null || this.secondSurname.isBlank())) &&
+                this.birthDate != null;
+    }
+
+    public boolean isAdult() {
+        return this.birthDate != null &&
+                Duration.between(this.birthDate , Instant.now()).toDays() >= SPAIN_ADULT_AGE * 365;
     }
 }

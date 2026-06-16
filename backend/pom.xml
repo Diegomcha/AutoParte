@@ -30,8 +30,8 @@
     <properties>
         <sonar.organization>diegomcha</sonar.organization>
         <java.version>21</java.version>
-        <sentry-build.version>0.11.0</sentry-build.version>
-        <sentry.version>8.27.0</sentry.version>
+        <sentry-plugin.version>0.11.0</sentry-plugin.version>
+        <sentry-profiler.version>8.43.2</sentry-profiler.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <commons-text.version>1.10.0</commons-text.version>
@@ -72,11 +72,8 @@
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>
-            <artifactId>sentry-spring-boot-4-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.sentry</groupId>
             <artifactId>sentry-async-profiler</artifactId>
+            <version>${sentry-profiler.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -137,6 +134,7 @@
             <artifactId>httpclient5</artifactId>
         </dependency>
 
+        <!--Testing dependencies-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator-test</artifactId>
@@ -178,45 +176,9 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.sentry</groupId>
-                <artifactId>sentry-bom</artifactId>
-                <version>${sentry.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources.version}</version>
-                <executions>
-                    <execution>
-                        <id>move-assets</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>
-                                ${project.build.outputDirectory}/static
-                            </outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>
-                                        ${project.basedir}/../frontend/build/client
-                                    </directory>
-                                    <filtering>false</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!-- Configure project -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -227,6 +189,9 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <image>
+                        <tags>${env.TAGS}</tags>
+                    </image>
                 </configuration>
             </plugin>
             <plugin>
@@ -250,6 +215,7 @@
                                     <artifactId>mapstruct-processor</artifactId>
                                     <version>${mapstruct.version}</version>
                                 </path>
+
                             </annotationProcessorPaths>
                         </configuration>
                     </execution>
@@ -275,6 +241,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--Configure testing-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -318,6 +285,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--XML / WS-->
             <plugin>
                 <groupId>com.sun.xml.ws</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
@@ -330,11 +298,75 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <wsdlDirectory>${project.basedir}/src/main/resources/ses</wsdlDirectory>
-                    <packageName>me.diegomcha.autoparte.integration.ses.wsdl</packageName>
+                    <wsdlDirectory>${project.basedir}/src/main/resources/ses
+                    </wsdlDirectory>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jvnet.jaxb</groupId>
+                <artifactId>jaxb-maven-plugin</artifactId>
+                <version>4.0.16</version>
+                <configuration>
+                    <schemaDirectory>
+                        ${project.basedir}/src/main/resources/ses/data
+                    </schemaDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Get frontend build-->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources.version}</version>
+                <executions>
+                    <execution>
+                        <id>move-assets</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>
+                                ${project.build.outputDirectory}/static
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>
+                                        ${project.basedir}/../frontend/build/client
+                                    </directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Sentry build plugin -->
+            <plugin>
+                <groupId>io.sentry</groupId>
+                <artifactId>sentry-maven-plugin</artifactId>
+                <version>${sentry-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <org>diegomcha</org>
+                    <project>autoparte-back</project>
+                    <authToken>${env.SENTRY_AUTH_TOKEN}</authToken>
+                    <skipTelemetry>true</skipTelemetry>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>uploadSourceBundle</goal>
+                            <goal>validateSdkDependencyVersions</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>
