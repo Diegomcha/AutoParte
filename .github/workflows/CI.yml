@@ -12,6 +12,10 @@ on:
     branches:
       - main
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   sonar-qube:
     name: SonarQube
@@ -73,11 +77,15 @@ jobs:
 
       - name: (Backend) Build
         working-directory: backend
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: mvn -B compile
 
       - name: (Backend) Run tests and generate reports
         working-directory: backend
         continue-on-error: true
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: mvn -B verify
 
       # SCAN
@@ -86,63 +94,119 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  build: # TODO: add frontend and backend images
-    name: Build images
-    # Only build on push to main or workflow dispatch
-    if: ${{ github.event_name != 'pull_request' }}
-    needs: sonar-qube
+  detect-changes:
+    name: Detect changes
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # OCR
-          # - cpu version
-          - context: ./ocr
-            dockerfile: ./ocr/docker/cpu.Dockerfile
-            module: ocr
-            suffix: cpu
-          # - gpu version
-          - context: ./ocr
-            dockerfile: ./ocr/docker/gpu.Dockerfile
-            module: ocr
-            suffix: gpu
+    needs: sonar-qube
     permissions:
       contents: read
-      packages: write
-      attestations: write
-      id-token: write
-    env:
-      REGISTRY: ghcr.io
-      IMAGE_NAME: ${{ github.repository }}
+    outputs:
+      app: ${{ steps.filter.outputs.app }}
+      ocr: ${{ steps.filter.outputs.ocr }}
     steps:
-      # Checkout
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
 
-      # Check for changes in the relevant directories
       - name: Check for changes in the relevant directories
         uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
         id: filter
         with:
           base: ${{ github.ref }}
           filters: |
-            module:
-              - '${{ matrix.context }}/**'
+            app:
+              - './backend/**'
+              - './frontend/**'
+            ocr:
+              - './ocr/**'
+
+  # build-app:
+  #   name: Build APP image
+  #   runs-on: ubuntu-latest
+  #   needs: detect-changes
+  #   if: needs.detect-changes.outputs.app == 'true'
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #     attestations: write
+  #     id-token: write
+  #   steps:
+  #     # Checkout
+  #     - name: Checkout code
+  #       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
+
+  #     # Setup
+  #     - name: Set up JDK 21
+  #       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+  #       with:
+  #         java-version: 21
+  #         distribution: temurin
+  #         cache: maven
+  #         cache-dependency-path: backend/pom.xml
+
+  #     - name: Extract container metadata (tags, labels)
+  #       id: meta
+  #       uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+  #       with:
+  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
+  #         sep-tags: ","
+
+  #     - name: Log in to the Container registry
+  #       uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+  #       with:
+  #         registry: ${{ env.REGISTRY }}
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+
+  #     # Test building images (PR)
+  #     - name: Build with Maven (No Publish)
+  #       if: github.event_name == 'pull_request'
+  #       run: ./mvnw clean package
+
+  #     # Build and push with attestation (main branch)
+  #     - name: Build and push Docker image
+  #       if: github.event_name != 'pull_request'
+  #       working-directory: backend
+  #       env:
+  #         TAGS: ${{ steps.meta.outputs.tags }}
+  #       run: |
+  #         ./mvnw spring-boot:build-image \
+  #           -Dspring-boot.build-image.imageName=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
+
+  #       # TODO: añadir attestation a la imagen de Spring Boot, actualmente no es posible con el plugin de Spring Boot, se puede hacer con buildpacks pero no con el plugin
+
+  build-ocr:
+    name: Build OCR images
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.ocr == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        type: [cpu, gpu]
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      # Checkout
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
 
       # Setup
       - name: Extract container metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
-        if: steps.filter.outputs.module == 'true'
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_${{ matrix.module }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_ocr
           flavor: |
-            suffix=-${{ matrix.suffix }},onlatest=true
+            suffix=-${{ matrix.type }},onlatest=true
 
       - name: Log in to the Container registry
         uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
-        if: steps.filter.outputs.module == 'true'
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -150,24 +214,23 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
-        if: steps.filter.outputs.module == 'true'
 
       # Build and push with attestation
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
-        if: steps.filter.outputs.module == 'true'
         with:
-          context: ${{ matrix.context }}
-          file: ${{ matrix.dockerfile }}
-          push: true
+          context: ./ocr
+          file: ./ocr/docker/${{ matrix.type }}.Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
 
       - name: Generate artifact attestation
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
-        if: steps.filter.outputs.module == 'true'
+        if: github.event_name != 'pull_request'
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_${{ matrix.module }}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_ocr
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
