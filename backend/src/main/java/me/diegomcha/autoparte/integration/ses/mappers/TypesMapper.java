@@ -19,9 +19,11 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.UUID;
 
 @Component
@@ -263,7 +265,7 @@ public class TypesMapper {
     private XMLGregorianCalendar toXmlDate(Instant instant) {
         if (instant == null) return null;
 
-        var cal = new GregorianCalendar();
+        var cal = new GregorianCalendar(TimeZone.getTimeZone(ZoneOffset.UTC));
         cal.setTimeInMillis(instant.toEpochMilli());
 
         return DatatypeFactory

@@ -31,7 +31,7 @@ class SesSender {
     private final AccommodationRepo accommodationRepo;
     private final SesAPI sesAPI;
 
-    @Scheduled
+    @Scheduled(cron = "0 0 */2 * * *")
     void sendBookings() {
         logger.info("Sending pending bookings to SES");
 
@@ -61,7 +61,7 @@ class SesSender {
         }
     }
 
-    @Scheduled
+    @Scheduled(cron = "0 15 */2 * * *")
     void sendCheckIns() {
         logger.info("Sending pending check-ins to SES");
 
@@ -97,7 +97,7 @@ class SesSender {
         }
     }
 
-    @Scheduled
+    @Scheduled(cron = "0 30 */2 * * *")
     void sendCancellations() {
         logger.info("Sending pending cancellations to SES");
 
@@ -134,6 +134,7 @@ class SesSender {
     }
 
     private Stream<List<Communication>> getPendingCommunications(@NonNull Communication.CommunicationType type, int maxBatchSize, @Nullable UUID accommodationId) {
+        // There is no need to change the page number since the elements are being updated to "SENT".
         UnaryOperator<Slice<Communication>> supplier = slice ->
                 accommodationId != null
                         ? communicationRepo.findByTypeAndStatusAndBookingAccommodationId(type, Communication.CommunicationStatus.PENDING, accommodationId, Pageable.ofSize(maxBatchSize))
@@ -153,6 +154,7 @@ class SesSender {
             case ServiceUnavailableException ignored:
                 logger.warn("SES service unavailable, will retry later");
                 break;
+            // TODO: This should be notified to the administrator
             case BadConfigurationException bce:
                 logger.error("Bad configuration for SES: {}", bce.getMessage());
                 break;
