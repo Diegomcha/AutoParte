@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.config;
 
+import me.diegomcha.autoparte.core.config.ConfigService;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
@@ -10,6 +11,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.transport.http.HttpComponents5ClientFactory;
 import org.springframework.ws.transport.http.SimpleHttpComponents5MessageSender;
+
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 class SesClientConfig {
@@ -23,22 +26,23 @@ class SesClientConfig {
     }
 
     @Bean
-    WebServiceTemplate sesClient(WebServiceTemplateBuilder builder, AutoparteProperties autoparteProperties, SslBundles sslBundles, Jaxb2Marshaller marshaller) {
+    WebServiceTemplate sesClient(WebServiceTemplateBuilder builder, AutoparteProperties autoparteProperties, SslBundles sslBundles, Jaxb2Marshaller marshaller, ConfigService configService) {
         // Create HTTP client factory with custom TLS strategy and basic auth
         var clientFactory = HttpComponents5ClientFactory.withDefaults();
         clientFactory.addConnectionManagerBuilderCustomizer(b ->
                 b.setTlsSocketStrategy(new DefaultClientTlsStrategy(sslBundles.getBundle("fnmt").createSslContext()))
         );
-        var authorization = "Basic " + HttpHeaders.encodeBasicAuth(autoparteProperties.getSes().getUsername(), autoparteProperties.getSes().getPassword(), java.nio.charset.StandardCharsets.UTF_8);
         clientFactory.addClientBuilderCustomizer(clientBuilder ->
-                clientBuilder.addRequestInterceptorFirst((request, entity, context) ->
-                        request.setHeader("Authorization", authorization)
-                )
+                clientBuilder.addRequestInterceptorFirst((request, entity, context) -> {
+                    var config = configService.getConfig();
+                    var authorization = "Basic " + HttpHeaders.encodeBasicAuth(config.getSesUsername(), config.getSesPassword(), StandardCharsets.UTF_8);
+                    request.setHeader("Authorization", authorization);
+                })
         );
 
         // Build and return the WebServiceTemplate
         return builder
-                .setDefaultUri(autoparteProperties.getSes().getEndpoint())
+                .setDefaultUri(autoparteProperties.getSes().getUrl())
                 .setMarshaller(marshaller)
                 .setUnmarshaller(marshaller)
                 .messageSenders(new SimpleHttpComponents5MessageSender(clientFactory))

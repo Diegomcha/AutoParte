@@ -1,24 +1,17 @@
 package me.diegomcha.autoparte.integration.ses;
 
 import lombok.AccessLevel;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.api.accommodation.AccommodationRepo;
+import me.diegomcha.autoparte.core.config.ConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ExceptionWrapper;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.domain.communication.Communication;
-import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 
 @Component
@@ -27,35 +20,45 @@ class SesSender {
 
     private final Logger logger = LoggerFactory.getLogger(SesSender.class);
 
-    private final CommunicationRepo communicationRepo;
-    private final AccommodationRepo accommodationRepo;
+    private final ConfigService configService;
+    private final SesPersistencyService persistencyService;
     private final SesAPI sesAPI;
 
     @Scheduled(cron = "0 0 */2 * * *")
     void sendBookings() {
-        logger.info("Sending pending bookings to SES");
+        // Ensure SES credentials are valid
+        if (!configService.getConfig().isSesCredentialsValid()) {
+            logger.warn("SES credentials are not validated, skipping sending bookings");
+            return;
+        }
 
-        try (var pendingCommunications = this.getPendingCommunications(
+        logger.debug("Sending pending bookings to SES");
+
+        try (var pendingCommunications = persistencyService.getBatchOfPendingCommunications(
                 Communication.CommunicationType.BOOKING,
-                SesAPI.MAX_BOOKING_BATCH_SIZE,
-                null
+                SesAPI.MAX_BOOKING_BATCH_SIZE
         )) {
-            pendingCommunications.forEach(communications -> {
-                logger.debug("Sending batch of {} bookings to SES", communications.size());
+            pendingCommunications.forEach(batch -> {
+                var request = sesAPI.prepareSendBooking(
+                        batch.stream().map(Communication::getBooking).toList()
+                );
+
+                logger.trace("Sending batch of {} bookings to SES", batch.size());
 
                 try {
-                    var batchId = sesAPI.sendCommunication(sesAPI.prepareSendBooking(communications.stream().map(Communication::getBooking).toList()));
-                    logger.debug("Batch of {} bookings sent to SES with batchId {}", communications.size(), batchId);
+                    var batchId = sesAPI.sendCommunication(request);
+                    logger.trace("Batch of {} bookings sent to SES with batchId {}", batch.size(), batchId);
 
-                    communications.forEach(communication -> communication.markSent(batchId));
-                    communicationRepo.saveAll(communications);
+                    // Update the communications in the batch to mark them as sent
+                    batch.forEach(communication -> communication.markSent(batchId));
+                    persistencyService.updateCommunications(batch);
                 } catch (ServiceUnavailableException |
                          BadConfigurationException e) {
                     throw new ExceptionWrapper(e);
                 }
             });
 
-            logger.debug("Finished sending pending bookings to SES");
+            logger.info("Finished sending pending bookings to SES");
         } catch (ExceptionWrapper e) {
             this.handleExceptionWrapper(e);
         }
@@ -63,35 +66,40 @@ class SesSender {
 
     @Scheduled(cron = "0 15 */2 * * *")
     void sendCheckIns() {
-        logger.info("Sending pending check-ins to SES");
+        // Ensure SES credentials are valid
+        if (!configService.getConfig().isSesCredentialsValid()) {
+            logger.warn("SES credentials are not validated, skipping sending check-ins");
+            return;
+        }
 
-        try {
-            for (var accommodation : accommodationRepo.findByBookingsCommunicationsTypeAndBookingsCommunicationsStatus(
-                    Communication.CommunicationType.CHECKIN,
-                    Communication.CommunicationStatus.PENDING
-            )) {
-                try (var pendingCommunications = this.getPendingCommunications(
-                        Communication.CommunicationType.CHECKIN,
-                        SesAPI.MAX_CHECKIN_BATCH_SIZE,
-                        accommodation.getId()
-                )) {
-                    pendingCommunications.forEach(communications -> {
-                        logger.debug("Sending batch of {} check-ins to SES", communications.size());
+        logger.debug("Sending pending check-ins to SES");
 
-                        try {
-                            var batchId = sesAPI.sendCommunication(sesAPI.prepareSendCheckIn(accommodation.getSesCode(), communications.stream().map(Communication::getBooking).toList()));
-                            logger.debug("Batch of {} check-ins sent to SES with batchId {}", communications.size(), batchId);
+        try (var pendingCommunications = persistencyService.getBatchOfPendingCommunicationsGroupedByAccommodation(
+                Communication.CommunicationType.CHECKIN,
+                SesAPI.MAX_CHECKIN_BATCH_SIZE
+        )) {
+            pendingCommunications.forEach(batch -> {
+                var request = sesAPI.prepareSendCheckIn(
+                        batch.getFirst().getBooking().getAccommodation().getSesCode(), // All communications in the batch belong to the same accommodation
+                        batch.stream().map(Communication::getBooking).toList()
+                );
 
-                            communications.forEach(communication -> communication.markSent(batchId));
-                            communicationRepo.saveAll(communications);
-                        } catch (ServiceUnavailableException |
-                                 BadConfigurationException e) {
-                            throw new ExceptionWrapper(e);
-                        }
-                    });
+                logger.trace("Sending batch of {} check-ins to SES", batch.size());
+
+                try {
+                    var batchId = sesAPI.sendCommunication(request);
+                    logger.trace("Batch of {} check-ins sent to SES with batchId {}", batch.size(), batchId);
+
+                    // Update the communications in the batch to mark them as sent
+                    batch.forEach(communication -> communication.markSent(batchId));
+                    persistencyService.updateCommunications(batch);
+                } catch (ServiceUnavailableException |
+                         BadConfigurationException e) {
+                    throw new ExceptionWrapper(e);
                 }
-            }
-            logger.debug("Finished sending pending check-ins to SES");
+            });
+
+            logger.info("Finished sending pending check-ins to SES");
         } catch (ExceptionWrapper e) {
             this.handleExceptionWrapper(e);
         }
@@ -99,52 +107,48 @@ class SesSender {
 
     @Scheduled(cron = "0 30 */2 * * *")
     void sendCancellations() {
-        logger.info("Sending pending cancellations to SES");
+        // Ensure SES credentials are valid
+        if (!configService.getConfig().isSesCredentialsValid()) {
+            logger.warn("SES credentials are not validated, skipping sending cancellations");
+            return;
+        }
 
-        try (var pendingCommunications = this.getPendingCommunications(
+        logger.debug("Sending pending cancellations to SES");
+
+        try (var pendingCommunications = persistencyService.getBatchOfPendingCommunications(
                 Communication.CommunicationType.CANCELLATION,
-                SesAPI.MAX_CANCEL_BATCH_SIZE / 2, // At most 2 communications will be voided per cancellation communication
-                null
+                SesAPI.MAX_CANCEL_BATCH_SIZE
         )) {
-            pendingCommunications.forEach(cancellations -> {
-                var cToCancel = cancellations.stream()
+            pendingCommunications.forEach(batch -> {
+                var commsToCancel = batch.stream()
                         .flatMap(cancellation -> cancellation.getBooking().getCommunications().stream())
                         .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION && c.getStatus() == Communication.CommunicationStatus.SUCCEEDED)
                         .toList();
 
-                logger.debug("Sending batch of {} cancellations to SES ({} communications to cancel)", cancellations.size(), cToCancel.size());
+                var request = sesAPI.prepareSendCancellation(
+                        commsToCancel.stream().map(Communication::getSesId).toList()
+                );
+
+                logger.trace("Sending batch of {} cancellations to SES ({} communications to cancel)", batch.size(), commsToCancel.size());
 
                 try {
-                    var batchId = sesAPI.sendCommunication(sesAPI.prepareSendCancellation(cToCancel.stream().map(Communication::getSesId).toList()));
-                    logger.debug("Batch of {} cancellations sent to SES with batchId {}", cancellations.size(), batchId);
+                    var batchId = sesAPI.sendCommunication(request);
+                    logger.trace("Batch of {} cancellations sent to SES with batchId {}", batch.size(), batchId);
 
-                    cancellations.forEach(cancellation -> cancellation.markSent(batchId));
-                    cToCancel.forEach(Communication::markPendingVoided);
-                    communicationRepo.saveAll(Stream.concat(cancellations.stream(), cToCancel.stream()).toList());
+                    // Update the communications in the batch to mark them as sent & the communications to cancel to mark them as pending voided
+                    batch.forEach(communication -> communication.markSent(batchId));
+                    commsToCancel.forEach(Communication::markPendingVoided);
+                    persistencyService.updateCommunications(Stream.concat(batch.stream(), commsToCancel.stream()).toList());
                 } catch (ServiceUnavailableException |
                          BadConfigurationException e) {
                     throw new ExceptionWrapper(e);
                 }
             });
 
-            logger.debug("Finished sending pending cancellations to SES");
+            logger.info("Finished sending pending cancellations to SES");
         } catch (ExceptionWrapper e) {
             this.handleExceptionWrapper(e);
         }
-    }
-
-    private Stream<List<Communication>> getPendingCommunications(@NonNull Communication.CommunicationType type, int maxBatchSize, @Nullable UUID accommodationId) {
-        // There is no need to change the page number since the elements are being updated to "SENT".
-        UnaryOperator<Slice<Communication>> supplier = slice ->
-                accommodationId != null
-                        ? communicationRepo.findByTypeAndStatusAndBookingAccommodationId(type, Communication.CommunicationStatus.PENDING, accommodationId, Pageable.ofSize(maxBatchSize))
-                        : communicationRepo.findByTypeAndStatus(type, Communication.CommunicationStatus.PENDING, Pageable.ofSize(maxBatchSize));
-
-        return Stream.iterate(
-                supplier.apply(null),
-                slice -> !slice.isEmpty(),
-                supplier
-        ).map(Slice::getContent);
     }
 
     private void handleExceptionWrapper(ExceptionWrapper e) {
@@ -154,9 +158,9 @@ class SesSender {
             case ServiceUnavailableException ignored:
                 logger.warn("SES service unavailable, will retry later");
                 break;
-            // TODO: This should be notified to the administrator
             case BadConfigurationException bce:
                 logger.error("Bad configuration for SES: {}", bce.getMessage());
+                configService.updateConfig(config -> config.setSesCredentialsValid(false));
                 break;
             default:
                 logger.error("Unexpected error while sending communications to SES", cause);

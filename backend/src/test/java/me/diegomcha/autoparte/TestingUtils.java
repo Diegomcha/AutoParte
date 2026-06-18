@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.mockito.Answers.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mockStatic;
@@ -23,8 +24,14 @@ public class TestingUtils {
     }
 
     public static MockedStatic<Generators> getMockedUuidGenerator() {
+        var counter = new AtomicInteger(1);
+
         var generatorMock = Mockito.mock(TimeBasedEpochRandomGenerator.class);
-        Mockito.when(generatorMock.generate()).thenReturn(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+        Mockito.when(generatorMock.generate()).thenAnswer(inv -> {
+            int currentId = counter.getAndIncrement();
+            String hexSuffix = String.format("%012x", currentId);
+            return UUID.fromString("00000000-0000-0000-0000-" + hexSuffix);
+        });
 
         var generatorsMock = mockStatic(Generators.class, CALLS_REAL_METHODS);
         generatorsMock.when(Generators::timeBasedEpochRandomGenerator)

@@ -115,7 +115,7 @@
                     <cascade-all/>
                 </cascade>
             </one-to-many>
-            <one-to-many name="communications" mapped-by="booking">
+            <one-to-many name="communications" mapped-by="booking" >
                 <cascade>
                     <cascade-all/>
                 </cascade>
@@ -129,7 +129,7 @@
                 <column nullable="false"/>
             </basic>
             <basic name="status">
-                <column nullable="false" />
+                <column nullable="false"/>
             </basic>
             <many-to-one name="booking" optional="false"/>
         </attributes>
@@ -179,6 +179,23 @@
                 <column nullable="false"/>
             </basic>
             <many-to-one name="account" fetch="LAZY"/>
+        </attributes>
+    </entity>
+
+    <entity class="me.diegomcha.autoparte.domain.Configuration">
+        <attributes>
+            <basic name="sesCredentialsValid">
+                <column nullable="false"/>
+            </basic>
+            <basic name="digitalSignatureEnabled">
+                <column nullable="false"/>
+            </basic>
+            <basic name="manualReviewEnabled">
+                <column nullable="false"/>
+            </basic>
+            <basic name="rememberMeKey">
+                <column nullable="false"/>
+            </basic>
         </attributes>
     </entity>
 

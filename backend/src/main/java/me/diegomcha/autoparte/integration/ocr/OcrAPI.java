@@ -20,7 +20,7 @@ public class OcrAPI {
 
     protected OcrAPI(AutoparteProperties properties) {
         this.client = RestClient.builder()
-                .baseUrl(properties.getOcrUrl())
+                .baseUrl(properties.getOcr().getUrl())
                 .build();
     }
 

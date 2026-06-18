@@ -4,21 +4,11 @@ import es.mir.hospedajes.servicios.soap.comunicacion.ComunicacionRequest;
 import es.mir.hospedajes.servicios.soap.comunicacion.ConsultaLoteRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.config.AutoparteProperties;
 import org.jspecify.annotations.Nullable;
-import org.springframework.context.ApplicationContext;
-import org.springframework.oxm.Marshaller;
 import org.springframework.stereotype.Component;
 
-import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.UUID;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Component
 @RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
@@ -31,10 +21,6 @@ public class RequestMapper {
 
     private final es.mir.hospedajes.servicios.soap.tipocomunicacion.ObjectFactory tipocomunicacionFactory = new es.mir.hospedajes.servicios.soap.tipocomunicacion.ObjectFactory();
     private final es.mir.hospedajes.servicios.soap.comunicacion.ObjectFactory comunicacionFactory = new es.mir.hospedajes.servicios.soap.comunicacion.ObjectFactory();
-
-    private final ApplicationContext applicationContext;
-    private final AutoparteProperties autoparteProperties;
-    private final Marshaller marshaller;
 
     public ConsultaLoteRequest toConsultaLoteRequest(@NonNull Collection<@NonNull UUID> batchIds) {
         var request = comunicacionFactory.createConsultaLoteRequest();
@@ -50,51 +36,43 @@ public class RequestMapper {
         return request;
     }
 
-    public ComunicacionRequest toSubmitCommunicationRequest(SesCommunicationType type, Object peticion) {
+    public ComunicacionRequest toSubmitCommunicationRequest(String appName, String landlordCode, SesCommunicationType type, String encodedSolicitud) {
         return this.createCommunicationRequest(
+                appName,
+                landlordCode,
                 "A",
                 switch (type) {
                     case BOOKING -> "RH";
                     case CHECKIN -> "PV";
                 },
-                peticion
+                encodedSolicitud
         );
     }
 
-    public ComunicacionRequest toCancelCommunicationRequest(Object peticion) {
+    public ComunicacionRequest toCancelCommunicationRequest(String appName, String landlordCode, String encodedSolicitud) {
         return this.createCommunicationRequest(
+                appName,
+                landlordCode,
                 "B",
                 null,
-                peticion
+                encodedSolicitud
         );
     }
 
-    private ComunicacionRequest createCommunicationRequest(@NonNull String tipoOperacion, @Nullable String tipoComunicacion, @NonNull Object peticionContent) {
+    private ComunicacionRequest createCommunicationRequest(@NonNull String appName, @NonNull String codigoArrendador, @NonNull String tipoOperacion, @Nullable String tipoComunicacion, @NonNull String encodedSolicitud) {
         var request = comunicacionFactory.createComunicacionRequest();
         var peticion = tipocomunicacionFactory.createPeticionType();
         var cabecera = tipocomunicacionFactory.createCabeceraLoteType();
 
-        cabecera.setCodigoArrendador(autoparteProperties.getSes().getLandlordCode());
-        cabecera.setAplicacion(applicationContext.getApplicationName());
+        cabecera.setCodigoArrendador(codigoArrendador);
+        cabecera.setAplicacion(appName);
         cabecera.setTipoOperacion(tipoOperacion);
         cabecera.setTipoComunicacion(tipoComunicacion);
 
         peticion.setCabecera(cabecera);
-        peticion.setSolicitud(this.encodePeticion(peticionContent));
+        peticion.setSolicitud(encodedSolicitud);
         request.setPeticion(peticion);
         return request;
-    }
-
-    private String encodePeticion(@NonNull Object obj) {
-        try (var outputStream = new ByteArrayOutputStream()) {
-            try (var zipStream = new ZipOutputStream(outputStream)) {
-                zipStream.putNextEntry(new ZipEntry("peticion.xml"));
-                marshaller.marshal(obj, new StreamResult(zipStream));
-            }
-            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
     }
 
 }

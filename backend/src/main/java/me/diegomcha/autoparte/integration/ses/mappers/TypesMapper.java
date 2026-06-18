@@ -145,7 +145,6 @@ public class TypesMapper {
         return pReserva;
     }
 
-
     private PersonaHospedajeType toPersonaHospedajeType(@NonNull Person person) {
         var pHospedaje = generalFactory.createPersonaHospedajeType();
 

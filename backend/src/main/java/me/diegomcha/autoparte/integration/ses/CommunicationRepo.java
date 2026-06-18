@@ -4,16 +4,18 @@ import me.diegomcha.autoparte.domain.communication.Communication;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 
+import java.util.List;
 import java.util.UUID;
 
-interface CommunicationRepo extends CrudRepository<Communication, UUID> {
+interface CommunicationRepo extends ListCrudRepository<Communication, UUID> {
 
-    @EntityGraph(attributePaths = {"booking", "booking.people", "booking.communications"})
     Slice<Communication> findByTypeAndStatus(Communication.CommunicationType type, Communication.CommunicationStatus status, Pageable pageable);
 
-    @EntityGraph(attributePaths = {"booking", "booking.people", "booking.communications"})
+    @EntityGraph(attributePaths = {"booking.people", "booking.communications"})
+    List<Communication> findAllByIdIn(Iterable<UUID> ids);
+
     Slice<Communication> findByTypeAndStatusAndBookingAccommodationId(Communication.CommunicationType type, Communication.CommunicationStatus status, UUID accommodationId, Pageable pageable);
 
 }

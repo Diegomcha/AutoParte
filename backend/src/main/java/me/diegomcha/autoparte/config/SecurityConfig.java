@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.config;
 
+import me.diegomcha.autoparte.core.config.ConfigService;
 import me.diegomcha.autoparte.core.security.AccountRepo;
 import me.diegomcha.autoparte.core.security.SecurityHandlers;
 import me.diegomcha.autoparte.core.security.SecurityService;
@@ -36,7 +37,7 @@ import java.util.Set;
 class SecurityConfig {
 
     @Bean
-    SecurityFilterChain securityFilterChain(AutoparteProperties properties, HttpSecurity http, SecurityHandlers securityHandlers) {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityHandlers securityHandlers, ConfigService configService) {
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/api/auth/**", "/api/docs/**").permitAll()
@@ -55,7 +56,7 @@ class SecurityConfig {
                 )
                 .rememberMe(rMe -> rMe
                         .rememberMeParameter("rememberMe")
-                        .key(properties.getSecurity().getRememberMeKey())
+                        .key(configService.getConfig().getRememberMeKey())
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

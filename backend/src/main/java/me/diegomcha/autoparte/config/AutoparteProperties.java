@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "autoparte")
 public class AutoparteProperties {
-    private String ocrUrl;
     private LocationCatalogueProperties locationCatalogue = new LocationCatalogueProperties();
     private SecurityProperties security = new SecurityProperties();
     private SesProperties ses = new SesProperties();
+    private OcrProperties ocr = new OcrProperties();
 
     @Data
     public static class LocationCatalogueProperties {
@@ -22,16 +22,22 @@ public class AutoparteProperties {
     }
 
     @Data
+    public static class OcrProperties {
+        private String url;
+    }
+
+    @Data
     public static class SesProperties {
-        private String username;
-        private String password;
-        private String landlordCode;
-        private String endpoint = "https://hospedajes.ses.mir.es/hospedajes-web/ws/v1/comunicacion";
+        // These can be set through properties for development purposes
+        private String initialUsername;
+        private String initialPassword;
+        private String initialLandlordCode;
+        // -----
+        private String url = "https://hospedajes.ses.mir.es/hospedajes-web/ws/v1/comunicacion";
     }
 
     @Data
     public static class SecurityProperties {
         private String initialAdminPassword = "admin";
-        private String rememberMeKey = "default-key";
     }
 }
