@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.api.employee;
+package me.diegomcha.autoparte.core.repos;
 
 import me.diegomcha.autoparte.domain.Employee;
 import org.springframework.data.repository.CrudRepository;

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Configuration extends BaseEntity {
 
     public static Configuration _blank() {

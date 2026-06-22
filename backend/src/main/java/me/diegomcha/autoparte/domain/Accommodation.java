@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Accommodation extends BaseEntity {
 
     @Setter

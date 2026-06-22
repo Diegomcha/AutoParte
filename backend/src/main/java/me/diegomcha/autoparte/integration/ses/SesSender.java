@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.integration.ses;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.core.config.ConfigService;
+import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ExceptionWrapper;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
@@ -20,14 +20,14 @@ class SesSender {
 
     private final Logger logger = LoggerFactory.getLogger(SesSender.class);
 
-    private final ConfigService configService;
+    private final DynamicConfigService dynamicConfigService;
     private final SesPersistencyService persistencyService;
     private final SesAPI sesAPI;
 
     @Scheduled(cron = "0 0 */2 * * *")
     void sendBookings() {
         // Ensure SES credentials are valid
-        if (!configService.getConfig().isSesCredentialsValid()) {
+        if (!dynamicConfigService.getConfig().isSesCredentialsValid()) {
             logger.warn("SES credentials are not validated, skipping sending bookings");
             return;
         }
@@ -67,7 +67,7 @@ class SesSender {
     @Scheduled(cron = "0 15 */2 * * *")
     void sendCheckIns() {
         // Ensure SES credentials are valid
-        if (!configService.getConfig().isSesCredentialsValid()) {
+        if (!dynamicConfigService.getConfig().isSesCredentialsValid()) {
             logger.warn("SES credentials are not validated, skipping sending check-ins");
             return;
         }
@@ -108,7 +108,7 @@ class SesSender {
     @Scheduled(cron = "0 30 */2 * * *")
     void sendCancellations() {
         // Ensure SES credentials are valid
-        if (!configService.getConfig().isSesCredentialsValid()) {
+        if (!dynamicConfigService.getConfig().isSesCredentialsValid()) {
             logger.warn("SES credentials are not validated, skipping sending cancellations");
             return;
         }
@@ -160,7 +160,7 @@ class SesSender {
                 break;
             case BadConfigurationException bce:
                 logger.error("Bad configuration for SES: {}", bce.getMessage());
-                configService.updateConfig(config -> config.setSesCredentialsValid(false));
+                dynamicConfigService.updateConfig(config -> config.setSesCredentialsValid(false));
                 break;
             default:
                 logger.error("Unexpected error while sending communications to SES", cause);

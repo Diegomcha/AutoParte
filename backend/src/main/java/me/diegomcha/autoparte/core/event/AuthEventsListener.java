@@ -2,6 +2,7 @@ package me.diegomcha.autoparte.core.event;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import me.diegomcha.autoparte.core.repos.SecurityEventRepo;
 import me.diegomcha.autoparte.core.security.SecurityService;
 import me.diegomcha.autoparte.domain.Account;
 import me.diegomcha.autoparte.domain.SecurityEvent;

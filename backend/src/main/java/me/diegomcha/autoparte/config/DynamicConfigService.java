@@ -1,8 +1,8 @@
-package me.diegomcha.autoparte.core.config;
+package me.diegomcha.autoparte.config;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.config.AutoparteProperties;
+import me.diegomcha.autoparte.core.repos.ConfigRepo;
 import me.diegomcha.autoparte.domain.Configuration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional
-public class ConfigService {
+public class DynamicConfigService {
 
     private final ConfigRepo configRepo;
     private final AutoparteProperties autoparteProperties;

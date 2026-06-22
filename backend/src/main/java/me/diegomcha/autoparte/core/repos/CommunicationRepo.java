@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.integration.ses;
+package me.diegomcha.autoparte.core.repos;
 
 import me.diegomcha.autoparte.domain.communication.Communication;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +9,7 @@ import org.springframework.data.repository.ListCrudRepository;
 import java.util.List;
 import java.util.UUID;
 
-interface CommunicationRepo extends ListCrudRepository<Communication, UUID> {
+public interface CommunicationRepo extends ListCrudRepository<Communication, UUID> {
 
     Slice<Communication> findByTypeAndStatus(Communication.CommunicationType type, Communication.CommunicationStatus status, Pageable pageable);
 

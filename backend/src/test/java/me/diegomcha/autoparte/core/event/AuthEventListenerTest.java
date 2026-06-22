@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.core.event;
 
+import me.diegomcha.autoparte.core.repos.SecurityEventRepo;
 import me.diegomcha.autoparte.domain.SecurityEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;

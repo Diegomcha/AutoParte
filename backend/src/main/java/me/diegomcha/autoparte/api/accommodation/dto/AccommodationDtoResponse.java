@@ -15,7 +15,6 @@ public record AccommodationDtoResponse(
         @Nonnull String sesCode,
         Boolean internetConnection,
 
-        @Nonnull Set<UUID> employees,
-        @Nonnull Set<UUID> bookings
+        @Nonnull Set<UUID> employees
 ) {
 }

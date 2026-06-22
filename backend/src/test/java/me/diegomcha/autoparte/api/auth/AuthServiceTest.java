@@ -3,7 +3,7 @@ package me.diegomcha.autoparte.api.auth;
 import me.diegomcha.autoparte.api.auth.dto.UpdatePasswordDto;
 import me.diegomcha.autoparte.core.event.UpdatePasswordSuccessEvent;
 import me.diegomcha.autoparte.core.exception.UnauthorizedException;
-import me.diegomcha.autoparte.core.security.AccountRepo;
+import me.diegomcha.autoparte.core.repos.AccountRepo;
 import me.diegomcha.autoparte.domain.Account;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

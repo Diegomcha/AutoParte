@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.core.security;
+package me.diegomcha.autoparte.core.repos;
 
 import me.diegomcha.autoparte.domain.Account;
 import org.springframework.data.repository.CrudRepository;

@@ -10,6 +10,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Employee extends BaseEntity {
 
     @Setter

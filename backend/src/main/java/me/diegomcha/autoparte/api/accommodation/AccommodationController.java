@@ -3,8 +3,7 @@ package me.diegomcha.autoparte.api.accommodation;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoCreate;
-import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoPatch;
+import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoRequest;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoResponse;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
@@ -32,7 +31,7 @@ class AccommodationController implements AccommodationAPI {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Override
-    public void createAccommodation(@Valid @RequestBody AccommodationDtoCreate accommodation) throws ResourceConflictException {
+    public void createAccommodation(@Valid @RequestBody AccommodationDtoRequest accommodation) throws ResourceConflictException {
         accommodationService.createAccommodation(accommodation);
     }
 
@@ -45,7 +44,7 @@ class AccommodationController implements AccommodationAPI {
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
-    public void updateAccommodation(@PathVariable UUID id, @Valid @RequestBody AccommodationDtoPatch accommodation) throws ResourceNotFoundException, ResourceConflictException {
+    public void updateAccommodation(@PathVariable UUID id, @Valid @RequestBody AccommodationDtoRequest accommodation) throws ResourceNotFoundException, ResourceConflictException {
         accommodationService.updateAccommodation(id, accommodation);
     }
 

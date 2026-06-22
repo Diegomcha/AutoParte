@@ -3,12 +3,12 @@ package me.diegomcha.autoparte.api.accommodation;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoCreate;
-import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoPatch;
+import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoRequest;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoResponse;
-import me.diegomcha.autoparte.api.employee.EmployeeRepo;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
+import me.diegomcha.autoparte.core.repos.AccommodationRepo;
+import me.diegomcha.autoparte.core.repos.EmployeeRepo;
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Employee;
 import org.springframework.data.domain.Page;
@@ -30,7 +30,7 @@ class AccommodationService {
 
     private static final Supplier<ResourceNotFoundException> NOT_FOUND_EXCEPTION = () ->
             new ResourceNotFoundException("Accommodation not found");
-    public static final Supplier<ResourceNotFoundException> EMPLOYEE_NOT_FOUND = () ->
+    private static final Supplier<ResourceNotFoundException> EMPLOYEE_NOT_FOUND = () ->
             new ResourceNotFoundException("Employee not found");
     private static final Supplier<ResourceConflictException> SAME_SESCODE_EXCEPTION = () ->
             new ResourceConflictException("An accommodation with the same sesCode already exists");
@@ -68,7 +68,7 @@ class AccommodationService {
      * @throws ResourceConflictException if an accommodation with the same name or sesCode already exists
      */
     @Transactional
-    public void createAccommodation(@NonNull AccommodationDtoCreate dto) throws ResourceConflictException {
+    public void createAccommodation(@NonNull AccommodationDtoRequest dto) throws ResourceConflictException {
         Accommodation newAccommodation = accommodationMapper.fromCreate(dto);
 
         // Ensure name is unique
@@ -83,29 +83,29 @@ class AccommodationService {
     }
 
     /**
-     * Updates the accommodation with the given ID using the provided patch data.
+     * Updates the accommodation with the given ID using the provided update data.
      *
      * @param id    The ID of the accommodation to update
-     * @param patch The patch data to apply to the accommodation
-     * @throws ResourceConflictException if the patch contains a name or sesCode that is already used by another accommodation
+     * @param update The update data to apply to the accommodation
+     * @throws ResourceConflictException if the update contains a name or sesCode that is already used by another accommodation
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
     @Transactional
-    public void updateAccommodation(@NonNull UUID id, @NonNull AccommodationDtoPatch patch) throws ResourceConflictException, ResourceNotFoundException {
-        // Get accommodation to patch
+    public void updateAccommodation(@NonNull UUID id, @NonNull AccommodationDtoRequest update) throws ResourceConflictException, ResourceNotFoundException {
+        // Get accommodation to update
         Accommodation accommodation = accommodationRepo
                 .findById(id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
         // Ensure name is unique
-        if (patch.name() != null && !accommodation.getName().equals(patch.name()) && accommodationRepo.existsByName(patch.name()))
+        if (!accommodation.getName().equals(update.name()) && accommodationRepo.existsByName(update.name()))
             throw SAME_NAME_EXCEPTION.get();
 
         // Ensure sesCode is unique
-        if (patch.sesCode() != null && !accommodation.getSesCode().equals(patch.sesCode()) && accommodationRepo.existsBySesCode(patch.sesCode()))
+        if (!accommodation.getSesCode().equals(update.sesCode()) && accommodationRepo.existsBySesCode(update.sesCode()))
             throw SAME_SESCODE_EXCEPTION.get();
 
-        accommodationMapper.patchAccommodation(patch, accommodation);
+        accommodationMapper.fromUpdate(update, accommodation);
     }
 
     /**

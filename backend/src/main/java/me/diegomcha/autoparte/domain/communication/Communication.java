@@ -10,6 +10,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Communication extends BaseEntity {
 
     public enum CommunicationType {

@@ -1,10 +1,10 @@
-package me.diegomcha.autoparte.core.config;
+package me.diegomcha.autoparte.core.repos;
 
 import me.diegomcha.autoparte.domain.Configuration;
 import org.springframework.data.repository.ListCrudRepository;
 
 import java.util.UUID;
 
-interface ConfigRepo extends ListCrudRepository<Configuration, UUID> {
+public interface ConfigRepo extends ListCrudRepository<Configuration, UUID> {
 
 }

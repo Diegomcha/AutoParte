@@ -1,9 +1,9 @@
-package me.diegomcha.autoparte.core.event;
+package me.diegomcha.autoparte.core.repos;
 
 import me.diegomcha.autoparte.domain.SecurityEvent;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.UUID;
 
-interface SecurityEventRepo extends CrudRepository<SecurityEvent, UUID> {
+public interface SecurityEventRepo extends CrudRepository<SecurityEvent, UUID> {
 }

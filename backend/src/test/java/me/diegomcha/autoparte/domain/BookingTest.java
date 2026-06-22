@@ -100,24 +100,14 @@ class BookingTest {
     @Test
     void testCanBeConfirmed() {
         Assertions.assertFalse(this.booking.canBeConfirmed());
-
-        new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
-
+        this.makeConfirmable();
         Assertions.assertTrue(this.booking.canBeConfirmed());
     }
 
     @Test
     void testCanBeCheckedIn() {
         Assertions.assertFalse(this.booking.canBeCheckedIn());
-
-        var person = new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
-
-        Assertions.assertFalse(this.booking.canBeCheckedIn());
-
-        person.setPersonalInfo(new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS), null));
-        person.setDocumentInfo(DocumentInfo.of(DocumentInfo.DocumentType.NIF, "54095720L", "SUPPORT"));
-        person.setAddress(Address.of("Line1", null, "Municipality", "PostalCode", "USA"));
-
+        this.makeCheckinable(true);
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             Assertions.assertTrue(this.booking.canBeCheckedIn());
         }
@@ -128,8 +118,7 @@ class BookingTest {
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.confirm());
         Assertions.assertTrue(this.booking.getCommunications().isEmpty());
 
-        // Make the booking confirmable
-        testCanBeConfirmed();
+        this.makeConfirmable();
 
         this.booking.confirm();
 
@@ -148,21 +137,22 @@ class BookingTest {
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.checkIn());
         Assertions.assertTrue(this.booking.getCommunications().isEmpty());
 
-        // Make the booking checkinable
-        testCanBeCheckedIn();
+        this.makeCheckinable(true);
 
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             this.booking.checkIn();
         }
 
-        Assertions.assertEquals(1, this.booking.getCommunications().size());
-        this.booking.getCommunications().forEach(communication -> {
-            Assertions.assertEquals(this.booking, communication.getBooking());
-            Assertions.assertEquals(Communication.CommunicationType.CHECKIN, communication.getType());
-        });
+        Assertions.assertEquals(2, this.booking.getCommunications().size());
+        this.booking.getCommunications().stream()
+                .filter(communication -> communication.getType() == Communication.CommunicationType.CHECKIN)
+                .forEach(communication -> {
+                    Assertions.assertEquals(this.booking, communication.getBooking());
+                    Assertions.assertEquals(Communication.CommunicationType.CHECKIN, communication.getType());
+                });
 
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.checkIn());
-        Assertions.assertEquals(1, this.booking.getCommunications().size());
+        Assertions.assertEquals(2, this.booking.getCommunications().size());
     }
 
     @Test
@@ -176,8 +166,7 @@ class BookingTest {
             Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, communication.getStatus());
         });
 
-        // Make confirmable & checkinable to test that they cannot be done after cancellation
-        testCanBeCheckedIn();
+        this.makeCheckinable(false);
 
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.confirm());
         try (var ignored = TestingUtils.getMockedInstantNow()) {
@@ -189,10 +178,8 @@ class BookingTest {
 
     @Test
     void testCancellationVoidsOtherCommunicationsNotSent() {
-        // Make the booking confirmable & checkinable
-        testCanBeCheckedIn();
+        this.makeCheckinable(true);
 
-        this.booking.confirm();
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             this.booking.checkIn();
         }
@@ -213,10 +200,7 @@ class BookingTest {
 
     @Test
     void testCancellationVoidsOtherCommunicationsMixed() {
-        // Make the booking confirmable & checkinable
-        testCanBeCheckedIn();
-
-        this.booking.confirm();
+        this.makeCheckinable(true);
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             this.booking.checkIn();
         }
@@ -242,5 +226,30 @@ class BookingTest {
             };
             Assertions.assertEquals(expectedStatus, communication.getStatus());
         });
+    }
+
+    private void makeConfirmable() {
+        Assertions.assertFalse(this.booking.canBeConfirmed());
+
+        new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
+
+        Assertions.assertTrue(this.booking.canBeConfirmed());
+    }
+
+    private void makeCheckinable(boolean confirm) {
+        Assertions.assertFalse(this.booking.canBeCheckedIn());
+
+        var person = new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
+
+        Assertions.assertFalse(this.booking.canBeCheckedIn());
+
+        person.setPersonalInfo(new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS), null));
+        person.setDocumentInfo(DocumentInfo.of(DocumentInfo.DocumentType.NIF, "54095720L", "SUPPORT"));
+        person.setAddress(Address.of("Line1", null, "Municipality", "PostalCode", "USA"));
+
+        if (confirm) {
+            this.booking.confirm();
+            Assertions.assertTrue(this.booking.canBeCheckedIn());
+        }
     }
 }

@@ -14,7 +14,15 @@ import java.util.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Booking extends BaseEntity {
+
+    public enum BookingStatus {
+        DRAFT,
+        CONFIRMED,
+        CHECKED_IN,
+        CANCELLED
+    }
 
     private @NonNull Instant startTime;
     private @NonNull Instant endTime;
@@ -92,11 +100,13 @@ public class Booking extends BaseEntity {
     }
 
     public boolean canBeConfirmed() {
-        return !this.people.isEmpty();
+        return this.getStatus() == BookingStatus.DRAFT &&
+                !this.people.isEmpty();
     }
 
     public boolean canBeCheckedIn() {
-        return this.people.size() == this.numberOfPeople &&
+        return this.getStatus() == BookingStatus.CONFIRMED &&
+                this.people.size() == this.numberOfPeople &&
                 this.people.stream().allMatch(Person::isComplete);
     }
 
@@ -128,12 +138,25 @@ public class Booking extends BaseEntity {
             communication.markFinishedSuccessfully();
     }
 
+    public BookingStatus getStatus() {
+        if (this.communications.stream().anyMatch(c -> c.getType() == Communication.CommunicationType.CANCELLATION))
+            return BookingStatus.CANCELLED;
+
+        if (this.communications.stream().anyMatch(c -> c.getType() == Communication.CommunicationType.CHECKIN))
+            return BookingStatus.CHECKED_IN;
+
+        if (this.communications.stream().anyMatch(c -> c.getType() == Communication.CommunicationType.BOOKING))
+            return BookingStatus.CONFIRMED;
+
+        return BookingStatus.DRAFT;
+    }
+
     public Set<Communication> getCommunications() {
         return Set.copyOf(this.communications);
     }
 
     private Communication addCommunication(@NonNull Communication.CommunicationType type) {
-        if (this.communications.stream().anyMatch(c -> c.getType() == Communication.CommunicationType.CANCELLATION))
+        if (this.getStatus() == BookingStatus.CANCELLED)
             throw new IllegalStateException("Cannot make any communication to a cancelled booking");
 
         if (this.communications.stream().anyMatch(c -> c.getType() == type))

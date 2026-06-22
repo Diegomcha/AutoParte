@@ -16,7 +16,7 @@ import java.io.IOException;
 @Configuration
 @EnableJpaAuditing
 @EnableScheduling
-class Config implements WebMvcConfigurer {
+class ApplicationConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")

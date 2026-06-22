@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.api.accommodation;
+package me.diegomcha.autoparte.core.repos;
 
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.communication.Communication;

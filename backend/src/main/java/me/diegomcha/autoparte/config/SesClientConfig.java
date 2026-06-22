@@ -1,6 +1,5 @@
 package me.diegomcha.autoparte.config;
 
-import me.diegomcha.autoparte.core.config.ConfigService;
 import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
@@ -26,7 +25,7 @@ class SesClientConfig {
     }
 
     @Bean
-    WebServiceTemplate sesClient(WebServiceTemplateBuilder builder, AutoparteProperties autoparteProperties, SslBundles sslBundles, Jaxb2Marshaller marshaller, ConfigService configService) {
+    WebServiceTemplate sesClient(WebServiceTemplateBuilder builder, AutoparteProperties autoparteProperties, SslBundles sslBundles, Jaxb2Marshaller marshaller, DynamicConfigService dynamicConfigService) {
         // Create HTTP client factory with custom TLS strategy and basic auth
         var clientFactory = HttpComponents5ClientFactory.withDefaults();
         clientFactory.addConnectionManagerBuilderCustomizer(b ->
@@ -34,7 +33,7 @@ class SesClientConfig {
         );
         clientFactory.addClientBuilderCustomizer(clientBuilder ->
                 clientBuilder.addRequestInterceptorFirst((request, entity, context) -> {
-                    var config = configService.getConfig();
+                    var config = dynamicConfigService.getConfig();
                     var authorization = "Basic " + HttpHeaders.encodeBasicAuth(config.getSesUsername(), config.getSesPassword(), StandardCharsets.UTF_8);
                     request.setHeader("Authorization", authorization);
                 })

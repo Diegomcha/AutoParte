@@ -2,8 +2,7 @@ package me.diegomcha.autoparte.api.accommodation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoCreate;
-import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoPatch;
+import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoRequest;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoResponse;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
@@ -23,10 +22,10 @@ interface AccommodationAPI {
     AccommodationDtoResponse getAccommodation(UUID id) throws ResourceNotFoundException;
 
     @Operation(summary = "Create accommodation")
-    void createAccommodation(AccommodationDtoCreate accommodation) throws ResourceConflictException;
+    void createAccommodation(AccommodationDtoRequest accommodation) throws ResourceConflictException;
 
     @Operation(summary = "Update accommodation")
-    void updateAccommodation(UUID id, AccommodationDtoPatch accommodation) throws ResourceNotFoundException, ResourceConflictException;
+    void updateAccommodation(UUID id, AccommodationDtoRequest accommodation) throws ResourceNotFoundException, ResourceConflictException;
 
     @Operation(summary = "Delete accommodation")
     void deleteAccommodation(UUID id) throws ResourceNotFoundException;

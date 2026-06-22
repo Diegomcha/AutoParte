@@ -1,10 +1,10 @@
 package me.diegomcha.autoparte.api.accommodation;
 
-import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoCreate;
-import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoPatch;
-import me.diegomcha.autoparte.api.employee.EmployeeRepo;
+import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoRequest;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
+import me.diegomcha.autoparte.core.repos.AccommodationRepo;
+import me.diegomcha.autoparte.core.repos.EmployeeRepo;
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Employee;
 import org.junit.jupiter.api.Assertions;
@@ -64,7 +64,6 @@ class AccommodationServiceTest {
 
         Assertions.assertEquals(accommodation.getId(), accommodationResponse.id());
         Assertions.assertNotNull(accommodationResponse.employees());
-        Assertions.assertNotNull(accommodationResponse.bookings());
 
         // Non-existing accommodation
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
@@ -74,7 +73,7 @@ class AccommodationServiceTest {
 
     @Test
     void testCreateAccommodation() throws ResourceConflictException {
-        service.createAccommodation(new AccommodationDtoCreate("Name1", "00001", null));
+        service.createAccommodation(new AccommodationDtoRequest("Name1", "00001", null));
 
         Assertions.assertTrue(repo.existsByName("Name1"));
     }
@@ -83,54 +82,42 @@ class AccommodationServiceTest {
     void testCreateAccommodationFailed() {
         // Same name or sesCode as existing accommodation
         Assertions.assertThrows(ResourceConflictException.class, () ->
-                service.createAccommodation(new AccommodationDtoCreate("Name", "00001", null))
+                service.createAccommodation(new AccommodationDtoRequest("Name", "00001", null))
         );
         Assertions.assertThrows(ResourceConflictException.class, () ->
-                service.createAccommodation(new AccommodationDtoCreate("Name1", "00000", null))
+                service.createAccommodation(new AccommodationDtoRequest("Name1", "00000", null))
         );
 
         Assertions.assertEquals(1, StreamSupport.stream(repo.findAll().spliterator(), false).count());
     }
 
-    private static final AccommodationDtoPatch[][] UPDATE_PATCHES = new AccommodationDtoPatch[][]{
-            new AccommodationDtoPatch[]{
-                    new AccommodationDtoPatch(null, null, null),        // Patch
-                    new AccommodationDtoPatch("Name", "00000", null)    // Expected
-            },
-            new AccommodationDtoPatch[]{
-                    new AccommodationDtoPatch("Name1", null, null),
-                    new AccommodationDtoPatch("Name1", "00000", null)
-            },
-            new AccommodationDtoPatch[]{
-                    new AccommodationDtoPatch("Name1", "00001", null),
-                    new AccommodationDtoPatch("Name1", "00001", null)
-            },
-            new AccommodationDtoPatch[]{
-                    new AccommodationDtoPatch("Name1", "00001", true),
-                    new AccommodationDtoPatch("Name1", "00001", true)
-            },
+    private static final AccommodationDtoRequest[] UPDATES = new AccommodationDtoRequest[]{
+            new AccommodationDtoRequest("Name", "00000", null),
+            new AccommodationDtoRequest("Name1", "00000", null),
+            new AccommodationDtoRequest("Name1", "00001", null),
+            new AccommodationDtoRequest("Name1", "00001", true)
     };
 
     @ParameterizedTest
-    @FieldSource("UPDATE_PATCHES")
-    void testUpdateAccommodation(AccommodationDtoPatch patch, AccommodationDtoPatch expected) throws ResourceNotFoundException, ResourceConflictException {
+    @FieldSource("UPDATES")
+    void testUpdateAccommodation(AccommodationDtoRequest update) throws ResourceNotFoundException, ResourceConflictException {
         Assertions.assertNotNull(accommodation.getId());
 
-        service.updateAccommodation(accommodation.getId(), patch);
+        service.updateAccommodation(accommodation.getId(), update);
 
         var accommodationDb = repo.findById(accommodation.getId());
 
         Assertions.assertTrue(accommodationDb.isPresent());
-        Assertions.assertEquals(expected.name(), accommodationDb.get().getName());
-        Assertions.assertEquals(expected.sesCode(), accommodationDb.get().getSesCode());
-        Assertions.assertEquals(expected.internetConnection(), accommodationDb.get().getInternetConnection());
+        Assertions.assertEquals(update.name(), accommodationDb.get().getName());
+        Assertions.assertEquals(update.sesCode(), accommodationDb.get().getSesCode());
+        Assertions.assertEquals(update.internetConnection(), accommodationDb.get().getInternetConnection());
     }
 
     @Test
     void testUpdateAccommodationFailed() {
         // Non-existing accommodation
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
-                service.updateAccommodation(UUID.randomUUID(), new AccommodationDtoPatch(null, null, null))
+                service.updateAccommodation(UUID.randomUUID(), new AccommodationDtoRequest("Name", "00000", null))
         );
 
         repo.save(new Accommodation("Name1", "00001", null));
@@ -138,12 +125,12 @@ class AccommodationServiceTest {
         // Same name as another accommodation
         Assertions.assertNotNull(accommodation.getId());
         Assertions.assertThrows(ResourceConflictException.class, () ->
-                service.updateAccommodation(accommodation.getId(), new AccommodationDtoPatch("Name1", null, null))
+                service.updateAccommodation(accommodation.getId(), new AccommodationDtoRequest("Name1", "00000", null))
         );
 
         // Same sesCode as another accommodation
         Assertions.assertThrows(ResourceConflictException.class, () ->
-                service.updateAccommodation(accommodation.getId(), new AccommodationDtoPatch(null, "00001", null))
+                service.updateAccommodation(accommodation.getId(), new AccommodationDtoRequest("Name", "00001", null))
         );
 
         Assertions.assertNotNull(accommodation.getId());

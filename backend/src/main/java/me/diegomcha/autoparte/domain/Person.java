@@ -11,6 +11,7 @@ import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Person extends BaseEntity {
 
     public enum PersonRelationship {

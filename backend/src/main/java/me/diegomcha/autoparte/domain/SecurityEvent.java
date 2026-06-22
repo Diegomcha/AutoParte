@@ -9,6 +9,7 @@ import java.time.Instant;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class SecurityEvent extends BaseEntity {
 
     public enum SecurityEventType {

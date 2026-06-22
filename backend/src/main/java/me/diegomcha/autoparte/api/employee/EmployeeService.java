@@ -9,6 +9,7 @@ import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoResponse;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
+import me.diegomcha.autoparte.core.repos.EmployeeRepo;
 import me.diegomcha.autoparte.domain.Employee;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;

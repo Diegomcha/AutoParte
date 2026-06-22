@@ -14,6 +14,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @ToString
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Account extends BaseEntity {
 
     @Setter

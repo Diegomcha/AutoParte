@@ -3,6 +3,7 @@ package me.diegomcha.autoparte.core.security;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.core.event.UpdatePasswordSuccessEvent;
 import me.diegomcha.autoparte.core.exception.UnauthorizedException;
+import me.diegomcha.autoparte.core.repos.AccountRepo;
 import me.diegomcha.autoparte.domain.Account;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationEventPublisher;

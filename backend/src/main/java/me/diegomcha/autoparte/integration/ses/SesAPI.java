@@ -7,7 +7,7 @@ import io.sentry.Sentry;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.core.config.ConfigService;
+import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.domain.Booking;
@@ -42,7 +42,7 @@ public class SesAPI {
     private final WebServiceTemplate client;
     private final Jaxb2Marshaller marshaller;
     
-    private final ConfigService configService;
+    private final DynamicConfigService dynamicConfigService;
 
     private final RequestMapper reqMapper;
     private final ResponseMapper resMapper;
@@ -53,7 +53,7 @@ public class SesAPI {
 
         return reqMapper.toSubmitCommunicationRequest(
                 applicationContext.getApplicationName(),
-                configService.getConfig().getSesLandlordCode(),
+                dynamicConfigService.getConfig().getSesLandlordCode(),
                 RequestMapper.SesCommunicationType.BOOKING,
                 this.encodePeticion(typesMapper.toPeticionReserva(bookings))
         );
@@ -64,7 +64,7 @@ public class SesAPI {
 
         return reqMapper.toSubmitCommunicationRequest(
                 applicationContext.getApplicationName(),
-                configService.getConfig().getSesLandlordCode(),
+                dynamicConfigService.getConfig().getSesLandlordCode(),
                 RequestMapper.SesCommunicationType.CHECKIN,
                 this.encodePeticion(typesMapper.toPeticionAlta(accommodationSesCode, bookings))
         );
@@ -75,7 +75,7 @@ public class SesAPI {
 
         return reqMapper.toCancelCommunicationRequest(
                 applicationContext.getApplicationName(),
-                configService.getConfig().getSesLandlordCode(),
+                dynamicConfigService.getConfig().getSesLandlordCode(),
                 this.encodePeticion(typesMapper.toComunicacionAnulacion(sesIds))
         );
     }
