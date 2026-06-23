@@ -31,7 +31,7 @@ public class Communication extends BaseEntity {
 
     public static Communication _of(@NonNull Booking booking, @NonNull CommunicationType type) {
         if (type == CommunicationType.CANCELLATION)
-            return new CancelationCommunication(booking);
+            return new CancellationCommunication(booking);
 
         return new Communication(booking, type);
     }

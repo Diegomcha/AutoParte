@@ -1,14 +1,15 @@
 package me.diegomcha.autoparte.domain.booking.payment;
 
 import lombok.*;
+import me.diegomcha.autoparte.domain.base.BaseEntity;
 
 import java.time.Instant;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@EqualsAndHashCode
-public class PaymentInfo {
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+public class Payment extends BaseEntity {
 
     public enum PaymentType {
         CASH, // EFECT
@@ -21,14 +22,14 @@ public class PaymentInfo {
         OTHER // OTRO
     }
 
-    public static PaymentInfo of(@NonNull PaymentType type) {
+    public static Payment of(@NonNull PaymentType type) {
         return of(type, null, null, null, null);
     }
 
-    public static PaymentInfo of(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
+    public static Payment of(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
         if (type == PaymentType.CREDIT_CARD)
-            return new CreditCardPaymentInfo(mean, holder, date, expiryDate);
-        return new PaymentInfo(type, mean, holder, date);
+            return new CreditCardPayment(mean, holder, date, expiryDate);
+        return new Payment(type, mean, holder, date);
     }
 
     private @NonNull PaymentType type;
@@ -36,7 +37,7 @@ public class PaymentInfo {
     private String holder;
     private Instant date;
 
-    protected PaymentInfo(@NonNull PaymentType type, String mean, String holder, Instant date) {
+    protected Payment(@NonNull PaymentType type, String mean, String holder, Instant date) {
         this.type = type;
         this.mean = mean;
         this.holder = holder;

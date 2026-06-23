@@ -70,7 +70,7 @@
             <basic name="surname">
                 <column nullable="false"/>
             </basic>
-            <one-to-one name="account" optional="false" fetch="LAZY">
+            <one-to-one name="account" optional="false">
                 <cascade>
                     <cascade-persist/>
                     <cascade-remove/>
@@ -107,19 +107,24 @@
             <basic name="numberOfPeople">
                 <column nullable="false"/>
             </basic>
-            <many-to-one name="createdBy" optional="false"/>
-            <many-to-one name="lastModifiedBy" optional="false"/>
+            <many-to-one name="createdBy"/>
+            <many-to-one name="lastModifiedBy"/>
             <many-to-one name="accommodation" optional="false"/>
             <one-to-many name="people" mapped-by="booking">
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </one-to-many>
-            <one-to-many name="communications" mapped-by="booking" >
+            <one-to-many name="communications" mapped-by="booking">
                 <cascade>
                     <cascade-all/>
                 </cascade>
             </one-to-many>
+            <one-to-one name="payment">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-one>
         </attributes>
     </entity>
 
@@ -134,35 +139,23 @@
             <many-to-one name="booking" optional="false"/>
         </attributes>
     </entity>
+    <entity class="me.diegomcha.autoparte.domain.communication.CancellationCommunication"/>
 
     <entity class="me.diegomcha.autoparte.domain.Person">
         <attributes>
             <many-to-one name="booking" optional="false"/>
-            <many-to-one name="address"/>
+            <many-to-one name="address">
+                <cascade>
+                    <cascade-persist/>
+                </cascade>
+            </many-to-one>
+            <one-to-one name="document">
+                <cascade>
+                    <cascade-all/>
+                </cascade>
+            </one-to-one>
         </attributes>
     </entity>
-
-    <entity
-            class="me.diegomcha.autoparte.domain.address.Address">
-        <inheritance strategy="SINGLE_TABLE"/>
-        <attributes>
-            <basic name="addressLine1">
-                <column nullable="false"/>
-            </basic>
-            <basic name="municipality">
-                <column nullable="false"/>
-            </basic>
-            <basic name="postalCode">
-                <column nullable="false"/>
-            </basic>
-            <basic name="country">
-                <column nullable="false"/>
-            </basic>
-            <one-to-many name="people" mapped-by="address"/>
-        </attributes>
-    </entity>
-    <entity
-            class="me.diegomcha.autoparte.domain.address.SpanishAddress"/>
 
     <entity class="me.diegomcha.autoparte.domain.SecurityEvent">
         <attributes>
@@ -178,7 +171,7 @@
             <basic name="method">
                 <column nullable="false"/>
             </basic>
-            <many-to-one name="account" fetch="LAZY"/>
+            <many-to-one name="account"/>
         </attributes>
     </entity>
 
@@ -199,55 +192,56 @@
         </attributes>
     </entity>
 
-    <embeddable
-            class="me.diegomcha.autoparte.domain.booking.payment.PaymentInfo">
+    <entity class="me.diegomcha.autoparte.domain.address.Address">
+        <inheritance strategy="SINGLE_TABLE"/>
+        <attributes>
+            <basic name="addressLine1">
+                <column nullable="false"/>
+            </basic>
+            <basic name="municipality">
+                <column nullable="false"/>
+            </basic>
+            <basic name="postalCode">
+                <column nullable="false"/>
+            </basic>
+            <basic name="country">
+                <column nullable="false"/>
+            </basic>
+            <one-to-many name="people" mapped-by="address"/>
+        </attributes>
+    </entity>
+    <entity class="me.diegomcha.autoparte.domain.address.SpanishAddress"/>
+
+    <entity class="me.diegomcha.autoparte.domain.booking.payment.Payment">
+        <inheritance strategy="SINGLE_TABLE"/>
         <attributes>
             <basic name="type">
-                <column name="payment_type" nullable="false"/>
-            </basic>
-            <basic name="mean">
-                <column name="payment_mean"/>
-            </basic>
-            <basic name="holder">
-                <column name="payment_holder"/>
-            </basic>
-            <basic name="date">
-                <column name="payment_date"/>
+                <column nullable="false"/>
             </basic>
         </attributes>
-    </embeddable>
-    <embeddable
-            class="me.diegomcha.autoparte.domain.booking.payment.CreditCardPaymentInfo">
-        <attributes>
-            <basic name="expiryDate">
-                <column name="payment_expiry_date"/>
-            </basic>
-        </attributes>
-    </embeddable>
+    </entity>
+    <entity class="me.diegomcha.autoparte.domain.booking.payment.CreditCardPayment"/>
 
-    <embeddable
-            class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
-
-    <embeddable class="me.diegomcha.autoparte.domain.person.PersonalInfo"/>
-
-    <embeddable
-            class="me.diegomcha.autoparte.domain.person.document.DocumentInfo">
+    <entity class="me.diegomcha.autoparte.domain.person.document.Document">
+        <inheritance strategy="SINGLE_TABLE"/>
         <attributes>
             <basic name="type">
-                <column name="document_type" nullable="false"/>
+                <column nullable="false"/>
             </basic>
             <basic name="number">
-                <column name="document_number" nullable="false"/>
+                <column nullable="false"/>
             </basic>
         </attributes>
-    </embeddable>
-    <embeddable
-            class="me.diegomcha.autoparte.domain.person.document.DniDocumentInfo">
+    </entity>
+    <entity class="me.diegomcha.autoparte.domain.person.document.DniDocument">
         <attributes>
             <basic name="supportNumber">
-                <column name="document_support_number" nullable="false"/>
+                <column nullable="false"/>
             </basic>
         </attributes>
-    </embeddable>
+    </entity>
+
+    <embeddable class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
+    <embeddable class="me.diegomcha.autoparte.domain.person.PersonalInfo"/>
 
 </entity-mappings>

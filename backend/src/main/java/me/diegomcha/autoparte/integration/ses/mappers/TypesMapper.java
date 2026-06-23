@@ -8,11 +8,11 @@ import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.Person;
 import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.address.SpanishAddress;
-import me.diegomcha.autoparte.domain.booking.payment.CreditCardPaymentInfo;
-import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import me.diegomcha.autoparte.domain.booking.payment.CreditCardPayment;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
-import me.diegomcha.autoparte.domain.person.document.DniDocumentInfo;
-import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
+import me.diegomcha.autoparte.domain.person.document.DniDocument;
+import me.diegomcha.autoparte.domain.person.document.Document;
 import org.springframework.stereotype.Component;
 
 import javax.xml.datatype.DatatypeFactory;
@@ -135,9 +135,9 @@ public class TypesMapper {
         pReserva.setTelefono2(person.getContactInfo().getPhoneNumber2());
         pReserva.setCorreo(person.getContactInfo().getEmail());
 
-        if (person.getDocumentInfo() != null) {
-            pReserva.setTipoDocumento(this.toTipoDocumento(person.getDocumentInfo().getType()));
-            pReserva.setNumeroDocumento(person.getDocumentInfo().getNumber());
+        if (person.getDocument() != null) {
+            pReserva.setTipoDocumento(this.toTipoDocumento(person.getDocument().getType()));
+            pReserva.setNumeroDocumento(person.getDocument().getNumber());
         }
 
         pReserva.setDireccion(this.toDireccionType(person.getAddress()));
@@ -161,10 +161,10 @@ public class TypesMapper {
         pHospedaje.setTelefono2(person.getContactInfo().getPhoneNumber2());
         pHospedaje.setCorreo(person.getContactInfo().getEmail());
 
-        if (person.getDocumentInfo() != null) {
-            pHospedaje.setTipoDocumento(this.toTipoDocumento(person.getDocumentInfo().getType()));
-            pHospedaje.setNumeroDocumento(person.getDocumentInfo().getNumber());
-            if (person.getDocumentInfo() instanceof DniDocumentInfo dniDoc)
+        if (person.getDocument() != null) {
+            pHospedaje.setTipoDocumento(this.toTipoDocumento(person.getDocument().getType()));
+            pHospedaje.setNumeroDocumento(person.getDocument().getNumber());
+            if (person.getDocument() instanceof DniDocument dniDoc)
                 pHospedaje.setSoporteDocumento(dniDoc.getSupportNumber());
         }
 
@@ -193,13 +193,13 @@ public class TypesMapper {
         return direccion;
     }
 
-    private PagoType toPagoType(@NonNull PaymentInfo payment) {
+    private PagoType toPagoType(@NonNull Payment payment) {
         var pago = generalFactory.createPagoType();
         pago.setTipoPago(this.toTipoPago(payment.getType()));
         pago.setFechaPago(this.toXmlDate(payment.getDate()));
         pago.setMedioPago(payment.getMean());
         pago.setTitular(payment.getHolder());
-        if (payment instanceof CreditCardPaymentInfo ccPayment)
+        if (payment instanceof CreditCardPayment ccPayment)
             pago.setCaducidadTarjeta(this.toCCExpiryDate(ccPayment.getExpiryDate()));
         return pago;
     }
@@ -234,7 +234,7 @@ public class TypesMapper {
         };
     }
 
-    private String toTipoDocumento(DocumentInfo.DocumentType type) {
+    private String toTipoDocumento(Document.DocumentType type) {
         return switch (type) {
             case NIF -> "NIF";
             case NIE -> "NIE";
@@ -243,7 +243,7 @@ public class TypesMapper {
         };
     }
 
-    private String toTipoPago(@NonNull PaymentInfo.PaymentType type) {
+    private String toTipoPago(@NonNull Payment.PaymentType type) {
         return switch (type) {
             case CASH -> "EFECT";
             case CREDIT_CARD -> "TARJT";

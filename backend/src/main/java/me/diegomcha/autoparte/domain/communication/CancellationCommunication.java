@@ -6,9 +6,9 @@ import lombok.NonNull;
 import me.diegomcha.autoparte.domain.Booking;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CancelationCommunication extends Communication {
+public class CancellationCommunication extends Communication {
 
-    protected CancelationCommunication(@NonNull Booking booking) {
+    protected CancellationCommunication(@NonNull Booking booking) {
         super(booking, CommunicationType.CANCELLATION);
     }
 

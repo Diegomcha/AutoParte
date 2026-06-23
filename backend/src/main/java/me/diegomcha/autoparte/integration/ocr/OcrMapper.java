@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.integration.ocr;
 
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
-import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
+import me.diegomcha.autoparte.domain.person.document.Document;
 import me.diegomcha.autoparte.integration.ocr.dto.DocDto;
 import me.diegomcha.autoparte.integration.ocr.dto.MrzDto.MrzData;
 import org.mapstruct.Mapper;
@@ -19,11 +19,11 @@ abstract class OcrMapper {
     abstract DocDto toDocument(MrzData mrzData);
 
     @Named("mapDocumentType")
-    protected DocumentInfo.DocumentType mapDocumentType(MrzData.DocumentType documentType) {
+    protected Document.DocumentType mapDocumentType(MrzData.DocumentType documentType) {
         return switch (documentType) {
-            case PASSPORT -> DocumentInfo.DocumentType.PASSPORT;
-            case DNI -> DocumentInfo.DocumentType.NIF;
-            case TIE_RESIDENCE_PERMIT, TIE_BORDER_WORKER -> DocumentInfo.DocumentType.NIE;
+            case PASSPORT -> Document.DocumentType.PASSPORT;
+            case DNI -> Document.DocumentType.NIF;
+            case TIE_RESIDENCE_PERMIT, TIE_BORDER_WORKER -> Document.DocumentType.NIE;
             case null -> null;
         };
     }

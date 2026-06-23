@@ -1,18 +1,20 @@
 package me.diegomcha.autoparte.domain.booking.payment;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.Instant;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public class CreditCardPaymentInfo extends PaymentInfo {
+public class CreditCardPayment extends Payment {
 
     private Instant expiryDate;
 
-    protected CreditCardPaymentInfo(String mean, String holder, Instant date, Instant expiryDate) {
+    protected CreditCardPayment(String mean, String holder, Instant date, Instant expiryDate) {
         super(PaymentType.CREDIT_CARD, mean, holder, date);
         this.setExpiryDate(expiryDate);
     }

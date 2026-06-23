@@ -3,7 +3,7 @@ package me.diegomcha.autoparte.api.catalogue.services;
 import lombok.NonNull;
 import me.diegomcha.autoparte.domain.Person;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
-import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
+import me.diegomcha.autoparte.domain.person.document.Document;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class CatalogueService {
      * @return Array of document type options
      */
     public String[] getDocumentTypeOptions() {
-        return this.getOptions(DocumentInfo.DocumentType.class);
+        return this.getOptions(Document.DocumentType.class);
     }
 
     private <T extends Enum<T>> String[] getOptions(@NonNull Class<T> enumerator) {

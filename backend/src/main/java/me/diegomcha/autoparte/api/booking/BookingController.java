@@ -23,14 +23,14 @@ class BookingController implements BookingAPI {
 
     @GetMapping
     @Override
-    public Page<BookingDtoResponse> getBookingsByAccommodation(@PathVariable UUID accommodationId, @ParameterObject Pageable pageable) {
+    public Page<BookingDtoResponse> getBookingsByAccommodation(@PathVariable UUID accommodationId, @ParameterObject Pageable pageable) throws ResourceNotFoundException {
         return bookingService.getBookings(accommodationId, pageable);
     }
 
     @GetMapping("/{id}")
     @Override
     public BookingDtoResponse getBookingById(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceNotFoundException {
-        return bookingService.getBookingById(accommodationId, id);
+        return bookingService.getBooking(accommodationId, id);
     }
 
     @PostMapping
@@ -54,7 +54,7 @@ class BookingController implements BookingAPI {
         bookingService.confirmBooking(accommodationId, id);
     }
 
-    @PostMapping("/{id}/confirm")
+    @PostMapping("/{id}/check-in")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
     public void checkInBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceConflictException, ResourceNotFoundException {

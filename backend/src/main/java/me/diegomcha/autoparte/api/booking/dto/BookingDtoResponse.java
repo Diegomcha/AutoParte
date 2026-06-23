@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.api.booking.dto;
 
 import jakarta.annotation.Nonnull;
 import me.diegomcha.autoparte.domain.Booking;
-import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.communication.Communication;
 
 import java.time.Instant;
@@ -24,14 +24,14 @@ public record BookingDtoResponse(
         @Nonnull Instant startTime,
         @Nonnull Instant endTime,
         int numberOfPeople,
-        @Nonnull PaymentInfoDtoResponse payment,
+        PaymentDtoResponse payment,
         Integer numberOfRooms,
         Boolean internetConnection,
 
         @Nonnull Set<CommunicationDtoResponse> communications
 ) {
-    public record PaymentInfoDtoResponse(
-            @Nonnull PaymentInfo.PaymentType type,
+    public record PaymentDtoResponse(
+            @Nonnull Payment.PaymentType type,
             String mean,
             String holder,
             Instant date,

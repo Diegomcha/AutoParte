@@ -2,10 +2,10 @@ package me.diegomcha.autoparte.domain;
 
 import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.domain.address.Address;
-import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
-import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
+import me.diegomcha.autoparte.domain.person.document.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class PersonTest {
     @BeforeEach
     void setUp() {
         Accommodation accommodation = new Accommodation("Test", "SESCODE", null);
-        this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 2, PaymentInfo.of(PaymentInfo.PaymentType.ON_SITE), null, null);
+        this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 2, Payment.of(Payment.PaymentType.ON_SITE), null, null);
         this.person = new Person(booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
     }
 
@@ -66,7 +66,7 @@ class PersonTest {
                 ? new PersonalInfo("Name", "Surname", "2Surname", null, birthDate, null)
                 : new PersonalInfo("Name", "Surname", null, null, birthDate, null);
         var dInfo = hasDInfo
-                ? DocumentInfo.of(DocumentInfo.DocumentType.NIF, "54095720L", "SUPPORT")
+                ? Document.of(Document.DocumentType.NIF, "54095720L", "SUPPORT")
                 : null;
         var address = hasAddress
                 ? Address.of("Line1", null, "Municipality", "PostalCode", "USA")

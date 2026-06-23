@@ -43,8 +43,10 @@ class BookingService {
      * @param accommodationId The ID of the accommodation to retrieve bookings for
      * @param pageable        Pagination information (page number, size, sorting)
      * @return A page of bookings for the specified accommodation
+     * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
-    public Page<BookingDtoResponse> getBookings(UUID accommodationId, Pageable pageable) {
+    public Page<BookingDtoResponse> getBookings(UUID accommodationId, Pageable pageable) throws ResourceNotFoundException {
+        this.ensureAccommodationExists(accommodationId);
         return bookingMapper.toResponse(bookingRepo.findByAccommodationId(accommodationId, pageable));
     }
 
@@ -54,9 +56,10 @@ class BookingService {
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param id              The ID of the booking to retrieve
      * @return The booking with the given ID for the specified accommodation, or empty if it does not exist
-     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      */
-    public BookingDtoResponse getBookingById(UUID accommodationId, UUID id) throws ResourceNotFoundException {
+    public BookingDtoResponse getBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException {
+        this.ensureAccommodationExists(accommodationId);
         return bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
                 .map(bookingMapper::toResponse)
@@ -67,7 +70,7 @@ class BookingService {
      * Creates a new booking for a specific accommodation using the provided booking data.
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
-     * @param booking         The booking data to fromCreate the new booking
+     * @param booking         The booking data to create the new booking
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
     @Transactional
@@ -86,10 +89,12 @@ class BookingService {
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param id              The ID of the booking to update
      * @param update          The update data
-     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      */
     @Transactional
     public void updateBooking(UUID accommodationId, UUID id, BookingDtoRequest update) throws ResourceNotFoundException {
+        this.ensureAccommodationExists(accommodationId);
+
         var booking = bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
@@ -102,11 +107,13 @@ class BookingService {
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param id              The ID of the booking to confirm
-     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking cannot be confirmed in its current state
      */
     @Transactional
     public void confirmBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+        this.ensureAccommodationExists(accommodationId);
+
         var booking = bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
@@ -123,11 +130,13 @@ class BookingService {
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param id              The ID of the booking to check in
-     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking cannot be checked in in its current state
      */
     @Transactional
     public void checkInBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+        this.ensureAccommodationExists(accommodationId);
+
         var booking = bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
@@ -144,11 +153,13 @@ class BookingService {
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param id              The ID of the booking to cancel
-     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking is already canceled
      */
     @Transactional
     public void cancelBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+        this.ensureAccommodationExists(accommodationId);
+
         var booking = bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
@@ -158,6 +169,11 @@ class BookingService {
             throw ALREADY_CANCELLED_EXCEPTION.get();
 
         booking.cancel();
+    }
+
+    private void ensureAccommodationExists(UUID accommodationId) throws ResourceNotFoundException {
+        if (!accommodationRepo.existsById(accommodationId))
+            throw ACCOMMODATION_NOT_FOUND_EXCEPTION.get();
     }
 
 }

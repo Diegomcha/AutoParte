@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.FieldSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,7 +21,6 @@ import java.util.stream.StreamSupport;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
 @Transactional
-@AutoConfigureTestDatabase
 class AuthEventListenerTest {
 
     @Autowired
@@ -32,11 +30,14 @@ class AuthEventListenerTest {
 
     private static final UsernamePasswordAuthenticationToken USERPASSWORD_AUTHENTICATION = UsernamePasswordAuthenticationToken.authenticated("test", "test", Set.of());
     private static final RememberMeAuthenticationToken REMEMBERME_AUTHENTICATION = new RememberMeAuthenticationToken("test", "test", Set.of());
+
     static {
         USERPASSWORD_AUTHENTICATION.setDetails(new WebAuthenticationDetails("test", null));
         REMEMBERME_AUTHENTICATION.setDetails(new WebAuthenticationDetails("test", null));
     }
-    private static final AuthenticationException AUTHENTICATION_EXCEPTION = new AuthenticationException("Test authentication") {};
+
+    private static final AuthenticationException AUTHENTICATION_EXCEPTION = new AuthenticationException("Test authentication") {
+    };
 
     private static final Object[][] EVENTS = new Object[][]{
             new Object[]{
@@ -57,25 +58,25 @@ class AuthEventListenerTest {
                     SecurityEvent.SecurityEventType.LOGOUT,
                     SecurityEvent.SecurityEventMethod.REMEMBER_ME
             },
-            new Object[] {
+            new Object[]{
                     true,
                     new AuthenticationFailureBadCredentialsEvent(USERPASSWORD_AUTHENTICATION, AUTHENTICATION_EXCEPTION),
                     SecurityEvent.SecurityEventType.LOGIN_FAILED_CREDENTIALS,
                     SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD
             },
-            new Object[] {
+            new Object[]{
                     true,
                     new AuthenticationFailureCredentialsExpiredEvent(REMEMBERME_AUTHENTICATION, AUTHENTICATION_EXCEPTION),
                     SecurityEvent.SecurityEventType.LOGIN_FAILED_CREDENTIALS_EXPIRED,
                     SecurityEvent.SecurityEventMethod.REMEMBER_ME
             },
-            new Object[] {
+            new Object[]{
                     true,
                     new AuthenticationFailureLockedEvent(USERPASSWORD_AUTHENTICATION, AUTHENTICATION_EXCEPTION),
                     SecurityEvent.SecurityEventType.LOGIN_FAILED_ACCOUNT_LOCKED,
                     SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD
             },
-            new Object[] {
+            new Object[]{
                     true,
                     new AuthenticationFailureDisabledEvent(REMEMBERME_AUTHENTICATION, AUTHENTICATION_EXCEPTION),
                     SecurityEvent.SecurityEventType.LOGIN_FAILED_ACCOUNT_DISABLED,

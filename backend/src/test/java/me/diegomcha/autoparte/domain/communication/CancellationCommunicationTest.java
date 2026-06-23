@@ -3,23 +3,23 @@ package me.diegomcha.autoparte.domain.communication;
 import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Booking;
-import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
-class CancelationCommunicationTest {
+class CancellationCommunicationTest {
 
-    private CancelationCommunication communication;
+    private CancellationCommunication communication;
     private UUID batchId;
     private UUID sesId;
 
     @BeforeEach
     void setUp() {
-        var booking = new Booking(new Accommodation("Test", "SESCODE", null), TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1, PaymentInfo.of(PaymentInfo.PaymentType.ON_SITE), null, null);
-        this.communication = (CancelationCommunication) Communication._of(booking, Communication.CommunicationType.CANCELLATION);
+        var booking = new Booking(new Accommodation("Test", "SESCODE", null), TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1, Payment.of(Payment.PaymentType.ON_SITE), null, null);
+        this.communication = (CancellationCommunication) Communication._of(booking, Communication.CommunicationType.CANCELLATION);
         this.batchId = UUID.randomUUID();
         this.sesId = UUID.randomUUID();
     }

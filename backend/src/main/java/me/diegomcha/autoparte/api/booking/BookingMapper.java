@@ -5,8 +5,8 @@ import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
-import me.diegomcha.autoparte.domain.booking.payment.CreditCardPaymentInfo;
-import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import me.diegomcha.autoparte.domain.booking.payment.CreditCardPayment;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -14,6 +14,7 @@ import org.mapstruct.Named;
 import org.springframework.data.domain.Page;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Mapper(componentModel = "spring")
@@ -34,18 +35,23 @@ abstract class BookingMapper {
     public abstract void fromUpdate(BookingDtoRequest dto, @MappingTarget Booking booking);
 
     protected UUID map(BaseEntity entity) {
-        return entity.getId();
+        return Optional
+                .ofNullable(entity)
+                .map(BaseEntity::getId)
+                .orElse(null);
     }
 
     @Named("mapExpiryDate")
-    protected Instant mapExpiryDate(PaymentInfo paymentInfo) {
-        return paymentInfo instanceof CreditCardPaymentInfo cc
+    protected Instant mapExpiryDate(Payment payment) {
+        return payment instanceof CreditCardPayment cc
                 ? cc.getExpiryDate()
                 : null;
     }
 
-    protected PaymentInfo map(BookingDtoRequest.PaymentInfoDtoRequest dto) {
-        return PaymentInfo.of(dto.type(), dto.mean(), dto.holder(), dto.date(), dto.expiryDate());
+    protected Payment map(BookingDtoRequest.PaymentDtoRequest dto) {
+        return dto != null
+                ? Payment.of(dto.type(), dto.mean(), dto.holder(), dto.date(), dto.expiryDate())
+                : null;
     }
 
 }

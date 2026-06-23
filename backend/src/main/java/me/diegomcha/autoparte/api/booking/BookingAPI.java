@@ -16,7 +16,7 @@ import java.util.UUID;
 public interface BookingAPI {
 
     @Operation(summary = "List bookings for an accommodation")
-    Page<BookingDtoResponse> getBookingsByAccommodation(UUID accommodationId, Pageable pageable);
+    Page<BookingDtoResponse> getBookingsByAccommodation(UUID accommodationId, Pageable pageable) throws ResourceNotFoundException;
 
     @Operation(summary = "Get booking by id for an accommodation")
     BookingDtoResponse getBookingById(UUID accommodationId, UUID id) throws ResourceNotFoundException;

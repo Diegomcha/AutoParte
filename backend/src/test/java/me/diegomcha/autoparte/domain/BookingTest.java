@@ -2,11 +2,11 @@ package me.diegomcha.autoparte.domain;
 
 import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.domain.address.Address;
-import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.communication.Communication;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
-import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
+import me.diegomcha.autoparte.domain.person.document.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,13 +18,13 @@ class BookingTest {
 
     private Accommodation accommodation;
     private Booking booking;
-    private PaymentInfo payment;
+    private Payment payment;
 
     @BeforeEach
     void setUp() {
-        this.payment = PaymentInfo.of(PaymentInfo.PaymentType.ON_SITE);
+        this.payment = Payment.of(Payment.PaymentType.ON_SITE);
         this.accommodation = new Accommodation("Test", "SESCODE", null);
-        this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1, this.payment, null, null);
+        this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1, null, null, null);
     }
 
     @Test
@@ -231,6 +231,7 @@ class BookingTest {
     private void makeConfirmable() {
         Assertions.assertFalse(this.booking.canBeConfirmed());
 
+        booking.setPayment(this.payment);
         new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
 
         Assertions.assertTrue(this.booking.canBeConfirmed());
@@ -239,12 +240,13 @@ class BookingTest {
     private void makeCheckinable(boolean confirm) {
         Assertions.assertFalse(this.booking.canBeCheckedIn());
 
+        booking.setPayment(this.payment);
         var person = new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
 
         Assertions.assertFalse(this.booking.canBeCheckedIn());
 
         person.setPersonalInfo(new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS), null));
-        person.setDocumentInfo(DocumentInfo.of(DocumentInfo.DocumentType.NIF, "54095720L", "SUPPORT"));
+        person.setDocument(Document.of(Document.DocumentType.NIF, "54095720L", "SUPPORT"));
         person.setAddress(Address.of("Line1", null, "Municipality", "PostalCode", "USA"));
 
         if (confirm) {

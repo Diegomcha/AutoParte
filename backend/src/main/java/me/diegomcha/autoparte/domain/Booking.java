@@ -2,8 +2,8 @@ package me.diegomcha.autoparte.domain;
 
 import lombok.*;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
-import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
-import me.diegomcha.autoparte.domain.communication.CancelationCommunication;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
+import me.diegomcha.autoparte.domain.communication.CancellationCommunication;
 import me.diegomcha.autoparte.domain.communication.Communication;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -28,15 +28,15 @@ public class Booking extends BaseEntity {
     private @NonNull Instant endTime;
     private int numberOfPeople;
     @Setter
-    private @NonNull PaymentInfo payment;
+    private Payment payment;
     private Integer numberOfRooms;
     @Setter
     private Boolean internetConnection;
 
     @CreatedBy
-    private @NonNull Account createdBy;
+    private Account createdBy;
     @LastModifiedBy
-    private @NonNull Account lastModifiedBy;
+    private Account lastModifiedBy;
 
     private @NonNull Accommodation accommodation;
     @ToString.Exclude
@@ -44,7 +44,7 @@ public class Booking extends BaseEntity {
     @ToString.Exclude
     private final @NonNull Set<@NonNull Communication> communications = new HashSet<>();
 
-    public Booking(@NonNull Accommodation accommodation, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, @NonNull PaymentInfo payment, Integer numberOfRooms, Boolean internetConnection) {
+    public Booking(@NonNull Accommodation accommodation, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, Payment payment, Integer numberOfRooms, Boolean internetConnection) {
         this.setAccommodation(accommodation);
         this.startTime = startTime;
         this.setEndTime(endTime);
@@ -101,6 +101,7 @@ public class Booking extends BaseEntity {
 
     public boolean canBeConfirmed() {
         return this.getStatus() == BookingStatus.DRAFT &&
+                this.payment != null &&
                 !this.people.isEmpty();
     }
 
@@ -123,7 +124,7 @@ public class Booking extends BaseEntity {
     }
 
     public void cancel() {
-        var communication = (CancelationCommunication) this.addCommunication(Communication.CommunicationType.CANCELLATION);
+        var communication = (CancellationCommunication) this.addCommunication(Communication.CommunicationType.CANCELLATION);
 
         // Mark all other communications as voided if they are pending or failed (not in SES)
         this.communications.stream()

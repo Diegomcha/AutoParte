@@ -3,6 +3,7 @@ package me.diegomcha.autoparte.domain.address;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+// TODO: Split this test into multiple test classes for better organization
 class AddressTest {
 
     @Test

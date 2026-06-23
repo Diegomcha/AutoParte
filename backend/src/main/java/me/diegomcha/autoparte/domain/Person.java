@@ -5,7 +5,7 @@ import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
-import me.diegomcha.autoparte.domain.person.document.DocumentInfo;
+import me.diegomcha.autoparte.domain.person.document.Document;
 
 @Getter
 @Setter
@@ -36,16 +36,16 @@ public class Person extends BaseEntity {
 
     private @NonNull PersonalInfo personalInfo;
     private @NonNull ContactInfo contactInfo;
-    private DocumentInfo documentInfo;
+    private Document document;
     private Address address;
     private PersonRelationship relationship;
 
-    public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo, @NonNull ContactInfo contactInfo, DocumentInfo documentInfo, Address address, PersonRelationship relationship) {
+    public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo, @NonNull ContactInfo contactInfo, Document document, Address address, PersonRelationship relationship) {
         this.setBooking(booking);
         this.setPersonalInfo(personalInfo);
 
         this.setContactInfo(contactInfo);
-        this.setDocumentInfo(documentInfo);
+        this.setDocument(document);
         this.setAddress(address);
 
         this.setRelationship(relationship);
@@ -63,8 +63,8 @@ public class Person extends BaseEntity {
     }
 
     public boolean isComplete() {
-        return personalInfo.isComplete(this.documentInfo != null && this.documentInfo.requiresSecondSurname()) &&
-                (personalInfo.isAdult() ? this.documentInfo != null : this.relationship != null) &&
+        return personalInfo.isComplete(this.document != null && this.document.requiresSecondSurname()) &&
+                (personalInfo.isAdult() ? this.document != null : this.relationship != null) &&
                 address != null;
     }
 

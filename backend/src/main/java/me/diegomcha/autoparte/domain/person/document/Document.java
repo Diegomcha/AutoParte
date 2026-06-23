@@ -1,12 +1,13 @@
 package me.diegomcha.autoparte.domain.person.document;
 
 import lombok.*;
+import me.diegomcha.autoparte.domain.base.BaseEntity;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@EqualsAndHashCode
-public class DocumentInfo {
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
+public class Document extends BaseEntity {
 
     public enum DocumentType {
         NIF, // NIF
@@ -15,21 +16,21 @@ public class DocumentInfo {
         OTHER // OTRO
     }
 
-    public static DocumentInfo of(@NonNull DocumentType type, @NonNull String number) {
+    public static Document of(@NonNull DocumentType type, @NonNull String number) {
         return of(type, number, null);
     }
 
-    public static DocumentInfo of(@NonNull DocumentType type, @NonNull String number, String supportNumber) {
+    public static Document of(@NonNull DocumentType type, @NonNull String number, String supportNumber) {
         if (type == DocumentType.NIE || type == DocumentType.NIF)
-            return new DniDocumentInfo(type, number, supportNumber);
-        return new DocumentInfo(type, number);
+            return new DniDocument(type, number, supportNumber);
+        return new Document(type, number);
     }
 
     private @NonNull DocumentType type;
     @Setter(AccessLevel.PROTECTED)
     private @NonNull String number;
 
-    protected DocumentInfo(@NonNull DocumentType type, @NonNull String number) {
+    protected Document(@NonNull DocumentType type, @NonNull String number) {
         this.type = type;
         this.setNumber(number);
     }

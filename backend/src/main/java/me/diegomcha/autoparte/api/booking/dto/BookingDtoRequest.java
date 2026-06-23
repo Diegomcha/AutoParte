@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.api.booking.dto;
 
 import lombok.NonNull;
-import me.diegomcha.autoparte.domain.booking.payment.PaymentInfo;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 
 import java.time.Instant;
 
@@ -10,12 +10,12 @@ public record BookingDtoRequest(
         @NonNull Instant startTime,
         @NonNull Instant endTime,
         int numberOfPeople,
-        @NonNull BookingDtoRequest.PaymentInfoDtoRequest payment,
+        PaymentDtoRequest payment,
         Integer numberOfRooms,
         Boolean internetConnection
 ) {
-    public record PaymentInfoDtoRequest(
-            @NonNull PaymentInfo.PaymentType type,
+    public record PaymentDtoRequest(
+            @NonNull Payment.PaymentType type,
             String mean,
             String holder,
             Instant date,
