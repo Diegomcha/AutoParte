@@ -5,6 +5,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoRequest;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoResponse;
+import me.diegomcha.autoparte.api.common.EntityDtoCreated;
+import me.diegomcha.autoparte.api.common.EntityMapper;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
@@ -24,10 +26,6 @@ import java.util.function.Supplier;
 @Transactional(readOnly = true)
 class AccommodationService {
 
-    private final AccommodationMapper accommodationMapper;
-    private final AccommodationRepo accommodationRepo;
-    private final EmployeeRepo employeeRepo;
-
     private static final Supplier<ResourceNotFoundException> NOT_FOUND_EXCEPTION = () ->
             new ResourceNotFoundException("Accommodation not found");
     private static final Supplier<ResourceNotFoundException> EMPLOYEE_NOT_FOUND = () ->
@@ -36,6 +34,11 @@ class AccommodationService {
             new ResourceConflictException("An accommodation with the same sesCode already exists");
     private static final Supplier<ResourceConflictException> SAME_NAME_EXCEPTION = () ->
             new ResourceConflictException("An accommodation with the same name already exists");
+
+    private final AccommodationMapper accommodationMapper;
+    private final AccommodationRepo accommodationRepo;
+    private final EmployeeRepo employeeRepo;
+    private final EntityMapper entityMapper;
 
     /**
      * Returns a paginated list of all accommodations.
@@ -65,10 +68,11 @@ class AccommodationService {
      * Creates a new accommodation with the given data.
      *
      * @param dto The data for the new accommodation
+     * @return The created accommodation's ID and creation timestamp
      * @throws ResourceConflictException if an accommodation with the same name or sesCode already exists
      */
     @Transactional
-    public void createAccommodation(@NonNull AccommodationDtoRequest dto) throws ResourceConflictException {
+    public EntityDtoCreated createAccommodation(@NonNull AccommodationDtoRequest dto) throws ResourceConflictException {
         Accommodation newAccommodation = accommodationMapper.fromCreate(dto);
 
         // Ensure name is unique
@@ -79,7 +83,8 @@ class AccommodationService {
         if (accommodationRepo.existsBySesCode(newAccommodation.getSesCode()))
             throw SAME_SESCODE_EXCEPTION.get();
 
-        accommodationRepo.save(newAccommodation);
+        newAccommodation = accommodationRepo.save(newAccommodation);
+        return entityMapper.toCreated(newAccommodation);
     }
 
     /**

@@ -233,13 +233,7 @@
             </basic>
         </attributes>
     </entity>
-    <entity class="me.diegomcha.autoparte.domain.person.document.DniDocument">
-        <attributes>
-            <basic name="supportNumber">
-                <column nullable="false"/>
-            </basic>
-        </attributes>
-    </entity>
+    <entity class="me.diegomcha.autoparte.domain.person.document.DniDocument"/>
 
     <embeddable class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
     <embeddable class="me.diegomcha.autoparte.domain.person.PersonalInfo"/>

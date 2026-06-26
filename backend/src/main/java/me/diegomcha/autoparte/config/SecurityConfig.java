@@ -41,8 +41,10 @@ class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/api/auth/**", "/api/docs/**").permitAll()
                         .anyRequest().authenticated()
+//                                .anyRequest().permitAll() // TODO: UNDO!
                 )
                 .csrf(CsrfConfigurer::spa)
+//                .csrf(CsrfConfigurer::disable) // TODO: UNDO!
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/api/auth/login")

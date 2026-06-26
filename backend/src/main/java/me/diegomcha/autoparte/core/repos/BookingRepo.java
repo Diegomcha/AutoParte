@@ -14,4 +14,6 @@ public interface BookingRepo extends CrudRepository<Booking, UUID>, PagingAndSor
     Page<Booking> findByAccommodationId(UUID accommodationId, Pageable pageable);
 
     Optional<Booking> findByAccommodationIdAndId(UUID accommodationId, UUID id);
+    
+    boolean existsByAccommodationIdAndId(UUID accommodationId, UUID id);
 }

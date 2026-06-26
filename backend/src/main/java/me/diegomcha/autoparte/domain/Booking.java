@@ -80,6 +80,9 @@ public class Booking extends BaseEntity {
     public void setNumberOfPeople(int numberOfPeople) {
         if (numberOfPeople <= 0)
             throw new IllegalArgumentException("Number of people must be greater than 0");
+        if (people.size() > numberOfPeople)
+            throw new IllegalStateException("Cannot set number of people less than the number of people already added to the booking");
+
         this.numberOfPeople = numberOfPeople;
     }
 
@@ -97,6 +100,16 @@ public class Booking extends BaseEntity {
         if (this.people.size() >= this.numberOfPeople)
             throw new IllegalStateException("Cannot add more people than the number specified in the booking");
         this.people.add(person);
+    }
+
+    public void removePerson(@NonNull Person person) {
+        if (!this.people.remove(person))
+            throw new IllegalArgumentException("Person not found in booking");
+    }
+
+    public boolean canBeModified() {
+        return this.getStatus() != BookingStatus.CHECKED_IN ||
+                this.getStatus() != BookingStatus.CANCELLED;
     }
 
     public boolean canBeConfirmed() {

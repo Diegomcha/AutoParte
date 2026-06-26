@@ -22,7 +22,7 @@ class SesSender {
 
     private final DynamicConfigService dynamicConfigService;
     private final SesPersistencyService persistencyService;
-    private final SesAPI sesAPI;
+    private final SesClient sesClient;
 
     @Scheduled(cron = "0 0 */2 * * *")
     void sendBookings() {
@@ -36,17 +36,17 @@ class SesSender {
 
         try (var pendingCommunications = persistencyService.getBatchOfPendingCommunications(
                 Communication.CommunicationType.BOOKING,
-                SesAPI.MAX_BOOKING_BATCH_SIZE
+                SesClient.MAX_BOOKING_BATCH_SIZE
         )) {
             pendingCommunications.forEach(batch -> {
-                var request = sesAPI.prepareSendBooking(
+                var request = sesClient.prepareSendBooking(
                         batch.stream().map(Communication::getBooking).toList()
                 );
 
                 logger.trace("Sending batch of {} bookings to SES", batch.size());
 
                 try {
-                    var batchId = sesAPI.sendCommunication(request);
+                    var batchId = sesClient.sendCommunication(request);
                     logger.trace("Batch of {} bookings sent to SES with batchId {}", batch.size(), batchId);
 
                     // Update the communications in the batch to mark them as sent
@@ -76,10 +76,10 @@ class SesSender {
 
         try (var pendingCommunications = persistencyService.getBatchOfPendingCommunicationsGroupedByAccommodation(
                 Communication.CommunicationType.CHECKIN,
-                SesAPI.MAX_CHECKIN_BATCH_SIZE
+                SesClient.MAX_CHECKIN_BATCH_SIZE
         )) {
             pendingCommunications.forEach(batch -> {
-                var request = sesAPI.prepareSendCheckIn(
+                var request = sesClient.prepareSendCheckIn(
                         batch.getFirst().getBooking().getAccommodation().getSesCode(), // All communications in the batch belong to the same accommodation
                         batch.stream().map(Communication::getBooking).toList()
                 );
@@ -87,7 +87,7 @@ class SesSender {
                 logger.trace("Sending batch of {} check-ins to SES", batch.size());
 
                 try {
-                    var batchId = sesAPI.sendCommunication(request);
+                    var batchId = sesClient.sendCommunication(request);
                     logger.trace("Batch of {} check-ins sent to SES with batchId {}", batch.size(), batchId);
 
                     // Update the communications in the batch to mark them as sent
@@ -117,7 +117,7 @@ class SesSender {
 
         try (var pendingCommunications = persistencyService.getBatchOfPendingCommunications(
                 Communication.CommunicationType.CANCELLATION,
-                SesAPI.MAX_CANCEL_BATCH_SIZE
+                SesClient.MAX_CANCEL_BATCH_SIZE
         )) {
             pendingCommunications.forEach(batch -> {
                 var commsToCancel = batch.stream()
@@ -125,14 +125,14 @@ class SesSender {
                         .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION && c.getStatus() == Communication.CommunicationStatus.SUCCEEDED)
                         .toList();
 
-                var request = sesAPI.prepareSendCancellation(
+                var request = sesClient.prepareSendCancellation(
                         commsToCancel.stream().map(Communication::getSesId).toList()
                 );
 
                 logger.trace("Sending batch of {} cancellations to SES ({} communications to cancel)", batch.size(), commsToCancel.size());
 
                 try {
-                    var batchId = sesAPI.sendCommunication(request);
+                    var batchId = sesClient.sendCommunication(request);
                     logger.trace("Batch of {} cancellations sent to SES with batchId {}", batch.size(), batchId);
 
                     // Update the communications in the batch to mark them as sent & the communications to cancel to mark them as pending voided

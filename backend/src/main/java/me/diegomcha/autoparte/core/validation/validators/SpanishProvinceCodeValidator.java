@@ -6,11 +6,11 @@ import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.catalogue.services.LocationCatalogueService;
-import me.diegomcha.autoparte.core.validation.annotations.ProvinceCode;
+import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceCode;
 
 @RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 @SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)
-public class ProvinceCodeValidator implements ConstraintValidator<ProvinceCode, CharSequence> {
+public class SpanishProvinceCodeValidator implements ConstraintValidator<SpanishProvinceCode, CharSequence> {
 
     private final LocationCatalogueService catalogueService;
 

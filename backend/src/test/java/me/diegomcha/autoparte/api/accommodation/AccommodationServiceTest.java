@@ -71,7 +71,10 @@ class AccommodationServiceTest {
 
     @Test
     void testCreateAccommodation() throws ResourceConflictException {
-        service.createAccommodation(new AccommodationDtoRequest("Name1", "00001", null));
+        var created = service.createAccommodation(new AccommodationDtoRequest("Name1", "00001", null));
+
+        Assertions.assertNotNull(created.id());
+        Assertions.assertNotNull(created.createdAt());
 
         Assertions.assertTrue(repo.existsByName("Name1"));
     }

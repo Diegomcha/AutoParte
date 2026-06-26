@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
+import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springdoc.core.annotations.ParameterObject;
@@ -36,8 +37,8 @@ class BookingController implements BookingAPI {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Override
-    public void createBooking(@PathVariable UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException {
-        bookingService.createBooking(accommodationId, booking);
+    public EntityDtoCreated createBooking(@PathVariable UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException {
+        return bookingService.createBooking(accommodationId, booking);
     }
 
     @PutMapping("/{id}")

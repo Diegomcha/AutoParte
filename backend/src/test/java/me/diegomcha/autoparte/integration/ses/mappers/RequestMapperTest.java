@@ -70,7 +70,7 @@ class RequestMapperTest {
         Assertions.assertEquals("base64-encoded-zip-content", request.getPeticion().getSolicitud());
     }
 
-    // TODO: Move to SesAPI test
+    // TODO: Move to SesClient test
 //    private void assertBase64ZipContent(String encoded) {
 //        try (var stringInput = new ByteArrayInputStream(Base64.getDecoder().decode(encoded))) {
 //            try (var unzipStream = new ZipInputStream(stringInput)) {

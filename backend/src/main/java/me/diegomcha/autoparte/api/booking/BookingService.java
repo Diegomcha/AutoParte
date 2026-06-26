@@ -4,6 +4,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
+import me.diegomcha.autoparte.api.common.EntityDtoCreated;
+import me.diegomcha.autoparte.api.common.EntityMapper;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
@@ -36,6 +38,7 @@ class BookingService {
     private final BookingRepo bookingRepo;
     private final BookingMapper bookingMapper;
     private final AccommodationRepo accommodationRepo;
+    private final EntityMapper entityMapper;
 
     /**
      * Returns a paginated list of bookings for a specific accommodation.
@@ -71,16 +74,18 @@ class BookingService {
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param booking         The booking data to create the new booking
+     * @return The created booking's ID and creation timestamp
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
     @Transactional
-    public void createBooking(UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException {
+    public EntityDtoCreated createBooking(UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException {
         var accommodation = accommodationRepo
                 .findById(accommodationId)
                 .orElseThrow(ACCOMMODATION_NOT_FOUND_EXCEPTION);
 
         var newBooking = bookingMapper.fromCreate(accommodation, booking);
-        bookingRepo.save(newBooking);
+        newBooking = bookingRepo.save(newBooking);
+        return entityMapper.toCreated(newBooking);
     }
 
     /**

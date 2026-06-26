@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.api;
+package me.diegomcha.autoparte.api.common;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,6 +45,12 @@ class ExceptionTranslator extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ProblemDetail handleUnauthorizedException(UnauthorizedException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+    public ProblemDetail handleUnsupportedMediaException(UnsupportedMediaException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage());
     }
 
     @Override

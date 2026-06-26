@@ -14,11 +14,11 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
 @Service
-public class OcrAPI {
+public class OcrClient {
 
     private final RestClient client;
 
-    protected OcrAPI(AutoparteProperties properties) {
+    protected OcrClient(AutoparteProperties properties) {
         this.client = RestClient.builder()
                 .baseUrl(properties.getOcr().getUrl())
                 .build();

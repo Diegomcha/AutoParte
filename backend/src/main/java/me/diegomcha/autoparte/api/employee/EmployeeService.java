@@ -27,14 +27,14 @@ import java.util.function.Supplier;
 @Transactional(readOnly = true)
 class EmployeeService {
 
-    private final EmployeeRepo employeeRepo;
-    private final EmployeeMapper employeeMapper;
-    private final PasswordEncoder passwordEncoder;
-
     private static final Supplier<ResourceNotFoundException> NOT_FOUND_EXCEPTION = () ->
             new ResourceNotFoundException("Employee not found");
     private static final Supplier<ResourceConflictException> SAME_EMAIL_EXCEPTION = () ->
             new ResourceConflictException("An employee with the same email already exists");
+
+    private final EmployeeRepo employeeRepo;
+    private final EmployeeMapper employeeMapper;
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Returns a paginated list of all employees.

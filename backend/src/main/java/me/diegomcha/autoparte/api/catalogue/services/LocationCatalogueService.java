@@ -10,12 +10,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-@Getter
 @Service
 public class LocationCatalogueService {
 
+    @Getter
     private final String[] countries = Locale.getISOCountries();
 
+    @Getter
     private final Map<String, String> spanishProvinces;
     // Province code -> (Municipality code -> Municipality name)
     private final Map<String, Map<String, String>> spanishMunicipalities;
@@ -95,6 +96,21 @@ public class LocationCatalogueService {
     }
 
     // --------------------
+
+    /**
+     * Finds the Spanish province code corresponding to a given municipality code.
+     *
+     * @param municipalityCode The code of the municipality for which to find the corresponding province.
+     * @return The code of the province corresponding to the given municipality code.
+     * @throws IllegalArgumentException if the provided municipality code does not exist in the data.
+     */
+    public String findSpanishProvinceFromMunicipalityCode(@NonNull String municipalityCode) {
+        return spanishMunicipalities.entrySet().stream()
+                .filter(entry -> entry.getValue().containsKey(municipalityCode))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid municipality code: " + municipalityCode));
+    }
 
     /**
      * Gets the map of municipality codes to municipality names for a given province code in Spain.

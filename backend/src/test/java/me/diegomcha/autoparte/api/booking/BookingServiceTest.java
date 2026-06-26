@@ -102,10 +102,12 @@ class BookingServiceTest {
     void testCreateBooking() throws ResourceNotFoundException {
         var newBooking = new BookingDtoRequest(TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 2, new BookingDtoRequest.PaymentDtoRequest(Payment.PaymentType.ON_SITE, null, null, null, null), null, null);
 
-        bookingService.createBooking(accommodation.getId(), newBooking);
+        var created = bookingService.createBooking(accommodation.getId(), newBooking);
 
-        var bookings = bookingRepo.findByAccommodationId(accommodation.getId(), Pageable.unpaged());
-        var dbBooking = bookings.getContent().stream().filter(b -> b.getNumberOfPeople() == 2).findFirst();
+        Assertions.assertNotNull(created.id());
+        Assertions.assertNotNull(created.createdAt());
+
+        var dbBooking = bookingRepo.findByAccommodationIdAndId(accommodation.getId(), created.id());
 
         Assertions.assertTrue(dbBooking.isPresent());
         Assertions.assertNotNull(dbBooking.get().getPayment());
@@ -263,7 +265,7 @@ class BookingServiceTest {
         Assertions.assertFalse(this.booking.canBeConfirmed());
 
         this.booking.setPayment(Payment.of(Payment.PaymentType.ON_SITE, null, null, null, null));
-        new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
+        new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
 
         Assertions.assertTrue(this.booking.canBeConfirmed());
     }
@@ -272,7 +274,7 @@ class BookingServiceTest {
         Assertions.assertFalse(this.booking.canBeCheckedIn());
 
         this.booking.setPayment(Payment.of(Payment.PaymentType.CREDIT_CARD, null, null, null, null));
-        var person = new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
+        var person = new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
 
         Assertions.assertFalse(this.booking.canBeCheckedIn());
 

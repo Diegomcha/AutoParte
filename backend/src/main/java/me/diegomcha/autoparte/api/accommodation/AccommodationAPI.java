@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoRequest;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoResponse;
+import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ interface AccommodationAPI {
     AccommodationDtoResponse getAccommodation(UUID id) throws ResourceNotFoundException;
 
     @Operation(summary = "Create accommodation")
-    void createAccommodation(AccommodationDtoRequest accommodation) throws ResourceConflictException;
+    EntityDtoCreated createAccommodation(AccommodationDtoRequest accommodation) throws ResourceConflictException;
 
     @Operation(summary = "Update accommodation")
     void updateAccommodation(UUID id, AccommodationDtoRequest accommodation) throws ResourceNotFoundException, ResourceConflictException;

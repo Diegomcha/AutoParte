@@ -25,7 +25,7 @@ class SesClientConfig {
     }
 
     @Bean
-    WebServiceTemplate sesClient(WebServiceTemplateBuilder builder, AutoparteProperties autoparteProperties, SslBundles sslBundles, Jaxb2Marshaller marshaller, DynamicConfigService dynamicConfigService) {
+    WebServiceTemplate wsSesClient(WebServiceTemplateBuilder builder, AutoparteProperties autoparteProperties, SslBundles sslBundles, Jaxb2Marshaller marshaller, DynamicConfigService dynamicConfigService) {
         // Create HTTP client factory with custom TLS strategy and basic auth
         var clientFactory = HttpComponents5ClientFactory.withDefaults();
         clientFactory.addConnectionManagerBuilderCustomizer(b ->

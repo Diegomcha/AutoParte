@@ -25,6 +25,6 @@ class BirthDateDeserializer extends StdScalarDeserializer<LocalDate> {
                 .appendPattern("MMdd")
                 .toFormatter();
 
-        return formatter.parse(p.getString(), LocalDate::from);
+            return formatter.parse(p.getString(), LocalDate::from);
     }
 }

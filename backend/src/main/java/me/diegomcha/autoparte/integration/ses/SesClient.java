@@ -30,7 +30,7 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class SesAPI {
+public class SesClient {
 
     // TODO: Adjust these values based on SES service limitations
     public static final int MAX_BOOKING_BATCH_SIZE = 100;
@@ -39,7 +39,7 @@ public class SesAPI {
     public static final int MAX_CANCEL_BATCH_SIZE = 100;
 
     private final ApplicationContext applicationContext;
-    private final WebServiceTemplate client;
+    private final WebServiceTemplate wsClient;
     private final Jaxb2Marshaller marshaller;
     
     private final DynamicConfigService dynamicConfigService;
@@ -102,7 +102,7 @@ public class SesAPI {
 
     private <T, R> R sendRequest(T request, Class<R> responseClass) throws ServiceUnavailableException {
         try {
-            return responseClass.cast(client.marshalSendAndReceive(request));
+            return responseClass.cast(wsClient.marshalSendAndReceive(request));
         } catch (Exception e) {
             Sentry.captureException(e);
             throw new ServiceUnavailableException("SES service unavailable");

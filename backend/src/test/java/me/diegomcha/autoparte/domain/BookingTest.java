@@ -37,7 +37,7 @@ class BookingTest {
     void testNumberOfPeople() {
         Assertions.assertEquals(1, this.booking.getNumberOfPeople());
 
-        var personalInfo = new PersonalInfo("Name", "Surname");
+        var personalInfo = new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null);
         var contactInfo = new ContactInfo(null, null, "email@email.com");
 
         new Person(this.booking, personalInfo, contactInfo, null, null, null);
@@ -232,7 +232,7 @@ class BookingTest {
         Assertions.assertFalse(this.booking.canBeConfirmed());
 
         booking.setPayment(this.payment);
-        new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
+        new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
 
         Assertions.assertTrue(this.booking.canBeConfirmed());
     }
@@ -241,7 +241,7 @@ class BookingTest {
         Assertions.assertFalse(this.booking.canBeCheckedIn());
 
         booking.setPayment(this.payment);
-        var person = new Person(this.booking, new PersonalInfo("Name", "Surname"), new ContactInfo(null, null, "email@email.com"), null, null, null);
+        var person = new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
 
         Assertions.assertFalse(this.booking.canBeCheckedIn());
 

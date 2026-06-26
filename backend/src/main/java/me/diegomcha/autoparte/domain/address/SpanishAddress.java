@@ -6,8 +6,8 @@ import lombok.NonNull;
 import me.diegomcha.autoparte.core.validation.Validations;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SpanishAddress extends Address {
 
+public class SpanishAddress extends Address {
     protected SpanishAddress(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {
         super(addressLine1, addressLine2, municipality, postalCode, country);
     }

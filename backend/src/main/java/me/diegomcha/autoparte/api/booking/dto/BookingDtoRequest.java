@@ -1,25 +1,29 @@
 package me.diegomcha.autoparte.api.booking.dto;
 
-import lombok.NonNull;
+import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.PastOrPresent;
+import me.diegomcha.autoparte.core.validation.annotations.StartEndDatesConstraint;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
 
 import java.time.Instant;
 
-
+@StartEndDatesConstraint
 public record BookingDtoRequest(
-        @NonNull Instant startTime,
-        @NonNull Instant endTime,
-        int numberOfPeople,
+        @Nonnull Instant startTime,
+        @Nonnull Instant endTime,
+        @Min(1) int numberOfPeople,
         PaymentDtoRequest payment,
-        Integer numberOfRooms,
+        @Min(1) Integer numberOfRooms,
         Boolean internetConnection
 ) {
     public record PaymentDtoRequest(
-            @NonNull Payment.PaymentType type,
+            @Nonnull Payment.PaymentType type,
             String mean,
             String holder,
-            Instant date,
-            Instant expiryDate
+            @PastOrPresent Instant date,
+            @Future Instant expiryDate
     ) {
     }
 }

@@ -2,16 +2,17 @@ package me.diegomcha.autoparte.core.validation.annotations;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-import me.diegomcha.autoparte.core.validation.validators.ProvinceMunicipalityCodesValidator;
+import me.diegomcha.autoparte.core.validation.validators.PhoneNumberValidator;
 
 import java.lang.annotation.*;
 
-@Constraint(validatedBy = ProvinceMunicipalityCodesValidator.class)
+@Constraint(validatedBy = PhoneNumberValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE, ElementType.CONSTRUCTOR, ElementType.PARAMETER, ElementType.TYPE_USE})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ProvinceMunicipalityCodes {
-    String message() default "The municipality code must be valid for the given province code";
+public @interface PhoneNumber {
+
+    String message() default "The field must be a phone number";
 
     Class<?>[] groups() default {};
 

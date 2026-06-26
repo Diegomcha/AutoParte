@@ -40,6 +40,7 @@
         <libphonenumber.version>9.0.30</libphonenumber.version>
         <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
         <maven-resources.version>3.5.0</maven-resources.version>
+        <tika.version>3.3.1</tika.version>
     </properties>
     <dependencies>
         <dependency>
@@ -132,6 +133,11 @@
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
             <artifactId>httpclient5</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
+            <version>${tika.version}</version>
         </dependency>
 
         <!--Testing dependencies-->

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
+import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public interface BookingAPI {
     BookingDtoResponse getBookingById(UUID accommodationId, UUID id) throws ResourceNotFoundException;
 
     @Operation(summary = "Create a new booking for an accommodation")
-    void createBooking(UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException;
+    EntityDtoCreated createBooking(UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException;
 
     @Operation(summary = "Update a booking for an accommodation")
     void updateBooking(UUID accommodationId, UUID id, BookingDtoRequest booking) throws ResourceNotFoundException;

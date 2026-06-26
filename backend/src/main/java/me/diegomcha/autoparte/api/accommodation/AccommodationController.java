@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoRequest;
 import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoResponse;
+import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springdoc.core.annotations.ParameterObject;
@@ -31,8 +32,8 @@ class AccommodationController implements AccommodationAPI {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Override
-    public void createAccommodation(@Valid @RequestBody AccommodationDtoRequest accommodation) throws ResourceConflictException {
-        accommodationService.createAccommodation(accommodation);
+    public EntityDtoCreated createAccommodation(@Valid @RequestBody AccommodationDtoRequest accommodation) throws ResourceConflictException {
+        return accommodationService.createAccommodation(accommodation);
     }
 
     @GetMapping("/{id}")

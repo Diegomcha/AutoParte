@@ -1,12 +1,12 @@
 package me.diegomcha.autoparte.api.catalogue.dto;
 
-import me.diegomcha.autoparte.core.validation.annotations.ProvinceCode;
-import me.diegomcha.autoparte.core.validation.annotations.ProvinceMunicipalityCodes;
+import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceCode;
+import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceMunicipalityCodes;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@ProvinceMunicipalityCodes
+@SpanishProvinceMunicipalityCodes
 public record ProvinceMunicipalityCodesDto(
-        @PathVariable @ProvinceCode String provinceCode,
+        @PathVariable @SpanishProvinceCode String provinceCode,
         @PathVariable String municipalityCode
 ) {
 }

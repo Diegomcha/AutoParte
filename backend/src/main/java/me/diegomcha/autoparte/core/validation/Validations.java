@@ -3,7 +3,11 @@ package me.diegomcha.autoparte.core.validation;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import lombok.NonNull;
+import org.apache.tika.Tika;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -17,7 +21,9 @@ public class Validations {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$", Pattern.CASE_INSENSITIVE);
     private static final Pattern MUNICIPALITY_CODE_PATTERN = Pattern.compile("^\\d{5}$");
     private static final Pattern POSTAL_CODE_PATTERN = Pattern.compile("^\\d{5}$");
+
     private static final PhoneNumberUtil PHONE_UTIL = PhoneNumberUtil.getInstance();
+    private static final Tika TIKA = new Tika();
 
     public static void ensureValidNif(@NonNull String nif) {
         if (!isValidNif(nif))
@@ -51,7 +57,7 @@ public class Validations {
             throw new IllegalArgumentException("Invalid country code");
     }
 
-    private static boolean isValidNif(@NonNull String nif) {
+    public static boolean isValidNif(@NonNull String nif) {
         // Check the format of the NIF
         if (!NIF_PATTERN.matcher(nif).matches() && !NIE_PATTERN.matcher(nif).matches())
             return false;
@@ -68,12 +74,21 @@ public class Validations {
         return "TRWAGMYFPDXBNJZSQVHLCKE".charAt(number % 23) == nif.charAt(8);
     }
 
-    private static boolean isValidPhone(@NonNull String phone) {
+    public static boolean isValidPhone(@NonNull String phone) {
         try {
             var number = PHONE_UTIL.parse(phone, "ES");
             return PHONE_UTIL.isValidNumber(number);
         } catch (NumberParseException e) {
             return false;
+        }
+    }
+
+    public static boolean isValidImage(MultipartFile file) {
+        try (var stream = file.getInputStream()) {
+            var fileType = TIKA.detect(stream);
+            return fileType != null && fileType.startsWith("image/");
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 

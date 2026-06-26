@@ -13,19 +13,21 @@ class PersonalInfoTest {
 
     @Test
     void testNationalityValidation() {
-        // Valid
-        new PersonalInfo("name", "surname");
-        new PersonalInfo("name", "surname", "ESP");
+        try (var ignored = TestingUtils.getMockedInstantNow()) {
+            // Valid
+            new PersonalInfo("name", "surname", null, null, TestingUtils.PAST_INSTANT, null);
+            new PersonalInfo("name", "surname", "ESP", null, TestingUtils.PAST_INSTANT, null);
 
-        // Invalid country code
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new PersonalInfo("name", "surname", null, "INVALID", null, null));
+            // Invalid country code
+            Assertions.assertThrows(IllegalArgumentException.class, () -> new PersonalInfo("name", "surname", null, "INVALID", TestingUtils.PAST_INSTANT, null));
+        }
     }
 
     @Test
     void testBirthDateValidation() {
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             // Valid
-            new PersonalInfo("name", "surname", "ESP");
+            new PersonalInfo("name", "surname", "ESP", null, TestingUtils.PAST_INSTANT, null);
             new PersonalInfo("name", "surname", "ESP", null, TestingUtils.INSTANT, null);
 
             // Future birthdate
@@ -34,27 +36,23 @@ class PersonalInfoTest {
     }
 
     private static final Object[][] IS_COMPLETE_MCDC = new Boolean[][]{
-            new Boolean[]{true, true, true,    /* = */ true},
-            new Boolean[]{true, false, true,   /* = */ false},
-            new Boolean[]{false, false, true,  /* = */ true},
-            new Boolean[]{false, false, false, /* = */ false},
+            new Boolean[]{true, true,   /* = */ true},
+            new Boolean[]{true, false,  /* = */ false},
+            new Boolean[]{false, false, /* = */ true},
     };
 
     @ParameterizedTest
     @FieldSource("IS_COMPLETE_MCDC")
-    void testIsComplete(boolean reqSSur, boolean hasSSur, boolean hasBirth, boolean expected) {
+    void testIsComplete(boolean reqSSur, boolean hasSSur, boolean expected) {
         var secondSurname = hasSSur ? "2surname" : null;
-        var birthDate = hasBirth ? TestingUtils.PAST_INSTANT : null;
 
-        var pInfo = new PersonalInfo("name", "surname", secondSurname, null, birthDate, null);
-        Assertions.assertEquals(expected, pInfo.isComplete(reqSSur));
+        try (var ignored = TestingUtils.getMockedInstantNow()) {
+            var pInfo = new PersonalInfo("name", "surname", secondSurname, null, TestingUtils.PAST_INSTANT, null);
+            Assertions.assertEquals(expected, pInfo.isComplete(reqSSur));
+        }
     }
 
     private static final Object[][] BIRTHDATES = new Object[][]{
-            new Object[]{
-                    null,
-                    false
-            },
             new Object[]{
                     TestingUtils.INSTANT.minus(17 * 365, ChronoUnit.DAYS), // Minor
                     false
