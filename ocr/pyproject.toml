@@ -1,6 +1,5 @@
 [project]
 name = "autoparte-ocr"
-version = "1.0.0"
 requires-python = "~=3.11.0"
 dependencies = [
     "fastapi~=0.136.3",
@@ -10,11 +9,17 @@ dependencies = [
     "rapidocr~=3.8.1",
     "opencv-python-headless~=4.13.0.92",
 ]
+dynamic = ["version"]
 
 [tool.uv]
 exclude-dependencies = ["opencv-python"]
+
+[build-system]
+requires = ["setuptools~=82.0.1", "setuptools_scm[simple]~=10.2.0"]
+build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
 deploy = ["uvloop~=0.22.1"]
 cpu = ["onnxruntime~=1.26.0"]
 gpu = ["onnxruntime-gpu~=1.26.0"]
+dev = ["fastapi[standard]~=0.136.3", "pytest~=9.1.1", "pytest-cov~=7.1.0"]

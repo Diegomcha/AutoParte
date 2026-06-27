@@ -1,6 +1,7 @@
 from typing import Annotated
 
 from fastapi import FastAPI, File, HTTPException
+from fastapi.responses import JSONResponse
 
 from ocr import ocr_mrz
 
@@ -23,19 +24,30 @@ def mrz_route(image: Annotated[bytes, File()]):
     try:
         # Perform OCR and MRZ parsing
         result = ocr_mrz(image)
-        return {
-            "valid": bool(result),
-            "raw": result.mrz_code,
-            "data": result.fields()._asdict(),
-            "errors": result.report.errors,
-            "warnings": result.report.warnings,
-        }
+        return JSONResponse(
+            status_code=200 if bool(result) else 400,
+            content={
+                "valid": bool(result),
+                "raw": result.mrz_code,
+                "data": result.fields()._asdict(),
+                "errors": result.report.errors,
+                "warnings": result.report.warnings,
+            },
+        )
     except ValueError as e:
         [msg, raw] = e.args
-        raise HTTPException(status_code=400, detail={"msg": msg, "raw": raw})
+        return JSONResponse(
+            status_code=400,
+            content={
+                "valid": False,
+                "raw": raw,
+                "errors": [msg],
+            },
+        )
     except Exception as e:
         print("Unexpected error while processing image")
         print(e)
         raise HTTPException(
-            status_code=500, detail="Unexpected error while processing image"
+            status_code=500,
+            detail=f"Unexpected error while processing image:{str(e)}",
         )

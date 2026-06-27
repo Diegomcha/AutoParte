@@ -1,0 +1,145 @@
+{
+  "dnis/dni.jpeg": {
+    "valid": true,
+    "raw": "IDESPCAA000000499999999R<<<<<<\n8001014F3106028ESP<<<<<<<<<<<1\nESPANOLA<ESPANOLA<<CARMEN<<<<<",
+    "data": {
+      "surname": "ESPANOLA ESPANOLA",
+      "name": "CARMEN",
+      "country": "ESP",
+      "nationality": "ESP",
+      "birth_date": "800101",
+      "expiry_date": "310602",
+      "sex": "F",
+      "document_type": "ID",
+      "document_number": "CAA000000",
+      "optional_data": "99999999R",
+      "birth_date_hash": "4",
+      "expiry_date_hash": "8",
+      "document_number_hash": "4",
+      "optional_data_2": "",
+      "final_hash": "1"
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "others/fr_id.png": {
+    "valid": true,
+    "raw": "IDFRAX4RTBPFW46<<<<<<<<<<<<<<<\n9007138F3002119FRA<<<<<<<<<<<6\nMARTIN<<MAELYS<GAELLE<MARIE<<<",
+    "data": {
+      "surname": "MARTIN",
+      "name": "MAELYS GAELLE MARIE",
+      "country": "FRA",
+      "nationality": "FRA",
+      "birth_date": "900713",
+      "expiry_date": "300211",
+      "sex": "F",
+      "document_type": "ID",
+      "document_number": "X4RTBPFW4",
+      "optional_data": "",
+      "birth_date_hash": "8",
+      "expiry_date_hash": "9",
+      "document_number_hash": "6",
+      "optional_data_2": "",
+      "final_hash": "6"
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "others/nl_id.avif": {
+    "valid": true,
+    "raw": "I<NLDSPECI20142999999990<<<<<8\n6503101F2403096NLD<<<<<<<<<<<8\nDE<BRUIJN<<WILLEKE<LISELOTTE<<",
+    "data": {
+      "surname": "DE BRUIJN",
+      "name": "WILLEKE LISELOTTE",
+      "country": "NLD",
+      "nationality": "NLD",
+      "birth_date": "650310",
+      "expiry_date": "240309",
+      "sex": "F",
+      "document_type": "I",
+      "document_number": "SPECI2014",
+      "optional_data": "999999990<<<<<8",
+      "birth_date_hash": "1",
+      "expiry_date_hash": "6",
+      "document_number_hash": "2",
+      "optional_data_2": "",
+      "final_hash": "8"
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "passports/CAN.webp": {
+    "valid": true,
+    "raw": "P<CANAMAN<<RITA<TANIA<<<<<<<<<<<<<<<<<<<<<<<\nERE82721<9CAN8412070M2405252<<<<<<<<<<<<<<08",
+    "data": {
+      "surname": "AMAN",
+      "name": "RITA TANIA",
+      "country": "CAN",
+      "nationality": "CAN",
+      "birth_date": "841207",
+      "expiry_date": "240525",
+      "sex": "M",
+      "document_type": "P",
+      "document_number": "ERE82721",
+      "optional_data": "",
+      "birth_date_hash": "0",
+      "expiry_date_hash": "2",
+      "document_number_hash": "9",
+      "optional_data_hash": "0",
+      "final_hash": "8"
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "passports/DE.jpg": {
+    "valid": true,
+    "raw": "P<D<<MUSTERMANN<<ERIKA<<<<<<<<<<<<<<<<<<<<<<\nC01XYCCG91D<<6408125F2702283<<<<<<<<<<<<<<<8",
+    "data": {
+      "surname": "MUSTERMANN",
+      "name": "ERIKA",
+      "country": "D",
+      "nationality": "D",
+      "birth_date": "640812",
+      "expiry_date": "270228",
+      "sex": "F",
+      "document_type": "P",
+      "document_number": "C01XYCCG9",
+      "optional_data": "",
+      "birth_date_hash": "5",
+      "expiry_date_hash": "3",
+      "document_number_hash": "1",
+      "optional_data_hash": "<",
+      "final_hash": "8"
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "passports/NL.jpg": {
+    "valid": true,
+    "raw": "P<NLDDE<BRUIJN<<WILLEKE<LISELOTTE<<<<<<<<<<<\nSPECI20142NLD6503101F2403096999999990<<<<<84",
+    "data": {
+      "surname": "DE BRUIJN",
+      "name": "WILLEKE LISELOTTE",
+      "country": "NLD",
+      "nationality": "NLD",
+      "birth_date": "650310",
+      "expiry_date": "240309",
+      "sex": "F",
+      "document_type": "P",
+      "document_number": "SPECI2014",
+      "optional_data": "999999990",
+      "birth_date_hash": "1",
+      "expiry_date_hash": "6",
+      "document_number_hash": "2",
+      "optional_data_hash": "8",
+      "final_hash": "4"
+    },
+    "errors": [],
+    "warnings": []
+  },
+  "failed/DNI_front.webp": {
+    "valid": false,
+    "raw": [],
+    "errors": ["No valid MRZ detected in the image"]
+  }
+}
