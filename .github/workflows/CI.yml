@@ -96,7 +96,7 @@ jobs:
       # OCR
       - name: (OCR) Install dependencies
         working-directory: ocr
-        run: uv sync --locked --extra cpu,deploy,dev --no-install-project
+        run: uv sync --locked --extra cpu,dev --no-install-project
 
       - name: (OCR) Run tests and generate reports
         working-directory: ocr

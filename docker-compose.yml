@@ -1,0 +1,29 @@
+# TODO: FINISH!!!
+
+name: autoparte
+
+services:
+    app:
+        image: autoparte:0.0.1-SNAPSHOT
+        depends_on:
+            - db
+        container_name: autoparte_app
+        expose:
+            - 8080
+        environment:
+            - AUTOPARTE_SES_ENDPOINT=http://localhost
+            - AUTOPARTE_SES_USERNAME=autoparte
+            - AUTOPARTE_SES_PASSWORD=autoparte
+            - AUTOPARTE_SES_LANDLORD-CODE=00000
+
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/autoparte
+            - SPRING_DATASOURCE_USERNAME=autoparte
+            - SPRING_DATASOURCE_PASSWORD=autoparte
+            - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    db:
+        image: dhi.io/postgres:18.4-alpine3.24
+        container_name: autoparte_db
+        environment:
+            - POSTGRES_DB=autoparte
+            - POSTGRES_USER=autoparte
+            - POSTGRES_PASSWORD=autoparte
