@@ -49,6 +49,11 @@ jobs:
           cache: maven
           cache-dependency-path: backend/pom.xml
 
+      - name: Set up UV
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          working-directory: ocr
+
       # FRONTEND
       - name: (Frontend) Install dependencies
         working-directory: frontend
@@ -88,6 +93,16 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: mvn -B verify
 
+      # OCR
+      - name: (OCR) Install dependencies
+        working-directory: ocr
+        run: uv sync --locked --extra cpu,deploy,dev --no-install-project
+
+      - name: (OCR) Run tests and generate reports
+        working-directory: ocr
+        continue-on-error: true
+        run: uv run -m pytest --cov --cov-report=xml --cov-branch
+
       # SCAN
       - name: Analyze with SonarQube
         uses: SonarSource/sonarqube-scan-action@59db25f34e16620e48ab4bb9e4a5dce155cb5432 # v8.0.0
@@ -101,8 +116,8 @@ jobs:
     permissions:
       contents: read
     outputs:
-      app: ${{ steps.filter.outputs.app }}
-      ocr: ${{ steps.filter.outputs.ocr }}
+      app: ${{ steps.filter.outputs.app == 'true' || github.ref_type == 'tag' }}
+      ocr: ${{ steps.filter.outputs.ocr == 'true' || github.ref_type == 'tag' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
@@ -119,63 +134,75 @@ jobs:
             ocr:
               - './ocr/**'
 
-  # build-app:
-  #   name: Build APP image
-  #   runs-on: ubuntu-latest
-  #   needs: detect-changes
-  #   if: needs.detect-changes.outputs.app == 'true'
-  #   permissions:
-  #     contents: read
-  #     packages: write
-  #     attestations: write
-  #     id-token: write
-  #   steps:
-  #     # Checkout
-  #     - name: Checkout code
-  #       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
+  build-app:
+    name: Build APP image
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.app == 'true'
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      # Checkout
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
 
-  #     # Setup
-  #     - name: Set up JDK 21
-  #       uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
-  #       with:
-  #         java-version: 21
-  #         distribution: temurin
-  #         cache: maven
-  #         cache-dependency-path: backend/pom.xml
+      # Setup
+      - name: Set up JDK 21
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+          cache-dependency-path: backend/pom.xml
 
-  #     - name: Extract container metadata (tags, labels)
-  #       id: meta
-  #       uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
-  #       with:
-  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
-  #         sep-tags: ","
+      - name: Extract container metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
+          sep-tags: ","
 
-  #     - name: Log in to the Container registry
-  #       uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
-  #       with:
-  #         registry: ${{ env.REGISTRY }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log in to the Container registry
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
-  #     # Test building images (PR)
-  #     - name: Build with Maven (No Publish)
-  #       if: github.event_name == 'pull_request'
-  #       run: ./mvnw clean package
+      # Test building images (PR)
+      - name: Build with Maven (No Publish)
+        if: github.event_name == 'pull_request'
+        run: ./mvnw clean package
 
-  #     # Build and push with attestation (main branch)
-  #     - name: Build and push Docker image
-  #       if: github.event_name != 'pull_request'
-  #       working-directory: backend
-  #       env:
-  #         TAGS: ${{ steps.meta.outputs.tags }}
-  #       run: |
-  #         ./mvnw spring-boot:build-image \
-  #           -Dspring-boot.build-image.imageName=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
+      # Build and push with attestation (main branch)
+      - name: Build and push Docker image
+        id: push
+        if: github.event_name != 'pull_request'
+        working-directory: backend
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          # Build & push image
+          ./mvnw spring-boot:build-image \
+            -Dspring-boot.build-image.imageName=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
 
-  #       # TODO: añadir attestation a la imagen de Spring Boot, actualmente no es posible con el plugin de Spring Boot, se puede hacer con buildpacks pero no con el plugin
+          # Extract the image digest
+          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app | cut -d'@' -f2)
+          echo "digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
+
+      - name: Generate artifact attestation
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        if: github.event_name != 'pull_request'
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
 
   build-ocr:
     name: Build OCR images
