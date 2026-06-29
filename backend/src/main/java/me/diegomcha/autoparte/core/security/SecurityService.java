@@ -1,10 +1,13 @@
 package me.diegomcha.autoparte.core.security;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.core.event.UpdatePasswordSuccessEvent;
 import me.diegomcha.autoparte.core.exception.UnauthorizedException;
 import me.diegomcha.autoparte.core.repos.AccountRepo;
+import me.diegomcha.autoparte.core.repos.EmployeeRepo;
 import me.diegomcha.autoparte.domain.Account;
+import me.diegomcha.autoparte.domain.Employee;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +29,7 @@ public class SecurityService {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final ApplicationEventPublisher eventPublisher;
+    private final EmployeeRepo employeeRepo;
 
     /**
      * Updates the password of the user with the given username, if the current password matches.
@@ -67,6 +71,17 @@ public class SecurityService {
      */
     public @Nullable Account getAccountFromAuthentication(@Nullable Authentication authentication) {
         return this.getAccountFromAuthentication(authentication, true);
+    }
+
+    /**
+     * Extracts the Employee associated with the given Account if possible.
+     *
+     * @param account The Account object from which to extract the Employee. Must not be null.
+     * @return The Employee associated with the given Account, or null if no such Employee exists.
+     */
+    // TODO: Add to tests
+    public @Nullable Employee getEmployeeFromAccount(@NonNull Account account) {
+        return employeeRepo.findByAccountId(account.getId()).orElse(null);
     }
 
     /**

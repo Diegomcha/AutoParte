@@ -22,7 +22,7 @@ class PersonTest {
     @BeforeEach
     void setUp() {
         Accommodation accommodation = new Accommodation("Test", "SESCODE", null);
-        this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 2, Payment.of(Payment.PaymentType.ON_SITE), null, null);
+        this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 2, Payment.of(Payment.PaymentType.ON_SITE, null, null, null, null), null, null);
         this.person = new Person(booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
     }
 

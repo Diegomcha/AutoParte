@@ -1,7 +1,10 @@
 import {
 	Button,
+	Center,
 	Checkbox,
+	Paper,
 	PasswordInput,
+	Stack,
 	TextInput,
 	Title,
 } from '@mantine/core';
@@ -44,31 +47,44 @@ export default function LoginPage() {
 	};
 
 	return (
-		<>
-			<Title>{t(($) => $.auth.login.title)}</Title>
-			<form onSubmit={form.onSubmit(login)}>
-				<TextInput
-					key={form.key('username')}
-					name="username"
-					label={t(($) => $.auth.login.form.username)}
-					{...form.getInputProps('username')}
-					// type="email"
-				/>
-				<PasswordInput
-					key={form.key('password')}
-					name="password"
-					label={t(($) => $.auth.login.form.password)}
-					type="password"
-					{...form.getInputProps('password')}
-				/>
-				<Checkbox
-					key={form.key('rememberMe')}
-					name="remember-me"
-					label={t(($) => $.auth.login.form.rememberMe)}
-					{...form.getInputProps('rememberMe')}
-				/>
-				<Button type="submit">{t(($) => $.auth.login.form.submit)}</Button>
-			</form>
-		</>
+		<Center bg="dark" className="h-screen">
+			<Paper withBorder p="xl" className="w-full sm:max-w-md">
+				<Title ta="center" mb="lg">
+					{t(($) => $.auth.login.title)}
+				</Title>
+				<form onSubmit={form.onSubmit(login)}>
+					<Stack>
+						<TextInput
+							key={form.key('username')}
+							name="username"
+							label={t(($) => $.auth.login.form.username)}
+							size="md"
+							radius="md"
+							{...form.getInputProps('username')}
+						/>
+						<PasswordInput
+							key={form.key('password')}
+							name="password"
+							label={t(($) => $.auth.login.form.password)}
+							type="password"
+							size="md"
+							radius="md"
+							{...form.getInputProps('password')}
+						/>
+						<Checkbox
+							key={form.key('rememberMe')}
+							name="remember-me"
+							label={t(($) => $.auth.login.form.rememberMe)}
+							size="md"
+							radius="md"
+							{...form.getInputProps('rememberMe')}
+						/>
+						<Button type="submit" size="md" radius="md">
+							{t(($) => $.auth.login.form.submit)}
+						</Button>
+					</Stack>
+				</form>
+			</Paper>
+		</Center>
 	);
 }

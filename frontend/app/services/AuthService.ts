@@ -1,10 +1,19 @@
 import api from '~/api';
 import { redirect } from 'react-router';
-import type { UserDetails } from '~/@types/api';
+import type { AccountDto } from '~/@types/api';
 
 const USER_KEY = 'user';
 
 class AuthService {
+	/**
+	 * Checks if the currently logged in user has the "ROLE_ADMIN" authority.
+	 * @returns True if the user has the "ROLE_ADMIN" authority, false otherwise.
+	 */
+	async isAdmin(): Promise<boolean> {
+		const user = await this.getLoggedInUser();
+		return user?.roles.includes('ROLE_ADMIN') ?? false;
+	}
+
 	/**
 	 * Checks if the user is currently authenticated.
 	 * @returns True if the user is authenticated, false otherwise.
@@ -18,10 +27,10 @@ class AuthService {
 	 * First checks sessionStorage, and if not found, makes an API call to try and retrieve the user.
 	 * @returns The logged-in user if available, or null if not logged in.
 	 */
-	async getLoggedInUser(): Promise<UserDetails | null> {
+	async getLoggedInUser(): Promise<AccountDto | null> {
 		// First check sessionStorage for cached user
 		const storedUser = sessionStorage.getItem(USER_KEY);
-		let user = storedUser ? (JSON.parse(storedUser) as UserDetails) : null;
+		let user = storedUser ? (JSON.parse(storedUser) as AccountDto) : null;
 
 		// If not found in sessionStorage, make API call to get logged in user & cache it in sessionStorage
 		if (!user) {

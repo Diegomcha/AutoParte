@@ -14,7 +14,7 @@ import java.util.*;
 public class LocationCatalogueService {
 
     @Getter
-    private final String[] countries = Locale.getISOCountries();
+    private final String[] countries = Locale.getISOCountries(Locale.IsoCountryCode.PART1_ALPHA3).toArray(new String[0]);
 
     @Getter
     private final Map<String, String> spanishProvinces;

@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Arrays;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
 class LocationCatalogueServiceTest {
@@ -18,7 +20,8 @@ class LocationCatalogueServiceTest {
         var countries = locationCatalogueService.getCountries();
 
         Assertions.assertNotNull(countries);
-        Assertions.assertTrue(countries.length > 0);
+        Assertions.assertEquals(249, countries.length); // There are 249 ISO 3166-1 alpha-3 country codes
+        Assertions.assertTrue(Arrays.stream(countries).allMatch(code -> code.length() == 3)); // All codes should be 3 characters long
     }
 
     @Test

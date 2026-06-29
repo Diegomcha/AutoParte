@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.config;
 
 import me.diegomcha.autoparte.core.repos.AccountRepo;
+import me.diegomcha.autoparte.core.security.BookingPublicAccessEval;
 import me.diegomcha.autoparte.core.security.SecurityHandlers;
 import me.diegomcha.autoparte.core.security.SecurityService;
 import me.diegomcha.autoparte.core.security.UserAccount;
@@ -10,11 +11,16 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -30,21 +36,40 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfig {
 
+    // TODO: TEST SECURITY!!!
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityHandlers securityHandlers, DynamicConfigService dynamicConfigService) {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityHandlers securityHandlers, DynamicConfigService dynamicConfigService, BookingPublicAccessEval bookingPublicAccessEval) {
         return http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/api/auth/**", "/api/docs/**").permitAll()
-                        .anyRequest().authenticated()
+                                .requestMatchers(
+                                        // Public endpoints
+                                        "/auth/**",
+                                        // Public API endpoints
+                                        "/api/auth/**",
+                                        "/api/docs/**",
+                                        "/api/catalogue/**",
+                                        "/api/ocr/**"
+                                ).permitAll()
+                                // Public access to bookings for check-in purposes
+                                .requestMatchers(HttpMethod.GET, "/api/accommodations/{accommodationId}/bookings/{bookingId}").access(bookingPublicAccessEval.getBookingCanBeAccessedPubliclyAuthorizationManager())
+                                .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/completed").access(bookingPublicAccessEval.getBookingCanBeAccessedPubliclyAuthorizationManager()) // TODO: ADD ROUTE!!!
+                                .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/checkin").access(bookingPublicAccessEval.getCheckinCanBeAccessedPubliclyAuthorizationManager())
+                                .requestMatchers("/api/accommodations/{accommodationId}/bookings/{bookingId}/people/**").access(bookingPublicAccessEval.getBookingCanBeAccessedPubliclyAuthorizationManager())
+                                // Protected routes for employees
+                                .requestMatchers(HttpMethod.GET, "/api/accommodations/*").authenticated()
+                                .requestMatchers("/api/accommodations/*/bookings/**").authenticated()
+                                // Admin-only routes
+                                .anyRequest().hasRole("ADMIN")
 //                                .anyRequest().permitAll() // TODO: UNDO!
                 )
-                .csrf(CsrfConfigurer::spa)
-//                .csrf(CsrfConfigurer::disable) // TODO: UNDO!
+//                .csrf(CsrfConfigurer::spa)
+                .csrf(CsrfConfigurer::disable) // TODO: UNDO!
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/api/auth/login")
@@ -106,5 +131,12 @@ class SecurityConfig {
     @Bean
     AuditorAware<Account> auditorProvider(SecurityService service) {
         return () -> Optional.ofNullable(service.getAccountFromAuthentication(SecurityContextHolder.getContext().getAuthentication(), false));
+    }
+
+    @Bean
+    static RoleHierarchy roleHierarchy() {
+        return RoleHierarchyImpl.withDefaultRolePrefix()
+                .role("ADMIN").implies("EMPLOYEE")
+                .build();
     }
 }

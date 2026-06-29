@@ -14,12 +14,28 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Address extends BaseEntity {
 
+    /**
+     * Factory method to create an Address instance based on the provided country.
+     * If the country is "ESP", a SpanishAddress instance is created;
+     * otherwise, a generic Address instance is created.
+     *
+     * @param addressLine1 First line of the address. Must not be null.
+     * @param addressLine2 Second line of the address. Can be null.
+     * @param municipality Municipality (code for Spain) of the address. Must not be null.
+     * @param postalCode   Postal code of the address. Must not be null.
+     * @param country      Country code of the address. Must not be null.
+     * @return An instance of Address or SpanishAddress based on the country.
+     * @throws IllegalArgumentException if any of the required parameters (addressLine1, municipality, postalCode, country) are null
+     *                                  or the country code is invalid
+     *                                  or the municipality code is invalid for Spain when country is "ESP"
+     *                                  or the postal code does not match the municipality.
+     */
     public static Address of(@NonNull String addressLine1, String addressLine2, @NonNull String municipality, @NonNull String postalCode, @NonNull String country) {
         if ("ESP".equals(country))
             return new SpanishAddress(addressLine1, addressLine2, municipality, postalCode, country);
         return new Address(addressLine1, addressLine2, municipality, postalCode, country);
     }
-    
+
     private @NonNull String addressLine1;
     private String addressLine2;
     @Setter(AccessLevel.PROTECTED)

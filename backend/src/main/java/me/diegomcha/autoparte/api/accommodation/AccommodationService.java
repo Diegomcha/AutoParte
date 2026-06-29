@@ -11,13 +11,16 @@ import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
 import me.diegomcha.autoparte.core.repos.EmployeeRepo;
+import me.diegomcha.autoparte.core.security.SecurityService;
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -39,15 +42,25 @@ class AccommodationService {
     private final AccommodationRepo accommodationRepo;
     private final EmployeeRepo employeeRepo;
     private final EntityMapper entityMapper;
+    private final SecurityService securityService;
 
     /**
-     * Returns a paginated list of all accommodations.
+     * Returns a paginated list of all accommodations taking into account the logged-in user access.
      *
      * @param pageable Pagination information (page number, size, sorting)
      * @return A page of accommodations
      */
     public Page<AccommodationDtoResponse> getAccommodations(@NonNull Pageable pageable) {
-        return accommodationMapper.toResponse(accommodationRepo.findAll(pageable));
+        var employee = Optional
+                .ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(securityService::getAccountFromAuthentication)
+                .map(securityService::getEmployeeFromAccount);
+
+        return employee
+                // Employee
+                .map(emp -> accommodationMapper.toResponse(accommodationRepo.findByEmployeesId(emp.getId(), pageable)))
+                // Admin
+                .orElseGet(() -> accommodationMapper.toResponse(accommodationRepo.findAll(Pageable.unpaged())));
     }
 
     /**
@@ -90,7 +103,7 @@ class AccommodationService {
     /**
      * Updates the accommodation with the given ID using the provided update data.
      *
-     * @param id    The ID of the accommodation to update
+     * @param id     The ID of the accommodation to update
      * @param update The update data to apply to the accommodation
      * @throws ResourceConflictException if the update contains a name or sesCode that is already used by another accommodation
      * @throws ResourceNotFoundException if no accommodation with the given ID exists

@@ -42,6 +42,7 @@ export default defineConfig([
 					varsIgnorePattern: '^_',
 				},
 			],
+			'@typescript-eslint/only-throw-error': 'warn',
 		},
 	},
 	{

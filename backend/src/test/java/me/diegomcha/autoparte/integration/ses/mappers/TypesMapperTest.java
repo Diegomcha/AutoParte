@@ -138,7 +138,8 @@ class TypesMapperTest {
                     ),
                     Document.of(
                             Document.DocumentType.PASSPORT,
-                            "number_2"
+                            "number_2",
+                            null
                     ),
                     Address.of(
                             "line1_2",

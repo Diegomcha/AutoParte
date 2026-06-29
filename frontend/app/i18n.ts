@@ -3,6 +3,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import HttpAPI from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
 
+// Initialize i18next for internationalization
 await i18n
 	// Pass the i18n instance to react-i18next.
 	.use(initReactI18next)

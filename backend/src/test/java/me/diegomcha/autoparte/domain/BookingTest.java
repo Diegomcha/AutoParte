@@ -22,7 +22,7 @@ class BookingTest {
 
     @BeforeEach
     void setUp() {
-        this.payment = Payment.of(Payment.PaymentType.ON_SITE);
+        this.payment = Payment.of(Payment.PaymentType.ON_SITE, null, null, null, null);
         this.accommodation = new Accommodation("Test", "SESCODE", null);
         this.booking = new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.INSTANT.plusSeconds(3600), 1, null, null, null);
     }
@@ -37,11 +37,19 @@ class BookingTest {
     void testNumberOfPeople() {
         Assertions.assertEquals(1, this.booking.getNumberOfPeople());
 
+        // Test that creating a second person without increasing the number of people throws an exception
         var personalInfo = new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null);
         var contactInfo = new ContactInfo(null, null, "email@email.com");
 
         new Person(this.booking, personalInfo, contactInfo, null, null, null);
         Assertions.assertThrows(IllegalStateException.class, () -> new Person(this.booking, personalInfo, contactInfo, null, null, null));
+
+        // Now increase the number of people and create a second person
+        this.booking.setNumberOfPeople(2);
+        new Person(this.booking, personalInfo, contactInfo, null, null, null);
+
+        // Test reducing the number of people below the current number of persons throws an exception
+        Assertions.assertThrows(IllegalStateException.class, () -> this.booking.setNumberOfPeople(1));
     }
 
     @Test
@@ -95,6 +103,14 @@ class BookingTest {
 
         this.booking.setInternetConnection(null);
         Assertions.assertFalse(this.booking.getInternetConnection());
+    }
+
+    @Test
+    void testCanBeModified() {
+        Assertions.assertTrue(this.booking.canBeModified());
+        this.makeCheckinable(true);
+        this.booking.checkIn();
+        Assertions.assertFalse(this.booking.canBeModified());
     }
 
     @Test
@@ -226,6 +242,22 @@ class BookingTest {
             };
             Assertions.assertEquals(expectedStatus, communication.getStatus());
         });
+    }
+
+    @Test
+    void testRemovePerson() {
+        this.makeConfirmable(); // adds a person to the booking
+
+        Assertions.assertEquals(1, this.booking.getPeople().size());
+        var person = this.booking.getPeople().getFirst();
+
+        this.booking.removePerson(person);
+
+        // After removing the person, the list of people should be empty
+        Assertions.assertTrue(this.booking.getPeople().isEmpty());
+
+        // Trying to remove the same person again should throw an exception
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.removePerson(person));
     }
 
     private void makeConfirmable() {

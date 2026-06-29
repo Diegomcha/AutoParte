@@ -8,6 +8,5 @@ public record ConfigDtoResponse(
         boolean sesCredentialsValid,
         boolean digitalSignatureEnabled,
         boolean manualReviewEnabled
-        // TODO: ...
-        ) {
+) {
 }

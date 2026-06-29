@@ -17,6 +17,11 @@ public class DynamicConfigService {
     private final ConfigRepo configRepo;
     private final AutoparteProperties autoparteProperties;
 
+    /**
+     * Get the current configuration. If no configuration exists, initialize a new one with default values.
+     *
+     * @return The current Configuration object.
+     */
     public Configuration getConfig() {
         return configRepo.findAll()
                 .stream()
@@ -24,6 +29,12 @@ public class DynamicConfigService {
                 .orElseGet(this::initializeConfig);
     }
 
+    /**
+     * Update the current configuration using the provided updater function.
+     * The updater function receives the current Configuration object and can modify its properties.
+     *
+     * @param updater A Consumer function that takes the current Configuration object and updates its properties.
+     */
     public void updateConfig(Consumer<Configuration> updater) {
         var config = getConfig();
         updater.accept(config);

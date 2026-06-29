@@ -27,6 +27,11 @@ public class Configuration extends BaseEntity {
     @Setter(AccessLevel.NONE)
     private String rememberMeKey = RandomStringUtils.secureStrong().nextAlphanumeric(64);
 
+    /**
+     * Checks if the SES configuration is complete by verifying that the SES username, password, and landlord code are all set (not null).
+     *
+     * @return true if all SES configuration fields are set; false otherwise.
+     */
     public boolean isSesConfigured() {
         return sesUsername != null && sesPassword != null && sesLandlordCode != null;
     }

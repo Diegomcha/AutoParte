@@ -22,10 +22,21 @@ public class Payment extends BaseEntity {
         OTHER // OTRO
     }
 
-    public static Payment of(@NonNull PaymentType type) {
-        return of(type, null, null, null, null);
-    }
-
+    /**
+     * Factory method to create a Payment instance based on the provided payment type.
+     * If the payment type is CREDIT_CARD, a CreditCardPayment instance is created.
+     * Otherwise, a generic Payment instance is created.
+     *
+     * @param type       The type of payment (e.g., CASH, CREDIT_CARD, PLATFORM, etc.). Must not be null.
+     * @param mean       The payment mean (e.g., card number, platform name, etc.). Can be null.
+     * @param holder     The name of the payment holder. Can be null.
+     * @param date       The date of the payment. Can be null.
+     * @param expiryDate The expiry date of the payment method (only relevant for CREDIT_CARD type). Can be null.
+     * @return A Payment instance (either CreditCardPayment or generic Payment) based on the provided type.
+     * @throws IllegalArgumentException if type is null or
+     *                                  the date is in the future or
+     *                                  the payment type is CREDIT_CARD and the expiryDate is null or in the past.
+     */
     public static Payment of(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
         if (type == PaymentType.CREDIT_CARD)
             return new CreditCardPayment(mean, holder, date, expiryDate);

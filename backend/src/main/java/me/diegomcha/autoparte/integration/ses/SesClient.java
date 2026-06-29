@@ -18,6 +18,8 @@ import me.diegomcha.autoparte.integration.ses.mappers.TypesMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
+import org.springframework.ws.client.WebServiceClientException;
+import org.springframework.ws.client.WebServiceTransportException;
 import org.springframework.ws.client.core.WebServiceTemplate;
 
 import javax.xml.transform.stream.StreamResult;
@@ -41,7 +43,7 @@ public class SesClient {
     private final ApplicationContext applicationContext;
     private final WebServiceTemplate wsClient;
     private final Jaxb2Marshaller marshaller;
-    
+
     private final DynamicConfigService dynamicConfigService;
 
     private final RequestMapper reqMapper;
@@ -97,13 +99,19 @@ public class SesClient {
 
     public void checkConnection() throws BadConfigurationException, ServiceUnavailableException {
         // Check connection by sending an empty batch check request
-        this.checkBatches(List.of());
+        this.checkBatches(List.of(UUID.randomUUID()));
     }
 
-    private <T, R> R sendRequest(T request, Class<R> responseClass) throws ServiceUnavailableException {
+    private <T, R> R sendRequest(T request, Class<R> responseClass) throws ServiceUnavailableException, BadConfigurationException {
         try {
             return responseClass.cast(wsClient.marshalSendAndReceive(request));
         } catch (Exception e) {
+            // Handle client exceptions
+            if (e instanceof WebServiceTransportException wsTransport && wsTransport.getMessage() != null
+                    && (wsTransport.getMessage().contains("401") || wsTransport.getMessage().contains("502")))
+                // 502 Bad Gateway is returned by SES (for some unknown reason) when the credentials are invalid, so we treat it as a bad configuration
+                throw new BadConfigurationException(BadConfigurationException.BadConfigurationType.SES_BAD_CREDENTIALS);
+
             Sentry.captureException(e);
             throw new ServiceUnavailableException("SES service unavailable");
         }

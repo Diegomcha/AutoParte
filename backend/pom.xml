@@ -376,7 +376,8 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>uploadSourceBundle</goal>
+<!--                            TODO: UNDO!-->
+<!--                            <goal>uploadSourceBundle</goal>-->
                             <goal>validateSdkDependencyVersions</goal>
                         </goals>
                     </execution>

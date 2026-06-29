@@ -18,7 +18,7 @@ class CancellationCommunicationTest {
 
     @BeforeEach
     void setUp() {
-        var booking = new Booking(new Accommodation("Test", "SESCODE", null), TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1, Payment.of(Payment.PaymentType.ON_SITE), null, null);
+        var booking = new Booking(new Accommodation("Test", "SESCODE", null), TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1, Payment.of(Payment.PaymentType.ON_SITE, null, null, null, null), null, null);
         this.communication = (CancellationCommunication) Communication._of(booking, Communication.CommunicationType.CANCELLATION);
         this.batchId = UUID.randomUUID();
         this.sesId = UUID.randomUUID();

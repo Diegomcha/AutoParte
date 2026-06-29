@@ -27,6 +27,19 @@ public class PersonalInfo {
     private @NonNull Instant birthDate;
     private PersonalInfoGender gender;
 
+    /**
+     * Constructor for creating a PersonalInfo instance.
+     *
+     * @param name          Name of the person. Must not be null.
+     * @param firstSurname  First surname of the person. Must not be null.
+     * @param secondSurname Second surname of the person. Can be null.
+     * @param nationality   Nationality of the person. Can be null, but if provided, must be a valid country code.
+     * @param birthDate     Birth date of the person. Must not be null and cannot be in the future.
+     * @param gender        Gender of the person. Can be null.
+     * @throws IllegalArgumentException if birthDate is in the future or
+     *                                  country code is invalid or
+     *                                  any of the required parameters are null.
+     */
     public PersonalInfo(@NonNull String name, @NonNull String firstSurname, String secondSurname, String nationality, @NonNull Instant birthDate, PersonalInfoGender gender) {
         this.name = name;
         this.firstSurname = firstSurname;
@@ -48,10 +61,21 @@ public class PersonalInfo {
         this.birthDate = birthDate;
     }
 
+    /**
+     * Checks if the personal information is complete based on the requirement of a second surname.
+     *
+     * @param requiresSecondSurname Indicates whether a second surname is required for completeness.
+     * @return true if the personal information is complete; false otherwise.
+     */
     public boolean isComplete(boolean requiresSecondSurname) {
         return !(requiresSecondSurname && (this.secondSurname == null || this.secondSurname.isBlank()));
     }
 
+    /**
+     * Checks if the person is considered an adult based on their birthdate and the defined adult age in Spain.
+     *
+     * @return true if the person is an adult; false otherwise.
+     */
     public boolean isAdult() {
         return Duration.between(this.birthDate, Instant.now()).toDays() >= SPAIN_ADULT_AGE * 365;
     }

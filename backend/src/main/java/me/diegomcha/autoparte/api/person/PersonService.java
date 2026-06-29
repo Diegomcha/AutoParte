@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@Transactional(readOnly = true)
 class PersonService {
 
     private static final Supplier<ResourceNotFoundException> BOOKING_NOT_FOUND_EXCEPTION = () ->

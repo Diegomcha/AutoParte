@@ -30,6 +30,14 @@ public class Accommodation extends BaseEntity {
     @ToString.Exclude
     private final @NonNull Set<@NonNull Booking> bookings = new HashSet<>();
 
+    /**
+     * Constructor for creating an Accommodation instance.
+     *
+     * @param name               Accommodation name. Must not be null.
+     * @param sesCode            SES code for the accommodation. Must not be null.
+     * @param internetConnection Boolean indicating if the accommodation has internet connection. Can be null.
+     * @throws IllegalArgumentException if any of the required parameters (name, sesCode) are null.
+     */
     public Accommodation(@NonNull String name, @NonNull String sesCode, Boolean internetConnection) {
         this.setName(name);
         this.setSesCode(sesCode);

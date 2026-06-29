@@ -4,6 +4,7 @@ public class BadConfigurationException extends Exception {
 
     public enum BadConfigurationType {
         SES_UNKNOWN_LANDLORD_CODE,
+        NO_CREDENTIALS_PROVIDED,
         SES_BAD_CREDENTIALS,
         SES_LANDLORD_CANNOT_COMMUNICATE_TYPE,
         SES_LANDLORD_DISABLED_WEB_SERVICE

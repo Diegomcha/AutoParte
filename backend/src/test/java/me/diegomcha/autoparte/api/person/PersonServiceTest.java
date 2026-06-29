@@ -55,7 +55,7 @@ class PersonServiceTest {
 
         var personalInfo = new PersonalInfo("John", "Doe", null, "USA", TestingUtils.PAST_INSTANT, PersonalInfo.PersonalInfoGender.MALE);
         var contactInfo = new ContactInfo("971 49 28 05", null, "john.doe@example.com");
-        var document = Document.of(Document.DocumentType.PASSPORT, "PAS123456");
+        var document = Document.of(Document.DocumentType.PASSPORT, "PAS123456", null);
 
         this.person = personRepo.save(new Person(booking, personalInfo, contactInfo, document, address, Person.PersonRelationship.OTHER));
     }

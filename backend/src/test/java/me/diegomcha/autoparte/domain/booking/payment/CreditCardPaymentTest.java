@@ -11,7 +11,7 @@ class CreditCardPaymentTest {
 
     @BeforeEach
     void setUp() {
-        this.ccPayment = Payment.of(Payment.PaymentType.CREDIT_CARD);
+        this.ccPayment = Payment.of(Payment.PaymentType.CREDIT_CARD, null, null, null, null);
     }
 
 

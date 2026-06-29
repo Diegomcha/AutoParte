@@ -37,6 +37,16 @@ public class SecurityEvent extends BaseEntity {
 
     private Account account;
 
+    /**
+     * Constructor for creating a SecurityEvent instance.
+     *
+     * @param timestamp     The timestamp of the security event. Must not be in the future.
+     * @param remoteAddress The remote address (IP) from which the event originated.
+     * @param type          The type of security event (e.g., LOGIN, LOGOUT, PASSWORD_CHANGE).
+     * @param method        The method used for the security event (e.g., USERNAME_PASSWORD, REMEMBER_ME).
+     * @param account       The account associated with the security event. Can be null if the event is not associated with any account.
+     * @throws IllegalArgumentException if the timestamp is in the future.
+     */
     public SecurityEvent(@NonNull Instant timestamp, @NonNull String remoteAddress, @NonNull SecurityEventType type, @NonNull SecurityEventMethod method, Account account) {
         this.setTimestamp(timestamp);
         this.remoteAddress = remoteAddress;

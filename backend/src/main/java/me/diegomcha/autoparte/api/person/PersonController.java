@@ -47,7 +47,7 @@ class PersonController implements PersonAPI {
         personService.updatePerson(accommodationId, bookingId, id, person);
     }
 
-    @PostMapping("{id}")
+    @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
     public void removePerson(@PathVariable UUID accommodationId, @PathVariable UUID bookingId, @PathVariable UUID id) throws ResourceNotFoundException, ResourceConflictException {

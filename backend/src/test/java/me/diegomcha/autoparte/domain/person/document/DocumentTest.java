@@ -11,8 +11,8 @@ class DocumentTest {
 
     @BeforeEach
     void setUp() {
-        this.passportDoc = Document.of(Document.DocumentType.PASSPORT, "123456789");
-        this.otherDoc = Document.of(Document.DocumentType.OTHER, "987654321");
+        this.passportDoc = Document.of(Document.DocumentType.PASSPORT, "123456789", null);
+        this.otherDoc = Document.of(Document.DocumentType.OTHER, "987654321", null);
     }
 
     @Test

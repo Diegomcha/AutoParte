@@ -1,44 +1,170 @@
 {
-	"employees": {
-		"title": "Empleados",
+	"meta": {
+		"name": "AutoParte"
+	},
+	"header": {
+		"accommodationSelector": {
+			"placeholder": "Selecciona un alojamiento",
+			"nothingFound": "No se encontraron"
+		},
+		"admin": "Modo administrador",
+		"logout": "Cerrar sesión"
+	},
+	"common": {
 		"properties": {
-			"status": {
-				"title": "Estado",
-				"options": {
-					"active": "Activo",
-					"inactive": "Inactivo"
-				}
-			},
-			"name": "Nombre",
-			"surname": "Apellidos",
-			"email": "Correo electrónico",
 			"createdAt": "Fecha de creación",
 			"updatedAt": "Fecha de actualización"
 		},
-		"new": {
-			"button": "Nuevo empleado",
-			"title": "Añadir nuevo empleado",
-			"form": {
-				"name": "Nombre",
-				"surname": "Apellidos",
-				"email": "Correo electrónico",
-				"submit": "Crear",
-				"errors": {
-					"noName": "El nombre es obligatorio",
-					"noSurname": "Los apellidos son obligatorios",
-					"invalidEmail": "El correo electrónico no es válido",
-					"emailInUse": "El correo electrónico ya está registrado"
+		"buttons": {
+			"create": "Crear",
+			"save": "Guardar",
+			"delete": "Eliminar",
+			"deleteSelected": "Eliminar seleccionados",
+			"cancel": "Cancelar"
+		}
+	},
+	"admin": {
+		"nav": {
+			"employees": "Empleados",
+			"accommodations": "Alojamientos",
+			"configuration": "Configuración",
+			"logs": "Registros",
+			"exit": "Salir del modo administrador"
+		},
+		"employees": {
+			"title": "Gestión de empleados",
+			"noRecords": "No hay empleados",
+			"properties": {
+				"enabled": {
+					"label": "Estado",
+					"disabledTooltip": "Deshabilitado el {{date}}",
+					"states": {
+						"enabled": "Habilitado",
+						"disabled": "Deshabilitado"
+					}
+				},
+				"name": {
+					"label": "Nombre",
+					"errors": {
+						"noName": "El nombre es obligatorio"
+					}
+				},
+				"surname": {
+					"label": "Apellidos",
+					"errors": {
+						"noSurname": "Los apellidos son obligatorios"
+					}
+				},
+				"email": {
+					"label": "Correo electrónico",
+					"errors": {
+						"invalidEmail": "El correo electrónico no es válido",
+						"emailInUse": "El correo electrónico ya está registrado"
+					}
+				},
+				"accommodations": {
+					"label": "Alojamientos asignados",
+					"none": "Ninguno",
+					"some": "{{count}} alojamientos"
 				}
 			},
-			"created": {
-				"title": "Empleado creado",
-				"description": "El empleado se ha creado correctamente.",
-				"credentials": {
-					"email": "Correo electrónico de acceso",
+			"new": {
+				"button": "Añadir empleado",
+				"title": "Añadir nuevo empleado",
+				"created": {
+					"title": "Empleado creado",
+					"description": "El empleado se ha creado correctamente."
+				}
+			},
+			"view": {
+				"title": "Detalles del empleado"
+			},
+			"edit": {
+				"title": "Editar empleado",
+				"form": {
+					"noAvailableAccommodations": "No hay alojamientos disponibles"
+				}
+			},
+			"delete": {
+				"title": "Eliminar empleado",
+				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
+			},
+			"deleteMultiple": {
+				"title": "Eliminar empleados",
+				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE.\nSe eliminarán {{count}} empleados."
+			},
+			"resetPassword": {
+				"button": "Restablecer contraseña",
+				"title": "Restablecer contraseña",
+				"description": "¿Estás seguro? Esta acción restablecerá la contraseña del empleado.",
+				"done": {
+					"title": "Contraseña restablecida",
+					"description": "La contraseña del empleado se ha restablecido correctamente."
+				}
+			},
+			"credentials": {
+				"title": "Credenciales de acceso",
+				"fields": {
+					"username": "Nombre de usuario",
 					"password": "Contraseña temporal"
 				},
-				"warning": "Guarda estas credenciales ahora. No podrás volver a ver la contraseña.",
-				"view": "Ver empleado"
+				"description": "Estas son las credenciales de acceso del empleado.",
+				"warning": "No podrás volver a ver la contraseña."
+			}
+		},
+		"accommodations": {
+			"title": "Gestión de alojamientos",
+			"noRecords": "No hay alojamientos",
+			"properties": {
+				"name": {
+					"label": "Nombre",
+					"errors": {
+						"noName": "El nombre es obligatorio"
+					}
+				},
+				"sesCode": {
+					"label": "Código SES",
+					"errors": {
+						"noSesCode": "El código SES es obligatorio"
+					}
+				},
+				"internetConnection": {
+					"label": "Conexión a Internet",
+					"states": {
+						"yes": "Sí",
+						"no": "No"
+					}
+				},
+				"employees": {
+					"label": "Empleados asignados",
+					"none": "Ninguno",
+					"some": "{{count}} empleados"
+				}
+			},
+			"new": {
+				"button": "Añadir alojamiento",
+				"title": "Añadir nuevo alojamiento",
+				"created": {
+					"title": "Alojamiento creado",
+					"description": "El alojamiento se ha creado correctamente."
+				}
+			},
+			"view": {
+				"title": "Detalles del alojamiento"
+			},
+			"edit": {
+				"title": "Editar alojamiento",
+				"form": {
+					"noAvailableEmployees": "No hay empleados disponibles"
+				}
+			},
+			"delete": {
+				"title": "Eliminar alojamiento",
+				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
+			},
+			"deleteMultiple": {
+				"title": "Eliminar alojamientos",
+				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE.\nSe eliminarán {{count}} alojamientos."
 			}
 		}
 	},
@@ -56,10 +182,14 @@
 					"invalidCredentials": "Nombre de usuario o contraseña incorrectos"
 				}
 			}
-		},
-		"logout": {
-			"title": "Cerrar sesión",
-			"button": "Cerrar sesión"
 		}
+	},
+	"error": {
+		"status": {
+			"400": "Solicitud incorrecta",
+			"404": "Página no encontrada",
+			"default": "Se ha producido un error inesperado."
+		},
+		"disclaimer": "No te preocupes, nuestro equipo de desarrollo ya ha sido notificado. Intenta actualizar la página."
 	}
 }

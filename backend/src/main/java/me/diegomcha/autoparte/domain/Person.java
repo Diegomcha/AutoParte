@@ -40,6 +40,17 @@ public class Person extends BaseEntity {
     private Address address;
     private PersonRelationship relationship;
 
+    /**
+     * Constructor for creating a Person instance.
+     *
+     * @param booking      Booking associated with the person. Must not be null.
+     * @param personalInfo Personal information of the person. Must not be null.
+     * @param contactInfo  Contact information of the person. Must not be null.
+     * @param document     Document associated with the person. Can be null.
+     * @param address      Address associated with the person. Can be null.
+     * @param relationship Relationship of the person to another entity. Can be null.
+     * @throws IllegalArgumentException if any of the required parameters (booking, personalInfo, contactInfo) are null.
+     */
     public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo, @NonNull ContactInfo contactInfo, Document document, Address address, PersonRelationship relationship) {
         this.setBooking(booking);
         this.setPersonalInfo(personalInfo);
@@ -62,6 +73,14 @@ public class Person extends BaseEntity {
         if (this.address != null) this.address._getPeople().add(this);
     }
 
+    /**
+     * Check if the Person instance is complete based on the following criteria:
+     * - Personal information is complete, considering if the document requires a second surname.
+     * - If the person is an adult, a document must be present; otherwise, a relationship must be specified.
+     * - An address must be provided.
+     *
+     * @return true if the Person instance is complete; false otherwise.
+     */
     public boolean isComplete() {
         return personalInfo.isComplete(this.document != null && this.document.requiresSecondSurname()) &&
                 (personalInfo.isAdult() ? this.document != null : this.relationship != null) &&

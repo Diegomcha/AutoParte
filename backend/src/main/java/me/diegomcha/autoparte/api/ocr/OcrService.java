@@ -25,9 +25,8 @@ class OcrService {
      * @throws ServiceUnavailableException    if the OCR service is unavailable or fails to process the image
      */
     public PartialPersonDtoRequest extractPersonInfoFromMrz(MultipartFile image) throws ResourceUnprocessableException, ServiceUnavailableException {
-        var response = ocrClient.convertImageToMrz(image.getResource());
-        if (response.valid())
-            throw new ResourceUnprocessableException("Unable to process the provided image file. Please ensure it contains a valid Machine Readable Zone (MRZ).");
-        return ocrMapper.toPartialRequest(response.data());
+        return ocrMapper.toPartialRequest(
+                ocrClient.convertImageToMrz(image.getResource()).data()
+        );
     }
 }
