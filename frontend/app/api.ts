@@ -34,7 +34,7 @@ export function throwErrors<T extends Record<string | number, unknown>>({
 	// Handle API errors in a standardized way
 	if (!response.ok) {
 		// Handle 404 error
-		if (response.status.toString().startsWith('4'))
+		if ([401, 404].includes(response.status))
 			// eslint-disable-next-line @typescript-eslint/only-throw-error
 			throw data(response.statusText, { status: response.status });
 

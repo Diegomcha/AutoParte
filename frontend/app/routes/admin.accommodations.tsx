@@ -7,12 +7,10 @@ import {
 	Group,
 	Modal,
 	Title,
-	Tooltip,
 } from '@mantine/core';
 import {
 	CursorClickIcon,
 	EyeIcon,
-	PasswordIcon,
 	PencilIcon,
 	PlusIcon,
 	TrashIcon,
@@ -24,10 +22,7 @@ import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useRevalidator } from 'react-router';
-import type {
-	AccommodationDtoResponse,
-	EmployeeDtoResponse,
-} from '~/@types/api';
+import type { AccommodationDtoResponse } from '~/@types/api';
 import type { DataTableColumn, DataTableSortStatus } from 'mantine-datatable';
 
 const PAGE_SIZE = 50;
@@ -70,39 +65,63 @@ export default function AccommodationsPage() {
 			sortable: true,
 			resizable: true,
 			accessor: 'name',
-			title: t(($) => $.admin.employees.properties.name.label),
-			render: (accommodation) => accommodation.name,
+			title: t(($) => $.admin.accommodations.properties.name.label),
 		},
 		{
 			sortable: true,
 			resizable: true,
-			accessor: 'email',
-			title: t(($) => $.admin.employees.properties.email.label),
+			accessor: 'sesCode',
+			title: t(($) => $.admin.accommodations.properties.sesCode.label),
+		},
+		{
+			sortable: true,
+			resizable: true,
+			accessor: 'internetConnection',
+			title: t(
+				($) => $.admin.accommodations.properties.internetConnection.label
+			),
+			render: (accommodation) => (
+				<Badge
+					color={accommodation.internetConnection ? 'green' : 'red'}
+					variant="light"
+				>
+					{accommodation.internetConnection
+						? t(
+								($) =>
+									$.admin.accommodations.properties.internetConnection.states
+										.yes
+							)
+						: t(
+								($) =>
+									$.admin.accommodations.properties.internetConnection.states.no
+							)}
+				</Badge>
+			),
 		},
 		{
 			sortable: true,
 			resizable: true,
 			accessor: 'createdAt',
 			title: t(($) => $.common.properties.createdAt),
-			render: (employee) => dayjs(employee.createdAt).format('LLLL'),
+			render: (entity) => dayjs(entity.createdAt).format('LLLL'),
 		},
 		{
 			sortable: true,
 			resizable: true,
 			accessor: 'updatedAt',
 			title: t(($) => $.common.properties.updatedAt),
-			render: (employee) => dayjs(employee.updatedAt).format('LLLL'),
+			render: (entity) => dayjs(entity.updatedAt).format('LLLL'),
 		},
 		{
-			accessor: 'accommodations',
-			title: t(($) => $.admin.employees.properties.accommodations.label),
-			render: (employee) =>
-				employee.accommodations.length === 0 ? (
-					t(($) => $.admin.employees.properties.accommodations.none)
+			accessor: 'employees',
+			title: t(($) => $.admin.accommodations.properties.employees.label),
+			render: (accommodation) =>
+				accommodation.employees.length === 0 ? (
+					t(($) => $.admin.accommodations.properties.employees.none)
 				) : (
 					<Badge variant="light">
-						{t(($) => $.admin.employees.properties.accommodations.some, {
-							count: employee.accommodations.length,
+						{t(($) => $.admin.accommodations.properties.employees.some, {
+							count: accommodation.employees.length,
 						})}
 					</Badge>
 				),
@@ -116,11 +135,11 @@ export default function AccommodationsPage() {
 			),
 			textAlign: 'center',
 			width: '0%',
-			render: (employee) => (
+			render: (accommodation) => (
 				<Group gap={4} wrap="nowrap" justify="center">
 					<ActionIcon
 						component={Link}
-						to={`/admin/employees/${employee.id}`}
+						to={`/admin/accommodations/${accommodation.id}`}
 						size="sm"
 						variant="subtle"
 						color="green"
@@ -129,7 +148,7 @@ export default function AccommodationsPage() {
 					</ActionIcon>
 					<ActionIcon
 						component={Link}
-						to={`/admin/employees/${employee.id}/edit`}
+						to={`/admin/accommodations/${accommodation.id}/edit`}
 						size="sm"
 						variant="subtle"
 						color="blue"
@@ -138,16 +157,7 @@ export default function AccommodationsPage() {
 					</ActionIcon>
 					<ActionIcon
 						component={Link}
-						to={`/admin/employees/${employee.id}/reset-password`}
-						size="sm"
-						variant="subtle"
-						color="orange"
-					>
-						<PasswordIcon />
-					</ActionIcon>
-					<ActionIcon
-						component={Link}
-						to={`/admin/employees/${employee.id}/delete`}
+						to={`/admin/accommodations/${accommodation.id}/delete`}
 						size="sm"
 						variant="subtle"
 						color="red"
@@ -159,26 +169,26 @@ export default function AccommodationsPage() {
 		},
 	];
 
-	const [deleteModalOpen, setDeleteModalOpened] = useState(false);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const { mutate: deleteSelected, isPending: isDeleting } = useMutation({
 		throwOnError: true,
 		mutationFn: async () => {
 			await Promise.all(
-				selected.map(async (employee) => {
+				selected.map(async (accommodation) => {
 					throwErrors(
-						await api.DELETE('/api/employees/{id}', {
-							params: { path: { id: employee.id } },
+						await api.DELETE('/api/accommodations/{id}', {
+							params: { path: { id: accommodation.id } },
 						})
 					);
 				})
 			);
 		},
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['employees'] });
+			await queryClient.invalidateQueries({ queryKey: ['accommodations'] });
 			await revalidator.revalidate();
 
 			setSelected([]);
-			setDeleteModalOpened(false);
+			setDeleteModalOpen(false);
 		},
 	});
 
@@ -186,14 +196,14 @@ export default function AccommodationsPage() {
 		<>
 			<div hidden={revalidator.state === 'idle'}>Revalidating...</div>
 			<Group justify="space-between">
-				<Title order={2}>{t(($) => $.admin.employees.title)}</Title>
+				<Title order={2}>{t(($) => $.admin.accommodations.title)}</Title>
 				<Group>
 					<Button
 						color="red"
 						leftSection={<TrashIcon weight="bold" size={16} />}
 						disabled={selected.length === 0}
 						onClick={() => {
-							setDeleteModalOpened(true);
+							setDeleteModalOpen(true);
 						}}
 					>
 						{t(($) => $.common.buttons.deleteSelected, {
@@ -202,18 +212,18 @@ export default function AccommodationsPage() {
 					</Button>
 					<Button
 						component={Link}
-						to="/admin/employees/new"
+						to="/admin/accommodations/new"
 						color="green"
 						leftSection={<PlusIcon weight="bold" size={16} />}
 					>
-						{t(($) => $.admin.employees.new.button)}
+						{t(($) => $.admin.accommodations.new.button)}
 					</Button>
 				</Group>
 			</Group>
 			<Divider my="sm" />
 			<DataTable
 				height={'calc(100vh - 93px)'}
-				noRecordsText={t(($) => $.admin.employees.noRecords)}
+				noRecordsText={t(($) => $.admin.accommodations.noRecords)}
 				columns={columns}
 				pinLastColumn
 				records={data?.content}
@@ -231,11 +241,11 @@ export default function AccommodationsPage() {
 			<Modal
 				opened={deleteModalOpen}
 				onClose={() => {
-					setDeleteModalOpened(false);
+					setDeleteModalOpen(false);
 				}}
-				title={t(($) => $.admin.employees.deleteMultiple.title)}
+				title={t(($) => $.admin.accommodations.deleteMultiple.title)}
 			>
-				{t(($) => $.admin.employees.deleteMultiple.description, {
+				{t(($) => $.admin.accommodations.deleteMultiple.description, {
 					count: selected.length,
 				})}
 
@@ -243,7 +253,7 @@ export default function AccommodationsPage() {
 					<Button
 						disabled={isDeleting}
 						onClick={() => {
-							setDeleteModalOpened(false);
+							setDeleteModalOpen(false);
 						}}
 						color="gray"
 					>

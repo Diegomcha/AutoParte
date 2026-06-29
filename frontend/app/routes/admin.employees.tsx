@@ -107,14 +107,14 @@ export default function EmployeesPage() {
 			resizable: true,
 			accessor: 'createdAt',
 			title: t(($) => $.common.properties.createdAt),
-			render: (employee) => dayjs(employee.createdAt).format('LLLL'),
+			render: (entity) => dayjs(entity.createdAt).format('LLLL'),
 		},
 		{
 			sortable: true,
 			resizable: true,
 			accessor: 'updatedAt',
 			title: t(($) => $.common.properties.updatedAt),
-			render: (employee) => dayjs(employee.updatedAt).format('LLLL'),
+			render: (entity) => dayjs(entity.updatedAt).format('LLLL'),
 		},
 		{
 			accessor: 'accommodations',
@@ -182,7 +182,7 @@ export default function EmployeesPage() {
 		},
 	];
 
-	const [deleteModalOpen, setDeleteModalOpened] = useState(false);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const { mutate: deleteSelected, isPending: isDeleting } = useMutation({
 		throwOnError: true,
 		mutationFn: async () => {
@@ -201,7 +201,7 @@ export default function EmployeesPage() {
 			await revalidator.revalidate();
 
 			setSelected([]);
-			setDeleteModalOpened(false);
+			setDeleteModalOpen(false);
 		},
 	});
 
@@ -216,7 +216,7 @@ export default function EmployeesPage() {
 						leftSection={<TrashIcon weight="bold" size={16} />}
 						disabled={selected.length === 0}
 						onClick={() => {
-							setDeleteModalOpened(true);
+							setDeleteModalOpen(true);
 						}}
 					>
 						{t(($) => $.common.buttons.deleteSelected, {
@@ -254,7 +254,7 @@ export default function EmployeesPage() {
 			<Modal
 				opened={deleteModalOpen}
 				onClose={() => {
-					setDeleteModalOpened(false);
+					setDeleteModalOpen(false);
 				}}
 				title={t(($) => $.admin.employees.deleteMultiple.title)}
 			>
@@ -266,7 +266,7 @@ export default function EmployeesPage() {
 					<Button
 						disabled={isDeleting}
 						onClick={() => {
-							setDeleteModalOpened(false);
+							setDeleteModalOpen(false);
 						}}
 						color="gray"
 					>

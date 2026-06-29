@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.api.booking;
 
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
@@ -37,14 +38,14 @@ class BookingController implements BookingAPI {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Override
-    public EntityDtoCreated createBooking(@PathVariable UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException {
+    public EntityDtoCreated createBooking(@PathVariable UUID accommodationId, @Valid @RequestBody BookingDtoRequest booking) throws ResourceNotFoundException {
         return bookingService.createBooking(accommodationId, booking);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
-    public void updateBooking(@PathVariable UUID accommodationId, @PathVariable UUID id, BookingDtoRequest booking) throws ResourceNotFoundException {
+    public void updateBooking(@PathVariable UUID accommodationId, @PathVariable UUID id, @Valid @RequestBody BookingDtoRequest booking) throws ResourceNotFoundException {
         bookingService.updateBooking(accommodationId, id, booking);
     }
 

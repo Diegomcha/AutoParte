@@ -28,7 +28,10 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	};
 }
 
-export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
+export default function ProtectedLayout({
+	loaderData,
+	params: { id },
+}: Route.ComponentProps) {
 	const { account, isAdmin } = loaderData;
 
 	const { t } = useTranslation();
@@ -61,6 +64,7 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 						nothingFoundMessage={t(
 							($) => $.header.accommodationSelector.nothingFound
 						)}
+						defaultValue={id}
 						allowDeselect={false}
 						onChange={(value) => {
 							if (value) void navigate(`/${value}`);

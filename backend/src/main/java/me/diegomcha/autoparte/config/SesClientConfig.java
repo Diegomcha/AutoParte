@@ -36,6 +36,10 @@ class SesClientConfig {
                     var config = dynamicConfigService.getConfig();
                     var authorization = "Basic " + HttpHeaders.encodeBasicAuth(config.getSesUsername(), config.getSesPassword(), StandardCharsets.UTF_8);
                     request.setHeader("Authorization", authorization);
+
+                    request.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+                    request.setHeader("Pragma", "no-cache");
+                    request.setHeader("Expires", "0");
                 })
         );
 

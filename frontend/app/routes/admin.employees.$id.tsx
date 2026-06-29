@@ -14,11 +14,11 @@ export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 		queryKey: ['employee', id],
 		queryFn: async () => {
 			// Get employee
-			const response = await api.GET('/api/employees/{id}', {
-				params: { path: { id } },
-			});
-
-			const employee = throwErrors(response);
+			const employee = throwErrors(
+				await api.GET('/api/employees/{id}', {
+					params: { path: { id } },
+				})
+			);
 
 			// Get accommodations for the employee
 			const accommodations = await Promise.all(

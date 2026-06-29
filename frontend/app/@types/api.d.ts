@@ -22,6 +22,25 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/accommodations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get accommodation by id */
+        get: operations["getAccommodation"];
+        /** Update accommodation */
+        put: operations["updateAccommodation"];
+        post?: never;
+        /** Delete accommodation */
+        delete: operations["deleteAccommodation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/accommodations/{accommodationId}/bookings/{id}": {
         parameters: {
             query?: never;
@@ -321,25 +340,6 @@ export interface paths {
         patch: operations["updateEmployee"];
         trace?: never;
     };
-    "/api/accommodations/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get accommodation by id */
-        get: operations["getAccommodation"];
-        put?: never;
-        post?: never;
-        /** Delete accommodation */
-        delete: operations["deleteAccommodation"];
-        options?: never;
-        head?: never;
-        /** Update accommodation */
-        patch: operations["updateAccommodation"];
-        trace?: never;
-    };
     "/api/catalogue/person/relationships": {
         parameters: {
             query?: never;
@@ -500,6 +500,11 @@ export interface components {
             digitalSignatureEnabled?: boolean;
             manualReviewEnabled?: boolean;
         };
+        AccommodationDtoRequest: {
+            name: string;
+            sesCode: string;
+            internetConnection?: boolean;
+        };
         BookingDtoRequest: {
             /** Format: date-time */
             startTime: string;
@@ -594,11 +599,6 @@ export interface components {
             username?: string;
             password?: string;
             rememberMe?: boolean;
-        };
-        AccommodationDtoRequest: {
-            name: string;
-            sesCode: string;
-            internetConnection?: boolean;
         };
         EntityDtoCreated: {
             /** Format: uuid */
@@ -768,6 +768,7 @@ export interface components {
 }
 export type ProblemDetail = components['schemas']['ProblemDetail'];
 export type ConfigDtoRequest = components['schemas']['ConfigDtoRequest'];
+export type AccommodationDtoRequest = components['schemas']['AccommodationDtoRequest'];
 export type BookingDtoRequest = components['schemas']['BookingDtoRequest'];
 export type PaymentDtoRequest = components['schemas']['PaymentDtoRequest'];
 export type ContactInfoDtoRequest = components['schemas']['ContactInfoDtoRequest'];
@@ -781,7 +782,6 @@ export type EmployeeDtoCreate = components['schemas']['EmployeeDtoCreate'];
 export type EmployeeDtoCredentialsResponse = components['schemas']['EmployeeDtoCredentialsResponse'];
 export type UpdatePasswordDto = components['schemas']['UpdatePasswordDto'];
 export type LoginRequest = components['schemas']['LoginRequest'];
-export type AccommodationDtoRequest = components['schemas']['AccommodationDtoRequest'];
 export type EntityDtoCreated = components['schemas']['EntityDtoCreated'];
 export type EmployeeDtoPatch = components['schemas']['EmployeeDtoPatch'];
 export type EmployeeDtoResponse = components['schemas']['EmployeeDtoResponse'];
@@ -871,6 +871,162 @@ export interface operations {
             };
             /** @description Unauthorized */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getAccommodation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AccommodationDtoResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    updateAccommodation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AccommodationDtoRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    deleteAccommodation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Accepted */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2229,162 +2385,6 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["EmployeeDtoPatch"];
-            };
-        };
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AccommodationDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    deleteAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Accepted */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    updateAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AccommodationDtoRequest"];
             };
         };
         responses: {

@@ -1,4 +1,11 @@
-import { Button, Group, Modal, TextInput, useModalsStack } from '@mantine/core';
+import {
+	Button,
+	Group,
+	Modal,
+	Switch,
+	TextInput,
+	useModalsStack,
+} from '@mantine/core';
 import { isEmail, isNotEmpty, useForm } from '@mantine/form';
 import { UserCirclePlusIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';

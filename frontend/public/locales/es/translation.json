@@ -23,6 +23,73 @@
 			"cancel": "Cancelar"
 		}
 	},
+	"bookings": {
+		"selectAccommodation": "Selecciona un alojamiento para ver sus reservas",
+		"title": "Gestión de reservas",
+		"noRecords": "No hay reservas",
+		"properties": {
+			"status": {
+				"label": "Estado",
+				"states": {
+					"DRAFT": { "label": "Borrador", "color": "gray" },
+					"CONFIRMED": { "label": "Confirmada", "color": "pink" },
+					"COMPLETED": { "label": "Completada", "color": "violet" },
+					"CHECKED_IN": { "label": "Registrada", "color": "green" },
+					"CANCELLED": { "label": "Cancelada", "color": "dark" }
+				}
+			},
+			"canBeConfirmed": {
+				"label": "Lista para confirmar",
+				"states": {
+					"yes": "Sí",
+					"no": "No"
+				}
+			},
+			"canBeCheckedIn": {
+				"label": "Lista para registrar",
+				"states": {
+					"yes": "Sí",
+					"no": "No"
+				}
+			},
+			"startTime": "Fecha de inicio",
+			"endTime": "Fecha de fin",
+			"numberOfPeople": "Número de personas",
+			"numberOfRooms": "Número de habitaciones",
+			"internetConnection": {
+				"label": "Conexión a Internet",
+				"states": {
+					"yes": "Sí",
+					"no": "No"
+				}
+			}
+		},
+		"new": {
+			"button": "Añadir alojamiento",
+			"title": "Añadir nuevo alojamiento",
+			"created": {
+				"title": "Alojamiento creado",
+				"description": "El alojamiento se ha creado correctamente."
+			}
+		},
+		"view": {
+			"title": "Detalles del alojamiento"
+		},
+		"edit": {
+			"title": "Editar alojamiento",
+			"form": {
+				"noAvailableEmployees": "No hay empleados disponibles"
+			}
+		},
+		"delete": {
+			"title": "Eliminar alojamiento",
+			"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
+		},
+		"deleteMultiple": {
+			"title": "Eliminar alojamientos",
+			"description": "¿Estás seguro? Esta acción es IRREVERSIBLE.\nSe eliminarán {{count}} alojamientos."
+		}
+	},
 	"admin": {
 		"nav": {
 			"employees": "Empleados",
@@ -119,13 +186,15 @@
 				"name": {
 					"label": "Nombre",
 					"errors": {
-						"noName": "El nombre es obligatorio"
+						"noName": "El nombre es obligatorio",
+						"nameInUse": "El nombre ya está registrado"
 					}
 				},
 				"sesCode": {
 					"label": "Código SES",
 					"errors": {
-						"noSesCode": "El código SES es obligatorio"
+						"noSesCode": "El código SES es obligatorio",
+						"sesCodeInUse": "El código SES ya está registrado"
 					}
 				},
 				"internetConnection": {
@@ -165,6 +234,28 @@
 			"deleteMultiple": {
 				"title": "Eliminar alojamientos",
 				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE.\nSe eliminarán {{count}} alojamientos."
+			}
+		},
+		"config": {
+			"title": "Configuración",
+			"properties": {
+				"sesCredentials": {
+					"legend": "Credenciales SES",
+					"username": "Usuario",
+					"password": "Contraseña",
+					"sesLandlordCode": "Código de arrendador"
+				},
+				"toggles": {
+					"legend": "Opciones",
+					"manualReviewEnabled": "Habilitar revisiones manuales",
+					"digitalSignatureEnabled": "Habilitar firma digital"
+				}
+			},
+			"sesValidation": {
+				"validating": "Validando credenciales...",
+				"error": "Error al validar credenciales",
+				"invalid": "Credenciales inválidas",
+				"valid": "Credenciales válidas"
 			}
 		}
 	},

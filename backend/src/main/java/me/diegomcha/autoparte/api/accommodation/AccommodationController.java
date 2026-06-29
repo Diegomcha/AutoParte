@@ -42,7 +42,7 @@ class AccommodationController implements AccommodationAPI {
         return accommodationService.getAccommodation(id);
     }
 
-    @PatchMapping("/{id}")
+    @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
     public void updateAccommodation(@PathVariable UUID id, @Valid @RequestBody AccommodationDtoRequest accommodation) throws ResourceNotFoundException, ResourceConflictException {
