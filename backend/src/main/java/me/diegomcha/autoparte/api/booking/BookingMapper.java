@@ -20,9 +20,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 abstract class BookingMapper {
 
-    @Mapping(target = "canBeConfirmed", expression = "java(booking.canBeConfirmed())")
-    @Mapping(target = "canBeCheckedIn", expression = "java(booking.canBeCheckedIn())")
-    @Mapping(target = "payment.expiryDate", source = "booking.payment", qualifiedByName = "mapExpiryDate")
+    @Mapping(target = "canBeModified", expression = "java(booking.canBeModified())")
     public abstract BookingDtoResponse toResponse(Booking booking);
 
     public Page<BookingDtoResponse> toResponse(Page<Booking> bookings) {
@@ -33,6 +31,9 @@ abstract class BookingMapper {
     public abstract Booking fromCreate(Accommodation accommodation, BookingDtoRequest dto);
 
     public abstract void fromUpdate(BookingDtoRequest dto, @MappingTarget Booking booking);
+
+    @Mapping(target = "expiryDate", source = ".", qualifiedByName = "mapExpiryDate")
+    protected abstract BookingDtoResponse.PaymentDtoResponse map(Payment payment);
 
     protected UUID map(BaseEntity entity) {
         return Optional

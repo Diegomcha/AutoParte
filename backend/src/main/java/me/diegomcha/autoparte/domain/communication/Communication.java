@@ -57,6 +57,8 @@ public class Communication extends BaseEntity {
     protected Communication(@NonNull Booking booking, @NonNull CommunicationType type) {
         this.booking = booking;
         this.type = type;
+
+        booking._updateState();
     }
 
     /**
@@ -72,6 +74,8 @@ public class Communication extends BaseEntity {
         this.status = CommunicationStatus.SENT;
         this.sentTimestamp = Instant.now();
         this.batchId = batchId;
+
+        booking._updateState();
     }
 
     /**
@@ -86,6 +90,8 @@ public class Communication extends BaseEntity {
 
         this.status = CommunicationStatus.SUCCEEDED;
         this.sesId = sesId;
+
+        booking._updateState();
     }
 
     /**
@@ -100,6 +106,8 @@ public class Communication extends BaseEntity {
 
         this.status = CommunicationStatus.FAILED;
         this.errorCode = errorCode;
+
+        booking._updateState();
     }
 
     /**
@@ -112,6 +120,8 @@ public class Communication extends BaseEntity {
             throw new IllegalStateException("Communication must be in SUCCEEDED status to mark as PENDING_VOIDED");
 
         this.status = CommunicationStatus.PENDING_VOIDED;
+
+        booking._updateState();
     }
 
     /**
@@ -124,5 +134,7 @@ public class Communication extends BaseEntity {
             throw new IllegalStateException("Communications SENT must be first processed before being marked as VOIDED");
 
         this.status = CommunicationStatus.VOIDED;
+
+        booking._updateState();
     }
 }

@@ -14,9 +14,11 @@ public class CancellationCommunication extends Communication {
 
     public void markFinishedSuccessfully() {
         if (this.getStatus() != CommunicationStatus.PENDING)
-            throw new IllegalStateException("Communication must be a PENDING to mark as SUCCEEDED without sesId");
+            throw new IllegalStateException("Communication must be PENDING to mark as SUCCEEDED without sesId");
 
         this.setStatus(CommunicationStatus.SUCCEEDED);
+
+        getBooking()._updateState();
     }
 
     @Override

@@ -21,6 +21,16 @@
 			"delete": "Eliminar",
 			"deleteSelected": "Eliminar seleccionados",
 			"cancel": "Cancelar"
+		},
+		"actionButtons": {
+			"view": "Ver",
+			"edit": "Editar",
+			"delete": "Eliminar"
+		},
+		"boolean": {
+			"true": "Sí",
+			"false": "No",
+			"undefined": "No definido"
 		}
 	},
 	"bookings": {
@@ -28,28 +38,37 @@
 		"title": "Gestión de reservas",
 		"noRecords": "No hay reservas",
 		"properties": {
+			"published": "Publicado",
 			"status": {
 				"label": "Estado",
 				"states": {
 					"DRAFT": { "label": "Borrador", "color": "gray" },
+
+					"CONFIRMATION_READY": {
+						"label": "Lista para confirmar",
+						"color": "blue"
+					},
+					"PENDING_CONFIRMATION": {
+						"label": "Pendiente de confirmar",
+						"color": "yellow"
+					},
 					"CONFIRMED": { "label": "Confirmada", "color": "pink" },
-					"COMPLETED": { "label": "Completada", "color": "violet" },
+
+					"CHECK_IN_READY": {
+						"label": "Lista para registrar",
+						"color": "violet"
+					},
+					"PENDING_CHECK_IN": {
+						"label": "Pendiente de registrar",
+						"color": "yellow"
+					},
 					"CHECKED_IN": { "label": "Registrada", "color": "green" },
+
+					"PENDING_CANCELLATION": {
+						"label": "Pendiente de cancelar",
+						"color": "yellow"
+					},
 					"CANCELLED": { "label": "Cancelada", "color": "dark" }
-				}
-			},
-			"canBeConfirmed": {
-				"label": "Lista para confirmar",
-				"states": {
-					"yes": "Sí",
-					"no": "No"
-				}
-			},
-			"canBeCheckedIn": {
-				"label": "Lista para registrar",
-				"states": {
-					"yes": "Sí",
-					"no": "No"
 				}
 			},
 			"startTime": "Fecha de inicio",
@@ -65,11 +84,11 @@
 			}
 		},
 		"new": {
-			"button": "Añadir alojamiento",
-			"title": "Añadir nuevo alojamiento",
+			"button": "Añadir reserva",
+			"title": "Añadir nueva reserva",
 			"created": {
-				"title": "Alojamiento creado",
-				"description": "El alojamiento se ha creado correctamente."
+				"title": "Reserva creada",
+				"description": "La reserva se ha creado correctamente."
 			}
 		},
 		"view": {

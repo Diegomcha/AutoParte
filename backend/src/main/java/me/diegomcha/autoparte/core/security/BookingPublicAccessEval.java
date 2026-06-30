@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.repos.BookingRepo;
+import me.diegomcha.autoparte.domain.Booking;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -76,7 +77,7 @@ public class BookingPublicAccessEval {
         var bookingId = UUID.fromString(context.getVariables().get("bookingId"));
 
         var booking = bookingRepo.findByAccommodationIdAndId(accommodationId, bookingId);
-        return booking.isPresent() && booking.get().canBeCheckedIn();
+        return booking.isPresent() && booking.get().isPublished();
     }
 
     private boolean canCheckinBeAccessedPublicly() {

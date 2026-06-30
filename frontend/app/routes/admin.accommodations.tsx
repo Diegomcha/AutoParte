@@ -17,6 +17,8 @@ import {
 } from '@phosphor-icons/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
+import BooleanBadge from '~/component/BooleanBadge';
+import WifiBadge from '~/component/WifiBadge';
 import dayjs from 'dayjs';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
@@ -81,21 +83,7 @@ export default function AccommodationsPage() {
 				($) => $.admin.accommodations.properties.internetConnection.label
 			),
 			render: (accommodation) => (
-				<Badge
-					color={accommodation.internetConnection ? 'green' : 'red'}
-					variant="light"
-				>
-					{accommodation.internetConnection
-						? t(
-								($) =>
-									$.admin.accommodations.properties.internetConnection.states
-										.yes
-							)
-						: t(
-								($) =>
-									$.admin.accommodations.properties.internetConnection.states.no
-							)}
-				</Badge>
+				<WifiBadge value={accommodation.internetConnection} />
 			),
 		},
 		{

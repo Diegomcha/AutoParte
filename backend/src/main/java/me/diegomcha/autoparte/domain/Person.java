@@ -53,13 +53,15 @@ public class Person extends BaseEntity {
      */
     public Person(@NonNull Booking booking, @NonNull PersonalInfo personalInfo, @NonNull ContactInfo contactInfo, Document document, Address address, PersonRelationship relationship) {
         this.setBooking(booking);
-        this.setPersonalInfo(personalInfo);
+        this.personalInfo = personalInfo;
 
-        this.setContactInfo(contactInfo);
-        this.setDocument(document);
+        this.contactInfo = contactInfo;
+        this.document = document;
         this.setAddress(address);
 
-        this.setRelationship(relationship);
+        this.relationship = relationship;
+
+        this.booking._updateState();
     }
 
     private void setBooking(@NonNull Booking booking) {
@@ -71,6 +73,27 @@ public class Person extends BaseEntity {
         if (this.address != null) this.address._getPeople().remove(this);
         this.address = address;
         if (this.address != null) this.address._getPeople().add(this);
+        booking._updateState();
+    }
+
+    public void setPersonalInfo(@NonNull PersonalInfo personalInfo) {
+        this.personalInfo = personalInfo;
+        booking._updateState();
+    }
+
+    public void setContactInfo(@NonNull ContactInfo contactInfo) {
+        this.contactInfo = contactInfo;
+        booking._updateState();
+    }
+
+    public void setDocument(Document document) {
+        this.document = document;
+        booking._updateState();
+    }
+
+    public void setRelationship(PersonRelationship relationship) {
+        this.relationship = relationship;
+        booking._updateState();
     }
 
     /**

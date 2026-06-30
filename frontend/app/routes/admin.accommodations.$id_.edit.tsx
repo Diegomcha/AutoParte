@@ -3,6 +3,7 @@ import {
 	Group,
 	Modal,
 	MultiSelect,
+	Space,
 	Stack,
 	Switch,
 	TextInput,
@@ -11,6 +12,7 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { FloppyDiskIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
+import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useRevalidator } from 'react-router';
 import type { Route } from './+types/admin.accommodations.$id_.edit';
@@ -55,7 +57,7 @@ export default function EditAccommodation({
 			name: accommodation.name,
 			sesCode: accommodation.sesCode,
 			employees: accommodation.employees,
-			internetConnection: accommodation.internetConnection,
+			internetConnection: String(accommodation.internetConnection ?? undefined),
 		},
 		validate: {
 			name: isNotEmpty(
@@ -65,6 +67,13 @@ export default function EditAccommodation({
 				t(($) => $.admin.accommodations.properties.sesCode.errors.noSesCode)
 			),
 		},
+		transformValues: (values) => ({
+			...values,
+			internetConnection:
+				values.internetConnection === 'undefined'
+					? undefined
+					: values.internetConnection === 'true',
+		}),
 	});
 
 	const { mutate, isPending } = useMutation({
@@ -156,6 +165,7 @@ export default function EditAccommodation({
 								key={form.key('name')}
 								name="name"
 								label={t(($) => $.admin.accommodations.properties.name.label)}
+								withAsterisk
 								{...form.getInputProps('name')}
 							/>
 							<TextInput
@@ -164,20 +174,21 @@ export default function EditAccommodation({
 								label={t(
 									($) => $.admin.accommodations.properties.sesCode.label
 								)}
+								withAsterisk
 								{...form.getInputProps('sesCode')}
 							/>
 						</Group>
-						<Switch
+						<BooleanInputWithUndefined
 							key={form.key('internetConnection')}
 							name="internetConnection"
 							label={t(
 								($) =>
 									$.admin.accommodations.properties.internetConnection.label
 							)}
-							{...form.getInputProps('internetConnection', {
-								type: 'checkbox',
-							})}
+							withAsterisk
+							{...form.getInputProps('internetConnection')}
 						/>
+						<Space />
 						<MultiSelect
 							key={form.key('employees')}
 							label={t(
@@ -188,7 +199,7 @@ export default function EditAccommodation({
 								label: `${employee.name} ${employee.surname}`,
 							}))}
 							nothingFoundMessage={t(
-								($) => $.admin.employees.properties.accommodations.none
+								($) => $.admin.accommodations.edit.form.noAvailableEmployees
 							)}
 							{...form.getInputProps('employees')}
 						/>

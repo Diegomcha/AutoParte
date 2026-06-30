@@ -3,44 +3,61 @@ import {
 	Badge,
 	Button,
 	Center,
+	CheckIcon,
 	Divider,
 	Group,
 	Modal,
 	Title,
+	Tooltip,
 } from '@mantine/core';
 import {
+	CalendarCheckIcon,
+	CheckCircleIcon,
 	CursorClickIcon,
 	EyeIcon,
+	LockKeyIcon,
+	PaperPlaneTiltIcon,
 	PencilIcon,
 	PlusIcon,
+	ProhibitIcon,
 	TrashIcon,
+	UserCheckIcon,
+	WifiHighIcon,
+	WifiSlashIcon,
 } from '@phosphor-icons/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
+import BooleanBadge from '~/component/BooleanBadge';
+import TableActionButton from '~/component/TableActionButton';
+import WifiBadge from '~/component/WifiBadge';
 import dayjs from 'dayjs';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useRevalidator } from 'react-router';
-import type { Route } from './+types/_main.$id';
+import type { Route } from './+types/_main.$accommodationId';
 import type { BookingDtoResponse } from '~/@types/api';
 import type { DataTableColumn, DataTableSortStatus } from 'mantine-datatable';
 
 const PAGE_SIZE = 50;
 
-export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
+export async function clientLoader({
+	params: { accommodationId },
+}: Route.ClientLoaderArgs) {
 	return await queryClient.fetchQuery({
-		queryKey: ['accommodations', id],
+		queryKey: ['accommodations', accommodationId],
 		queryFn: async () =>
 			throwErrors(
 				await api.GET('/api/accommodations/{id}', {
-					params: { path: { id } },
+					params: { path: { id: accommodationId } },
 				})
 			),
 	});
 }
 
-export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
+export default function BookingsPage({
+	params: { accommodationId },
+}: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const revalidator = useRevalidator();
 
@@ -62,7 +79,7 @@ export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
 				await api.GET('/api/accommodations/{accommodationId}/bookings', {
 					params: {
 						path: {
-							accommodationId: id,
+							accommodationId,
 						},
 						query: {
 							page: page,
@@ -76,9 +93,63 @@ export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
 
 	const [selected, setSelected] = useState<BookingDtoResponse[]>([]);
 
+	const getQuickActionButton = (booking: BookingDtoResponse) => {
+		let button: React.ReactNode | undefined;
+		switch (booking.status) {
+			case 'CONFIRMATION_READY':
+				button = (
+					<TableActionButton
+						tooltip={t(($) => $.common.actionButtons.confirm)}
+						color="pink"
+					>
+						<CalendarCheckIcon />
+					</TableActionButton>
+				);
+				break;
+			case 'CONFIRMED':
+				button = (
+					<TableActionButton
+						tooltip={t(($) => $.common.actionButtons.publish)}
+						color="pink"
+					>
+						<PaperPlaneTiltIcon />
+					</TableActionButton>
+				);
+				break;
+			case 'CHECK_IN_READY':
+				button = (
+					<TableActionButton
+						tooltip={t(($) => $.common.actionButtons.checkIn)}
+						color="pink"
+					>
+						<UserCheckIcon />
+					</TableActionButton>
+				);
+				break;
+		}
+		return button ? (
+			<>
+				{button}
+				<Divider orientation="vertical" />
+			</>
+		) : undefined;
+	};
+
 	const columns: DataTableColumn<BookingDtoResponse>[] = [
 		{
-			// TODO: Add filtering
+			sortable: true,
+			resizable: true,
+			accessor: 'published',
+			title: t(($) => $.bookings.properties.published),
+			render: (booking) => (
+				<BooleanBadge
+					value={!!booking.published}
+					icons={{ true: <PaperPlaneTiltIcon />, false: <LockKeyIcon /> }}
+				/>
+			),
+		},
+		{
+			sortable: true,
 			resizable: true,
 			accessor: 'status',
 			title: t(($) => $.bookings.properties.status.label),
@@ -93,44 +164,18 @@ export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
 			),
 		},
 		{
-			// TODO: Add filtering
-			resizable: true,
-			accessor: 'canBeConfirmed',
-			title: t(($) => $.bookings.properties.canBeConfirmed.label),
-			render: (booking) => (
-				<Badge color={booking.canBeConfirmed ? 'green' : 'red'} variant="light">
-					{booking.canBeConfirmed
-						? t(($) => $.bookings.properties.canBeConfirmed.states.yes)
-						: t(($) => $.bookings.properties.canBeConfirmed.states.no)}
-				</Badge>
-			),
-		},
-		{
-			// TODO: Add filtering
-			resizable: true,
-			accessor: 'canBeCheckedIn',
-			title: t(($) => $.bookings.properties.canBeCheckedIn.label),
-			render: (booking) => (
-				<Badge color={booking.canBeCheckedIn ? 'green' : 'red'} variant="light">
-					{booking.canBeCheckedIn
-						? t(($) => $.bookings.properties.canBeCheckedIn.states.yes)
-						: t(($) => $.bookings.properties.canBeCheckedIn.states.no)}
-				</Badge>
-			),
-		},
-		{
 			sortable: true,
 			resizable: true,
 			accessor: 'startTime',
 			title: t(($) => $.bookings.properties.startTime),
-			render: (booking) => dayjs(booking.startTime).format('LL'),
+			render: (booking) => dayjs(booking.startTime).format('LLLL'),
 		},
 		{
 			sortable: true,
 			resizable: true,
 			accessor: 'endTime',
 			title: t(($) => $.bookings.properties.endTime),
-			render: (booking) => dayjs(booking.endTime).format('LL'),
+			render: (booking) => dayjs(booking.endTime).format('LLLL'),
 		},
 		{
 			sortable: true,
@@ -149,82 +194,8 @@ export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
 			resizable: true,
 			accessor: 'internetConnection',
 			title: t(($) => $.bookings.properties.internetConnection.label),
-			render: (booking) => (
-				<Badge
-					color={booking.internetConnection ? 'green' : 'red'}
-					variant="light"
-				>
-					{booking.internetConnection
-						? t(($) => $.bookings.properties.internetConnection.states.yes)
-						: t(($) => $.bookings.properties.internetConnection.states.no)}
-				</Badge>
-			),
+			render: (booking) => <WifiBadge value={booking.internetConnection} />,
 		},
-		// {
-		// 	sortable: true,
-		// 	resizable: true,
-		// 	accessor: 'name',
-		// 	title: t(($) => $.admin.accommodations.properties.name.label),
-		// },
-		// {
-		// 	sortable: true,
-		// 	resizable: true,
-		// 	accessor: 'sesCode',
-		// 	title: t(($) => $.admin.accommodations.properties.sesCode.label),
-		// },
-		// {
-		// 	sortable: true,
-		// 	resizable: true,
-		// 	accessor: 'internetConnection',
-		// 	title: t(
-		// 		($) => $.admin.accommodations.properties.internetConnection.label
-		// 	),
-		// 	render: (accommodation) => (
-		// 		<Badge
-		// 			color={accommodation.internetConnection ? 'green' : 'red'}
-		// 			variant="light"
-		// 		>
-		// 			{accommodation.internetConnection
-		// 				? t(
-		// 						($) =>
-		// 							$.admin.accommodations.properties.internetConnection.states
-		// 								.yes
-		// 					)
-		// 				: t(
-		// 						($) =>
-		// 							$.admin.accommodations.properties.internetConnection.states.no
-		// 					)}
-		// 		</Badge>
-		// 	),
-		// },
-		// {
-		// 	sortable: true,
-		// 	resizable: true,
-		// 	accessor: 'createdAt',
-		// 	title: t(($) => $.common.properties.createdAt),
-		// 	render: (entity) => dayjs(entity.createdAt).format('LLLL'),
-		// },
-		// {
-		// 	sortable: true,
-		// 	resizable: true,
-		// 	accessor: 'updatedAt',
-		// 	title: t(($) => $.common.properties.updatedAt),
-		// 	render: (entity) => dayjs(entity.updatedAt).format('LLLL'),
-		// },
-		// {
-		// 	accessor: 'employees',
-		// 	title: t(($) => $.admin.accommodations.properties.employees.label),
-		// 	render: (accommodation) =>
-		// 		accommodation.employees.length === 0 ? (
-		// 			t(($) => $.admin.accommodations.properties.employees.none)
-		// 		) : (
-		// 			<Badge variant="light">
-		// 				{t(($) => $.admin.accommodations.properties.employees.some, {
-		// 					count: accommodation.employees.length,
-		// 				})}
-		// 			</Badge>
-		// 		),
-		// },
 		{
 			accessor: 'actions',
 			title: (
@@ -234,35 +205,28 @@ export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
 			),
 			textAlign: 'center',
 			width: '0%',
-			render: (accommodation) => (
+			render: (booking) => (
 				<Group gap={4} wrap="nowrap" justify="center">
-					<ActionIcon
-						component={Link}
-						to={`/admin/accommodations/${accommodation.id}`}
-						size="sm"
-						variant="subtle"
+					{getQuickActionButton(booking)}
+					<TableActionButton
+						tooltip={t(($) => $.common.actionButtons.view)}
 						color="green"
 					>
-						<EyeIcon weight="bold" />
-					</ActionIcon>
-					<ActionIcon
-						component={Link}
-						to={`/admin/accommodations/${accommodation.id}/edit`}
-						size="sm"
-						variant="subtle"
+						<EyeIcon />
+					</TableActionButton>
+					<TableActionButton
+						tooltip={t(($) => $.common.actionButtons.edit)}
+						disabled={!booking.canBeModified}
 						color="blue"
 					>
 						<PencilIcon />
-					</ActionIcon>
-					<ActionIcon
-						component={Link}
-						to={`/admin/accommodations/${accommodation.id}/delete`}
-						size="sm"
-						variant="subtle"
+					</TableActionButton>
+					<TableActionButton
+						tooltip={t(($) => $.common.actionButtons.cancel)}
 						color="red"
 					>
-						<TrashIcon />
-					</ActionIcon>
+						<ProhibitIcon />
+					</TableActionButton>
 				</Group>
 			),
 		},
@@ -275,9 +239,12 @@ export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
 			await Promise.all(
 				selected.map(async (accommodation) => {
 					throwErrors(
-						await api.DELETE('/api/accommodations/{id}', {
-							params: { path: { id: accommodation.id } },
-						})
+						await api.DELETE(
+							'/api/accommodations/{accommodationId}/bookings/{bookingId}',
+							{
+								params: { path: { id: accommodation.id } },
+							}
+						)
 					);
 				})
 			);
@@ -299,7 +266,7 @@ export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
 					{t(($) => $.bookings.title)}
 				</Title>
 				<Group>
-					<Button
+					{/* <Button
 						color="red"
 						leftSection={<TrashIcon weight="bold" size={16} />}
 						disabled={selected.length === 0}
@@ -310,14 +277,14 @@ export default function BookingsPage({ params: { id } }: Route.ComponentProps) {
 						{t(($) => $.common.buttons.deleteSelected, {
 							count: selected.length,
 						})}
-					</Button>
+					</Button> */}
 					<Button
 						component={Link}
 						to="/admin/accommodations/new"
 						color="green"
 						leftSection={<PlusIcon weight="bold" size={16} />}
 					>
-						{t(($) => $.admin.accommodations.new.button)}
+						{t(($) => $.bookings.new.button)}
 					</Button>
 				</Group>
 			</Group>

@@ -12,6 +12,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -56,11 +57,19 @@ class BookingController implements BookingAPI {
         bookingService.confirmBooking(accommodationId, id);
     }
 
-    @PostMapping("/{id}/check-in")
+    @PostMapping("/{id}/publish")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
-    public void checkInBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceConflictException, ResourceNotFoundException {
-        bookingService.checkInBooking(accommodationId, id);
+    public void publishBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceNotFoundException {
+        bookingService.publishBooking(accommodationId, id);
+    }
+
+    @PostMapping("/{id}/check-in")
+    @Override
+    public ResponseEntity<Void> checkInBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceConflictException, ResourceNotFoundException {
+        return bookingService.checkInBooking(accommodationId, id) ?
+                ResponseEntity.noContent().build() :
+                ResponseEntity.accepted().build();
     }
 
     @PostMapping("/{id}/cancel")

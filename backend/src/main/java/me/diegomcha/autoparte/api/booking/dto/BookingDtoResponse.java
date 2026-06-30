@@ -18,8 +18,8 @@ public record BookingDtoResponse(
         @Nonnull UUID lastModifiedBy,
 
         @Nonnull Booking.BookingStatus status,
-        boolean canBeConfirmed,
-        boolean canBeCheckedIn,
+        boolean published,
+        boolean canBeModified,
 
         @Nonnull Instant startTime,
         @Nonnull Instant endTime,

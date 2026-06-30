@@ -6,16 +6,20 @@ import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.api.common.EntityMapper;
+import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
 import me.diegomcha.autoparte.core.repos.BookingRepo;
+import me.diegomcha.autoparte.core.security.SecurityService;
 import me.diegomcha.autoparte.domain.Booking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -39,6 +43,8 @@ class BookingService {
     private final BookingMapper bookingMapper;
     private final AccommodationRepo accommodationRepo;
     private final EntityMapper entityMapper;
+    private final DynamicConfigService dynamicConfigService;
+    private final SecurityService securityService;
 
     /**
      * Returns a paginated list of bookings for a specific accommodation.
@@ -124,10 +130,28 @@ class BookingService {
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
         // Check if the booking can be confirmed
-        if (!booking.canBeConfirmed())
+        if (booking.getStatus() != Booking.BookingStatus.CONFIRMATION_READY)
             throw CANNOT_BE_CONFIRMED_EXCEPTION.get();
 
         booking.confirm();
+    }
+
+    /**
+     * Marks the booking with the given ID for a specific accommodation as published, allowing it to be used for self-check-in.
+     *
+     * @param accommodationId The ID of the accommodation to which the booking belongs
+     * @param id              The ID of the booking to publish
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
+     */
+    @Transactional
+    public void publishBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException {
+        this.ensureAccommodationExists(accommodationId);
+
+        var booking = bookingRepo
+                .findByAccommodationIdAndId(accommodationId, id)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        booking.setPublished(true);
     }
 
     /**
@@ -135,22 +159,34 @@ class BookingService {
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param id              The ID of the booking to check in
+     * @return true if the booking was checked in successfully, false if the booking needs to be reviewed manually
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking cannot be checked in in its current state
      */
     @Transactional
-    public void checkInBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public boolean checkInBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
-        // Check if the booking can be checked in
-        if (!booking.canBeCheckedIn())
+        if (booking.getStatus() != Booking.BookingStatus.CHECK_IN_READY)
             throw CANNOT_BE_CHECKED_IN_EXCEPTION.get();
 
+        // If the user is not logged-in and manual review is enabled do not check-in directly
+        var isLoggedIn = Optional
+                .ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(securityService::getAccountFromAuthentication)
+                .isPresent();
+
+        if (!isLoggedIn && dynamicConfigService.getConfig().isManualReviewEnabled()) {
+            booking.setPublished(false);
+            return false;
+        }
+
         booking.checkIn();
+        return true;
     }
 
     /**

@@ -1,8 +1,21 @@
-import { Button, Group, Modal, Stack, Switch, TextInput } from '@mantine/core';
+import {
+	Button,
+	Checkbox,
+	Group,
+	Modal,
+	Radio,
+	SegmentedControl,
+	Stack,
+	Switch,
+	Text,
+	TextInput,
+} from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { UserCirclePlusIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
+import SwitchWithNull from '~/component/BooleanInputWithUndefined';
+import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useRevalidator } from 'react-router';
 import type { AccommodationDtoRequest, ProblemDetail } from '~/@types/api';
@@ -16,7 +29,7 @@ export default function NewAccommodation() {
 		initialValues: {
 			name: '',
 			sesCode: '',
-			internetConnection: false,
+			internetConnection: 'undefined',
 		},
 		validate: {
 			name: isNotEmpty(
@@ -26,6 +39,13 @@ export default function NewAccommodation() {
 				t(($) => $.admin.accommodations.properties.sesCode.errors.noSesCode)
 			),
 		},
+		transformValues: (values) => ({
+			...values,
+			internetConnection:
+				values.internetConnection === 'undefined'
+					? undefined
+					: values.internetConnection === 'true',
+		}),
 	});
 
 	const { mutate, isPending } = useMutation({
@@ -85,22 +105,25 @@ export default function NewAccommodation() {
 							key={form.key('name')}
 							name="name"
 							label={t(($) => $.admin.accommodations.properties.name.label)}
+							withAsterisk
 							{...form.getInputProps('name')}
 						/>
 						<TextInput
 							key={form.key('sesCode')}
 							name="sesCode"
 							label={t(($) => $.admin.accommodations.properties.sesCode.label)}
+							withAsterisk
 							{...form.getInputProps('sesCode')}
 						/>
 					</Group>
-					<Switch
+					<BooleanInputWithUndefined
 						key={form.key('internetConnection')}
 						name="internetConnection"
 						label={t(
 							($) => $.admin.accommodations.properties.internetConnection.label
 						)}
-						{...form.getInputProps('internetConnection', { type: 'checkbox' })}
+						withAsterisk
+						{...form.getInputProps('internetConnection')}
 					/>
 				</Stack>
 				<Group justify="right" mt="md">

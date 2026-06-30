@@ -1,5 +1,6 @@
 import { Badge, DataList, Divider, Modal, Stack } from '@mantine/core';
 import api, { queryClient, throwErrors } from '~/api';
+import WifiBadge from '~/component/WifiBadge';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useTranslation } from 'react-i18next';
@@ -87,22 +88,7 @@ export default function ViewAccommodation({
 						)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
-						<Badge
-							color={accommodation.internetConnection ? 'green' : 'red'}
-							variant="light"
-						>
-							{accommodation.internetConnection
-								? t(
-										($) =>
-											$.admin.accommodations.properties.internetConnection
-												.states.yes
-									)
-								: t(
-										($) =>
-											$.admin.accommodations.properties.internetConnection
-												.states.no
-									)}
-						</Badge>
+						<WifiBadge value={accommodation.internetConnection} />
 					</DataList.ItemValue>
 				</DataList.Item>
 				<Divider />

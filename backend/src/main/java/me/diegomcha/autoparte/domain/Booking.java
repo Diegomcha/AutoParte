@@ -19,10 +19,22 @@ public class Booking extends BaseEntity {
 
     public enum BookingStatus {
         DRAFT,
+
+        CONFIRMATION_READY,
+        PENDING_CONFIRMATION,
         CONFIRMED,
+
+        CHECK_IN_READY,
+        PENDING_CHECK_IN,
         CHECKED_IN,
+
+        PENDING_CANCELLATION,
         CANCELLED
     }
+
+    @Setter
+    private boolean published = false;
+    private @NonNull BookingStatus status = BookingStatus.DRAFT;
 
     private @NonNull Instant startTime;
     private @NonNull Instant endTime;
@@ -161,41 +173,14 @@ public class Booking extends BaseEntity {
 
     /**
      * Checks if the booking can be modified based on its current status.
-     * The booking cannot be modified if it is in CHECKED_IN or CANCELLED status.
      *
      * @return true if the booking can be modified, false otherwise
      */
     public boolean canBeModified() {
-        return this.getStatus() != BookingStatus.CHECKED_IN &&
-                this.getStatus() != BookingStatus.CANCELLED;
-    }
-
-    /**
-     * Checks if the booking can be confirmed based on its current status, payment, and number of people.
-     * - The booking must be in DRAFT status.
-     * - A payment must be associated with the booking.
-     * - At least one person must be added to the booking (booking titular).
-     *
-     * @return true if the booking can be confirmed, false otherwise
-     */
-    public boolean canBeConfirmed() {
-        return this.getStatus() == BookingStatus.DRAFT &&
-                this.payment != null &&
-                !this.people.isEmpty();
-    }
-
-    /**
-     * Checks if the booking can be checked-in based on its current status, number of people, and completeness of each person.
-     * - The booking must be in CONFIRMED status.
-     * - The number of people added to the booking must match the specified number of people.
-     * - Each person in the booking must be complete (i.e., all required information is provided).
-     *
-     * @return true if the booking can be checked-in, false otherwise
-     */
-    public boolean canBeCheckedIn() {
-        return this.getStatus() == BookingStatus.CONFIRMED &&
-                this.people.size() == this.numberOfPeople &&
-                this.people.stream().allMatch(Person::isComplete);
+        return this.getStatus() == BookingStatus.DRAFT ||
+                this.getStatus() == BookingStatus.CONFIRMATION_READY ||
+                this.getStatus() == BookingStatus.CONFIRMED ||
+                this.getStatus() == BookingStatus.CHECK_IN_READY;
     }
 
     /**
@@ -204,7 +189,7 @@ public class Booking extends BaseEntity {
      * @throws IllegalStateException if the booking cannot be confirmed
      */
     public void confirm() {
-        if (!this.canBeConfirmed())
+        if (this.getStatus() != BookingStatus.CONFIRMATION_READY)
             throw new IllegalStateException("Booking cannot be confirmed");
         this.addCommunication(Communication.CommunicationType.BOOKING);
     }
@@ -215,8 +200,11 @@ public class Booking extends BaseEntity {
      * @throws IllegalStateException if the booking cannot be checked-in
      */
     public void checkIn() {
-        if (!this.canBeCheckedIn())
+        if (this.getStatus() != BookingStatus.CHECK_IN_READY)
             throw new IllegalStateException("Booking cannot be checked-in");
+
+        this.published = false;
+
         this.addCommunication(Communication.CommunicationType.CHECKIN);
     }
 
@@ -243,22 +231,32 @@ public class Booking extends BaseEntity {
             communication.markFinishedSuccessfully();
     }
 
-    /**
-     * Returns the current status of the booking based on its communications.
-     *
-     * @return BookingStatus representing the current status of the booking
-     */
-    public BookingStatus getStatus() {
-        if (this.communications.stream().anyMatch(c -> c.getType() == Communication.CommunicationType.CANCELLATION))
-            return BookingStatus.CANCELLED;
+    public void _updateState() {
+        // Cancelled
+        if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.CANCELLATION))
+            this.status = BookingStatus.CANCELLED;
+        else if (this.hasCommunicationOfType(Communication.CommunicationType.CANCELLATION))
+            this.status = BookingStatus.PENDING_CANCELLATION;
 
-        if (this.communications.stream().anyMatch(c -> c.getType() == Communication.CommunicationType.CHECKIN))
-            return BookingStatus.CHECKED_IN;
+            // Checked-in
+        else if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.CHECKIN))
+            this.status = BookingStatus.CHECKED_IN;
+        else if (this.hasCommunicationOfType(Communication.CommunicationType.CHECKIN))
+            this.status = BookingStatus.PENDING_CHECK_IN;
+        else if (this.people.size() == this.numberOfPeople &&
+                this.people.stream().allMatch(Person::isComplete))
+            this.status = BookingStatus.CHECK_IN_READY;
 
-        if (this.communications.stream().anyMatch(c -> c.getType() == Communication.CommunicationType.BOOKING))
-            return BookingStatus.CONFIRMED;
+            // Confirmed
+        else if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.BOOKING))
+            this.status = BookingStatus.CONFIRMED;
+        else if (this.hasCommunicationOfType(Communication.CommunicationType.BOOKING))
+            this.status = BookingStatus.PENDING_CONFIRMATION;
+        else if (this.payment != null && !this.people.isEmpty())
+            this.status = BookingStatus.CONFIRMATION_READY;
 
-        return BookingStatus.DRAFT;
+            // Draft
+        else this.status = BookingStatus.DRAFT;
     }
 
     public Set<Communication> getCommunications() {
@@ -266,14 +264,23 @@ public class Booking extends BaseEntity {
     }
 
     private Communication addCommunication(@NonNull Communication.CommunicationType type) {
-        if (this.getStatus() == BookingStatus.CANCELLED)
+        if (this.getStatus() == BookingStatus.CANCELLED || this.getStatus() == BookingStatus.PENDING_CANCELLATION)
             throw new IllegalStateException("Cannot make any communication to a cancelled booking");
 
-        if (this.communications.stream().anyMatch(c -> c.getType() == type))
+        if (hasCommunicationOfType(type))
             throw new IllegalStateException("Communication of type " + type + " already exists for this booking");
 
         var communication = Communication._of(this, type);
         this.communications.add(communication);
         return communication;
+    }
+
+    private boolean hasCommunicationOfType(@NonNull Communication.CommunicationType type) {
+        // Exclude communications that have failed, as they can be retried and should not block the booking state
+        return this.communications.stream().anyMatch(c -> c.getType() == type && c.getStatus() != Communication.CommunicationStatus.FAILED);
+    }
+
+    private boolean hasSuccessfulCommunicationOfType(@NonNull Communication.CommunicationType type) {
+        return this.communications.stream().anyMatch(c -> c.getType() == type && c.getStatus() == Communication.CommunicationStatus.SUCCEEDED);
     }
 }

@@ -252,6 +252,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/accommodations/{accommodationId}/bookings/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Publish a booking for self-check-in */
+        post: operations["publishBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/accommodations/{accommodationId}/bookings/{id}/confirm": {
         parameters: {
             query?: never;
@@ -686,9 +703,9 @@ export interface components {
             /** Format: uuid */
             lastModifiedBy: string;
             /** @enum {string} */
-            status: "DRAFT" | "CONFIRMED" | "CHECKED_IN" | "CANCELLED";
-            canBeConfirmed?: boolean;
-            canBeCheckedIn?: boolean;
+            status: "DRAFT" | "CONFIRMATION_READY" | "PENDING_CONFIRMATION" | "CONFIRMED" | "CHECK_IN_READY" | "PENDING_CHECK_IN" | "CHECKED_IN" | "PENDING_CANCELLATION" | "CANCELLED";
+            published?: boolean;
+            canBeModified?: boolean;
             /** Format: date-time */
             startTime: string;
             /** Format: date-time */
@@ -1088,9 +1105,7 @@ export interface operations {
     };
     updateBooking: {
         parameters: {
-            query: {
-                booking: components["schemas"]["BookingDtoRequest"];
-            };
+            query?: never;
             header?: never;
             path: {
                 accommodationId: string;
@@ -1098,7 +1113,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingDtoRequest"];
+            };
+        };
         responses: {
             /** @description No Content */
             204: {
@@ -1944,16 +1963,18 @@ export interface operations {
     };
     createBooking: {
         parameters: {
-            query: {
-                booking: components["schemas"]["BookingDtoRequest"];
-            };
+            query?: never;
             header?: never;
             path: {
                 accommodationId: string;
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookingDtoRequest"];
+            };
+        };
         responses: {
             /** @description Created */
             201: {
@@ -1963,6 +1984,54 @@ export interface operations {
                 content: {
                     "*/*": components["schemas"]["EntityDtoCreated"];
                 };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    publishBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                accommodationId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Bad Request */
             400: {
@@ -2062,7 +2131,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description No Content */
+            /** @description Check-in request accepted and is pending processing */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Check-in processed successfully immediately */
             204: {
                 headers: {
                     [name: string]: unknown;
