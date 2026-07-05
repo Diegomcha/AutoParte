@@ -109,36 +109,9 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  detect-changes:
-    name: Detect changes
-    runs-on: ubuntu-latest
-    needs: sonar-qube
-    permissions:
-      contents: read
-    outputs:
-      app: ${{ steps.filter.outputs.app == 'true' || github.ref_type == 'tag' }}
-      ocr: ${{ steps.filter.outputs.ocr == 'true' || github.ref_type == 'tag' }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
-
-      - name: Check for changes in the relevant directories
-        uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4.0.1
-        id: filter
-        with:
-          base: ${{ github.ref }}
-          filters: |
-            app:
-              - './backend/**'
-              - './frontend/**'
-            ocr:
-              - './ocr/**'
-
   build-app:
     name: Build APP image
     runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.app == 'true'
     permissions:
       contents: read
       packages: write
@@ -178,7 +151,7 @@ jobs:
       # Test building images (PR)
       - name: Build with Maven (No Publish)
         if: github.event_name == 'pull_request'
-        run: ./mvnw clean package
+        run: mvn clean package
 
       # Build and push with attestation (main branch)
       - name: Build and push Docker image
@@ -189,7 +162,7 @@ jobs:
           TAGS: ${{ steps.meta.outputs.tags }}
         run: |
           # Build & push image
-          ./mvnw spring-boot:build-image \
+          mvn spring-boot:build-image \
             -Dspring-boot.build-image.imageName=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
 
           # Extract the image digest
@@ -207,8 +180,6 @@ jobs:
   build-ocr:
     name: Build OCR images
     runs-on: ubuntu-latest
-    needs: detect-changes
-    if: needs.detect-changes.outputs.ocr == 'true'
     strategy:
       fail-fast: false
       matrix:
