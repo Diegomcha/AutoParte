@@ -14,7 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ lowercase(github.repository) }}
 
 jobs:
   sonar-qube:
@@ -112,6 +112,7 @@ jobs:
   build-app:
     name: Build APP image
     runs-on: ubuntu-latest
+    needs: sonar-qube
     permissions:
       contents: read
       packages: write
@@ -161,12 +162,16 @@ jobs:
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
         run: |
+          # Lowercase the image name for consistency
+          IMAGE_NAME=${{ env.REGISTRY }}/${IMAGE_NAME@L}_app
+          LOWERCASED_IMAGE_NAME="${IMAGE_NAME,,}"
+
           # Build & push image
           mvn spring-boot:build-image \
-            -Dspring-boot.build-image.imageName=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
+            -Dspring-boot.build-image.imageName=$LOWERCASED_IMAGE_NAME
 
           # Extract the image digest
-          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app | cut -d'@' -f2)
+          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $LOWERCASED_IMAGE_NAME | cut -d'@' -f2)
           echo "digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
 
       - name: Generate artifact attestation
@@ -180,6 +185,7 @@ jobs:
   build-ocr:
     name: Build OCR images
     runs-on: ubuntu-latest
+    needs: sonar-qube
     strategy:
       fail-fast: false
       matrix:
