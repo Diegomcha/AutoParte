@@ -124,6 +124,17 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
 
       # Setup
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: frontend/package.json
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: ~/.bun/install/cache
+          key: bun-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('frontend/bun.lock') }}
+
       - name: Set up JDK 21
         uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
@@ -149,6 +160,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
+      # Build frontend
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: bun ci --frozen-lockfile
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: bun run build
+
       # Test building images (PR)
       - name: Build with Maven (No Publish)
         if: github.event_name == 'pull_request'
@@ -167,7 +189,7 @@ jobs:
           LOWERCASED_IMAGE_NAME="${IMAGE_NAME,,}"
 
           # Build & push image
-          mvn spring-boot:build-image \
+          mvn clean spring-boot:build-image \
             -Dspring-boot.build-image.imageName=$LOWERCASED_IMAGE_NAME \
             -Dspring-boot.build-image.publish=true
 
