@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import i18n from './i18n';
+import { lang } from './i18n';
 // Languages
-import 'dayjs/locale/es';
 import 'dayjs/locale/en';
+import 'dayjs/locale/es';
 
 dayjs.extend(localizedFormat);
-dayjs.locale(i18n.language.split('-')[0] ?? 'es');
+dayjs.locale(lang);

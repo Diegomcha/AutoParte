@@ -3,10 +3,6 @@
 		"name": "AutoParte"
 	},
 	"header": {
-		"accommodationSelector": {
-			"placeholder": "Selecciona un alojamiento",
-			"nothingFound": "No se encontraron"
-		},
 		"admin": "Modo administrador",
 		"logout": "Cerrar sesión"
 	},
@@ -20,7 +16,8 @@
 			"save": "Guardar",
 			"delete": "Eliminar",
 			"deleteSelected": "Eliminar seleccionados",
-			"cancel": "Cancelar"
+			"cancel": "Cancelar",
+			"reset": "Restablecer"
 		},
 		"actionButtons": {
 			"view": "Ver",
@@ -31,60 +28,108 @@
 			"true": "Sí",
 			"false": "No",
 			"undefined": "No definido"
+		},
+		"dates": {
+			"today": "Hoy",
+			"checkInDate": "Fecha de entrada",
+			"checkOutDate": "Fecha de salida"
 		}
 	},
 	"bookings": {
+		"noAccommodations": "No tienes alojamientos asignados.\nContacta con tu administrador para que te asigne uno.",
+		"noAccommodationsAdmin": "No hay alojamientos registrados.\nRegistra uno nuevo desde el modo administrador.",
 		"selectAccommodation": "Selecciona un alojamiento para ver sus reservas",
 		"title": "Gestión de reservas",
 		"noRecords": "No hay reservas",
 		"properties": {
-			"published": "Publicado",
-			"status": {
-				"label": "Estado",
-				"states": {
-					"DRAFT": { "label": "Borrador", "color": "gray" },
+			"details": {
+				"title": "Detalles",
+				"name": {
+					"noHolder": "[$t(bookings.properties.details.status.states.{{status}}.label)] {{numberOfPeople}} pax.",
+					"withHolder": "[$t(bookings.properties.details.status.states.{{status}}.label)] {{numberOfPeople}} pax. - {{holderName}}"
+				},
+				"published": "Publicado",
+				"status": {
+					"label": "Estado",
+					"states": {
+						"DRAFT": { "label": "Borrador", "color": "dark" },
 
-					"CONFIRMATION_READY": {
-						"label": "Lista para confirmar",
-						"color": "blue"
-					},
-					"PENDING_CONFIRMATION": {
-						"label": "Pendiente de confirmar",
-						"color": "yellow"
-					},
-					"CONFIRMED": { "label": "Confirmada", "color": "pink" },
+						"CONFIRMATION_READY": {
+							"label": "Lista para confirmar",
+							"color": "blue"
+						},
+						"PENDING_CONFIRMATION": {
+							"label": "Pendiente de confirmar",
+							"color": "yellow"
+						},
+						"CONFIRMED": { "label": "Confirmada", "color": "pink" },
 
-					"CHECK_IN_READY": {
-						"label": "Lista para registrar",
-						"color": "violet"
-					},
-					"PENDING_CHECK_IN": {
-						"label": "Pendiente de registrar",
-						"color": "yellow"
-					},
-					"CHECKED_IN": { "label": "Registrada", "color": "green" },
+						"CHECK_IN_READY": {
+							"label": "Lista para registrar",
+							"color": "violet"
+						},
+						"PENDING_CHECK_IN": {
+							"label": "Pendiente de registrar",
+							"color": "yellow"
+						},
+						"CHECKED_IN": { "label": "Registrada", "color": "green" },
 
-					"PENDING_CANCELLATION": {
-						"label": "Pendiente de cancelar",
-						"color": "yellow"
-					},
-					"CANCELLED": { "label": "Cancelada", "color": "dark" }
-				}
+						"PENDING_CANCELLATION": {
+							"label": "Pendiente de cancelar",
+							"color": "yellow"
+						},
+						"CANCELLED": { "label": "Cancelada", "color": "dark" }
+					}
+				},
+				"date": {
+					"label": "Fechas de la estancia",
+					"errors": {
+						"undefined": "Las fechas de la estancia son obligatorias"
+					}
+				},
+				"startTime": "Fecha de inicio",
+				"endTime": "Fecha de fin",
+				"numberOfPeople": {
+					"label": "Número de personas",
+					"errors": {
+						"undefined": "El número de personas es obligatorio"
+					}
+				},
+				"numberOfRooms": "Número de habitaciones",
+				"internetConnection": "Conexión a Internet"
 			},
-			"startTime": "Fecha de inicio",
-			"endTime": "Fecha de fin",
-			"numberOfPeople": "Número de personas",
-			"numberOfRooms": "Número de habitaciones",
-			"internetConnection": {
-				"label": "Conexión a Internet",
-				"states": {
-					"yes": "Sí",
-					"no": "No"
+			"payment": {
+				"title": "Pago",
+				"type": {
+					"label": "Tipo",
+					"options": {
+						"CASH": "Efectivo",
+						"CREDIT_CARD": "Tarjeta de crédito",
+						"PLATFORM": "Plataforma de pago",
+						"TRANSFER": "Transferencia bancaria",
+						"MOBILE": "Pago móvil",
+						"GIFT_CARD": "Tarjeta regalo",
+						"ON_SITE": "Pago en el alojamiento",
+						"OTHER": "Otro"
+					}
+				},
+				"mean": "Medio",
+				"holder": "Titular",
+				"date": {
+					"label": "Fecha",
+					"format": "DD/MM/YYYY"
+				},
+				"expiryDate": {
+					"label": "Fecha de caducidad",
+					"placeholder": "MM / AA",
+					"errors": {
+						"invalid": "La fecha de caducidad no es válida",
+						"beforePaymentDate": "La fecha de caducidad no puede ser anterior a la fecha de pago"
+					}
 				}
 			}
 		},
 		"new": {
-			"button": "Añadir reserva",
 			"title": "Añadir nueva reserva",
 			"created": {
 				"title": "Reserva creada",
@@ -92,21 +137,43 @@
 			}
 		},
 		"view": {
-			"title": "Detalles del alojamiento"
-		},
-		"edit": {
-			"title": "Editar alojamiento",
-			"form": {
-				"noAvailableEmployees": "No hay empleados disponibles"
+			"title": "Detalles de la reserva",
+			"communications": {
+				"title": "Registro",
+				"sentDate": "Enviado {{date}}",
+				"status": {
+					"PENDING": {
+						"label": "Pendiente",
+						"color": "orange"
+					},
+					"SENT": {
+						"label": "Procesando",
+						"color": "teal"
+					},
+					"SUCCEEDED": {
+						"label": "Registrado sin errores",
+						"color": "green"
+					},
+					"FAILED": {
+						"label": "Error al registrar",
+						"color": "red"
+					},
+					"PENDING_VOIDED": {
+						"label": "Pendiente de anular",
+						"color": "gray"
+					},
+					"VOIDED": {
+						"label": "Anulado",
+						"color": "dark"
+					}
+				},
+				"types": {
+					"CREATED": "Creación de la reserva",
+					"BOOKING": "Confirmación de la reserva",
+					"CHECKIN": "Registro de la entrada",
+					"CANCELLATION": "Cancelación de la reserva"
+				}
 			}
-		},
-		"delete": {
-			"title": "Eliminar alojamiento",
-			"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
-		},
-		"deleteMultiple": {
-			"title": "Eliminar alojamientos",
-			"description": "¿Estás seguro? Esta acción es IRREVERSIBLE.\nSe eliminarán {{count}} alojamientos."
 		}
 	},
 	"admin": {
@@ -298,8 +365,35 @@
 		"status": {
 			"400": "Solicitud incorrecta",
 			"404": "Página no encontrada",
+			"503": "Servicio no disponible",
 			"default": "Se ha producido un error inesperado."
 		},
 		"disclaimer": "No te preocupes, nuestro equipo de desarrollo ya ha sido notificado. Intenta actualizar la página."
+	},
+	"schedule": {
+		"day": "Día",
+		"week": "Semana",
+		"month": "Mes",
+		"year": "Año",
+		"allDay": "Todo el día",
+		"weekday": "Día de la semana",
+		"timeSlot": "Franja horaria",
+		"today": "Hoy",
+		"next": "Siguiente",
+		"previous": "Anterior",
+		"more": "Más",
+		"selectMonth": "Seleccionar mes",
+		"selectYear": "Seleccionar año",
+		"switchToDayView": "Cambiar a vista de día",
+		"switchToWeekView": "Cambiar a vista de semana",
+		"switchToMonthView": "Cambiar a vista de mes",
+		"switchToYearView": "Cambiar a vista de año",
+		"viewSelectLabel": "Seleccionar vista",
+		"noEvents": "No hay eventos",
+		"moreLabel": "{{hiddenEventsCount}} más",
+		"resource": "Alojamiento",
+		"resources": "Alojamientos",
+		"resourceSlot": "Franja de alojamiento",
+		"agenda": "Agenda"
 	}
 }

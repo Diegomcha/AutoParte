@@ -9,10 +9,6 @@ import me.diegomcha.autoparte.domain.Employee;
 import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 @Mapper(componentModel = "spring")
 abstract class EmployeeMapper {
 
@@ -33,6 +29,10 @@ abstract class EmployeeMapper {
     @Mapping(target = "email", qualifiedByName = "normalizeEmail")
     public abstract void patchEmployee(EmployeeDtoPatch patch, @MappingTarget Employee employee);
 
+    // Helpers
+
+    protected abstract EmployeeDtoResponse.EmployeeDtoAccommodationResponse map(Accommodation accommodation);
+
     @AfterMapping
     protected void updateAccountEnabled(EmployeeDtoPatch patch, @MappingTarget Employee employee) {
         if (patch.enabled() != null)
@@ -42,11 +42,5 @@ abstract class EmployeeMapper {
     @Named("normalizeEmail")
     public String normalizeEmail(String email) {
         return email == null ? null : email.toLowerCase().trim();
-    }
-
-    protected Set<UUID> mapAccommodations(Set<Accommodation> accommodations) {
-        return accommodations.stream()
-                .map(Accommodation::getId)
-                .collect(Collectors.toSet());
     }
 }

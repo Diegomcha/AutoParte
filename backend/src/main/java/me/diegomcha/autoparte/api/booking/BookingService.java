@@ -7,6 +7,7 @@ import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.api.common.EntityMapper;
 import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.exception.BadRequestException;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -51,12 +53,17 @@ class BookingService {
      *
      * @param accommodationId The ID of the accommodation to retrieve bookings for
      * @param pageable        Pagination information (page number, size, sorting)
+     * @param startRange       Optional start date filter for bookings
+     * @param endRange         Optional end date filter for bookings
      * @return A page of bookings for the specified accommodation
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
-    public Page<BookingDtoResponse> getBookings(UUID accommodationId, Pageable pageable) throws ResourceNotFoundException {
+    public Page<BookingDtoResponse> getBookings(UUID accommodationId, Pageable pageable, Instant startRange, Instant endRange) throws ResourceNotFoundException, BadRequestException {
         this.ensureAccommodationExists(accommodationId);
-        return bookingMapper.toResponse(bookingRepo.findByAccommodationId(accommodationId, pageable));
+        if (startRange != null && endRange != null && startRange.isAfter(endRange))
+            throw new BadRequestException("Start date cannot be after end date");
+
+        return bookingMapper.toResponse(bookingRepo.findAll(BookingSpecs.ofAccommodationWithDatesBetween(accommodationId, startRange, endRange), pageable));
     }
 
     /**

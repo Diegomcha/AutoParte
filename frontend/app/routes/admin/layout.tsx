@@ -9,7 +9,7 @@ import {
 import AuthService from '~/services/AuthService';
 import { useTranslation } from 'react-i18next';
 import { Outlet, NavLink as RouterNavLink } from 'react-router';
-import type { Route } from './+types/admin';
+import type { Route } from './+types/layout';
 
 // Ensure the user is authenticated & admin before allowing access to any protected routes.
 // This should only be required in dev mode, as in production the server will handle route protection.

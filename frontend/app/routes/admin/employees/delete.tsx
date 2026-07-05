@@ -3,21 +3,21 @@ import { useMutation } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useRevalidator } from 'react-router';
-import type { Route } from './+types/admin.accommodations.$id_.delete';
+import type { Route } from './+types/delete';
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	return await queryClient.fetchQuery({
-		queryKey: ['accommodations', id],
+		queryKey: ['employee', id],
 		queryFn: async () =>
 			throwErrors(
-				await api.GET('/api/accommodations/{id}', {
+				await api.GET('/api/employees/{id}', {
 					params: { path: { id } },
 				})
 			),
 	});
 }
 
-export default function DeleteAccommodation({
+export default function DeleteEmployee({
 	params: { id },
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
@@ -28,15 +28,15 @@ export default function DeleteAccommodation({
 		throwOnError: true,
 		mutationFn: async () =>
 			throwErrors(
-				await api.DELETE('/api/accommodations/{id}', {
+				await api.DELETE('/api/employees/{id}', {
 					params: { path: { id } },
 				})
 			),
 		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['accommodations'] });
+			await queryClient.invalidateQueries({ queryKey: ['employees'] });
 			await revalidator.revalidate();
 
-			await navigate('/admin/accommodations');
+			await navigate('/admin/employees');
 		},
 	});
 
@@ -45,14 +45,14 @@ export default function DeleteAccommodation({
 			<div hidden={revalidator.state === 'idle'}>Revalidating...</div>
 			<Modal
 				opened
-				onClose={() => void navigate('/admin/accommodations')}
-				title={t(($) => $.admin.accommodations.delete.title)}
+				onClose={() => void navigate('/admin/employees')}
+				title={t(($) => $.admin.employees.delete.title)}
 			>
-				{t(($) => $.admin.accommodations.delete.description)}
+				{t(($) => $.admin.employees.delete.description)}
 
 				<Group justify="right" mt="md" gap="xs">
 					<Button
-						onClick={() => void navigate('/admin/accommodations')}
+						onClick={() => void navigate('/admin/employees')}
 						color="gray"
 					>
 						{t(($) => $.common.buttons.cancel)}

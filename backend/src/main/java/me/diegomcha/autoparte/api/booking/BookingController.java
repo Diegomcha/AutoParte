@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
+import me.diegomcha.autoparte.core.exception.BadRequestException;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springdoc.core.annotations.ParameterObject;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @RestController
@@ -26,8 +28,11 @@ class BookingController implements BookingAPI {
 
     @GetMapping
     @Override
-    public Page<BookingDtoResponse> getBookingsByAccommodation(@PathVariable UUID accommodationId, @ParameterObject Pageable pageable) throws ResourceNotFoundException {
-        return bookingService.getBookings(accommodationId, pageable);
+    public Page<BookingDtoResponse> getBookingsByAccommodation(@PathVariable UUID accommodationId,
+                                                               @ParameterObject Pageable pageable,
+                                                               @RequestParam(required = false) Instant startRange,
+                                                               @RequestParam(required = false) Instant endRange) throws ResourceNotFoundException, BadRequestException {
+        return bookingService.getBookings(accommodationId, pageable, startRange, endRange);
     }
 
     @GetMapping("/{id}")

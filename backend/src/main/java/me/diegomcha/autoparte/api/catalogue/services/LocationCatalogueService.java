@@ -98,21 +98,6 @@ public class LocationCatalogueService {
     // --------------------
 
     /**
-     * Finds the Spanish province code corresponding to a given municipality code.
-     *
-     * @param municipalityCode The code of the municipality for which to find the corresponding province.
-     * @return The code of the province corresponding to the given municipality code.
-     * @throws IllegalArgumentException if the provided municipality code does not exist in the data.
-     */
-    public String findSpanishProvinceFromMunicipalityCode(@NonNull String municipalityCode) {
-        return spanishMunicipalities.entrySet().stream()
-                .filter(entry -> entry.getValue().containsKey(municipalityCode))
-                .map(Map.Entry::getKey)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Invalid municipality code: " + municipalityCode));
-    }
-
-    /**
      * Gets the map of municipality codes to municipality names for a given province code in Spain.
      *
      * @param provinceCode The code of the province for which to retrieve the municipalities.

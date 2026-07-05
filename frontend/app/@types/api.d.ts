@@ -391,6 +391,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/catalogue/payment/types": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get valid payment types */
+        get: operations["getPaymentTypes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalogue/document/types": {
         parameters: {
             query?: never;
@@ -630,6 +647,11 @@ export interface components {
             /** Format: email */
             email?: string;
         };
+        EmployeeDtoAccommodationResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
         EmployeeDtoResponse: {
             /** Format: uuid */
             id: string;
@@ -643,7 +665,7 @@ export interface components {
             name: string;
             surname: string;
             email: string;
-            accommodations: string[];
+            accommodations: components["schemas"]["EmployeeDtoAccommodationResponse"][];
         };
         PageMetadata: {
             /** Format: int64 */
@@ -675,6 +697,13 @@ export interface components {
             username: string;
             roles: string[];
         };
+        AccommodationDtoEmployeeResponse: {
+            enabled?: boolean;
+            /** Format: uuid */
+            id: string;
+            name: string;
+            email: string;
+        };
         AccommodationDtoResponse: {
             /** Format: uuid */
             id: string;
@@ -685,7 +714,7 @@ export interface components {
             name: string;
             sesCode: string;
             internetConnection?: boolean;
-            employees: string[];
+            employees: components["schemas"]["AccommodationDtoEmployeeResponse"][];
         };
         PagedModelAccommodationDtoResponse: {
             content?: components["schemas"]["AccommodationDtoResponse"][];
@@ -716,9 +745,12 @@ export interface components {
             /** Format: int32 */
             numberOfRooms?: number;
             internetConnection?: boolean;
+            holderName?: string;
             communications: components["schemas"]["CommunicationDtoResponse"][];
         };
         CommunicationDtoResponse: {
+            /** Format: uuid */
+            id: string;
             /** @enum {string} */
             type: "BOOKING" | "CHECKIN" | "CANCELLATION";
             /** @enum {string} */
@@ -801,12 +833,14 @@ export type UpdatePasswordDto = components['schemas']['UpdatePasswordDto'];
 export type LoginRequest = components['schemas']['LoginRequest'];
 export type EntityDtoCreated = components['schemas']['EntityDtoCreated'];
 export type EmployeeDtoPatch = components['schemas']['EmployeeDtoPatch'];
+export type EmployeeDtoAccommodationResponse = components['schemas']['EmployeeDtoAccommodationResponse'];
 export type EmployeeDtoResponse = components['schemas']['EmployeeDtoResponse'];
 export type PageMetadata = components['schemas']['PageMetadata'];
 export type PagedModelEmployeeDtoResponse = components['schemas']['PagedModelEmployeeDtoResponse'];
 export type ConfigDtoResponse = components['schemas']['ConfigDtoResponse'];
 export type ProvinceMunicipalityCodesDto = components['schemas']['ProvinceMunicipalityCodesDto'];
 export type AccountDto = components['schemas']['AccountDto'];
+export type AccommodationDtoEmployeeResponse = components['schemas']['AccommodationDtoEmployeeResponse'];
 export type AccommodationDtoResponse = components['schemas']['AccommodationDtoResponse'];
 export type PagedModelAccommodationDtoResponse = components['schemas']['PagedModelAccommodationDtoResponse'];
 export type BookingDtoResponse = components['schemas']['BookingDtoResponse'];
@@ -1914,6 +1948,8 @@ export interface operations {
                 size?: number;
                 /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
                 sort?: string[];
+                startRange?: string;
+                endRange?: string;
             };
             header?: never;
             path: {
@@ -2548,6 +2584,44 @@ export interface operations {
         };
     };
     getPersonGenders: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string[];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getPaymentTypes: {
         parameters: {
             query?: never;
             header?: never;

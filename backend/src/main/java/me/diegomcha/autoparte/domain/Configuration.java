@@ -19,9 +19,12 @@ public class Configuration extends BaseEntity {
     private String sesPassword;
     private String sesLandlordCode;
 
-    private boolean sesCredentialsValid = false;
     private boolean digitalSignatureEnabled = false;
     private boolean manualReviewEnabled = false;
+
+    private int logsRetentionDays = 3 * 365; // Default to 3 years (RD 933/2021)
+
+    private boolean sesCredentialsValid = false;
 
     // Auto-configured variables
     @Setter(AccessLevel.NONE)

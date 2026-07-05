@@ -34,8 +34,7 @@ public class Payment extends BaseEntity {
      * @param expiryDate The expiry date of the payment method (only relevant for CREDIT_CARD type). Can be null.
      * @return A Payment instance (either CreditCardPayment or generic Payment) based on the provided type.
      * @throws IllegalArgumentException if type is null or
-     *                                  the date is in the future or
-     *                                  the payment type is CREDIT_CARD and the expiryDate is null or in the past.
+     *                                  expiryDate is before the payment date.
      */
     public static Payment of(@NonNull PaymentType type, String mean, String holder, Instant date, Instant expiryDate) {
         if (type == PaymentType.CREDIT_CARD)
@@ -52,13 +51,6 @@ public class Payment extends BaseEntity {
         this.type = type;
         this.mean = mean;
         this.holder = holder;
-        this.setDate(date);
-    }
-
-    private void setDate(Instant date) {
-        if (date != null && date.isAfter(Instant.now()))
-            throw new IllegalArgumentException("Payment date cannot be in the future");
-
         this.date = date;
     }
 }

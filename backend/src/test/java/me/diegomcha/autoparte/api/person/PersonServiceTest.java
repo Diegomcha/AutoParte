@@ -130,7 +130,6 @@ class PersonServiceTest {
     void testAddPersonBookingFull() {
         // Set number of people allowed in booking to 1, since we already have 1 person in setUp(), the booking is full
         booking.setNumberOfPeople(1);
-        bookingRepo.save(booking);
 
         var personalInfoReq = new PersonDtoRequest.PersonalInfoDtoRequest(
                 "Jane", "Smith", "Johnson", "USA", TestingUtils.PAST_INSTANT, PersonalInfo.PersonalInfoGender.FEMALE
@@ -155,7 +154,62 @@ class PersonServiceTest {
     }
 
     @Test
+    void testAddPersonUnknownAddress() {
+        var personalInfoReq = new PersonDtoRequest.PersonalInfoDtoRequest(
+                "Jane", "Smith", "Johnson", "USA", TestingUtils.PAST_INSTANT, PersonalInfo.PersonalInfoGender.FEMALE
+        );
+        var contactInfoReq = new PersonDtoRequest.ContactInfoDtoRequest(
+                "971 49 28 05", null, "jane.smith@example.com"
+        );
+        var documentReq = new PersonDtoRequest.DocumentDtoRequest(
+                Document.DocumentType.PASSPORT, "PAS987654", null
+        );
+        var dto = new PersonDtoRequest(
+                personalInfoReq,
+                contactInfoReq,
+                documentReq,
+                UUID.randomUUID(), // Unknown address ID
+                Person.PersonRelationship.SPOUSE
+        );
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                service.addPerson(accommodation.getId(), booking.getId(), dto)
+        );
+    }
+
+    @Test
     void testUpdatePerson() throws ResourceNotFoundException, ResourceConflictException {
+        var personalInfoReq = new PersonDtoRequest.PersonalInfoDtoRequest(
+                "JohnUpdated", "DoeUpdated", "SmithUpdated", "USA", TestingUtils.PAST_INSTANT, PersonalInfo.PersonalInfoGender.MALE
+        );
+        var contactInfoReq = new PersonDtoRequest.ContactInfoDtoRequest(
+                "971 49 28 05", null, "john.updated@example.com"
+        );
+        var documentReq = new PersonDtoRequest.DocumentDtoRequest(
+                Document.DocumentType.PASSPORT, "PASUPDATED", null
+        );
+        var dto = new PersonDtoRequest(
+                personalInfoReq,
+                contactInfoReq,
+                documentReq,
+                null,
+                Person.PersonRelationship.OTHER
+        );
+
+        service.updatePerson(accommodation.getId(), booking.getId(), person.getId(), dto);
+
+        var updatedPerson = personRepo.findById(person.getId()).orElseThrow();
+        Assertions.assertEquals("JohnUpdated", updatedPerson.getPersonalInfo().getName());
+        Assertions.assertEquals("DoeUpdated", updatedPerson.getPersonalInfo().getFirstSurname());
+        Assertions.assertEquals("john.updated@example.com", updatedPerson.getContactInfo().getEmail());
+        Assertions.assertEquals("PASUPDATED", updatedPerson.getDocument().getNumber());
+    }
+
+    @Test
+    void testUpdatePersonWhileBookingNotModifiable(){
+        // Set booking to not modifiable
+        booking.cancel();
+
         var personalInfoReq = new PersonDtoRequest.PersonalInfoDtoRequest(
                 "JohnUpdated", "DoeUpdated", "SmithUpdated", "USA", TestingUtils.PAST_INSTANT, PersonalInfo.PersonalInfoGender.MALE
         );
@@ -173,13 +227,7 @@ class PersonServiceTest {
                 Person.PersonRelationship.OTHER
         );
 
-        service.updatePerson(accommodation.getId(), booking.getId(), person.getId(), dto);
-
-        var updatedPerson = personRepo.findById(person.getId()).orElseThrow();
-        Assertions.assertEquals("JohnUpdated", updatedPerson.getPersonalInfo().getName());
-        Assertions.assertEquals("DoeUpdated", updatedPerson.getPersonalInfo().getFirstSurname());
-        Assertions.assertEquals("john.updated@example.com", updatedPerson.getContactInfo().getEmail());
-        Assertions.assertEquals("PASUPDATED", updatedPerson.getDocument().getNumber());
+        Assertions.assertThrows(ResourceConflictException.class, () -> service.updatePerson(accommodation.getId(), booking.getId(), person.getId(), dto));
     }
 
     @Test

@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.api.employee;
 
+import jakarta.persistence.EntityManager;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
@@ -14,7 +15,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.FieldSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,8 @@ class EmployeeServiceTest {
     private EmployeeRepo employeeRepo;
     @Autowired
     private AccountRepo accountRepo;
+    @Autowired
+    private EntityManager entityManager;
 
     private Employee employee;
 
@@ -52,6 +57,12 @@ class EmployeeServiceTest {
         employeesPage = employeeService.getEmployees(Pageable.unpaged());
 
         Assertions.assertEquals(0, employeesPage.getTotalElements());
+    }
+
+    @Test
+    void testGetEmployeesSortingTranslation() {
+        Assertions.assertDoesNotThrow(() -> employeeService.getEmployees(Pageable.unpaged(Sort.by("enabled"))));
+        Assertions.assertDoesNotThrow(() -> employeeService.getEmployees(PageRequest.of(0, 10, Sort.by("enabled"))));
     }
 
     @Test
@@ -163,7 +174,7 @@ class EmployeeServiceTest {
 
         Assertions.assertNotNull(employee.getId());
         Assertions.assertThrows(ResourceConflictException.class, () ->
-                employeeService.updateEmployee(employee.getId(), new EmployeeDtoPatch(null,null, null, "email1@email.com"))
+                employeeService.updateEmployee(employee.getId(), new EmployeeDtoPatch(null, null, null, "email1@email.com"))
         );
 
         Assertions.assertNotNull(employee.getId());
@@ -179,6 +190,7 @@ class EmployeeServiceTest {
         Assertions.assertNotNull(employee.getAccount().getId());
 
         employeeService.deleteEmployee(employee.getId());
+        entityManager.clear();
 
         Assertions.assertFalse(employeeRepo.existsById(employee.getId()));
         Assertions.assertFalse(accountRepo.existsById(employee.getAccount().getId()));

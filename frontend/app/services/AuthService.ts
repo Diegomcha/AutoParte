@@ -1,4 +1,4 @@
-import api from '~/api';
+import api, { throwErrors } from '~/api';
 import { redirect } from 'react-router';
 import type { AccountDto } from '~/@types/api';
 
@@ -28,18 +28,42 @@ class AuthService {
 	 * @returns The logged-in user if available, or null if not logged in.
 	 */
 	async getLoggedInUser(): Promise<AccountDto | null> {
-		// First check sessionStorage for cached user
+		return (
+			this.getLoggedInUserFromCache() ?? (await this.getLoggedInUserFromApi())
+		);
+	}
+
+	/**
+	 * Gets the currently logged in user from sessionStorage if available.
+	 * @returns  The logged-in user if available in sessionStorage, or null if not found.
+	 */
+	getLoggedInUserFromCache(): AccountDto | null {
 		const storedUser = sessionStorage.getItem(USER_KEY);
-		let user = storedUser ? (JSON.parse(storedUser) as AccountDto) : null;
+		return storedUser ? (JSON.parse(storedUser) as AccountDto) : null;
+	}
 
-		// If not found in sessionStorage, make API call to get logged in user & cache it in sessionStorage
-		if (!user) {
-			const { data } = await api.GET('/api/auth/me');
-			user = data ?? null;
-			if (user) sessionStorage.setItem(USER_KEY, JSON.stringify(user));
-		}
+	/**
+	 * Gets the currently logged in user from the API and caches it in sessionStorage.
+	 * @returns The logged-in user if available from the API, or null if not logged in.
+	 */
+	async getLoggedInUserFromApi(): Promise<AccountDto | null> {
+		// Get user
+		const user = throwErrors(await api.GET('/api/auth/me')) as
+			| AccountDto
+			| undefined;
 
-		return user;
+		// Cache the user in sessionStorage for future retrieval
+		if (user) sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+		else sessionStorage.removeItem(USER_KEY);
+
+		return user ?? null;
+	}
+
+	/**
+	 * Refreshes the cached logged-in user by making an API call to retrieve the latest user information and updating sessionStorage.
+	 */
+	async refreshLoggedInUser() {
+		await this.getLoggedInUserFromApi();
 	}
 
 	/**
@@ -52,14 +76,19 @@ class AuthService {
 		password: string;
 		rememberMe?: boolean;
 	}): Promise<boolean> {
-		return (
-			await api.POST('/api/auth/login', {
-				body: credentials,
-				headers: {
-					'Content-Type': 'application/x-www-form-urlencoded',
-				},
-			})
-		).response.ok;
+		const req = await api.POST('/api/auth/login', {
+			body: credentials,
+			headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+			},
+		});
+
+		// Handle 401 Unauthorized response (invalid credentials)
+		if (req.response.status === 401) return false;
+		// Handle other non-OK responses
+		throwErrors(req);
+
+		return true;
 	}
 
 	/**
@@ -68,7 +97,14 @@ class AuthService {
 	 */
 	async performLogout() {
 		sessionStorage.removeItem(USER_KEY);
-		return (await api.POST('/api/auth/logout')).response.ok;
+
+		const req = await api.POST('/api/auth/logout');
+		// Handle 401 Unauthorized response (user not logged in)
+		if (req.response.status === 401) return false;
+		// Handle other non-OK responses
+		throwErrors(req);
+
+		return true;
 	}
 
 	/**

@@ -17,7 +17,6 @@ import {
 } from '@phosphor-icons/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
-import BooleanBadge from '~/component/BooleanBadge';
 import WifiBadge from '~/component/WifiBadge';
 import dayjs from 'dayjs';
 import { DataTable } from 'mantine-datatable';

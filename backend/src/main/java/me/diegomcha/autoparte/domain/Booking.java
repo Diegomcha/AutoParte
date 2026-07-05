@@ -34,7 +34,6 @@ public class Booking extends BaseEntity {
 
     @Setter
     private boolean published = false;
-    private @NonNull BookingStatus status = BookingStatus.DRAFT;
 
     private @NonNull Instant startTime;
     private @NonNull Instant endTime;
@@ -72,8 +71,7 @@ public class Booking extends BaseEntity {
      */
     public Booking(@NonNull Accommodation accommodation, @NonNull Instant startTime, @NonNull Instant endTime, int numberOfPeople, Payment payment, Integer numberOfRooms, Boolean internetConnection) {
         this.setAccommodation(accommodation);
-        this.startTime = startTime;
-        this.setEndTime(endTime);
+        this.setDates(startTime, endTime);
         this.setNumberOfPeople(numberOfPeople);
         this.setNumberOfRooms(numberOfRooms);
         this.setPayment(payment);
@@ -99,26 +97,17 @@ public class Booking extends BaseEntity {
     }
 
     /**
-     * Sets the start time for the booking.
+     * Sets the start and end dates for the booking.
      *
-     * @param startTime The start time of the booking
+     * @param startTime Start time of the booking
+     * @param endTime   End time of the booking
      * @throws IllegalArgumentException if the start time is not before the end time
      */
-    public void setStartTime(@NonNull Instant startTime) {
+    public void setDates(@NonNull Instant startTime, @NonNull Instant endTime) {
         if (!startTime.isBefore(endTime))
             throw new IllegalArgumentException("Start time must be before end time");
-        this.startTime = startTime;
-    }
 
-    /**
-     * Sets the end time for the booking.
-     *
-     * @param endTime The end time of the booking
-     * @throws IllegalArgumentException if the end time is not after the start time
-     */
-    public void setEndTime(@NonNull Instant endTime) {
-        if (!startTime.isBefore(endTime))
-            throw new IllegalArgumentException("End time must be after start time");
+        this.startTime = startTime;
         this.endTime = endTime;
     }
 
@@ -221,46 +210,64 @@ public class Booking extends BaseEntity {
         // Mark all other communications as voided if they are pending or failed (not in SES)
         this.communications.stream()
                 .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION)
-                .filter(c -> c.getStatus() == Communication.CommunicationStatus.PENDING || c.getStatus() == Communication.CommunicationStatus.FAILED)
+                .filter(c -> c.getStatus() == Communication.CommunicationStatus.PENDING)
                 .forEach(Communication::markVoided);
 
         // If all other communications are voided, mark the cancellation communication as finished successfully
         if (this.communications.stream()
                 .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION)
-                .allMatch(c -> c.getStatus() == Communication.CommunicationStatus.VOIDED))
+                .allMatch(c -> c.getStatus() == Communication.CommunicationStatus.VOIDED || c.getStatus() == Communication.CommunicationStatus.FAILED))
             communication.markFinishedSuccessfully();
     }
 
-    public void _updateState() {
+    /**
+     * Returns the current status of the booking based on its communications and other properties.
+     *
+     * @return The current status of the booking
+     */
+    public BookingStatus getStatus() {
         // Cancelled
         if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.CANCELLATION))
-            this.status = BookingStatus.CANCELLED;
-        else if (this.hasCommunicationOfType(Communication.CommunicationType.CANCELLATION))
-            this.status = BookingStatus.PENDING_CANCELLATION;
+            return BookingStatus.CANCELLED;
+        if (this.hasCommunicationOfType(Communication.CommunicationType.CANCELLATION))
+            return BookingStatus.PENDING_CANCELLATION;
 
-            // Checked-in
-        else if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.CHECKIN))
-            this.status = BookingStatus.CHECKED_IN;
-        else if (this.hasCommunicationOfType(Communication.CommunicationType.CHECKIN))
-            this.status = BookingStatus.PENDING_CHECK_IN;
-        else if (this.people.size() == this.numberOfPeople &&
+        // Checked-in
+        if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.CHECKIN))
+            return BookingStatus.CHECKED_IN;
+        if (this.hasCommunicationOfType(Communication.CommunicationType.CHECKIN))
+            return BookingStatus.PENDING_CHECK_IN;
+        if (this.people.size() == this.numberOfPeople &&
                 this.people.stream().allMatch(Person::isComplete))
-            this.status = BookingStatus.CHECK_IN_READY;
+            return BookingStatus.CHECK_IN_READY;
 
-            // Confirmed
-        else if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.BOOKING))
-            this.status = BookingStatus.CONFIRMED;
-        else if (this.hasCommunicationOfType(Communication.CommunicationType.BOOKING))
-            this.status = BookingStatus.PENDING_CONFIRMATION;
-        else if (this.payment != null && !this.people.isEmpty())
-            this.status = BookingStatus.CONFIRMATION_READY;
+        // Confirmed
+        if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.BOOKING))
+            return BookingStatus.CONFIRMED;
+        if (this.hasCommunicationOfType(Communication.CommunicationType.BOOKING))
+            return BookingStatus.PENDING_CONFIRMATION;
+        if (this.payment != null && !this.people.isEmpty())
+            return BookingStatus.CONFIRMATION_READY;
 
-            // Draft
-        else this.status = BookingStatus.DRAFT;
+        // Draft
+        return BookingStatus.DRAFT;
     }
 
     public Set<Communication> getCommunications() {
         return Set.copyOf(this.communications);
+    }
+
+    /**
+     * Returns a list of communications of the specified type, sorted by creation time.
+     *
+     * @param type The type of communication to filter by
+     * @return A list of communications of the specified type, sorted by creation time
+     */
+    public List<Communication> getCommunications(@NonNull Communication.CommunicationType type) {
+        return this.communications.stream()
+                .filter(c -> c.getType() == type)
+                .sorted(Comparator.comparing(Communication::getCreatedAt))
+                .toList();
     }
 
     private Communication addCommunication(@NonNull Communication.CommunicationType type) {

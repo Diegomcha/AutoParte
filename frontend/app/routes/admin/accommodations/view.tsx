@@ -5,42 +5,26 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
-import type { Route } from './+types/admin.accommodations.$id';
+import type { Route } from './+types/view';
 
 dayjs.extend(relativeTime);
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
-	return await queryClient.fetchQuery({
-		queryKey: ['accommodations', id],
-		queryFn: async () => {
-			// Get accommodation
-			const accommodation = throwErrors(
-				await api.GET('/api/accommodations/{id}', {
-					params: { path: { id } },
-				})
-			);
-
-			// Get employees for the accommodation
-			const employees = await Promise.all(
-				accommodation.employees.map(async (employeeId) =>
-					throwErrors(
-						await api.GET('/api/employees/{id}', {
-							params: { path: { id: employeeId } },
-						})
-					)
-				)
-			);
-
-			return {
-				accommodation,
-				employees,
-			};
-		},
-	});
+	return {
+		accommodation: await queryClient.fetchQuery({
+			queryKey: ['accommodations', id],
+			queryFn: async () =>
+				throwErrors(
+					await api.GET('/api/accommodations/{id}', {
+						params: { path: { id } },
+					})
+				),
+		}),
+	};
 }
 
 export default function ViewAccommodation({
-	loaderData: { accommodation, employees },
+	loaderData: { accommodation },
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
@@ -97,11 +81,11 @@ export default function ViewAccommodation({
 						{t(($) => $.admin.accommodations.properties.employees.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
-						{employees.length === 0 ? (
+						{accommodation.employees.length === 0 ? (
 							t(($) => $.admin.accommodations.properties.employees.none)
 						) : (
 							<Stack gap={4}>
-								{employees.map((employee) => (
+								{accommodation.employees.map((employee) => (
 									<Badge
 										component={Link}
 										to={`/admin/employees/${employee.id}`}
@@ -109,7 +93,7 @@ export default function ViewAccommodation({
 										variant="dot"
 										className="cursor-pointer!"
 									>
-										{employee.name} {employee.surname}
+										{employee.name} &lt;{employee.email}&gt;
 									</Badge>
 								))}
 							</Stack>

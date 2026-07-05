@@ -33,4 +33,7 @@ interface CatalogueAPI {
 
     @Operation(summary = "Get valid document types")
     String[] getDocumentTypes();
+
+    @Operation(summary = "Get valid payment types")
+    String[] getPaymentTypes();
 }

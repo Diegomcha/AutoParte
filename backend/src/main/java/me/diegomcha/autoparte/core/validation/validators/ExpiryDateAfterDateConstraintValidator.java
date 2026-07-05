@@ -5,13 +5,14 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
+import me.diegomcha.autoparte.core.validation.annotations.ExpiryDateAfterDateConstraint;
 import me.diegomcha.autoparte.core.validation.annotations.StartEndDatesConstraint;
 
 @SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)
-public class StartEndDatesConstraintValidator implements ConstraintValidator<StartEndDatesConstraint, BookingDtoRequest> {
+public class ExpiryDateAfterDateConstraintValidator implements ConstraintValidator<ExpiryDateAfterDateConstraint, BookingDtoRequest.PaymentDtoRequest> {
 
     @Override
-    public boolean isValid(BookingDtoRequest o, ConstraintValidatorContext constraintValidatorContext) {
-        return o.startTime() != null && o.endTime() != null && o.startTime().isBefore(o.endTime());
+    public boolean isValid(BookingDtoRequest.PaymentDtoRequest o, ConstraintValidatorContext constraintValidatorContext) {
+        return o.date() == null || o.expiryDate() == null || o.date().isBefore(o.expiryDate());
     }
 }

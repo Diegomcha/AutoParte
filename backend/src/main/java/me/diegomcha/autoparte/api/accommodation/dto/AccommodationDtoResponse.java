@@ -15,6 +15,13 @@ public record AccommodationDtoResponse(
         @Nonnull String sesCode,
         Boolean internetConnection,
 
-        @Nonnull Set<UUID> employees
+        @Nonnull Set<AccommodationDtoEmployeeResponse> employees
 ) {
+    public record AccommodationDtoEmployeeResponse(
+            boolean enabled,
+            @Nonnull UUID id,
+            @Nonnull String name,
+            @Nonnull String email
+    ) {
+    }
 }

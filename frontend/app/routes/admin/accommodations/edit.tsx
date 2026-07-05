@@ -5,7 +5,6 @@ import {
 	MultiSelect,
 	Space,
 	Stack,
-	Switch,
 	TextInput,
 } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
@@ -15,7 +14,7 @@ import api, { queryClient, throwErrors } from '~/api';
 import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useRevalidator } from 'react-router';
-import type { Route } from './+types/admin.accommodations.$id_.edit';
+import type { Route } from './+types/edit';
 import type { AccommodationDtoRequest } from '~/@types/api';
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
@@ -56,7 +55,7 @@ export default function EditAccommodation({
 		initialValues: {
 			name: accommodation.name,
 			sesCode: accommodation.sesCode,
-			employees: accommodation.employees,
+			employees: accommodation.employees.map((employee) => employee.id),
 			internetConnection: String(accommodation.internetConnection ?? undefined),
 		},
 		validate: {
@@ -82,10 +81,11 @@ export default function EditAccommodation({
 			values: AccommodationDtoRequest & { employees: string[] }
 		) => {
 			const newEmployees = values.employees.filter(
-				(employeeId) => !accommodation.employees.includes(employeeId)
+				(employeeId) =>
+					!accommodation.employees.some((e) => e.id === employeeId)
 			);
 			const removedEmployees = accommodation.employees.filter(
-				(employeeId) => !values.employees.includes(employeeId)
+				(employee) => !values.employees.includes(employee.id)
 			);
 
 			// Requests
@@ -108,13 +108,16 @@ export default function EditAccommodation({
 						)
 					)
 				),
-				...removedEmployees.map(async (employeeId) =>
+				...removedEmployees.map(async (employee) =>
 					throwErrors(
 						await api.DELETE(
 							'/api/accommodations/{accommodationId}/employees/{employeeId}',
 							{
 								params: {
-									path: { accommodationId: accommodation.id, employeeId },
+									path: {
+										accommodationId: accommodation.id,
+										employeeId: employee.id,
+									},
 								},
 							}
 						)

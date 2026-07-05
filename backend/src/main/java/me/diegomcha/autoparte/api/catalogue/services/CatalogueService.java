@@ -2,6 +2,7 @@ package me.diegomcha.autoparte.api.catalogue.services;
 
 import lombok.NonNull;
 import me.diegomcha.autoparte.domain.Person;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
 import me.diegomcha.autoparte.domain.person.document.Document;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,15 @@ public class CatalogueService {
      */
     public String[] getDocumentTypeOptions() {
         return this.getOptions(Document.DocumentType.class);
+    }
+
+    /**
+     * Gets an array of payment type options.
+     *
+     * @return Array of payment type options
+     */
+    public String[] getPaymentTypeOptions() {
+        return this.getOptions(Payment.PaymentType.class);
     }
 
     private <T extends Enum<T>> String[] getOptions(@NonNull Class<T> enumerator) {

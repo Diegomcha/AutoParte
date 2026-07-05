@@ -4,6 +4,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.PastOrPresent;
+import me.diegomcha.autoparte.core.validation.annotations.ExpiryDateAfterDateConstraint;
 import me.diegomcha.autoparte.core.validation.annotations.StartEndDatesConstraint;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
 
@@ -18,12 +19,13 @@ public record BookingDtoRequest(
         @Min(1) Integer numberOfRooms,
         Boolean internetConnection
 ) {
+    @ExpiryDateAfterDateConstraint
     public record PaymentDtoRequest(
             @Nonnull Payment.PaymentType type,
             String mean,
             String holder,
-            @PastOrPresent Instant date,
-            @Future Instant expiryDate
+            Instant date,
+            Instant expiryDate
     ) {
     }
 }

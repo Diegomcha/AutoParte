@@ -5,42 +5,26 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
-import type { Route } from './+types/admin.employees.$id';
+import type { Route } from './+types/view';
 
 dayjs.extend(relativeTime);
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
-	return await queryClient.fetchQuery({
-		queryKey: ['employee', id],
-		queryFn: async () => {
-			// Get employee
-			const employee = throwErrors(
-				await api.GET('/api/employees/{id}', {
-					params: { path: { id } },
-				})
-			);
-
-			// Get accommodations for the employee
-			const accommodations = await Promise.all(
-				employee.accommodations.map(async (accommodationId) =>
-					throwErrors(
-						await api.GET('/api/accommodations/{id}', {
-							params: { path: { id: accommodationId } },
-						})
-					)
-				)
-			);
-
-			return {
-				employee,
-				accommodations,
-			};
-		},
-	});
+	return {
+		employee: await queryClient.fetchQuery({
+			queryKey: ['employee', id],
+			queryFn: async () =>
+				throwErrors(
+					await api.GET('/api/employees/{id}', {
+						params: { path: { id } },
+					})
+				),
+		}),
+	};
 }
 
 export default function ViewEmployee({
-	loaderData: { employee, accommodations },
+	loaderData: { employee },
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
@@ -114,11 +98,11 @@ export default function ViewEmployee({
 						{t(($) => $.admin.employees.properties.accommodations.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
-						{accommodations.length === 0 ? (
+						{employee.accommodations.length === 0 ? (
 							t(($) => $.admin.employees.properties.accommodations.none)
 						) : (
 							<Stack gap={4}>
-								{accommodations.map((accommodation) => (
+								{employee.accommodations.map((accommodation) => (
 									<Badge
 										component={Link}
 										to={`/admin/accommodations/${accommodation.id}`}

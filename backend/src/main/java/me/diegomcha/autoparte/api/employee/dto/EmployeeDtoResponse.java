@@ -18,7 +18,11 @@ public record EmployeeDtoResponse(
         @Nonnull String surname,
         @Nonnull String email,
 
-        @Nonnull Set<UUID> accommodations
+        @Nonnull Set<EmployeeDtoAccommodationResponse> accommodations
         ) {
-
+        public record EmployeeDtoAccommodationResponse(
+                @Nonnull UUID id,
+                @Nonnull String name
+        ) {
+        }
 }

@@ -52,20 +52,25 @@ class EmployeeService {
      * @return A page of employees
      */
     public Page<EmployeeDtoResponse> getEmployees(@NonNull Pageable pageable) {
-        List<Sort.Order> translatedOrders = pageable.getSort().stream()
-                .map(order -> new Sort.Order(
-                        order.getDirection(),
-                        EMPLOYEE_SORT_MAP.getOrDefault(order.getProperty(), order.getProperty())
-                ))
-                .toList();
+        // Translate sorting properties to match the entity fields
+        if (pageable.getSort().isSorted()) {
+            List<Sort.Order> translatedOrders = pageable.getSort().stream()
+                    .map(order -> new Sort.Order(
+                            order.getDirection(),
+                            EMPLOYEE_SORT_MAP.getOrDefault(order.getProperty(), order.getProperty())
+                    ))
+                    .toList();
 
-        Pageable translatedPageable = PageRequest.of(
-                pageable.getPageNumber(),
-                pageable.getPageSize(),
-                Sort.by(translatedOrders)
-        );
+            pageable = pageable.isUnpaged()
+                    ? Pageable.unpaged(Sort.by(translatedOrders))
+                    : PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by(translatedOrders)
+            );
+        }
 
-        return employeeMapper.toResponse(employeeRepo.findAll(translatedPageable));
+        return employeeMapper.toResponse(employeeRepo.findAll(pageable));
     }
 
     /**
@@ -159,9 +164,12 @@ class EmployeeService {
      */
     @Transactional
     public void deleteEmployee(@NonNull UUID id) throws ResourceNotFoundException {
-        // Ensure employee exists
-        if (!employeeRepo.existsById(id))
-            throw NOT_FOUND_EXCEPTION.get();
+        // Get employee
+        Employee employee = employeeRepo
+                .findById(id)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        employee.getAccommodations().forEach(accommodation -> accommodation.removeEmployee(employee));
 
         employeeRepo.deleteById(id);
     }

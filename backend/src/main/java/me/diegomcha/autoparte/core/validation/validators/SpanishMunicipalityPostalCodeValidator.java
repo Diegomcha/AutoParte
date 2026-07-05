@@ -21,12 +21,9 @@ public class SpanishMunicipalityPostalCodeValidator implements ConstraintValidat
             return true;
 
         try {
-            // Ensure that the municipality code is valid and corresponds to a Spanish province
-            var province = catalogueService.findSpanishProvinceFromMunicipalityCode(dto.municipality());
-
             // Ensure that the postal code is valid for the given municipality
             return catalogueService
-                    .getSpanishPostalCodes(province, dto.municipality())
+                    .getSpanishPostalCodes(dto.municipality().substring(0, 2), dto.municipality().substring(2))
                     .contains(dto.postalCode());
         } catch (IllegalArgumentException e) {
             return false;

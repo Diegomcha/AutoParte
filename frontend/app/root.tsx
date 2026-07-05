@@ -25,13 +25,14 @@ import {
 	useFetchers,
 	useNavigation,
 } from 'react-router';
-import { queryClient } from './api';
+import { ApiErrorResponse, queryClient } from './api';
 import { theme } from './theme';
 import type { Route } from './+types/root';
 //
 import './i18n';
 import './dayjs';
 import './app.css';
+import AuthService from './services/AuthService';
 
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
@@ -93,12 +94,27 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	let stack;
 	let showRetry = true;
 
+	// Handle route error responses
 	if (isRouteErrorResponse(error)) {
 		status = error.status.toString();
 		if (status.startsWith('4')) showRetry = false;
-	} else if (import.meta.env.DEV && error instanceof Error) {
-		stack = error.stack;
 	}
+
+	// Handle API error responses
+	if (ApiErrorResponse.isApiErrorResponse(error)) {
+		if (error.status === 404) {
+			status = '404';
+			showRetry = false;
+		} else if (error.status === 401) {
+			void AuthService.refreshLoggedInUser().then(() => {
+				location.reload();
+			});
+			return <></>;
+		} else if (error.status.toString().startsWith('5')) status = '503';
+	}
+
+	// Show stack trace in development mode
+	if (import.meta.env.DEV && error instanceof Error) stack = error.stack;
 
 	const message = t(($) => $.error.status[status as 'default'], {
 		defaultValue: t(($) => $.error.status.default),

@@ -7,12 +7,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
+import me.diegomcha.autoparte.core.exception.BadRequestException;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Tag(name = "Bookings", description = "Operations related to bookings")
@@ -20,7 +22,7 @@ import java.util.UUID;
 public interface BookingAPI {
 
     @Operation(summary = "List bookings for an accommodation")
-    Page<BookingDtoResponse> getBookingsByAccommodation(UUID accommodationId, Pageable pageable) throws ResourceNotFoundException;
+    Page<BookingDtoResponse> getBookingsByAccommodation(UUID accommodationId, Pageable pageable, Instant startRange, Instant endRange) throws ResourceNotFoundException, BadRequestException;
 
     @Operation(summary = "Get booking by id for an accommodation")
     BookingDtoResponse getBookingById(UUID accommodationId, UUID id) throws ResourceNotFoundException;

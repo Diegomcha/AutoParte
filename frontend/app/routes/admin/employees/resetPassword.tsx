@@ -5,7 +5,7 @@ import api, { queryClient, throwErrors } from '~/api';
 import EmployeeCredsModal from '~/component/EmployeeCredsModal';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import type { Route } from './+types/admin.employees.$id_.reset-password';
+import type { Route } from './+types/resetPassword';
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	return await queryClient.fetchQuery({

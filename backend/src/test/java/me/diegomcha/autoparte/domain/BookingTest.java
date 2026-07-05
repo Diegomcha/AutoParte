@@ -3,6 +3,7 @@ package me.diegomcha.autoparte.domain;
 import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
+import me.diegomcha.autoparte.domain.communication.CancellationCommunication;
 import me.diegomcha.autoparte.domain.communication.Communication;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
@@ -61,14 +62,13 @@ class BookingTest {
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> new Booking(this.accommodation, laterTime, earlierTime, 1, this.payment, null, null));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setStartTime(laterTime));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setEndTime(earlierTime));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setDates(laterTime, laterTime));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setDates(earlierTime, earlierTime));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setStartTime(evenLaterTime));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setEndTime(evenEarlierTime));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setDates(evenLaterTime, laterTime));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.setDates(earlierTime, evenEarlierTime));
 
-        this.booking.setStartTime(evenEarlierTime);
-        this.booking.setEndTime(evenLaterTime);
+        this.booking.setDates(evenEarlierTime, evenLaterTime);
     }
 
     @Test
@@ -108,25 +108,49 @@ class BookingTest {
     @Test
     void testCanBeModified() {
         Assertions.assertTrue(this.booking.canBeModified());
-        this.makeCheckinable(true);
-        this.booking.checkIn();
+
+        this.makeConfirmable();
+        Assertions.assertTrue(this.booking.canBeModified());
+        booking.confirm();
+        Assertions.assertFalse(this.booking.canBeModified());
+        this.finalizeConfirmation();
+        Assertions.assertTrue(this.booking.canBeModified());
+
+        this.makeCheckinable();
+        Assertions.assertTrue(this.booking.canBeModified());
+        booking.checkIn();
+        Assertions.assertFalse(this.booking.canBeModified());
+        this.finalizeCheckIn();
+        Assertions.assertFalse(this.booking.canBeModified());
+
+        booking.cancel();
+        Assertions.assertFalse(this.booking.canBeModified());
+        this.finalizeCancellation();
         Assertions.assertFalse(this.booking.canBeModified());
     }
 
     @Test
-    void testCanBeConfirmed() {
-        Assertions.assertFalse(this.booking.canBeConfirmed());
-        this.makeConfirmable();
-        Assertions.assertTrue(this.booking.canBeConfirmed());
-    }
+    void testGetStatus() {
+        Assertions.assertEquals(Booking.BookingStatus.DRAFT, this.booking.getStatus());
 
-    @Test
-    void testCanBeCheckedIn() {
-        Assertions.assertFalse(this.booking.canBeCheckedIn());
-        this.makeCheckinable(true);
-        try (var ignored = TestingUtils.getMockedInstantNow()) {
-            Assertions.assertTrue(this.booking.canBeCheckedIn());
-        }
+        this.makeConfirmable();
+        Assertions.assertEquals(Booking.BookingStatus.CONFIRMATION_READY, this.booking.getStatus());
+        booking.confirm();
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CONFIRMATION, this.booking.getStatus());
+        this.finalizeConfirmation();
+        Assertions.assertEquals(Booking.BookingStatus.CONFIRMED, this.booking.getStatus());
+
+        this.makeCheckinable();
+        Assertions.assertEquals(Booking.BookingStatus.CHECK_IN_READY, this.booking.getStatus());
+        booking.checkIn();
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CHECK_IN, this.booking.getStatus());
+        this.finalizeCheckIn();
+        Assertions.assertEquals(Booking.BookingStatus.CHECKED_IN, this.booking.getStatus());
+
+        booking.cancel();
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CANCELLATION, this.booking.getStatus());
+        this.finalizeCancellation();
+        Assertions.assertEquals(Booking.BookingStatus.CANCELLED, this.booking.getStatus());
     }
 
     @Test
@@ -153,19 +177,22 @@ class BookingTest {
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.checkIn());
         Assertions.assertTrue(this.booking.getCommunications().isEmpty());
 
-        this.makeCheckinable(true);
+        this.makeConfirmable();
+        booking.confirm();
+        this.finalizeConfirmation();
+        booking.setPublished(true);
+        this.makeCheckinable();
 
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             this.booking.checkIn();
         }
 
-        Assertions.assertEquals(2, this.booking.getCommunications().size());
-        this.booking.getCommunications().stream()
-                .filter(communication -> communication.getType() == Communication.CommunicationType.CHECKIN)
-                .forEach(communication -> {
-                    Assertions.assertEquals(this.booking, communication.getBooking());
-                    Assertions.assertEquals(Communication.CommunicationType.CHECKIN, communication.getType());
-                });
+        Assertions.assertFalse(booking.isPublished());
+
+        var checkinComms = this.booking.getCommunications(Communication.CommunicationType.CHECKIN);
+        Assertions.assertEquals(1, checkinComms.size());
+        Assertions.assertEquals(this.booking, checkinComms.getLast().getBooking());
+        Assertions.assertEquals(Communication.CommunicationType.CHECKIN, checkinComms.getLast().getType());
 
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.checkIn());
         Assertions.assertEquals(2, this.booking.getCommunications().size());
@@ -182,7 +209,8 @@ class BookingTest {
             Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, communication.getStatus());
         });
 
-        this.makeCheckinable(false);
+        this.makeConfirmable();
+        this.makeCheckinable();
 
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.confirm());
         try (var ignored = TestingUtils.getMockedInstantNow()) {
@@ -194,54 +222,43 @@ class BookingTest {
 
     @Test
     void testCancellationVoidsOtherCommunicationsNotSent() {
-        this.makeCheckinable(true);
+        this.makeConfirmable();
+        booking.confirm();
 
-        try (var ignored = TestingUtils.getMockedInstantNow()) {
-            this.booking.checkIn();
-        }
-
-        Assertions.assertEquals(2, this.booking.getCommunications().size());
+        Assertions.assertEquals(1, this.booking.getCommunications().size());
 
         this.booking.cancel();
 
-        Assertions.assertEquals(3, this.booking.getCommunications().size());
+        Assertions.assertEquals(2, this.booking.getCommunications().size());
 
-        this.booking.getCommunications().forEach(communication -> {
-            var expectedStatus = communication.getType() == Communication.CommunicationType.CANCELLATION
-                    ? Communication.CommunicationStatus.SUCCEEDED
-                    : Communication.CommunicationStatus.VOIDED;
-            Assertions.assertEquals(expectedStatus, communication.getStatus());
-        });
+        var cancellationComms = this.booking.getCommunications(Communication.CommunicationType.CANCELLATION);
+        Assertions.assertEquals(1, cancellationComms.size());
+        Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, cancellationComms.getLast().getStatus());
+
+        var confirmationComms = this.booking.getCommunications(Communication.CommunicationType.BOOKING);
+        Assertions.assertEquals(1, confirmationComms.size());
+        Assertions.assertEquals(Communication.CommunicationStatus.VOIDED, confirmationComms.getLast().getStatus());
     }
 
     @Test
     void testCancellationVoidsOtherCommunicationsMixed() {
-        this.makeCheckinable(true);
+        this.makeConfirmable();
+        booking.confirm();
+        this.finalizeConfirmation();
+        this.makeCheckinable();
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             this.booking.checkIn();
         }
 
         Assertions.assertEquals(2, this.booking.getCommunications().size());
 
-        // Mark one as sent to simulate it being sent to SES
-        this.booking.getCommunications().stream()
-                .filter(c -> c.getType() == Communication.CommunicationType.CHECKIN)
-                .findFirst()
-                .ifPresent(c -> c.markSent(UUID.randomUUID()));
-
         this.booking.cancel();
 
         Assertions.assertEquals(3, this.booking.getCommunications().size());
 
-        this.booking.getCommunications().forEach(communication -> {
-            var expectedStatus = switch (communication.getType()) {
-                case CHECKIN -> Communication.CommunicationStatus.SENT;
-                case BOOKING -> Communication.CommunicationStatus.VOIDED;
-                case CANCELLATION -> Communication.CommunicationStatus.PENDING;
-
-            };
-            Assertions.assertEquals(expectedStatus, communication.getStatus());
-        });
+        Assertions.assertEquals(Communication.CommunicationStatus.PENDING, this.booking.getCommunications(Communication.CommunicationType.CANCELLATION).getLast().getStatus());
+        Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, this.booking.getCommunications(Communication.CommunicationType.BOOKING).getLast().getStatus());
+        Assertions.assertEquals(Communication.CommunicationStatus.VOIDED, this.booking.getCommunications(Communication.CommunicationType.CHECKIN).getLast().getStatus());
     }
 
     @Test
@@ -261,29 +278,44 @@ class BookingTest {
     }
 
     private void makeConfirmable() {
-        Assertions.assertFalse(this.booking.canBeConfirmed());
-
         booking.setPayment(this.payment);
         new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
-
-        Assertions.assertTrue(this.booking.canBeConfirmed());
     }
 
-    private void makeCheckinable(boolean confirm) {
-        Assertions.assertFalse(this.booking.canBeCheckedIn());
-
-        booking.setPayment(this.payment);
-        var person = new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
-
-        Assertions.assertFalse(this.booking.canBeCheckedIn());
+    private void makeCheckinable() {
+        var person = this.booking.getPeople().getFirst();
 
         person.setPersonalInfo(new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS), null));
         person.setDocument(Document.of(Document.DocumentType.NIF, "54095720L", "SUPPORT"));
         person.setAddress(Address.of("Line1", null, "Municipality", "PostalCode", "USA"));
+    }
 
-        if (confirm) {
-            this.booking.confirm();
-            Assertions.assertTrue(this.booking.canBeCheckedIn());
-        }
+    private void finalizeConfirmation() {
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CONFIRMATION, this.booking.getStatus());
+
+        var communication = booking.getCommunications(Communication.CommunicationType.BOOKING).getLast();
+        communication.markSent(UUID.randomUUID());
+        communication.markFinishedSuccessfully(UUID.randomUUID());
+
+        Assertions.assertEquals(Booking.BookingStatus.CONFIRMED, this.booking.getStatus());
+    }
+
+    private void finalizeCheckIn() {
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CHECK_IN, this.booking.getStatus());
+
+        var communication = booking.getCommunications(Communication.CommunicationType.CHECKIN).getLast();
+        communication.markSent(UUID.randomUUID());
+        communication.markFinishedSuccessfully(UUID.randomUUID());
+
+        Assertions.assertEquals(Booking.BookingStatus.CHECKED_IN, this.booking.getStatus());
+    }
+
+    private void finalizeCancellation() {
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CANCELLATION, this.booking.getStatus());
+
+        var communication = (CancellationCommunication) booking.getCommunications(Communication.CommunicationType.CANCELLATION).getLast();
+        communication.markFinishedSuccessfully();
+
+        Assertions.assertEquals(Booking.BookingStatus.CANCELLED, this.booking.getStatus());
     }
 }

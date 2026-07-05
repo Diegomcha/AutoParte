@@ -7,10 +7,7 @@ import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 import me.diegomcha.autoparte.domain.booking.payment.CreditCardPayment;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Named;
+import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
 import java.time.Instant;
@@ -21,6 +18,7 @@ import java.util.UUID;
 abstract class BookingMapper {
 
     @Mapping(target = "canBeModified", expression = "java(booking.canBeModified())")
+    @Mapping(target = "holderName", source = ".", qualifiedByName = "mapHolderName")
     public abstract BookingDtoResponse toResponse(Booking booking);
 
     public Page<BookingDtoResponse> toResponse(Page<Booking> bookings) {
@@ -31,6 +29,13 @@ abstract class BookingMapper {
     public abstract Booking fromCreate(Accommodation accommodation, BookingDtoRequest dto);
 
     public abstract void fromUpdate(BookingDtoRequest dto, @MappingTarget Booking booking);
+
+    // Helpers
+
+    @AfterMapping
+    protected void updateDates(BookingDtoRequest dto, @MappingTarget Booking booking) {
+        booking.setDates(dto.startTime(), dto.endTime());
+    }
 
     @Mapping(target = "expiryDate", source = ".", qualifiedByName = "mapExpiryDate")
     protected abstract BookingDtoResponse.PaymentDtoResponse map(Payment payment);
@@ -47,6 +52,15 @@ abstract class BookingMapper {
         return payment instanceof CreditCardPayment cc
                 ? cc.getExpiryDate()
                 : null;
+    }
+
+    @Named("mapHolderName")
+    protected String mapHolderName(Booking booking) {
+        if (booking.getPeople().isEmpty())
+            return null;
+
+        var holder = booking.getPeople().getFirst();
+        return String.format("%s %s.", holder.getPersonalInfo().getName(), holder.getPersonalInfo().getFirstSurname().charAt(0));
     }
 
     protected Payment map(BookingDtoRequest.PaymentDtoRequest dto) {

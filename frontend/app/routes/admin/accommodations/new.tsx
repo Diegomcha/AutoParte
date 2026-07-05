@@ -1,20 +1,8 @@
-import {
-	Button,
-	Checkbox,
-	Group,
-	Modal,
-	Radio,
-	SegmentedControl,
-	Stack,
-	Switch,
-	Text,
-	TextInput,
-} from '@mantine/core';
+import { Button, Group, Modal, Stack, TextInput } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { UserCirclePlusIcon } from '@phosphor-icons/react';
+import { PlusIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
-import SwitchWithNull from '~/component/BooleanInputWithUndefined';
 import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useRevalidator } from 'react-router';
@@ -83,7 +71,7 @@ export default function NewAccommodation() {
 				await queryClient.invalidateQueries({ queryKey: ['accommodations'] });
 				await revalidator.revalidate();
 
-				await navigate(`/admin/accommodations/${success.id}`);
+				await navigate(`/admin/accommodations/${String(success.id)}`);
 			}
 		},
 	});
@@ -127,11 +115,7 @@ export default function NewAccommodation() {
 					/>
 				</Stack>
 				<Group justify="right" mt="md">
-					<Button
-						type="submit"
-						loading={isPending}
-						leftSection={<UserCirclePlusIcon />}
-					>
+					<Button type="submit" loading={isPending} leftSection={<PlusIcon />}>
 						{t(($) => $.common.buttons.create)}
 					</Button>
 				</Group>

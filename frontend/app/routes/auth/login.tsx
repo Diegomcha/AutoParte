@@ -10,8 +10,9 @@ import {
 } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useTranslation } from 'react-i18next';
-import AuthService from '../services/AuthService';
-import type { Route } from './+types/auth.login';
+import { useSubmit } from 'react-router';
+import AuthService from '../../services/AuthService';
+import type { Route } from './+types/login';
 import type { LoginRequest } from '~/@types/api';
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
@@ -19,8 +20,16 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 		return AuthService.getSuccessRedirection(request);
 }
 
-export default function LoginPage() {
+export async function clientAction({ request }: Route.ClientActionArgs) {
+	const values = (await request.json()) as Required<LoginRequest>;
+	return await AuthService.performLogin(values);
+}
+
+export default function LoginPage({
+	actionData: logInSuccess,
+}: Route.ComponentProps) {
 	const { t } = useTranslation();
+	const submit = useSubmit();
 
 	const form = useForm({
 		initialValues: {
@@ -34,17 +43,13 @@ export default function LoginPage() {
 		},
 	});
 
-	const login = async (values: Required<LoginRequest>) => {
-		const success = await AuthService.performLogin(values);
-		if (!success) {
-			form.setFieldError(
-				'password',
-				t(($) => $.auth.login.form.errors.invalidCredentials)
-			);
-			return;
-		}
-		location.reload();
-	};
+	// Handle login failure by setting a form error on the password field
+	if (logInSuccess === false) {
+		form.setFieldError(
+			'password',
+			t(($) => $.auth.login.form.errors.invalidCredentials)
+		);
+	}
 
 	return (
 		<Center bg="dark" className="h-screen">
@@ -52,7 +57,11 @@ export default function LoginPage() {
 				<Title ta="center" mb="lg">
 					{t(($) => $.auth.login.title)}
 				</Title>
-				<form onSubmit={form.onSubmit(login)}>
+				<form
+					onSubmit={form.onSubmit((creds) =>
+						submit(creds, { encType: 'application/json', method: 'POST' })
+					)}
+				>
 					<Stack>
 						<TextInput
 							key={form.key('username')}
@@ -79,7 +88,12 @@ export default function LoginPage() {
 							radius="md"
 							{...form.getInputProps('rememberMe')}
 						/>
-						<Button type="submit" size="md" radius="md">
+						<Button
+							type="submit"
+							size="md"
+							radius="md"
+							loading={form.submitting}
+						>
 							{t(($) => $.auth.login.form.submit)}
 						</Button>
 					</Stack>

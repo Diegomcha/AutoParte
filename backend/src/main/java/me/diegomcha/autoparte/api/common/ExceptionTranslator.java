@@ -8,7 +8,10 @@ import me.diegomcha.autoparte.core.exception.*;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,8 +19,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @RestControllerAdvice
-class ExceptionTranslator extends ResponseEntityExceptionHandler {
+class ExceptionTranslator {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -63,18 +71,51 @@ class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ProblemDetail handlePropertyReferenceException(PropertyReferenceException ex) {
+    public ProblemDetail handleBadRequestException(BadRequestException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    @Override
-    @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(implementation = ProblemDetail.class), mediaType = "application/problem+json"))
-    protected ResponseEntity<@NonNull Object> handleMethodArgumentNotValid(
-            @NonNull MethodArgumentNotValidException ex,
-            @NonNull HttpHeaders headers,
-            @NonNull HttpStatusCode status,
-            @NonNull WebRequest request) {
-        return super.handleMethodArgumentNotValid(ex, headers, status, request);
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handlePropertyReferenceException(PropertyReferenceException ex) {
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                String.format(
+                        "The property '%s' does not exist on the target resource type '%s'.",
+                        ex.getPropertyName(),
+                        ex.getType().getType().getSimpleName()
+                )
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+
+        // Field-level validation errors
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            errors.put(error.getField(), error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value");
+        }
+
+        // Class/object-level validation errors
+        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
+            String key = error.getObjectName();
+            errors.put(key, error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid object layout");
+        }
+
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Invalid method argument");
+        problemDetail.setProperty("invalidFields", errors);
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+        var problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Malformed JSON request");
+        problemDetail.setProperty("error", ex.getMessage());
+        return problemDetail;
     }
 
     @ExceptionHandler

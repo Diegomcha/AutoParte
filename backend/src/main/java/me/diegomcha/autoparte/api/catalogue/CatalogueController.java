@@ -63,4 +63,10 @@ class CatalogueController implements CatalogueAPI {
     public String[] getDocumentTypes() {
         return catalogueService.getDocumentTypeOptions();
     }
+
+    @GetMapping("/payment/types")
+    @Override
+    public String[] getPaymentTypes() {
+        return catalogueService.getPaymentTypeOptions();
+    }
 }

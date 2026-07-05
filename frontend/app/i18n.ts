@@ -12,7 +12,6 @@ await i18n
 	// Load translation using http -> see /public/locales
 	.use(HttpAPI)
 	.init({
-		lng: 'es', // TODO: remove this when we have the translations ready
 		fallbackLng: 'es',
 		enableSelector: true,
 		interpolation: {
@@ -21,3 +20,5 @@ await i18n
 	});
 
 export default i18n;
+
+export const lang = i18n.language.split('-')[0] as 'es' | 'en';

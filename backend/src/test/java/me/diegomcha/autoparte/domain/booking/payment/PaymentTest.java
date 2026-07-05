@@ -19,14 +19,4 @@ class PaymentTest {
         Assertions.assertSame(Payment.class, payment.getClass());
 
     }
-
-    @Test
-    void testDateValidation() {
-        try (var ignored = TestingUtils.getMockedInstantNow()) {
-            Payment.of(Payment.PaymentType.CASH, null, null, null,null);
-            Payment.of(Payment.PaymentType.GIFT_CARD, null, null, TestingUtils.PAST_INSTANT, null);
-            Payment.of(Payment.PaymentType.CREDIT_CARD, null, null, TestingUtils.INSTANT, null);
-            Assertions.assertThrows(IllegalArgumentException.class, () -> Payment.of(Payment.PaymentType.CASH, null, null, TestingUtils.FUTURE_INSTANT, null));
-        }
-    }
 }

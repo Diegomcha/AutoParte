@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import me.diegomcha.autoparte.domain.Booking;
 
+import java.util.UUID;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CancellationCommunication extends Communication {
 
@@ -17,8 +19,6 @@ public class CancellationCommunication extends Communication {
             throw new IllegalStateException("Communication must be PENDING to mark as SUCCEEDED without sesId");
 
         this.setStatus(CommunicationStatus.SUCCEEDED);
-
-        getBooking()._updateState();
     }
 
     @Override

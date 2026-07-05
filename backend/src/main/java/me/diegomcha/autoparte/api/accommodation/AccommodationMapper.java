@@ -5,12 +5,9 @@ import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoResponse;
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Employee;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.springframework.data.domain.Page;
-
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 abstract class AccommodationMapper {
@@ -25,9 +22,8 @@ abstract class AccommodationMapper {
 
     public abstract void fromUpdate(AccommodationDtoRequest update, @MappingTarget Accommodation accommodation);
 
-    protected Set<UUID> mapEmployees(Set<Employee> employees) {
-        return employees.stream()
-                .map(Employee::getId)
-                .collect(Collectors.toSet());
-    }
+    // Helpers
+
+    @Mapping(target = "enabled", source = "account.enabled")
+    protected abstract AccommodationDtoResponse.AccommodationDtoEmployeeResponse map(Employee employee);
 }

@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.api.booking.dto;
 
 import jakarta.annotation.Nonnull;
+import lombok.NonNull;
 import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.communication.Communication;
@@ -28,6 +29,8 @@ public record BookingDtoResponse(
         Integer numberOfRooms,
         Boolean internetConnection,
 
+        String holderName,
+
         @Nonnull Set<CommunicationDtoResponse> communications
 ) {
     public record PaymentDtoResponse(
@@ -40,6 +43,7 @@ public record BookingDtoResponse(
     }
 
     public record CommunicationDtoResponse(
+            @Nonnull UUID id,
             @Nonnull Communication.CommunicationType type,
             @Nonnull Communication.CommunicationStatus status,
             Instant sentTimestamp

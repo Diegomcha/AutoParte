@@ -2,6 +2,7 @@ package me.diegomcha.autoparte.api.booking;
 
 import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
+import me.diegomcha.autoparte.core.exception.BadRequestException;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
@@ -11,6 +12,7 @@ import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.Person;
 import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
+import me.diegomcha.autoparte.domain.communication.Communication;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
 import me.diegomcha.autoparte.domain.person.document.Document;
@@ -38,27 +40,43 @@ class BookingServiceTest {
     private BookingRepo bookingRepo;
 
     private Accommodation accommodation;
+    private Payment payment;
     private Booking booking;
 
     @BeforeEach
     void setUp() {
         this.accommodation = accommodationRepo.save(new Accommodation("Test Accommodation", "SESCODE", null));
+        this.payment = Payment.of(Payment.PaymentType.ON_SITE, null, null, null, null);
         this.booking = bookingRepo.save(new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1, null, null, null));
     }
 
     @Test
-    void testGetBookings() throws ResourceNotFoundException {
+    void testGetBookings() throws ResourceNotFoundException, BadRequestException {
         // One booking
-        var page = bookingService.getBookings(accommodation.getId(), Pageable.unpaged());
+        var page = bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), null, null);
 
         Assertions.assertEquals(1, page.getTotalElements());
         Assertions.assertEquals(booking.getId(), page.getContent().getFirst().id());
 
         // No bookings
         bookingRepo.delete(booking);
-        var emptyPage = bookingService.getBookings(accommodation.getId(), Pageable.unpaged());
+        var emptyPage = bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), null, null);
 
         Assertions.assertEquals(0, emptyPage.getTotalElements());
+    }
+
+    @Test
+    void testGetBookingsWithDateFilter() throws ResourceNotFoundException, BadRequestException {
+
+        Assertions.assertEquals(0, bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), TestingUtils.FUTURE_INSTANT.plusSeconds(1), null).getTotalElements());
+        Assertions.assertEquals(0, bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), null, TestingUtils.INSTANT.minusSeconds(1)).getTotalElements());
+
+        Assertions.assertEquals(1, bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), TestingUtils.FUTURE_INSTANT, null).getTotalElements());
+        Assertions.assertEquals(1, bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), null, TestingUtils.INSTANT).getTotalElements());
+
+        Assertions.assertThrows(BadRequestException.class, () ->
+                bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), TestingUtils.FUTURE_INSTANT, TestingUtils.INSTANT));
+
     }
 
     @Test
@@ -66,17 +84,19 @@ class BookingServiceTest {
         var nonExistentAccommodationId = UUID.randomUUID();
 
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
-                bookingService.getBookings(nonExistentAccommodationId, Pageable.unpaged()));
+                bookingService.getBookings(nonExistentAccommodationId, Pageable.unpaged(), null, null));
     }
 
     @Test
     void testGetBooking() throws ResourceNotFoundException {
+        new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
+
         var bookingResponse = bookingService.getBooking(accommodation.getId(), booking.getId());
 
         Assertions.assertEquals(booking.getId(), bookingResponse.id());
 
-        Assertions.assertEquals(booking.canBeConfirmed(), bookingResponse.canBeConfirmed());
-        Assertions.assertEquals(booking.canBeCheckedIn(), bookingResponse.canBeCheckedIn());
+        Assertions.assertEquals(booking.canBeModified(), bookingResponse.canBeModified());
+        Assertions.assertEquals("Name S.", bookingResponse.holderName());
 
         Assertions.assertNotNull(bookingResponse.communications());
     }
@@ -178,7 +198,7 @@ class BookingServiceTest {
         var dbBooking = bookingRepo.findByAccommodationIdAndId(accommodation.getId(), booking.getId());
 
         Assertions.assertTrue(dbBooking.isPresent());
-        Assertions.assertEquals(Booking.BookingStatus.CONFIRMED, dbBooking.get().getStatus());
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CONFIRMATION, dbBooking.get().getStatus());
     }
 
     @Test
@@ -202,14 +222,17 @@ class BookingServiceTest {
 
     @Test
     void testCheckInBooking() throws ResourceNotFoundException, ResourceConflictException {
-        this.makeCheckinable(true);
+        this.makeConfirmable();
+        this.booking.confirm();
+        this.finalizeConfirmation();
+        this.makeCheckinable();
 
         bookingService.checkInBooking(accommodation.getId(), booking.getId());
 
         var dbBooking = bookingRepo.findByAccommodationIdAndId(accommodation.getId(), booking.getId());
 
         Assertions.assertTrue(dbBooking.isPresent());
-        Assertions.assertEquals(Booking.BookingStatus.CHECKED_IN, dbBooking.get().getStatus());
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CHECK_IN, dbBooking.get().getStatus());
     }
 
     @Test
@@ -261,31 +284,41 @@ class BookingServiceTest {
                 bookingService.cancelBooking(accommodation.getId(), booking.getId()));
     }
 
-    private void makeConfirmable() {
-        Assertions.assertFalse(this.booking.canBeConfirmed());
+    @Test
+    void testPublishBooking() throws ResourceNotFoundException {
+        bookingService.publishBooking(accommodation.getId(), booking.getId());
 
-        this.booking.setPayment(Payment.of(Payment.PaymentType.ON_SITE, null, null, null, null));
-        new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
+        var dbBooking = bookingRepo.findByAccommodationIdAndId(accommodation.getId(), booking.getId()).orElseThrow();
 
-        Assertions.assertTrue(this.booking.canBeConfirmed());
+        Assertions.assertTrue(dbBooking.isPublished());
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                bookingService.publishBooking(UUID.randomUUID(), booking.getId()));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                bookingService.publishBooking(accommodation.getId(), UUID.randomUUID()));
     }
 
-    private void makeCheckinable(boolean confirm) {
-        Assertions.assertFalse(this.booking.canBeCheckedIn());
+    private void makeConfirmable() {
+        booking.setPayment(this.payment);
+        new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
+    }
 
-        this.booking.setPayment(Payment.of(Payment.PaymentType.CREDIT_CARD, null, null, null, null));
-        var person = new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
-
-        Assertions.assertFalse(this.booking.canBeCheckedIn());
+    private void makeCheckinable() {
+        var person = this.booking.getPeople().getFirst();
 
         person.setPersonalInfo(new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS), null));
         person.setDocument(Document.of(Document.DocumentType.NIF, "54095720L", "SUPPORT"));
         person.setAddress(Address.of("Line1", null, "Municipality", "PostalCode", "USA"));
+    }
 
-        if (confirm) {
-            this.booking.confirm();
-            Assertions.assertTrue(this.booking.canBeCheckedIn());
-        }
+    private void finalizeConfirmation() {
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CONFIRMATION, this.booking.getStatus());
+
+        var communication = booking.getCommunications(Communication.CommunicationType.BOOKING).getLast();
+        communication.markSent(UUID.randomUUID());
+        communication.markFinishedSuccessfully(UUID.randomUUID());
+
+        Assertions.assertEquals(Booking.BookingStatus.CONFIRMED, this.booking.getStatus());
     }
 
 }

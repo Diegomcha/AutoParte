@@ -2,18 +2,16 @@ import {
 	Button,
 	Center,
 	Chip,
-	Container,
 	Divider,
 	Fieldset,
 	Group,
-	Loader,
 	PasswordInput,
 	Stack,
 	Switch,
 	TextInput,
 	Title,
 } from '@mantine/core';
-import { isNotEmpty, useForm } from '@mantine/form';
+import { useForm } from '@mantine/form';
 import {
 	ArrowUUpLeftIcon,
 	FloppyDiskIcon,
@@ -22,7 +20,7 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import { useTranslation } from 'react-i18next';
-import type { Route } from './+types/admin.configuration';
+import type { Route } from './+types/configuration';
 import type { ConfigDtoRequest } from '~/@types/api';
 
 export async function clientLoader() {

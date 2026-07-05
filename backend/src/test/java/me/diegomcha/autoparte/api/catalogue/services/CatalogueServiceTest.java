@@ -36,4 +36,12 @@ class CatalogueServiceTest {
         Assertions.assertNotNull(options);
         Assertions.assertTrue(options.length > 0);
     }
+
+    @Test
+    void testGetPaymentTypeOptions() {
+        var options = catalogueService.getPaymentTypeOptions();
+
+        Assertions.assertNotNull(options);
+        Assertions.assertTrue(options.length > 0);
+    }
 }

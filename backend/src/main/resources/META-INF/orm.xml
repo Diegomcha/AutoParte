@@ -98,8 +98,8 @@
 
     <entity class="me.diegomcha.autoparte.domain.Booking">
         <attributes>
-            <basic name="status">
-                <column nullable="false" />
+            <basic name="published">
+                <column nullable="false"/>
             </basic>
             <basic name="startTime">
                 <column nullable="false"/>
