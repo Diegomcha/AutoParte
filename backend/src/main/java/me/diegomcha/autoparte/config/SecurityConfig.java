@@ -18,9 +18,7 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
@@ -36,7 +34,6 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Configuration
 @EnableWebSecurity
@@ -58,7 +55,6 @@ class SecurityConfig {
                                 ).permitAll()
                                 // Public access to bookings for check-in purposes
                                 .requestMatchers(HttpMethod.GET, "/api/accommodations/{accommodationId}/bookings/{bookingId}").access(bookingPublicAccessEval.getBookingCanBeAccessedPubliclyAuthorizationManager())
-                                .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/completed").access(bookingPublicAccessEval.getBookingCanBeAccessedPubliclyAuthorizationManager()) // TODO: ADD ROUTE!!!
                                 .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/checkin").access(bookingPublicAccessEval.getCheckinCanBeAccessedPubliclyAuthorizationManager())
                                 .requestMatchers("/api/accommodations/{accommodationId}/bookings/{bookingId}/people/**").access(bookingPublicAccessEval.getBookingCanBeAccessedPubliclyAuthorizationManager())
                                 // Protected routes for employees
