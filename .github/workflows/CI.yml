@@ -161,17 +161,18 @@ jobs:
         working-directory: backend
         env:
           TAGS: ${{ steps.meta.outputs.tags }}
+          IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
         run: |
           # Lowercase the image name for consistency
-          IMAGE_NAME=${{ env.REGISTRY }}/${IMAGE_NAME@L}_app
           LOWERCASED_IMAGE_NAME="${IMAGE_NAME,,}"
 
           # Build & push image
           mvn spring-boot:build-image \
-            -Dspring-boot.build-image.imageName=$LOWERCASED_IMAGE_NAME
+            -Dspring-boot.build-image.imageName=$LOWERCASED_IMAGE_NAME \
+            -Dspring-boot.build-image.publish=true
 
           # Extract the image digest
-          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $LOWERCASED_IMAGE_NAME | cut -d'@' -f2)
+          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$LOWERCASED_IMAGE_NAME" | cut -d'@' -f2)
           echo "digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
 
       - name: Generate artifact attestation
