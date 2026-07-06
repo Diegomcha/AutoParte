@@ -1,29 +1,39 @@
-# TODO: FINISH!!!
-
 name: autoparte
 
 services:
     app:
-        image: autoparte:0.0.1-SNAPSHOT
-        depends_on:
-            - db
+        image: ghcr.io/diegomcha/autoparte_app:main
         container_name: autoparte_app
-        expose:
-            - 8080
+        depends_on:
+            ocr:
+                condition: service_healthy
+            db:
+                condition: service_healthy
+        ports:
+            - 80:8080
         environment:
-            - AUTOPARTE_SES_ENDPOINT=http://localhost
-            - AUTOPARTE_SES_USERNAME=autoparte
-            - AUTOPARTE_SES_PASSWORD=autoparte
-            - AUTOPARTE_SES_LANDLORD-CODE=00000
+            - AUTOPARTE_SES_URL=https://hospedajes.pre-ses.mir.es/hospedajes-web/ws/v1/comunicacion
+            - AUTOPARTE_OCR_URL=http://ocr:80
 
-            - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/autoparte
-            - SPRING_DATASOURCE_USERNAME=autoparte
-            - SPRING_DATASOURCE_PASSWORD=autoparte
+            - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+            - SPRING_DATASOURCE_USERNAME=postgres
+            - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
             - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ocr:
+        image: ghcr.io/diegomcha/autoparte_ocr:main-cpu
+        container_name: autoparte_ocr
+        healthcheck:
+            test: ["CMD", "python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://localhost:80').status == 200 else 1)"]
+            timeout: 0.5s
+            start_interval: 1s
+            start_period: 10s
     db:
         image: dhi.io/postgres:18.4-alpine3.24
         container_name: autoparte_db
         environment:
-            - POSTGRES_DB=autoparte
-            - POSTGRES_USER=autoparte
-            - POSTGRES_PASSWORD=autoparte
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+        healthcheck:
+            test: ["CMD", "pg_isready"]
+            timeout: 0.5s
+            start_interval: 1s
+            start_period: 10s
