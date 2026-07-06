@@ -30,9 +30,8 @@ import type {
 	BookingDtoResponse,
 } from '~/@types/api';
 
+// Ensure the user is authenticated before allowing access to any protected routes.
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-	// Ensure the user is authenticated before allowing access to any protected routes.
-	// This should only be required in dev mode, as in production the server will handle route protection.
 	if (!(await AuthService.isAuthenticated())) {
 		return AuthService.getLoginRedirection(request);
 	}
@@ -179,7 +178,7 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 						onViewChange={setView}
 						onEventClick={(event) =>
 							void navigate(
-								`/${event.resourceId as string}/${event.id as string}`
+								`/bookings/${event.resourceId as string}/${event.id as string}`
 							)
 						}
 						events={events}

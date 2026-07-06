@@ -3,7 +3,10 @@ import type { RouteConfig } from '@react-router/dev/routes';
 
 export default [
 	route('/', './routes/index.tsx', [
-		route(':accommodationId/:bookingId', './routes/bookings/edit.tsx'),
+		route(
+			'/bookings/:accommodationId/:bookingId',
+			'./routes/bookings/edit.tsx'
+		),
 	]),
 	// TODO:
 	// route('check-in/:accommodationId/:bookingId', './routes/check-in.tsx'),

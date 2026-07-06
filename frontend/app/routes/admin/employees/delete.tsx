@@ -4,8 +4,11 @@ import api, { queryClient, throwErrors } from '~/api';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useRevalidator } from 'react-router';
 import type { Route } from './+types/delete';
+import Validators from '~/services/Validators';
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
+	Validators.validateUuids(id);
+
 	return await queryClient.fetchQuery({
 		queryKey: ['employee', id],
 		queryFn: async () =>

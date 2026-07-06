@@ -44,10 +44,10 @@ class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityHandlers securityHandlers, DynamicConfigService dynamicConfigService, BookingPublicAccessEval bookingPublicAccessEval) {
         return http
                 .authorizeHttpRequests(auth -> auth
+                                // Public access to non-API endpoints (e.g., web pages)
+                                .requestMatchers(request -> !request.getRequestURI().startsWith("/api")).permitAll()
+                                // Public API endpoints
                                 .requestMatchers(
-                                        // Public endpoints
-                                        "/auth/**",
-                                        // Public API endpoints
                                         "/api/auth/**",
                                         "/api/docs/**",
                                         "/api/catalogue/**",
@@ -64,8 +64,8 @@ class SecurityConfig {
                                 .anyRequest().hasRole("ADMIN")
 //                                .anyRequest().permitAll() // TODO: UNDO!
                 )
-//                .csrf(CsrfConfigurer::spa)
-                .csrf(CsrfConfigurer::disable) // TODO: UNDO!
+                .csrf(CsrfConfigurer::spa)
+//                .csrf(CsrfConfigurer::disable) // TODO: UNDO!
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/api/auth/login")

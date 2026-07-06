@@ -1,6 +1,7 @@
 import { Badge, Chip, DataList, Divider, Modal, Stack } from '@mantine/core';
 import { CheckCircleIcon } from '@phosphor-icons/react';
 import api, { queryClient, throwErrors } from '~/api';
+import Validators from '~/services/Validators';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,8 @@ import type { Route } from './+types/view';
 dayjs.extend(relativeTime);
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
+	Validators.validateUuids(id);
+
 	return {
 		employee: await queryClient.fetchQuery({
 			queryKey: ['employee', id],

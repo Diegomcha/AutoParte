@@ -30,6 +30,7 @@ import { useMutation } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import CommunicationTimelineItem from '~/component/CommunicationTimelineItem';
+import Validators from '~/services/Validators';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -45,6 +46,8 @@ dayjs.extend(customParseFormat);
 export async function clientLoader({
 	params: { accommodationId, bookingId },
 }: Route.ClientLoaderArgs) {
+	Validators.validateUuids(accommodationId, bookingId);
+
 	return {
 		booking: await queryClient.fetchQuery({
 			queryKey: ['bookings', accommodationId, bookingId],

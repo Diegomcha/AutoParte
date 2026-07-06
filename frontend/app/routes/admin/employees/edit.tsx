@@ -12,12 +12,15 @@ import { isEmail, isNotEmpty, useForm } from '@mantine/form';
 import { CheckCircleIcon, FloppyDiskIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
+import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import type { Route } from './+types/edit';
 import type { EmployeeDtoPatch } from '~/@types/api';
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
+	Validators.validateUuids(id);
+
 	return await queryClient.fetchQuery({
 		queryKey: ['employee', id],
 		queryFn: async () => {

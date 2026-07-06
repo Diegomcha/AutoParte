@@ -1,6 +1,7 @@
 import { Badge, DataList, Divider, Modal, Stack } from '@mantine/core';
 import api, { queryClient, throwErrors } from '~/api';
 import WifiBadge from '~/component/WifiBadge';
+import Validators from '~/services/Validators';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,8 @@ import type { Route } from './+types/view';
 dayjs.extend(relativeTime);
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
+	Validators.validateUuids(id);
+
 	return {
 		accommodation: await queryClient.fetchQuery({
 			queryKey: ['accommodations', id],

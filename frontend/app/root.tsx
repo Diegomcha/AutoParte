@@ -33,6 +33,7 @@ import './i18n';
 import './dayjs';
 import './app.css';
 import AuthService from './services/AuthService';
+import { ValidationErrorResponse } from './services/Validators';
 
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
@@ -111,6 +112,12 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 			});
 			return <></>;
 		} else if (error.status.toString().startsWith('5')) status = '503';
+	}
+
+	// Handle validation error responses
+	if (ValidationErrorResponse.isValidationErrorResponse(error)) {
+		status = '400';
+		showRetry = false;
 	}
 
 	// Show stack trace in development mode

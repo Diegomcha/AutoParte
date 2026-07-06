@@ -12,7 +12,6 @@ import { Outlet, NavLink as RouterNavLink } from 'react-router';
 import type { Route } from './+types/layout';
 
 // Ensure the user is authenticated & admin before allowing access to any protected routes.
-// This should only be required in dev mode, as in production the server will handle route protection.
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	if (!(await AuthService.isAuthenticated()))
 		return AuthService.getLoginRedirection(request);
