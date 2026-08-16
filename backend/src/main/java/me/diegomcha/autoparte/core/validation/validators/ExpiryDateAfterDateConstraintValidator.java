@@ -6,7 +6,6 @@ import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.core.validation.annotations.ExpiryDateAfterDateConstraint;
-import me.diegomcha.autoparte.core.validation.annotations.StartEndDatesConstraint;
 
 @SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)
 public class ExpiryDateAfterDateConstraintValidator implements ConstraintValidator<ExpiryDateAfterDateConstraint, BookingDtoRequest.PaymentDtoRequest> {

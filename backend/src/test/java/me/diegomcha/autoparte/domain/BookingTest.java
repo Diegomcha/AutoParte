@@ -180,14 +180,14 @@ class BookingTest {
         this.makeConfirmable();
         booking.confirm();
         this.finalizeConfirmation();
-        booking.setPublished(true);
+        booking.setSelfCheckInRequested(true);
         this.makeCheckinable();
 
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             this.booking.checkIn();
         }
 
-        Assertions.assertFalse(booking.isPublished());
+        Assertions.assertFalse(booking.isSelfCheckInRequested());
 
         var checkinComms = this.booking.getCommunications(Communication.CommunicationType.CHECKIN);
         Assertions.assertEquals(1, checkinComms.size());
@@ -200,16 +200,22 @@ class BookingTest {
 
     @Test
     void testCancellation() {
+        this.makeConfirmable();
+
+        // Booking cannot be canceled when no communications have been sent, only deleted
+        Assertions.assertThrows(IllegalStateException.class, () -> this.booking.cancel());
+
+        this.booking.confirm();
         this.booking.cancel();
 
-        Assertions.assertEquals(1, this.booking.getCommunications().size());
-        this.booking.getCommunications().forEach(communication -> {
+        var cancelations = this.booking.getCommunications(Communication.CommunicationType.CANCELLATION);
+        Assertions.assertEquals(1, cancelations.size());
+        cancelations.forEach(communication -> {
             Assertions.assertEquals(this.booking, communication.getBooking());
             Assertions.assertEquals(Communication.CommunicationType.CANCELLATION, communication.getType());
             Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, communication.getStatus());
         });
 
-        this.makeConfirmable();
         this.makeCheckinable();
 
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.confirm());
@@ -217,7 +223,7 @@ class BookingTest {
             Assertions.assertThrows(IllegalStateException.class, () -> this.booking.checkIn());
         }
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.cancel());
-        Assertions.assertEquals(1, this.booking.getCommunications().size());
+        Assertions.assertEquals(2, this.booking.getCommunications().size());
     }
 
     @Test
@@ -294,7 +300,7 @@ class BookingTest {
         Assertions.assertEquals(Booking.BookingStatus.PENDING_CONFIRMATION, this.booking.getStatus());
 
         var communication = booking.getCommunications(Communication.CommunicationType.BOOKING).getLast();
-        communication.markSent(UUID.randomUUID());
+        communication.markSent(UUID.randomUUID(), 0);
         communication.markFinishedSuccessfully(UUID.randomUUID());
 
         Assertions.assertEquals(Booking.BookingStatus.CONFIRMED, this.booking.getStatus());
@@ -304,7 +310,7 @@ class BookingTest {
         Assertions.assertEquals(Booking.BookingStatus.PENDING_CHECK_IN, this.booking.getStatus());
 
         var communication = booking.getCommunications(Communication.CommunicationType.CHECKIN).getLast();
-        communication.markSent(UUID.randomUUID());
+        communication.markSent(UUID.randomUUID(), 0);
         communication.markFinishedSuccessfully(UUID.randomUUID());
 
         Assertions.assertEquals(Booking.BookingStatus.CHECKED_IN, this.booking.getStatus());

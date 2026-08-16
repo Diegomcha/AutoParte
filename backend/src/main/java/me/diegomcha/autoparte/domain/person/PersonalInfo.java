@@ -24,7 +24,7 @@ public class PersonalInfo {
     private @NonNull String firstSurname;
     private String secondSurname;
     private String nationality;
-    private @NonNull Instant birthDate;
+    private Instant birthDate;
     private PersonalInfoGender gender;
 
     /**
@@ -34,13 +34,13 @@ public class PersonalInfo {
      * @param firstSurname  First surname of the person. Must not be null.
      * @param secondSurname Second surname of the person. Can be null.
      * @param nationality   Nationality of the person. Can be null, but if provided, must be a valid country code.
-     * @param birthDate     Birth date of the person. Must not be null and cannot be in the future.
+     * @param birthDate     Birth date of the person. Can be null and cannot be in the future.
      * @param gender        Gender of the person. Can be null.
      * @throws IllegalArgumentException if birthDate is in the future or
      *                                  country code is invalid or
      *                                  any of the required parameters are null.
      */
-    public PersonalInfo(@NonNull String name, @NonNull String firstSurname, String secondSurname, String nationality, @NonNull Instant birthDate, PersonalInfoGender gender) {
+    public PersonalInfo(@NonNull String name, @NonNull String firstSurname, String secondSurname, String nationality, Instant birthDate, PersonalInfoGender gender) {
         this.name = name;
         this.firstSurname = firstSurname;
         this.secondSurname = secondSurname;
@@ -54,8 +54,8 @@ public class PersonalInfo {
         this.nationality = nationality;
     }
 
-    private void setBirthDate(@NonNull Instant birthDate) {
-        if (birthDate.isAfter(Instant.now()))
+    private void setBirthDate(Instant birthDate) {
+        if (birthDate != null && birthDate.isAfter(Instant.now()))
             throw new IllegalArgumentException("Birth date cannot be in the future");
 
         this.birthDate = birthDate;
@@ -77,6 +77,6 @@ public class PersonalInfo {
      * @return true if the person is an adult; false otherwise.
      */
     public boolean isAdult() {
-        return Duration.between(this.birthDate, Instant.now()).toDays() >= SPAIN_ADULT_AGE * 365;
+        return this.birthDate != null && Duration.between(this.birthDate, Instant.now()).toDays() >= SPAIN_ADULT_AGE * 365;
     }
 }

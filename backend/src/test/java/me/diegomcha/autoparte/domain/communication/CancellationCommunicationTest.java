@@ -33,19 +33,31 @@ class CancellationCommunicationTest {
     }
 
     @Test
-    void testPendingMarkSucceededFailed() {
+    void testSentMarkSucceeded() {
         // Invalid status
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
+
+        communication.markFinishedSuccessfully();
+
+        Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, communication.getStatus());
+        Assertions.assertNull(communication.getSesId());
+    }
+
+    @Test
+    void testFailedMarkSucceededFailed() {
+        // Invalid status
+        communication.markSent(batchId, 0);
+        communication.markFinishedFailed("Error");
 
         Assertions.assertThrows(IllegalStateException.class, () -> communication.markFinishedSuccessfully());
 
-        Assertions.assertEquals(Communication.CommunicationStatus.SENT, communication.getStatus());
+        Assertions.assertEquals(Communication.CommunicationStatus.FAILED, communication.getStatus());
         Assertions.assertNull(communication.getSesId());
     }
 
     @Test
     void testMarkPendingVoidedFails() {
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
         communication.markFinishedSuccessfully(sesId);
 
         Assertions.assertThrows(UnsupportedOperationException.class, () -> communication.markPendingVoided());
@@ -59,5 +71,7 @@ class CancellationCommunicationTest {
 
         Assertions.assertEquals(Communication.CommunicationStatus.PENDING, communication.getStatus());
     }
+
+    // TODO: test revertFromPendingVoided
 
 }

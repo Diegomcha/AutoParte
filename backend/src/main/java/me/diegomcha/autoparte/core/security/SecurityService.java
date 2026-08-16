@@ -79,7 +79,6 @@ public class SecurityService {
      * @param account The Account object from which to extract the Employee. Must not be null.
      * @return The Employee associated with the given Account, or null if no such Employee exists.
      */
-    // TODO: Add to tests
     public @Nullable Employee getEmployeeFromAccount(@NonNull Account account) {
         return employeeRepo.findByAccountId(account.getId()).orElse(null);
     }

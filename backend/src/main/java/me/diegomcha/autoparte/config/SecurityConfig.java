@@ -1,11 +1,9 @@
 package me.diegomcha.autoparte.config;
 
 import me.diegomcha.autoparte.core.repos.AccountRepo;
-import me.diegomcha.autoparte.core.security.BookingPublicAccessEval;
-import me.diegomcha.autoparte.core.security.SecurityHandlers;
-import me.diegomcha.autoparte.core.security.SecurityService;
-import me.diegomcha.autoparte.core.security.UserAccount;
+import me.diegomcha.autoparte.core.security.*;
 import me.diegomcha.autoparte.domain.Account;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +16,10 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
+import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.authorization.AuthorizationManagerFactories;
+import org.springframework.security.authorization.AuthorizationManagerFactory;
+import org.springframework.security.authorization.AuthorizationManagers;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -29,6 +31,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.HttpStatusAccessDeniedHandler;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 import java.util.Objects;
@@ -41,31 +44,46 @@ class SecurityConfig {
 
     // TODO: TEST SECURITY!!!
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityHandlers securityHandlers, DynamicConfigService dynamicConfigService, BookingPublicAccessEval bookingPublicAccessEval) {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityHandlers securityHandlers, DynamicConfigService dynamicConfigService, AccessEvals accessEvals) {
+        var selfCheckInAuthorizationManager = AuthorizationManagers.anyOf(
+                accessEvals.hasRole("ADMIN"),
+                AuthorizationManagers.allOf(
+                        accessEvals.authenticated(),
+                        accessEvals.accommodationAuthorizationManager()
+                ),
+                accessEvals.publicBookingAuthorizationManager()
+        );
+
         return http
                 .authorizeHttpRequests(auth -> auth
-                                // Public access to non-API endpoints (e.g., web pages)
-                                .requestMatchers(request -> !request.getRequestURI().startsWith("/api")).permitAll()
-                                // Public API endpoints
-                                .requestMatchers(
-                                        "/api/auth/**",
-                                        "/api/docs/**",
-                                        "/api/catalogue/**",
-                                        "/api/ocr/**"
-                                ).permitAll()
-                                // Public access to bookings for check-in purposes
-                                .requestMatchers(HttpMethod.GET, "/api/accommodations/{accommodationId}/bookings/{bookingId}").access(bookingPublicAccessEval.getBookingCanBeAccessedPubliclyAuthorizationManager())
-                                .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/checkin").access(bookingPublicAccessEval.getCheckinCanBeAccessedPubliclyAuthorizationManager())
-                                .requestMatchers("/api/accommodations/{accommodationId}/bookings/{bookingId}/people/**").access(bookingPublicAccessEval.getBookingCanBeAccessedPubliclyAuthorizationManager())
-                                // Protected routes for employees
-                                .requestMatchers(HttpMethod.GET, "/api/accommodations/*").authenticated()
-                                .requestMatchers("/api/accommodations/*/bookings/**").authenticated()
-                                // Admin-only routes
-                                .anyRequest().hasRole("ADMIN")
-//                                .anyRequest().permitAll() // TODO: UNDO!
+                        // Public access to non-API endpoints (e.g., web pages)
+                        .requestMatchers(request -> !request.getRequestURI().startsWith("/api")).permitAll()
+                        // Public API endpoints
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/docs/**",
+                                "/api/catalogue/**",
+                                "/api/ocr/**",
+                                "/api/addresses/**"
+                        ).permitAll()
+                        // Public access to bookings for self-check-in purposes
+                        .requestMatchers(HttpMethod.GET, "/api/accommodations/{accommodationId}/bookings/{bookingId}").access(selfCheckInAuthorizationManager)
+                        .requestMatchers("/api/accommodations/{accommodationId}/bookings/{bookingId}/people/**").access(selfCheckInAuthorizationManager)
+                        .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/checkin").access(selfCheckInAuthorizationManager)
+                        // Protected routes for employees
+                        .requestMatchers("/api/accommodations/{accommodationId}/bookings/**")
+                        .access(AuthorizationManagers.anyOf(
+                                accessEvals.hasRole("ADMIN"),
+                                AuthorizationManagers.allOf(
+                                        accessEvals.authenticated(),
+                                        accessEvals.accommodationAuthorizationManager()
+                                )
+                        ))
+                        .requestMatchers(HttpMethod.GET, "/api/accommodations").authenticated()
+                        // Admin-only routes
+                        .anyRequest().hasRole("ADMIN")
                 )
                 .csrf(CsrfConfigurer::spa)
-//                .csrf(CsrfConfigurer::disable) // TODO: UNDO!
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .loginProcessingUrl("/api/auth/login")

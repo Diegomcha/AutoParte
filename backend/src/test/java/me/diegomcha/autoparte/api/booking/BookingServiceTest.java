@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+// TODO: somewhere put a credit card payment to exercise the BookingMapper
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
 @Transactional
@@ -144,7 +146,7 @@ class BookingServiceTest {
     }
 
     @Test
-    void testUpdateBooking() throws ResourceNotFoundException {
+    void testUpdateBooking() throws ResourceNotFoundException, ResourceConflictException {
         // Regular update
 
         var updateBooking = new BookingDtoRequest(TestingUtils.PAST_INSTANT, TestingUtils.INSTANT, 3, new BookingDtoRequest.PaymentDtoRequest(Payment.PaymentType.CASH, "MEAN", null, null, null), null, false);
@@ -187,6 +189,13 @@ class BookingServiceTest {
         // Non-existent accommodation and booking
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
                 bookingService.updateBooking(randomId, randomId, updateBooking));
+
+        // TODO: Test update booking that cannot be modified
+
+
+        // TODO: Test update booking with 2 ppl linked to 1 ppl
+
+
     }
 
     @Test
@@ -233,6 +242,8 @@ class BookingServiceTest {
 
         Assertions.assertTrue(dbBooking.isPresent());
         Assertions.assertEquals(Booking.BookingStatus.PENDING_CHECK_IN, dbBooking.get().getStatus());
+
+        // TODO: Test when manual review is required
     }
 
     @Test
@@ -256,6 +267,9 @@ class BookingServiceTest {
 
     @Test
     void testCancelBooking() throws ResourceNotFoundException, ResourceConflictException {
+        this.makeConfirmable();
+        booking.confirm();
+
         bookingService.cancelBooking(accommodation.getId(), booking.getId());
 
         var dbBooking = bookingRepo.findByAccommodationIdAndId(accommodation.getId(), booking.getId());
@@ -278,25 +292,41 @@ class BookingServiceTest {
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
                 bookingService.cancelBooking(UUID.randomUUID(), UUID.randomUUID()));
 
+        // Booking should be deleted instead
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.cancelBooking(accommodation.getId(), booking.getId()));
+
+        this.makeConfirmable();
+
+        // Booking should be deleted instead (draft-like status)
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.cancelBooking(accommodation.getId(), booking.getId()));
+
         // Booking already cancelled
+        booking.confirm();
         bookingService.cancelBooking(accommodation.getId(), booking.getId());
         Assertions.assertThrows(ResourceConflictException.class, () ->
                 bookingService.cancelBooking(accommodation.getId(), booking.getId()));
     }
 
     @Test
-    void testPublishBooking() throws ResourceNotFoundException {
-        bookingService.publishBooking(accommodation.getId(), booking.getId());
+    void testRequestSelfCheckInForBooking() throws ResourceNotFoundException, ResourceConflictException {
+        bookingService.requestSelfCheckInForBooking(accommodation.getId(), booking.getId());
 
         var dbBooking = bookingRepo.findByAccommodationIdAndId(accommodation.getId(), booking.getId()).orElseThrow();
 
-        Assertions.assertTrue(dbBooking.isPublished());
+        Assertions.assertTrue(dbBooking.isSelfCheckInRequested());
 
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
-                bookingService.publishBooking(UUID.randomUUID(), booking.getId()));
+                bookingService.requestSelfCheckInForBooking(UUID.randomUUID(), booking.getId()));
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
-                bookingService.publishBooking(accommodation.getId(), UUID.randomUUID()));
+                bookingService.requestSelfCheckInForBooking(accommodation.getId(), UUID.randomUUID()));
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.requestSelfCheckInForBooking(accommodation.getId(), booking.getId()));
+        // TODO: Check when booking cannot be modified
     }
+
+    // TODO: Test deleteBooking
 
     private void makeConfirmable() {
         booking.setPayment(this.payment);
@@ -315,7 +345,7 @@ class BookingServiceTest {
         Assertions.assertEquals(Booking.BookingStatus.PENDING_CONFIRMATION, this.booking.getStatus());
 
         var communication = booking.getCommunications(Communication.CommunicationType.BOOKING).getLast();
-        communication.markSent(UUID.randomUUID());
+        communication.markSent(UUID.randomUUID(), 0);
         communication.markFinishedSuccessfully(UUID.randomUUID());
 
         Assertions.assertEquals(Booking.BookingStatus.CONFIRMED, this.booking.getStatus());

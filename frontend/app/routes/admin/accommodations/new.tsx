@@ -71,7 +71,7 @@ export default function NewAccommodation() {
 				await queryClient.invalidateQueries({ queryKey: ['accommodations'] });
 				await revalidator.revalidate();
 
-				await navigate(`/admin/accommodations/${String(success.id)}`);
+				await navigate(`/admin/accommodations/${success.id}`);
 			}
 		},
 	});

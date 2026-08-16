@@ -13,11 +13,13 @@
 		},
 		"buttons": {
 			"create": "Crear",
+			"add": "Añadir",
 			"save": "Guardar",
 			"delete": "Eliminar",
 			"deleteSelected": "Eliminar seleccionados",
 			"cancel": "Cancelar",
-			"reset": "Restablecer"
+			"reset": "Restablecer",
+			"back": "Volver"
 		},
 		"actionButtons": {
 			"view": "Ver",
@@ -35,25 +37,174 @@
 			"checkOutDate": "Fecha de salida"
 		}
 	},
+	"people": {
+		"title": "Gestión de viajeros",
+		"properties": {
+			"personalInfo": {
+				"title": "Información personal",
+				"name": {
+					"label": "Nombre",
+					"errors": {
+						"undefined": "El nombre es obligatorio"
+					}
+				},
+				"firstSurname": {
+					"label": "Primer apellido",
+					"errors": {
+						"undefined": "El primer apellido es obligatorio"
+					}
+				},
+				"secondSurname": {
+					"label": "Segundo apellido"
+				},
+				"nationality": {
+					"label": "Nacionalidad"
+				},
+				"birthDate": {
+					"label": "Fecha de nacimiento",
+					"format": "DD/MM/YYYY",
+					"errors": {
+						"inFuture": "La fecha de nacimiento no puede ser futura"
+					}
+				},
+				"gender": {
+					"label": "Género",
+					"options": {
+						"MALE": "Hombre",
+						"FEMALE": "Mujer",
+						"OTHER": "Otro"
+					}
+				},
+				"address": {
+					"label": "Dirección"
+				},
+				"relationship": {
+					"label": "Parentesco",
+					"options": {
+						"GRANDPARENT": "Abuelo/a",
+						"GREAT_GRANDPARENT": "Bisabuelo/a",
+						"GREAT_GRANDCHILD": "Bisnieto/a",
+						"SIBLING_IN_LAW": "Cuñado/a",
+						"SPOUSE": "Esposo/a",
+						"CHILD": "Hijo/a",
+						"SIBLING": "Hermano/a",
+						"GRANDCHILD": "Nieto/a",
+						"PARENT": "Padre/Madre",
+						"NEPHEW_NIECE": "Sobrino/a",
+						"PARENT_IN_LAW": "Suegro/a",
+						"UNCLE_AUNT": "Tío/a",
+						"SON_DAUGHTER_IN_LAW": "Yerno/Nuera",
+						"TUTOR": "Tutor",
+						"OTHER": "Otro"
+					}
+				}
+			},
+			"contactInfo": {
+				"title": "Métodos de contacto",
+				"constraint": "Al menos un método de contacto es obligatorio",
+				"email": {
+					"label": "Correo electrónico",
+					"errors": {
+						"invalid": "El correo electrónico no es válido"
+					}
+				},
+				"phoneNumber1": {
+					"label": "Número de teléfono"
+				},
+				"phoneNumber2": {
+					"label": "Número de teléfono alternativo"
+				}
+			},
+			"document": {
+				"title": "Documento de identidad",
+				"type": {
+					"label": "Tipo de documento",
+					"options": {
+						"NIF": "NIF (Nacionales)",
+						"NIE": "NIE (Extranjeros)",
+						"PASSPORT": "Pasaporte",
+						"OTHER": "Otro documento"
+					}
+				},
+				"number": {
+					"label": "Número de documento",
+					"errors": {
+						"undefined": "El número de documento es obligatorio",
+						"invalidDni": "El NIF/NIE no es válido"
+					}
+				},
+				"supportNumber": {
+					"label": "Número de soporte",
+					"errors": {
+						"undefined": "El número de soporte es obligatorio para NIF/NIE"
+					}
+				}
+			}
+		},
+		"scan": {
+			"button": "Escanear documento"
+		},
+		"delete": {
+			"title": "Eliminar información del viajero",
+			"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
+		},
+		"newAddress": {
+			"title": "Añadir nueva dirección",
+			"legend": "Dirección del viajero",
+			"properties": {
+				"addressLine1": {
+					"label": "Dirección (línea 1)",
+					"errors": {
+						"undefined": "La dirección es obligatoria"
+					}
+				},
+				"addressLine2": {
+					"label": "Dirección (línea 2)"
+				},
+				"municipality": {
+					"label": "Municipio",
+					"errors": {
+						"undefined": "El municipio es obligatorio"
+					}
+				},
+				"postalCode": {
+					"label": "Código postal",
+					"errors": {
+						"undefined": "El código postal es obligatorio"
+					}
+				},
+				"country": {
+					"label": "País",
+					"errors": {
+						"undefined": "El país es obligatorio"
+					}
+				},
+				"province": {
+					"label": "Provincia",
+					"errors": {
+						"undefined": "La provincia es obligatoria"
+					}
+				}
+			}
+		}
+	},
 	"bookings": {
-		"noAccommodations": "No tienes alojamientos asignados.\nContacta con tu administrador para que te asigne uno.",
-		"noAccommodationsAdmin": "No hay alojamientos registrados.\nRegistra uno nuevo desde el modo administrador.",
-		"selectAccommodation": "Selecciona un alojamiento para ver sus reservas",
-		"title": "Gestión de reservas",
-		"noRecords": "No hay reservas",
+		"noAccommodations": "No hay alojamientos disponibles",
+		"noAccommodationsAdmin": "No hay alojamientos disponibles. Por favor, contacta con el administrador.",
 		"properties": {
 			"details": {
 				"title": "Detalles",
 				"name": {
-					"noHolder": "[$t(bookings.properties.details.status.states.{{status}}.label)] {{numberOfPeople}} pax.",
-					"withHolder": "[$t(bookings.properties.details.status.states.{{status}}.label)] {{numberOfPeople}} pax. - {{holderName}}"
+					"noHolder": "{{numberOfPeople}} pax.",
+					"withHolder": "{{numberOfPeople}} pax. - {{holderName}}"
 				},
-				"published": "Publicado",
 				"status": {
 					"label": "Estado",
 					"states": {
-						"DRAFT": { "label": "Borrador", "color": "dark" },
-
+						"DRAFT": {
+							"label": "Borrador",
+							"color": "dark"
+						},
 						"CONFIRMATION_READY": {
 							"label": "Lista para confirmar",
 							"color": "blue"
@@ -62,8 +213,10 @@
 							"label": "Pendiente de confirmar",
 							"color": "yellow"
 						},
-						"CONFIRMED": { "label": "Confirmada", "color": "pink" },
-
+						"CONFIRMED": {
+							"label": "Confirmada",
+							"color": "pink"
+						},
 						"CHECK_IN_READY": {
 							"label": "Lista para registrar",
 							"color": "violet"
@@ -72,13 +225,18 @@
 							"label": "Pendiente de registrar",
 							"color": "yellow"
 						},
-						"CHECKED_IN": { "label": "Registrada", "color": "green" },
-
+						"CHECKED_IN": {
+							"label": "Registrada",
+							"color": "green"
+						},
 						"PENDING_CANCELLATION": {
 							"label": "Pendiente de cancelar",
 							"color": "yellow"
 						},
-						"CANCELLED": { "label": "Cancelada", "color": "dark" }
+						"CANCELLED": {
+							"label": "Cancelada",
+							"color": "gray"
+						}
 					}
 				},
 				"date": {
@@ -92,7 +250,8 @@
 				"numberOfPeople": {
 					"label": "Número de personas",
 					"errors": {
-						"undefined": "El número de personas es obligatorio"
+						"undefined": "El número de personas es obligatorio",
+						"tooFew": "Existe información de viajeros para más personas de las indicadas\nPor favor, elimina la información de los viajeros sobrantes"
 					}
 				},
 				"numberOfRooms": "Número de habitaciones",
@@ -127,17 +286,7 @@
 						"beforePaymentDate": "La fecha de caducidad no puede ser anterior a la fecha de pago"
 					}
 				}
-			}
-		},
-		"new": {
-			"title": "Añadir nueva reserva",
-			"created": {
-				"title": "Reserva creada",
-				"description": "La reserva se ha creado correctamente."
-			}
-		},
-		"view": {
-			"title": "Detalles de la reserva",
+			},
 			"communications": {
 				"title": "Registro",
 				"sentDate": "Enviado {{date}}",
@@ -174,6 +323,42 @@
 					"CANCELLATION": "Cancelación de la reserva"
 				}
 			}
+		},
+		"edit": {
+			"title": "Detalles de la reserva",
+			"readOnly": {
+				"title": "Solo lectura",
+				"description": "La reserva no puede ser modificada en este estado"
+			}
+		},
+		"people": {
+			"button": "Gestionar viajeros",
+			"buttonDisabled": "Gestionar viajeros (deshabilitado mientras se edita el número de personas)"
+		},
+		"requestSelfCheckIn": {
+			"button": "Solicitar auto-registro",
+			"title": "Solicitar auto-registro",
+			"description": "Esta acción solicitará el auto-registro de los viajeros."
+		},
+		"confirm": {
+			"button": "Confirmar",
+			"title": "Confirmar reserva",
+			"description": "Esta acción confirmará la reserva y enviará la información al ministerio."
+		},
+		"checkIn": {
+			"button": "Registrar entrada",
+			"title": "Registrar entrada",
+			"description": "Esta acción registrará la entrada de los viajeros en el alojamiento informando al ministerio."
+		},
+		"cancel": {
+			"button": "Cancelar",
+			"title": "Cancelar reserva",
+			"description": "Esta acción cancelará la reserva y propagará dicha cancelación al ministerio en caso de haber confirmado la reserva previamente."
+		},
+		"delete": {
+			"button": "Eliminar",
+			"title": "Eliminar reserva",
+			"description": "Esta acción eliminará la reserva de forma permanente y no podrá ser recuperada."
 		}
 	},
 	"admin": {
@@ -364,10 +549,12 @@
 	"error": {
 		"status": {
 			"400": "Solicitud incorrecta",
+			"403": "Acceso denegado",
 			"404": "Página no encontrada",
 			"503": "Servicio no disponible",
 			"default": "Se ha producido un error inesperado."
 		},
+		"refreshButton": "Actualizar página",
 		"disclaimer": "No te preocupes, nuestro equipo de desarrollo ya ha sido notificado. Intenta actualizar la página."
 	},
 	"schedule": {
@@ -390,10 +577,23 @@
 		"switchToYearView": "Cambiar a vista de año",
 		"viewSelectLabel": "Seleccionar vista",
 		"noEvents": "No hay eventos",
-		"moreLabel": "{{hiddenEventsCount}} más",
+		"moreLabel": "+{{count}} más",
 		"resource": "Alojamiento",
 		"resources": "Alojamientos",
 		"resourceSlot": "Franja de alojamiento",
 		"agenda": "Agenda"
+	},
+	"phoneInput": {
+		"countrySelector": {
+			"nothingFoundMessage": "No encontrado"
+		},
+		"errors": {
+			"invalidPhoneNumber": "El número de teléfono no es válido"
+		}
+	},
+	"addressSelect": {
+		"new": "Nueva dirección",
+		"current": "Dirección actual",
+		"other": "Otras direcciones de la reserva"
 	}
 }

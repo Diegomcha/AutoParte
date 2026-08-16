@@ -26,27 +26,29 @@ class CommunicationTest {
 
     @Test
     void testMarkSent() {
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
 
         Assertions.assertEquals(Communication.CommunicationStatus.SENT, communication.getStatus());
         Assertions.assertNotNull(communication.getSentTimestamp());
         Assertions.assertEquals(batchId, communication.getBatchId());
+        Assertions.assertEquals(0, communication.getBatchOrder());
     }
 
     @Test
     void testMarkSentFailed() {
         communication.markVoided();
 
-        Assertions.assertThrows(IllegalStateException.class, () -> communication.markSent(batchId));
+        Assertions.assertThrows(IllegalStateException.class, () -> communication.markSent(batchId, 0));
 
         Assertions.assertEquals(Communication.CommunicationStatus.VOIDED, communication.getStatus());
         Assertions.assertNull(communication.getSentTimestamp());
         Assertions.assertNull(communication.getBatchId());
+        Assertions.assertNull(communication.getBatchOrder());
     }
 
     @Test
     void testMarkSucceeded() {
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
 
         communication.markFinishedSuccessfully(sesId);
 
@@ -64,28 +66,28 @@ class CommunicationTest {
 
     @Test
     void testMarkFailed() {
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
 
-        communication.markFinishedFailed(10100);
+        communication.markFinishedFailed("Error");
 
         Assertions.assertEquals(Communication.CommunicationStatus.FAILED, communication.getStatus());
-        Assertions.assertEquals(10100, communication.getErrorCode());
+        Assertions.assertEquals("Error", communication.getError());
     }
 
     @Test
     void testMarkFailedFailed() {
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
         communication.markFinishedSuccessfully(sesId);
 
-        Assertions.assertThrows(IllegalStateException.class, () -> communication.markFinishedFailed(10100));
+        Assertions.assertThrows(IllegalStateException.class, () -> communication.markFinishedFailed("Error"));
 
         Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, communication.getStatus());
-        Assertions.assertNull(communication.getErrorCode());
+        Assertions.assertNull(communication.getError());
     }
 
     @Test
     void testMarkPendingVoided() {
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
         communication.markFinishedSuccessfully(sesId);
 
         communication.markPendingVoided();
@@ -95,8 +97,8 @@ class CommunicationTest {
 
     @Test
     void testMarkPendingVoidedFailed() {
-        communication.markSent(batchId);
-        communication.markFinishedFailed(10100);
+        communication.markSent(batchId, 0);
+        communication.markFinishedFailed("Error");
 
         Assertions.assertThrows(IllegalStateException.class, () -> communication.markPendingVoided());
 
@@ -105,7 +107,7 @@ class CommunicationTest {
 
     @Test
     void testMarkVoided() {
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
         communication.markFinishedSuccessfully(sesId);
         communication.markPendingVoided();
 
@@ -116,11 +118,15 @@ class CommunicationTest {
 
     @Test
     void testMarkVoidedFailed() {
-        communication.markSent(batchId);
+        communication.markSent(batchId, 0);
+
+        // TODO: markVoided when FAILED is not allowed
 
         Assertions.assertThrows(IllegalStateException.class, () -> communication.markVoided());
 
         Assertions.assertEquals(Communication.CommunicationStatus.SENT, communication.getStatus());
     }
+
+    // TODO: Test revertFromPendingVoided
 
 }

@@ -9,7 +9,7 @@ import type { Route } from './+types/delete';
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
-	return await queryClient.fetchQuery({
+	await queryClient.fetchQuery({
 		queryKey: ['accommodations', id],
 		queryFn: async () =>
 			throwErrors(

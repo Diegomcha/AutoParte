@@ -11,7 +11,7 @@ import type { Route } from './+types/resetPassword';
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
-	return await queryClient.fetchQuery({
+	await queryClient.fetchQuery({
 		queryKey: ['employee', id],
 		queryFn: async () =>
 			throwErrors(

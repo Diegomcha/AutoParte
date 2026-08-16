@@ -2,9 +2,8 @@ package me.diegomcha.autoparte.api.catalogue;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
-import me.diegomcha.autoparte.api.catalogue.dto.ProvinceMunicipalityCodesDto;
 import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceCode;
+import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceMunicipalityCodes;
 
 import java.util.Map;
 import java.util.Set;
@@ -23,7 +22,8 @@ interface CatalogueAPI {
     Map<String, String> getSpanishMunicipalities(@SpanishProvinceCode String provinceCode);
 
     @Operation(summary = "Get valid Spanish postal codes by province and municipality codes")
-    Set<String> getSpanishPostalCodes(@Valid ProvinceMunicipalityCodesDto dto);
+    @SpanishProvinceMunicipalityCodes
+    Set<String> getSpanishPostalCodes(@SpanishProvinceCode String provinceCode, String municipalityCode);
 
     @Operation(summary = "Get valid genders")
     String[] getPersonGenders();

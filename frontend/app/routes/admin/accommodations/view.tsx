@@ -1,14 +1,11 @@
 import { Badge, DataList, Divider, Modal, Stack } from '@mantine/core';
 import api, { queryClient, throwErrors } from '~/api';
 import WifiBadge from '~/component/WifiBadge';
+import TimeService from '~/services/TimeService';
 import Validators from '~/services/Validators';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 import type { Route } from './+types/view';
-
-dayjs.extend(relativeTime);
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
@@ -44,7 +41,7 @@ export default function ViewAccommodation({
 						{t(($) => $.common.properties.createdAt)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
-						{dayjs(accommodation.createdAt).fromNow()}
+						{TimeService(accommodation.createdAt).fromNow()}
 					</DataList.ItemValue>
 				</DataList.Item>
 				<DataList.Item>
@@ -52,7 +49,7 @@ export default function ViewAccommodation({
 						{t(($) => $.common.properties.updatedAt)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
-						{dayjs(accommodation.updatedAt).fromNow()}
+						{TimeService(accommodation.updatedAt).fromNow()}
 					</DataList.ItemValue>
 				</DataList.Item>
 				<Divider />

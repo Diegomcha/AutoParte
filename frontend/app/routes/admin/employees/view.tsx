@@ -1,14 +1,11 @@
 import { Badge, Chip, DataList, Divider, Modal, Stack } from '@mantine/core';
 import { CheckCircleIcon } from '@phosphor-icons/react';
 import api, { queryClient, throwErrors } from '~/api';
+import TimeService from '~/services/TimeService';
 import Validators from '~/services/Validators';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router';
 import type { Route } from './+types/view';
-
-dayjs.extend(relativeTime);
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
@@ -65,7 +62,7 @@ export default function ViewEmployee({
 						{t(($) => $.common.properties.createdAt)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
-						{dayjs(employee.createdAt).fromNow()}
+						{TimeService(employee.createdAt).fromNow()}
 					</DataList.ItemValue>
 				</DataList.Item>
 				<DataList.Item>
@@ -73,7 +70,7 @@ export default function ViewEmployee({
 						{t(($) => $.common.properties.updatedAt)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
-						{dayjs(employee.updatedAt).fromNow()}
+						{TimeService(employee.updatedAt).fromNow()}
 					</DataList.ItemValue>
 				</DataList.Item>
 				<Divider />

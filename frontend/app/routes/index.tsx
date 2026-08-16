@@ -14,8 +14,7 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import api, { throwErrors } from '~/api';
 import { lang } from '~/i18n';
 import AuthService from '~/services/AuthService';
-import dayjs from 'dayjs';
-import isoWeek from 'dayjs/plugin/isoWeek';
+import TimeService from '~/services/TimeService';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate } from 'react-router';
@@ -178,9 +177,26 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 						onViewChange={setView}
 						onEventClick={(event) =>
 							void navigate(
-								`/bookings/${event.resourceId as string}/${event.id as string}`
+								`/accommodations/${event.resourceId as string}/bookings/${event.id as string}`
 							)
 						}
+						// TODO: REMOVE THIS!
+						onDayClick={({ resourceId }) => {
+							void api.POST('/api/accommodations/{accommodationId}/bookings', {
+								params: {
+									path: {
+										accommodationId: resourceId as string,
+									},
+								},
+								body: {
+									startTime: new Date().toISOString(),
+									endTime: new Date(
+										Date.now() + 24 * 60 * 60 * 1000
+									).toISOString(),
+									numberOfPeople: 1,
+								},
+							});
+						}}
 						events={events}
 						resources={resources}
 						locale={lang}
@@ -196,8 +212,6 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 	);
 }
 
-dayjs.extend(isoWeek);
-
 /**
  * Gets the start and end date of a given date range based on the specified unit (day, week, month).
  * @param unit Unit of time to determine the range (day, week, month)
@@ -205,7 +219,7 @@ dayjs.extend(isoWeek);
  * @returns A tuple containing the start and end date of the range in ISO string format.
  */
 function getDateRange(unit: ResourcesScheduleViewLevel, date: Date | string) {
-	const baseDate = dayjs(date);
+	const baseDate = TimeService(date);
 
 	// Makes sure that the week starts on Monday instead of Sunday
 	const rangeUnit = unit === 'week' ? 'isoWeek' : unit;

@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.api.config.dto;
 
+import jakarta.validation.constraints.NotNull;
 import me.diegomcha.autoparte.core.validation.annotations.NullableNotBlank;
 
 public record ConfigDtoRequest(
@@ -7,7 +8,7 @@ public record ConfigDtoRequest(
         @NullableNotBlank String sesPassword,
         @NullableNotBlank String sesLandlordCode,
 
-        boolean digitalSignatureEnabled,
-        boolean manualReviewEnabled
+        @NotNull boolean digitalSignatureEnabled,
+        @NotNull boolean manualReviewEnabled
 ) {
 }

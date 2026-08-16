@@ -53,7 +53,8 @@ export interface paths {
         /** Update a booking for an accommodation */
         put: operations["updateBooking"];
         post?: never;
-        delete?: never;
+        /** Delete a booking for an accommodation */
+        delete: operations["deleteBooking"];
         options?: never;
         head?: never;
         patch?: never;
@@ -198,6 +199,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/addresses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create address */
+        post: operations["createAddress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/accommodations": {
         parameters: {
             query?: never;
@@ -252,7 +270,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/accommodations/{accommodationId}/bookings/{id}/publish": {
+    "/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in": {
         parameters: {
             query?: never;
             header?: never;
@@ -261,8 +279,8 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Publish a booking for self-check-in */
-        post: operations["publishBooking"];
+        /** Request self-check-in for a booking */
+        post: operations["requestSelfCheckInForBooking"];
         delete?: never;
         options?: never;
         head?: never;
@@ -510,6 +528,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/addresses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get address by id */
+        get: operations["getAddressById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get addresses by booking id */
+        get: operations["getBookingAddresses"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -531,8 +583,8 @@ export interface components {
             sesUsername?: string;
             sesPassword?: string;
             sesLandlordCode?: string;
-            digitalSignatureEnabled?: boolean;
-            manualReviewEnabled?: boolean;
+            digitalSignatureEnabled: boolean;
+            manualReviewEnabled: boolean;
         };
         AccommodationDtoRequest: {
             name: string;
@@ -545,7 +597,7 @@ export interface components {
             /** Format: date-time */
             endTime: string;
             /** Format: int32 */
-            numberOfPeople?: number;
+            numberOfPeople: number;
             payment?: components["schemas"]["PaymentDtoRequest"];
             /** Format: int32 */
             numberOfRooms?: number;
@@ -634,11 +686,18 @@ export interface components {
             password?: string;
             rememberMe?: boolean;
         };
+        AddressDtoRequest: {
+            addressLine1: string;
+            addressLine2?: string;
+            municipality: string;
+            postalCode: string;
+            country?: string;
+        };
         EntityDtoCreated: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
         };
         EmployeeDtoPatch: {
             enabled?: boolean;
@@ -682,23 +741,32 @@ export interface components {
             page?: components["schemas"]["PageMetadata"];
         };
         ConfigDtoResponse: {
-            sesUsername?: string;
-            sesPassword?: string;
-            sesLandlordCode?: string;
-            sesCredentialsValid?: boolean;
-            digitalSignatureEnabled?: boolean;
-            manualReviewEnabled?: boolean;
-        };
-        ProvinceMunicipalityCodesDto: {
-            provinceCode?: string;
-            municipalityCode?: string;
+            sesUsername: string;
+            sesPassword: string;
+            sesLandlordCode: string;
+            sesCredentialsValid: boolean;
+            digitalSignatureEnabled: boolean;
+            manualReviewEnabled: boolean;
         };
         AccountDto: {
             username: string;
             roles: string[];
         };
+        AddressDtoResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            addressLine1: string;
+            addressLine2?: string;
+            municipality: string;
+            postalCode: string;
+            country: string;
+        };
         AccommodationDtoEmployeeResponse: {
-            enabled?: boolean;
+            enabled: boolean;
             /** Format: uuid */
             id: string;
             name: string;
@@ -733,14 +801,15 @@ export interface components {
             lastModifiedBy: string;
             /** @enum {string} */
             status: "DRAFT" | "CONFIRMATION_READY" | "PENDING_CONFIRMATION" | "CONFIRMED" | "CHECK_IN_READY" | "PENDING_CHECK_IN" | "CHECKED_IN" | "PENDING_CANCELLATION" | "CANCELLED";
-            published?: boolean;
-            canBeModified?: boolean;
+            selfCheckInRequested: boolean;
+            canBeModified: boolean;
+            canBeDeleted: boolean;
             /** Format: date-time */
             startTime: string;
             /** Format: date-time */
             endTime: string;
             /** Format: int32 */
-            numberOfPeople?: number;
+            numberOfPeople: number;
             payment?: components["schemas"]["PaymentDtoResponse"];
             /** Format: int32 */
             numberOfRooms?: number;
@@ -757,6 +826,7 @@ export interface components {
             status: "PENDING" | "SENT" | "SUCCEEDED" | "FAILED" | "PENDING_VOIDED" | "VOIDED";
             /** Format: date-time */
             sentTimestamp?: string;
+            error?: string;
         };
         PagedModelBookingDtoResponse: {
             content?: components["schemas"]["BookingDtoResponse"][];
@@ -831,6 +901,7 @@ export type EmployeeDtoCreate = components['schemas']['EmployeeDtoCreate'];
 export type EmployeeDtoCredentialsResponse = components['schemas']['EmployeeDtoCredentialsResponse'];
 export type UpdatePasswordDto = components['schemas']['UpdatePasswordDto'];
 export type LoginRequest = components['schemas']['LoginRequest'];
+export type AddressDtoRequest = components['schemas']['AddressDtoRequest'];
 export type EntityDtoCreated = components['schemas']['EntityDtoCreated'];
 export type EmployeeDtoPatch = components['schemas']['EmployeeDtoPatch'];
 export type EmployeeDtoAccommodationResponse = components['schemas']['EmployeeDtoAccommodationResponse'];
@@ -838,8 +909,8 @@ export type EmployeeDtoResponse = components['schemas']['EmployeeDtoResponse'];
 export type PageMetadata = components['schemas']['PageMetadata'];
 export type PagedModelEmployeeDtoResponse = components['schemas']['PagedModelEmployeeDtoResponse'];
 export type ConfigDtoResponse = components['schemas']['ConfigDtoResponse'];
-export type ProvinceMunicipalityCodesDto = components['schemas']['ProvinceMunicipalityCodesDto'];
 export type AccountDto = components['schemas']['AccountDto'];
+export type AddressDtoResponse = components['schemas']['AddressDtoResponse'];
 export type AccommodationDtoEmployeeResponse = components['schemas']['AccommodationDtoEmployeeResponse'];
 export type AccommodationDtoResponse = components['schemas']['AccommodationDtoResponse'];
 export type PagedModelAccommodationDtoResponse = components['schemas']['PagedModelAccommodationDtoResponse'];
@@ -1117,6 +1188,63 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    deleteBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                accommodationId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1594,6 +1722,39 @@ export interface operations {
             };
         };
     };
+    createAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddressDtoRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["EntityDtoCreated"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
     getAccommodations: {
         parameters: {
             query?: {
@@ -1861,7 +2022,7 @@ export interface operations {
             };
         };
     };
-    publishBooking: {
+    requestSelfCheckInForBooking: {
         parameters: {
             query?: never;
             header?: never;
@@ -1891,6 +2052,15 @@ export interface operations {
             };
             /** @description Not Found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Conflict */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -2486,11 +2656,12 @@ export interface operations {
     };
     getSpanishPostalCodes: {
         parameters: {
-            query: {
-                dto: components["schemas"]["ProvinceMunicipalityCodesDto"];
-            };
+            query?: never;
             header?: never;
-            path?: never;
+            path: {
+                provinceCode: string;
+                municipalityCode: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -2535,6 +2706,87 @@ export interface operations {
             };
             /** @description Bad Request */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getAddressById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AddressDtoResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getBookingAddresses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                accommodationId: string;
+                bookingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["AddressDtoResponse"][];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };

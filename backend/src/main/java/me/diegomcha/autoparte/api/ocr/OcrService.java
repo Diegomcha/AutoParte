@@ -9,6 +9,7 @@ import me.diegomcha.autoparte.integration.ocr.OcrClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+// TODO: Test this service
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 class OcrService {

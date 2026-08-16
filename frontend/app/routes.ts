@@ -4,8 +4,22 @@ import type { RouteConfig } from '@react-router/dev/routes';
 export default [
 	route('/', './routes/index.tsx', [
 		route(
-			'/bookings/:accommodationId/:bookingId',
-			'./routes/bookings/edit.tsx'
+			'/accommodations/:accommodationId/bookings/:bookingId',
+			'./routes/bookings/index.tsx',
+			[
+				route('people', './routes/bookings/people/index.tsx', [
+					route(':id/delete', './routes/bookings/people/delete.tsx'),
+					route('new-address', './routes/bookings/people/newAddress.tsx'),
+				]),
+				route('confirm', './routes/bookings/confirm.tsx'),
+				route('check-in', './routes/bookings/checkIn.tsx'),
+				route(
+					'request-self-check-in',
+					'./routes/bookings/requestSelfCheckIn.tsx'
+				),
+				route('cancel', './routes/bookings/cancel.tsx'),
+				route('delete', './routes/bookings/delete.tsx'),
+			]
 		),
 	]),
 	// TODO:

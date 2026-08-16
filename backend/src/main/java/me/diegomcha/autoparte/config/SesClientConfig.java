@@ -18,9 +18,7 @@ class SesClientConfig {
     @Bean
     Jaxb2Marshaller marshaller() {
         var marshaller = new Jaxb2Marshaller();
-        marshaller.setPackagesToScan(
-                "es.mir.hospedajes.servicios.soap.comunicacion",
-                "es.mir.hospedajes.servicios.soap.tipocomunicacion");
+        marshaller.setPackagesToScan("es.mir.hospedajes");
         return marshaller;
     }
 

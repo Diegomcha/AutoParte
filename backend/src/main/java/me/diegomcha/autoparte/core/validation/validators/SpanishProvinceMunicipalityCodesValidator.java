@@ -5,22 +5,24 @@ import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.constraintvalidation.SupportedValidationTarget;
 import jakarta.validation.constraintvalidation.ValidationTarget;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.api.catalogue.dto.ProvinceMunicipalityCodesDto;
 import me.diegomcha.autoparte.api.catalogue.services.LocationCatalogueService;
 import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceMunicipalityCodes;
 
 @RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
-@SupportedValidationTarget(ValidationTarget.ANNOTATED_ELEMENT)
-public class SpanishProvinceMunicipalityCodesValidator implements ConstraintValidator<SpanishProvinceMunicipalityCodes, ProvinceMunicipalityCodesDto> {
+@SupportedValidationTarget(ValidationTarget.PARAMETERS)
+public class SpanishProvinceMunicipalityCodesValidator implements ConstraintValidator<SpanishProvinceMunicipalityCodes, Object[]> {
 
     private final LocationCatalogueService catalogueService;
 
     @Override
-    public boolean isValid(ProvinceMunicipalityCodesDto dto, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Object[] values, ConstraintValidatorContext constraintValidatorContext) {
+        String provinceCode = (String) values[0];
+        String municipalityCode = (String) values[1];
+
         try {
             return catalogueService
-                    .getSpanishMunicipalities(dto.provinceCode())
-                    .containsKey(dto.municipalityCode());
+                    .getSpanishMunicipalities(provinceCode)
+                    .containsKey(municipalityCode);
         } catch (IllegalArgumentException e) {
             return false;
         }

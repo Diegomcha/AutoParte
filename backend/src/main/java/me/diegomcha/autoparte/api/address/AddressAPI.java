@@ -7,6 +7,7 @@ import me.diegomcha.autoparte.api.address.dto.AddressDtoResponse;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 
+import java.util.List;
 import java.util.UUID;
 
 @Tag(name = "Addresses", description = "Operations related to addresses")
@@ -15,6 +16,9 @@ interface AddressAPI {
 
     @Operation(summary = "Get address by id")
     AddressDtoResponse getAddressById(UUID id) throws ResourceNotFoundException;
+
+    @Operation(summary = "Get addresses by booking id")
+    List<AddressDtoResponse> getBookingAddresses(UUID accommodationId, UUID bookingId) throws ResourceNotFoundException;
 
     @Operation(summary = "Create address")
     EntityDtoCreated createAddress(AddressDtoRequest address);

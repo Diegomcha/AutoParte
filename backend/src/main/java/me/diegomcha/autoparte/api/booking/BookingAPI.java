@@ -12,7 +12,11 @@ import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -31,13 +35,16 @@ public interface BookingAPI {
     EntityDtoCreated createBooking(UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException;
 
     @Operation(summary = "Update a booking for an accommodation")
-    void updateBooking(UUID accommodationId, UUID id, BookingDtoRequest booking) throws ResourceNotFoundException;
+    void updateBooking(UUID accommodationId, UUID id, BookingDtoRequest booking) throws ResourceNotFoundException, ResourceConflictException;
+
+    @Operation(summary = "Delete a booking for an accommodation")
+    void deleteBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException;
 
     @Operation(summary = "Confirm a booking for an accommodation")
     void confirmBooking(UUID accommodationId, UUID id) throws ResourceConflictException, ResourceNotFoundException;
 
-    @Operation(summary = "Publish a booking for self-check-in")
-    void publishBooking(UUID accommodationId, UUID id) throws ResourceConflictException, ResourceNotFoundException;
+    @Operation(summary = "Request self-check-in for a booking")
+    void requestSelfCheckInForBooking(UUID accommodationId, UUID id) throws ResourceConflictException, ResourceNotFoundException;
 
     @Operation(summary = "Check-in a booking for an accommodation")
     @ApiResponses(value = {

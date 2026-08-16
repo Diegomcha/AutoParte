@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.integration.ses;
+package me.diegomcha.autoparte.integration.ses.tasks;
 
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -9,14 +9,18 @@ import me.diegomcha.autoparte.domain.communication.Communication;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// TODO: Test this service
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional(readOnly = true)
@@ -25,6 +29,7 @@ class SesPersistencyService {
     private final CommunicationRepo communicationRepo;
     private final AccommodationRepo accommodationRepo;
 
+    @Transactional
     public void updateCommunications(@NonNull Iterable<Communication> communications) {
         communicationRepo.saveAll(communications);
     }
@@ -57,5 +62,34 @@ class SesPersistencyService {
                 // Load the communications with their associated booking.people and booking.communications to avoid lazy loading issues when processing the batch.
                 .map(comms -> comms.stream().map(Communication::getId).toList())
                 .map(communicationRepo::findAllByIdIn);
+    }
+
+    public Stream<Map<UUID, List<Communication>>> getSentRegistrationBatches(int maxBatchSize) {
+        return this.getSentBatches(maxBatchSize, false);
+    }
+
+    public Stream<Map<UUID, List<Communication>>> getSentCancellationBatches(int maxBatchSize) {
+        return this.getSentBatches(maxBatchSize, true);
+    }
+
+    private Stream<Map<UUID, List<Communication>>> getSentBatches(int maxBatchSize, boolean isCancellation) {
+        UnaryOperator<Slice<UUID>> supplier = slice -> isCancellation
+                ? communicationRepo.findDistinctBatchIdsFromSentCancellations(Pageable.ofSize(maxBatchSize))
+                : communicationRepo.findDistinctBatchIdsFromSentRegistrations(Pageable.ofSize(maxBatchSize));
+
+        return Stream
+                .iterate(
+                        supplier.apply(null),
+                        slice -> !slice.isEmpty(),
+                        supplier
+                )
+                .map(batchIds -> batchIds.stream()
+                        .collect(
+                                Collectors.toMap(
+                                        batchId -> batchId,
+                                        batchId -> communicationRepo.findByBatchId(Sort.by("batchOrder"), batchId)
+                                )
+                        )
+                );
     }
 }

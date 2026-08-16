@@ -1,6 +1,7 @@
-import { ActionIcon, Button, createTheme } from '@mantine/core';
+import { ActionIcon, Button, createTheme, DEFAULT_THEME } from '@mantine/core';
 
 export const theme = createTheme({
+	fontFamily: "'Twemoji Country Flags'," + DEFAULT_THEME.fontFamily,
 	components: {
 		Button: Button.extend({
 			defaultProps: {

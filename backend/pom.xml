@@ -30,7 +30,8 @@
         <sonar.organization>diegomcha</sonar.organization>
         <java.version>21</java.version>
         <sentry-plugin.version>0.11.0</sentry-plugin.version>
-        <sentry-profiler.version>8.43.2</sentry-profiler.version>
+        <sentry.version>8.53.0</sentry.version>
+        <sentry-profiler.version>8.53.0</sentry-profiler.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
         <commons-text.version>1.10.0</commons-text.version>
@@ -69,6 +70,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webservices</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-spring-boot-4</artifactId>
+            <version>${sentry.version}</version>
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>
@@ -376,8 +382,7 @@
                 <executions>
                     <execution>
                         <goals>
-<!--                            TODO: UNDO!-->
-<!--                            <goal>uploadSourceBundle</goal>-->
+                            <goal>uploadSourceBundle</goal>
                             <goal>validateSdkDependencyVersions</goal>
                         </goals>
                     </execution>

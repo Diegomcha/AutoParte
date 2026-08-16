@@ -13,6 +13,7 @@ import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.Person;
 import me.diegomcha.autoparte.domain.address.Address;
+import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
 import me.diegomcha.autoparte.domain.person.document.Document;
@@ -50,7 +51,7 @@ class PersonServiceTest {
     @BeforeEach
     void setUp() {
         this.accommodation = accommodationRepo.save(new Accommodation("Test Accommodation", "SESCODE", null));
-        this.booking = bookingRepo.save(new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 2, null, null, null));
+        this.booking = bookingRepo.save(new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 2, Payment.of(Payment.PaymentType.ON_SITE, null, null, null, null), null, null));
         this.address = addressRepo.save(Address.of("Street 1", "Appt 2", "Miami", "12345", "USA"));
 
         var personalInfo = new PersonalInfo("John", "Doe", null, "USA", TestingUtils.PAST_INSTANT, PersonalInfo.PersonalInfoGender.MALE);
@@ -208,6 +209,7 @@ class PersonServiceTest {
     @Test
     void testUpdatePersonWhileBookingNotModifiable(){
         // Set booking to not modifiable
+        booking.confirm();
         booking.cancel();
 
         var personalInfoReq = new PersonDtoRequest.PersonalInfoDtoRequest(

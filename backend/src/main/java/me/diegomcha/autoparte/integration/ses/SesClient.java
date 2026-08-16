@@ -18,9 +18,9 @@ import me.diegomcha.autoparte.integration.ses.mappers.TypesMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
-import org.springframework.ws.client.WebServiceClientException;
 import org.springframework.ws.client.WebServiceTransportException;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.xml.transform.StringResult;
 
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayOutputStream;
@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+// TODO: Test this class
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SesClient {
@@ -54,7 +55,7 @@ public class SesClient {
         this.checkBatchSize(bookings, MAX_BOOKING_BATCH_SIZE);
 
         return reqMapper.toSubmitCommunicationRequest(
-                applicationContext.getApplicationName(),
+                applicationContext.getId(),
                 dynamicConfigService.getConfig().getSesLandlordCode(),
                 RequestMapper.SesCommunicationType.BOOKING,
                 this.encodePeticion(typesMapper.toPeticionReserva(bookings))
@@ -65,7 +66,7 @@ public class SesClient {
         this.checkBatchSize(bookings, MAX_CHECKIN_BATCH_SIZE);
 
         return reqMapper.toSubmitCommunicationRequest(
-                applicationContext.getApplicationName(),
+                applicationContext.getId(),
                 dynamicConfigService.getConfig().getSesLandlordCode(),
                 RequestMapper.SesCommunicationType.CHECKIN,
                 this.encodePeticion(typesMapper.toPeticionAlta(accommodationSesCode, bookings))
@@ -76,7 +77,7 @@ public class SesClient {
         this.checkBatchSize(sesIds, MAX_CANCEL_BATCH_SIZE);
 
         return reqMapper.toCancelCommunicationRequest(
-                applicationContext.getApplicationName(),
+                applicationContext.getId(),
                 dynamicConfigService.getConfig().getSesLandlordCode(),
                 this.encodePeticion(typesMapper.toComunicacionAnulacion(sesIds))
         );
@@ -123,6 +124,10 @@ public class SesClient {
     }
 
     private String encodePeticion(@NonNull Object obj) {
+        // TODO: remove
+        StringResult result = new StringResult();
+        marshaller.marshal(obj, result);
+
         try (var outputStream = new ByteArrayOutputStream()) {
             try (var zipStream = new ZipOutputStream(outputStream)) {
                 zipStream.putNextEntry(new ZipEntry("peticion.xml"));

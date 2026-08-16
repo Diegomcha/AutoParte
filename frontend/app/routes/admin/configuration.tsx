@@ -24,14 +24,16 @@ import type { Route } from './+types/configuration';
 import type { ConfigDtoRequest } from '~/@types/api';
 
 export async function clientLoader() {
-	return await queryClient.fetchQuery({
-		queryKey: ['configuration'],
-		queryFn: async () => throwErrors(await api.GET('/api/config')),
-	});
+	return {
+		config: await queryClient.fetchQuery({
+			queryKey: ['configuration'],
+			queryFn: async () => throwErrors(await api.GET('/api/config')),
+		}),
+	};
 }
 
 export default function ConfigPage({
-	loaderData: config,
+	loaderData: { config },
 }: Route.ComponentProps) {
 	const { t } = useTranslation();
 

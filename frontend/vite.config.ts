@@ -13,7 +13,6 @@ export default defineConfig((config) => ({
 			{
 				org: 'diegomcha',
 				project: 'autoparte-front',
-				authToken: process.env.SENTRY_AUTH_TOKEN,
 				telemetry: false,
 			},
 			config
@@ -30,8 +29,5 @@ export default defineConfig((config) => ({
 				proxyTimeout: 5000,
 			},
 		},
-	},
-	optimizeDeps: {
-		exclude: ['@sentry/react-router'],
 	},
 }));

@@ -1,12 +1,15 @@
 package me.diegomcha.autoparte.api.config.dto;
 
-public record ConfigDtoResponse(
-        String sesUsername,
-        String sesPassword,
-        String sesLandlordCode,
+import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 
-        boolean sesCredentialsValid,
-        boolean digitalSignatureEnabled,
-        boolean manualReviewEnabled
+public record ConfigDtoResponse(
+        @Nonnull String sesUsername,
+        @Nonnull String sesPassword,
+        @Nonnull String sesLandlordCode,
+
+        @NotNull boolean sesCredentialsValid,
+        @NotNull boolean digitalSignatureEnabled,
+        @NotNull boolean manualReviewEnabled
 ) {
 }

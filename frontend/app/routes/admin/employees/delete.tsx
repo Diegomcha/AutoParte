@@ -1,15 +1,15 @@
 import { Button, Group, Modal } from '@mantine/core';
 import { useMutation } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
+import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useRevalidator } from 'react-router';
 import type { Route } from './+types/delete';
-import Validators from '~/services/Validators';
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
-	return await queryClient.fetchQuery({
+	await queryClient.fetchQuery({
 		queryKey: ['employee', id],
 		queryFn: async () =>
 			throwErrors(

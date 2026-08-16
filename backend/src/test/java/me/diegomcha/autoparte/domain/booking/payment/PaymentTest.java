@@ -1,6 +1,5 @@
 package me.diegomcha.autoparte.domain.booking.payment;
 
-import me.diegomcha.autoparte.TestingUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

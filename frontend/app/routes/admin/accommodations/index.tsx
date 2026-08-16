@@ -18,7 +18,7 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import WifiBadge from '~/component/WifiBadge';
-import dayjs from 'dayjs';
+import TimeService from '~/services/TimeService';
 import { DataTable } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -90,14 +90,14 @@ export default function AccommodationsPage() {
 			resizable: true,
 			accessor: 'createdAt',
 			title: t(($) => $.common.properties.createdAt),
-			render: (entity) => dayjs(entity.createdAt).format('LLLL'),
+			render: (entity) => TimeService(entity.createdAt).format('LLLL'),
 		},
 		{
 			sortable: true,
 			resizable: true,
 			accessor: 'updatedAt',
 			title: t(($) => $.common.properties.updatedAt),
-			render: (entity) => dayjs(entity.updatedAt).format('LLLL'),
+			render: (entity) => TimeService(entity.updatedAt).format('LLLL'),
 		},
 		{
 			accessor: 'employees',

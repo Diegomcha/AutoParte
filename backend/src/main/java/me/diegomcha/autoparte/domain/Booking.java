@@ -33,7 +33,7 @@ public class Booking extends BaseEntity {
     }
 
     @Setter
-    private boolean published = false;
+    private boolean selfCheckInRequested = false;
 
     private @NonNull Instant startTime;
     private @NonNull Instant endTime;
@@ -51,7 +51,7 @@ public class Booking extends BaseEntity {
 
     private @NonNull Accommodation accommodation;
     @ToString.Exclude
-    private final @NonNull List<@NonNull Person> people = new ArrayList<>();
+    private final @NonNull Set<@NonNull Person> people = new HashSet<>();
     @ToString.Exclude
     private final @NonNull Set<@NonNull Communication> communications = new HashSet<>();
 
@@ -139,8 +139,13 @@ public class Booking extends BaseEntity {
         this.numberOfRooms = numberOfRooms;
     }
 
+    /**
+     * Returns a list of people associated with the booking, sorted by their id (creation time).
+     *
+     * @return A list of people sorted by creation time
+     */
     public List<Person> getPeople() {
-        return List.copyOf(this.people);
+        return this.people.stream().sorted(Comparator.comparing(Person::getId)).toList();
     }
 
     void _addPerson(@NonNull Person person) {
@@ -173,6 +178,16 @@ public class Booking extends BaseEntity {
     }
 
     /**
+     * Checks if the booking can be deleted.
+     * It is in a quasi-draft state (no communications were attempted).
+     *
+     * @return true if the booking can be deleted, false otherwise
+     */
+    public boolean canBeDeleted() {
+        return this.communications.isEmpty();
+    }
+
+    /**
      * Confirms the booking by adding a booking communication if it can be confirmed.
      *
      * @throws IllegalStateException if the booking cannot be confirmed
@@ -192,22 +207,27 @@ public class Booking extends BaseEntity {
         if (this.getStatus() != BookingStatus.CHECK_IN_READY)
             throw new IllegalStateException("Booking cannot be checked-in");
 
-        this.published = false;
+        this.selfCheckInRequested = false;
 
         this.addCommunication(Communication.CommunicationType.CHECKIN);
     }
 
     /**
-     * Cancels the booking by adding a cancellation communication and marking all other communications as voided if they are pending or failed.
-     * If all other communications are voided, the cancellation communication is marked as finished successfully.
+     * Cancels the booking by adding a cancellation communication and marking all other communications as voided if they are pending.
+     * If all other communications are voided or failed, the cancellation communication is marked as finished successfully.
      * Otherwise, the cancellation communication will be marked as pending and will be processed asynchronously.
      *
-     * @throws IllegalStateException if the booking is already cancelled or if a cancellation communication already
+     * @throws IllegalStateException if the booking is already cancelled or
+     *                               if the booking can be deleted
      */
     public void cancel() {
+        // Disallow cancellation if the booking can be deleted
+        if (this.canBeDeleted())
+            throw new IllegalStateException("Cannot cancel this booking, please delete it instead");
+
         var communication = (CancellationCommunication) this.addCommunication(Communication.CommunicationType.CANCELLATION);
 
-        // Mark all other communications as voided if they are pending or failed (not in SES)
+        // Mark communications as voided if they are pending (not in SES)
         this.communications.stream()
                 .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION)
                 .filter(c -> c.getStatus() == Communication.CommunicationStatus.PENDING)
@@ -253,20 +273,27 @@ public class Booking extends BaseEntity {
         return BookingStatus.DRAFT;
     }
 
-    public Set<Communication> getCommunications() {
-        return Set.copyOf(this.communications);
+    /**
+     * Returns a list of all communications associated with the booking, sorted by id (creation time).
+     *
+     * @return A list of communications sorted by creation time
+     */
+    public List<Communication> getCommunications() {
+        return this.communications.stream()
+                .sorted(Comparator.comparing(Communication::getId))
+                .toList();
     }
 
     /**
-     * Returns a list of communications of the specified type, sorted by creation time.
+     * Returns a list of communications of the specified type, sorted by id (creation time).
      *
      * @param type The type of communication to filter by
-     * @return A list of communications of the specified type, sorted by creation time
+     * @return A list of communications of the specified type, sorted by id (creation time)
      */
     public List<Communication> getCommunications(@NonNull Communication.CommunicationType type) {
         return this.communications.stream()
                 .filter(c -> c.getType() == type)
-                .sorted(Comparator.comparing(Communication::getCreatedAt))
+                .sorted(Comparator.comparing(Communication::getId))
                 .toList();
     }
 

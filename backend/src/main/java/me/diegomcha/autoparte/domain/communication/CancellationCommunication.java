@@ -5,8 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import me.diegomcha.autoparte.domain.Booking;
 
-import java.util.UUID;
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CancellationCommunication extends Communication {
 
@@ -15,8 +13,8 @@ public class CancellationCommunication extends Communication {
     }
 
     public void markFinishedSuccessfully() {
-        if (this.getStatus() != CommunicationStatus.PENDING)
-            throw new IllegalStateException("Communication must be PENDING to mark as SUCCEEDED without sesId");
+        if (this.getStatus() != CommunicationStatus.SENT && this.getStatus() != CommunicationStatus.PENDING)
+            throw new IllegalStateException("Communication must be SENT/PENDING to mark as SUCCEEDED without sesId");
 
         this.setStatus(CommunicationStatus.SUCCEEDED);
     }
@@ -29,5 +27,10 @@ public class CancellationCommunication extends Communication {
     @Override
     public void markVoided() {
         throw new UnsupportedOperationException("Communication CANCELLATION cannot be marked as VOIDED");
+    }
+
+    @Override
+    public void revertFromPendingVoided() {
+        throw new UnsupportedOperationException("Communication CANCELLATION cannot be reverted from PENDING_VOIDED");
     }
 }

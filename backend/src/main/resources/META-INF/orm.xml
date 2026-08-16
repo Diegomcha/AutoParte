@@ -98,7 +98,7 @@
 
     <entity class="me.diegomcha.autoparte.domain.Booking">
         <attributes>
-            <basic name="published">
+            <basic name="selfCheckInRequested">
                 <column nullable="false"/>
             </basic>
             <basic name="startTime">

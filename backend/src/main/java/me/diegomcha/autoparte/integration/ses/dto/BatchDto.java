@@ -18,6 +18,7 @@ public record BatchDto(
     }
 
     public record CommunicationDto(
+            int order,
             UUID id,
             String error
     ) {

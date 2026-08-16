@@ -36,10 +36,20 @@ class BookingService {
             new ResourceNotFoundException("Accommodation not found");
     private static final Supplier<ResourceConflictException> ALREADY_CANCELLED_EXCEPTION = () ->
             new ResourceConflictException("Booking is already cancelled");
+    private static final Supplier<ResourceConflictException> CANNOT_BE_DELETED_EXCEPTION = () ->
+            new ResourceConflictException("Booking cannot be deleted in its current state, cancel it instead");
+    private static final Supplier<ResourceConflictException> CANNOT_BE_CANCELLED_EXCEPTION = () ->
+            new ResourceConflictException("Booking cannot be cancelled in its current state, delete it instead");
     private static final Supplier<ResourceConflictException> CANNOT_BE_CONFIRMED_EXCEPTION = () ->
             new ResourceConflictException("Booking cannot be confirmed in its current state");
     private static final Supplier<ResourceConflictException> CANNOT_BE_CHECKED_IN_EXCEPTION = () ->
             new ResourceConflictException("Booking cannot be checked in in its current state");
+    private static final Supplier<ResourceConflictException> NUM_PEOPLE_LESS_THAN_CURRENT_PEOPLE = () ->
+            new ResourceConflictException("Number of people cannot be less than the current number of people in the booking");
+    private static final Supplier<ResourceConflictException> CANNOT_BE_MODIFIED_EXCEPTION = () ->
+            new ResourceConflictException("Booking cannot be modified in its current state");
+    private static final Supplier<ResourceConflictException> SELF_CHECK_IN_ALREADY_REQUESTED_EXCEPTION = () ->
+            new ResourceConflictException("Self-check-in has already been requested for this booking");
 
     private final BookingRepo bookingRepo;
     private final BookingMapper bookingMapper;
@@ -53,8 +63,8 @@ class BookingService {
      *
      * @param accommodationId The ID of the accommodation to retrieve bookings for
      * @param pageable        Pagination information (page number, size, sorting)
-     * @param startRange       Optional start date filter for bookings
-     * @param endRange         Optional end date filter for bookings
+     * @param startRange      Optional start date filter for bookings
+     * @param endRange        Optional end date filter for bookings
      * @return A page of bookings for the specified accommodation
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
@@ -108,14 +118,23 @@ class BookingService {
      * @param id              The ID of the booking to update
      * @param update          The update data
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
+     * @throws ResourceConflictException if the number of people in the update is less than the current number of people in the booking
      */
     @Transactional
-    public void updateBooking(UUID accommodationId, UUID id, BookingDtoRequest update) throws ResourceNotFoundException {
+    public void updateBooking(UUID accommodationId, UUID id, BookingDtoRequest update) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        // Ensure that the booking can be modified before applying the update
+        if (!booking.canBeModified())
+            throw CANNOT_BE_MODIFIED_EXCEPTION.get();
+
+        // Ensure that the number of people in the update is not less than the current number of people in the booking
+        if (booking.getPeople().size() > update.numberOfPeople())
+            throw NUM_PEOPLE_LESS_THAN_CURRENT_PEOPLE.get();
 
         bookingMapper.fromUpdate(update, booking);
     }
@@ -144,21 +163,28 @@ class BookingService {
     }
 
     /**
-     * Marks the booking with the given ID for a specific accommodation as published, allowing it to be used for self-check-in.
+     * Allows the booking with the given ID for a specific accommodation to be publicly accessible for self-check-in.
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
-     * @param id              The ID of the booking to publish
+     * @param id              The ID of the booking to publish for self-check-in
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
+     * @throws ResourceConflictException if the booking cannot be modified or if self-check-in has already been requested for the booking
      */
     @Transactional
-    public void publishBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException {
+    public void requestSelfCheckInForBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
-        booking.setPublished(true);
+        if (!booking.canBeModified())
+            throw CANNOT_BE_MODIFIED_EXCEPTION.get();
+
+        if (booking.isSelfCheckInRequested())
+            throw SELF_CHECK_IN_ALREADY_REQUESTED_EXCEPTION.get();
+
+        booking.setSelfCheckInRequested(true);
     }
 
     /**
@@ -188,7 +214,7 @@ class BookingService {
                 .isPresent();
 
         if (!isLoggedIn && dynamicConfigService.getConfig().isManualReviewEnabled()) {
-            booking.setPublished(false);
+            booking.setSelfCheckInRequested(false);
             return false;
         }
 
@@ -213,10 +239,37 @@ class BookingService {
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
         // Check if the booking is already canceled
-        if (booking.getStatus() == Booking.BookingStatus.CANCELLED)
+        if (booking.getStatus() == Booking.BookingStatus.CANCELLED || booking.getStatus() == Booking.BookingStatus.PENDING_CANCELLATION)
             throw ALREADY_CANCELLED_EXCEPTION.get();
 
+        // If the booking can be deleted, throw an exception to indicate that it should be deleted instead of canceled
+        if (booking.canBeDeleted())
+            throw CANNOT_BE_CANCELLED_EXCEPTION.get();
+
         booking.cancel();
+    }
+
+    /**
+     * Deletes the booking with the given ID for a specific accommodation.
+     *
+     * @param accommodationId The ID of the accommodation to which the booking belongs
+     * @param id              The ID of the booking to delete
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
+     * @throws ResourceConflictException if the booking cannot be deleted
+     */
+    @Transactional
+    public void deleteBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+        this.ensureAccommodationExists(accommodationId);
+
+        var booking = bookingRepo
+                .findByAccommodationIdAndId(accommodationId, id)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        // Check if the booking can be deleted
+        if (!booking.canBeDeleted())
+            throw CANNOT_BE_DELETED_EXCEPTION.get();
+
+        bookingRepo.delete(booking);
     }
 
     private void ensureAccommodationExists(UUID accommodationId) throws ResourceNotFoundException {

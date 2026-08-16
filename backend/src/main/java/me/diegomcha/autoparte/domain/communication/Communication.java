@@ -51,8 +51,9 @@ public class Communication extends BaseEntity {
     private @NonNull CommunicationStatus status = CommunicationStatus.PENDING;
     private Instant sentTimestamp;
     private UUID batchId;
+    private Integer batchOrder;
     private UUID sesId;
-    private Integer errorCode;
+    private String error;
 
     protected Communication(@NonNull Booking booking, @NonNull CommunicationType type) {
         this.booking = booking;
@@ -62,16 +63,18 @@ public class Communication extends BaseEntity {
     /**
      * Marks the communication as SENT, updating its status and recording the sent timestamp and batch ID.
      *
-     * @param batchId The unique identifier for the batch in which the communication was sent. Must not be null.
+     * @param batchId    The unique identifier for the batch in which the communication was sent. Must not be null.
+     * @param batchOrder The order of the communication within the batch. Must not be null.
      * @throws IllegalStateException if the communication is not in PENDING status.
      */
-    public void markSent(@NonNull UUID batchId) {
+    public void markSent(@NonNull UUID batchId, @NonNull Integer batchOrder) {
         if (this.status != CommunicationStatus.PENDING)
             throw new IllegalStateException("Communication must be in PENDING status to mark as SENT");
 
         this.status = CommunicationStatus.SENT;
         this.sentTimestamp = Instant.now();
         this.batchId = batchId;
+        this.batchOrder = batchOrder;
     }
 
     /**
@@ -89,17 +92,17 @@ public class Communication extends BaseEntity {
     }
 
     /**
-     * Marks the communication as FAILED, updating its status and recording the error code.
+     * Marks the communication as FAILED, updating its status and recording the error.
      *
-     * @param errorCode The error code associated with the failure. Must not be null.
+     * @param error The error associated with the failure. Must not be null.
      * @throws IllegalStateException if the communication is not in SENT status.
      */
-    public void markFinishedFailed(int errorCode) {
+    public void markFinishedFailed(String error) {
         if (this.status != CommunicationStatus.SENT)
             throw new IllegalStateException("Communication must be in SENT status to mark as FAILED");
 
         this.status = CommunicationStatus.FAILED;
-        this.errorCode = errorCode;
+        this.error = error;
     }
 
     /**
@@ -117,12 +120,23 @@ public class Communication extends BaseEntity {
     /**
      * Marks the communication as VOIDED, updating its status.
      *
-     * @throws IllegalStateException if the communication is in SENT status, as SENT communications must be processed before being marked as VOIDED.
+     * @throws IllegalStateException if the communication is in SENT status, as SENT communications must be processed before being marked as VOIDED or
+     *                               the communication FAILED, since FAILED communications do not need to be VOIDED
      */
     public void markVoided() {
-        if (this.status == CommunicationStatus.SENT)
-            throw new IllegalStateException("Communications SENT must be first processed before being marked as VOIDED");
+        if (this.status == CommunicationStatus.SENT || this.status == CommunicationStatus.FAILED)
+            throw new IllegalStateException("Communications SENT/FAILED cannot be marked as VOIDED");
 
         this.status = CommunicationStatus.VOIDED;
+    }
+
+    /**
+     * Reverts the communication from PENDING_VOIDED status back to SUCCEEDED status.
+     */
+    public void revertFromPendingVoided() {
+        if (this.status != CommunicationStatus.PENDING_VOIDED)
+            throw new IllegalStateException("Communication must be in PENDING_VOIDED status to be reverted to SUCCEEDED");
+
+        this.status = CommunicationStatus.SUCCEEDED;
     }
 }

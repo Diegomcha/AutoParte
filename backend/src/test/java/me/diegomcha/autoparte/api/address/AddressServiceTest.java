@@ -73,5 +73,7 @@ class AddressServiceTest {
         Assertions.assertEquals("33007", savedAddress.getPostalCode());
         Assertions.assertEquals("ESP", savedAddress.getCountry());
     }
+
+    //TODO: Test getBookingAddresses
 }
 

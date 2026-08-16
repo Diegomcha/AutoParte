@@ -12,12 +12,13 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+// TODO: Test this class
 public class Validations {
 
     public static final Set<String> VALID_COUNTRIES = Set.copyOf(Locale.getISOCountries(Locale.IsoCountryCode.PART1_ALPHA3));
 
     private static final Pattern NIF_PATTERN = Pattern.compile("^(\\d{8})([A-Z])$");
-    private static final Pattern NIE_PATTERN = Pattern.compile("^[XYZ]\\d{7,8}[A-Z]$");
+    private static final Pattern NIE_PATTERN = Pattern.compile("^[XYZ]\\d{7}[A-Z]$");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$", Pattern.CASE_INSENSITIVE);
     private static final Pattern MUNICIPALITY_CODE_PATTERN = Pattern.compile("^\\d{5}$");
     private static final Pattern POSTAL_CODE_PATTERN = Pattern.compile("^\\d{5}$");

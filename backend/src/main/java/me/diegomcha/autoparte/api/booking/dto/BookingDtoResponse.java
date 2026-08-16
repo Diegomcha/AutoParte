@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.api.booking.dto;
 
 import jakarta.annotation.Nonnull;
-import lombok.NonNull;
+import jakarta.validation.constraints.NotNull;
 import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.communication.Communication;
@@ -19,12 +19,13 @@ public record BookingDtoResponse(
         @Nonnull UUID lastModifiedBy,
 
         @Nonnull Booking.BookingStatus status,
-        boolean published,
-        boolean canBeModified,
+        @NotNull boolean selfCheckInRequested,
+        @NotNull boolean canBeModified,
+        @NotNull boolean canBeDeleted,
 
         @Nonnull Instant startTime,
         @Nonnull Instant endTime,
-        int numberOfPeople,
+        @NotNull int numberOfPeople,
         PaymentDtoResponse payment,
         Integer numberOfRooms,
         Boolean internetConnection,
@@ -46,7 +47,8 @@ public record BookingDtoResponse(
             @Nonnull UUID id,
             @Nonnull Communication.CommunicationType type,
             @Nonnull Communication.CommunicationStatus status,
-            Instant sentTimestamp
+            Instant sentTimestamp,
+            String error
     ) {
     }
 }

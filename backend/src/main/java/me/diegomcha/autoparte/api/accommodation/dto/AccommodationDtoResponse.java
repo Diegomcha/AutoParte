@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.api.accommodation.dto;
 
 import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.util.Set;
@@ -18,7 +19,7 @@ public record AccommodationDtoResponse(
         @Nonnull Set<AccommodationDtoEmployeeResponse> employees
 ) {
     public record AccommodationDtoEmployeeResponse(
-            boolean enabled,
+            @NotNull boolean enabled,
             @Nonnull UUID id,
             @Nonnull String name,
             @Nonnull String email

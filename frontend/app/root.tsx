@@ -13,6 +13,7 @@ import {
 import { NavigationProgress, nprogress } from '@mantine/nprogress';
 import * as Sentry from '@sentry/react-router';
 import { QueryClientProvider } from '@tanstack/react-query';
+import { polyfillCountryFlagEmojis } from 'country-flag-emoji-polyfill';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,14 +27,15 @@ import {
 	useNavigation,
 } from 'react-router';
 import { ApiErrorResponse, queryClient } from './api';
+import AuthService from './services/AuthService';
+import { ValidationErrorResponse } from './services/Validators';
 import { theme } from './theme';
 import type { Route } from './+types/root';
 //
 import './i18n';
-import './dayjs';
 import './app.css';
-import AuthService from './services/AuthService';
-import { ValidationErrorResponse } from './services/Validators';
+
+polyfillCountryFlagEmojis();
 
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
@@ -82,12 +84,6 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-	// Log error to Sentry if error
-	if (error instanceof Error) {
-		console.error(error);
-		Sentry.captureException(error);
-	}
-
 	// Display error message to user
 	const { t } = useTranslation();
 
@@ -100,11 +96,10 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 		status = error.status.toString();
 		if (status.startsWith('4')) showRetry = false;
 	}
-
 	// Handle API error responses
-	if (ApiErrorResponse.isApiErrorResponse(error)) {
-		if (error.status === 404) {
-			status = '404';
+	else if (ApiErrorResponse.isApiErrorResponse(error)) {
+		if ([404, 403].includes(error.status)) {
+			status = error.status.toString();
 			showRetry = false;
 		} else if (error.status === 401) {
 			void AuthService.refreshLoggedInUser().then(() => {
@@ -113,11 +108,16 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 			return <></>;
 		} else if (error.status.toString().startsWith('5')) status = '503';
 	}
-
 	// Handle validation error responses
-	if (ValidationErrorResponse.isValidationErrorResponse(error)) {
+	else if (ValidationErrorResponse.isValidationErrorResponse(error)) {
 		status = '400';
 		showRetry = false;
+	}
+
+	// Log error to Sentry
+	if (error instanceof Error && status.startsWith('5')) {
+		console.error(error);
+		Sentry.captureException(error);
 	}
 
 	// Show stack trace in development mode
@@ -144,7 +144,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 									location.reload();
 								}}
 							>
-								Refresh the page
+								{t(($) => $.error.refreshButton)}
 							</Button>
 						</Group>
 					</>

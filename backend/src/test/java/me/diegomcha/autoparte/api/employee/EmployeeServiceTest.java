@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 import java.util.stream.StreamSupport;
 
+// TODO: Test employee with an accommodation assigned to exercise mapper
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
 @Transactional

@@ -53,6 +53,7 @@ class AccommodationServiceTest {
         accommodationsPage = service.getAccommodations(Pageable.unpaged());
 
         Assertions.assertEquals(0, accommodationsPage.getTotalElements());
+        // TODO: Test as an admin and as an employee
     }
 
     @Test

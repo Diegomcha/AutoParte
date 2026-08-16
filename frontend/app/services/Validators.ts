@@ -14,6 +14,15 @@ class Validators {
 			}
 		}
 	}
+
+	/**
+	 * Creates a ValidationErrorResponse with the provided detail message.
+	 * @param detail The detail message for the validation error.
+	 * @throws ValidationErrorResponse with the provided detail message.
+	 */
+	throwValidationErrorResponse(detail: string): ValidationErrorResponse {
+		throw new ValidationErrorResponse(detail);
+	}
 }
 
 export default new Validators();

@@ -31,7 +31,7 @@ class ResponseMapperTest {
             {
                     getConsultaLoteResponse(OK_RESPUESTA, List.of(
                             getWscomunicacionType("123e4567-e89b-12d3-a456-426614174000", 1, "Ok", List.of(
-                                    getResultadoType("123e4567-e89b-12d3-a456-426614174001", null)
+                                    getResultadoType(1, "123e4567-e89b-12d3-a456-426614174001", null)
                             ))
                     )),
                     Map.of(
@@ -39,7 +39,7 @@ class ResponseMapperTest {
                                     BatchDto.BatchDtoStatus.SUCCESS,
                                     "Ok",
                                     List.of(
-                                            new BatchDto.CommunicationDto(UUID.fromString("123e4567-e89b-12d3-a456-426614174001"), null)
+                                            new BatchDto.CommunicationDto(1, UUID.fromString("123e4567-e89b-12d3-a456-426614174001"), null)
                                     )
                             )
                     )
@@ -47,28 +47,24 @@ class ResponseMapperTest {
             {
                     getConsultaLoteResponse(OK_RESPUESTA, List.of(
                             getWscomunicacionType("123e4567-e89b-12d3-a456-426614174000", 6, "Error 1", List.of(
-                                    getResultadoType("123e4567-e89b-12d3-a456-426614174001", null),
-                                    getResultadoType(null, "Error 2")
+                                    getResultadoType(1, "123e4567-e89b-12d3-a456-426614174001", null),
+                                    getResultadoType(2, null, "Error 2")
                             )),
-                            getWscomunicacionType("123e4567-e89b-12d3-a456-426614174002", 2, "Error 3", List.of(
-                                    getResultadoType(null, "Error 4")
-                            ))
+                            getWscomunicacionType("123e4567-e89b-12d3-a456-426614174002", 2, "Error 3", null)
                     )),
                     Map.of(
                             UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), new BatchDto(
                                     BatchDto.BatchDtoStatus.ERROR_COMMUNICATIONS,
                                     "Error 1",
                                     List.of(
-                                            new BatchDto.CommunicationDto(UUID.fromString("123e4567-e89b-12d3-a456-426614174001"), null),
-                                            new BatchDto.CommunicationDto(null, "Error 2")
+                                            new BatchDto.CommunicationDto(1, UUID.fromString("123e4567-e89b-12d3-a456-426614174001"), null),
+                                            new BatchDto.CommunicationDto(2, null, "Error 2")
                                     )
                             ),
                             UUID.fromString("123e4567-e89b-12d3-a456-426614174002"), new BatchDto(
                                     BatchDto.BatchDtoStatus.ERROR_FORMAT,
                                     "Error 3",
-                                    List.of(
-                                            new BatchDto.CommunicationDto(null, "Error 4")
-                                    )
+                                    null
                             )
                     )
             }
@@ -131,12 +127,19 @@ class ResponseMapperTest {
         wscomunicacionType.setCodigoEstado(codigoEstado);
         wscomunicacionType.setDescEstado(descEstado);
         wscomunicacionType.setResultadoComunicaciones(TIPOCOMUNICACION_FACTORY.createResultadosType());
-        wscomunicacionType.getResultadoComunicaciones().getResultadoComunicacion().addAll(resultadosType);
+
+        // Emulate response from SES where resultadoComunicaciones can be null
+        if (resultadosType != null)
+            wscomunicacionType.getResultadoComunicaciones().getResultadoComunicacion().addAll(resultadosType);
+        else
+            wscomunicacionType.setResultadoComunicaciones(null);
+
         return wscomunicacionType;
     }
 
-    private static ResultadoType getResultadoType(String codigoComunicacion, String error) {
+    private static ResultadoType getResultadoType(int order, String codigoComunicacion, String error) {
         var resultadoType = TIPOCOMUNICACION_FACTORY.createResultadoType();
+        resultadoType.setOrden(order);
         resultadoType.setCodigoComunicacion(codigoComunicacion);
         resultadoType.setError(error);
         return resultadoType;

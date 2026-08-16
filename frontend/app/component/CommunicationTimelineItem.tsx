@@ -7,7 +7,7 @@ import {
 	SpinnerGapIcon,
 	XIcon,
 } from '@phosphor-icons/react';
-import dayjs from 'dayjs';
+import TimeService from '~/services/TimeService';
 import { useTranslation } from 'react-i18next';
 import type { CommunicationDtoResponse } from '~/@types/api';
 
@@ -44,7 +44,8 @@ export default function CommunicationTimelineItem({
 				<Tooltip
 					label={t(
 						($) =>
-							$.bookings.view.communications.status[communication.status].label
+							$.bookings.properties.communications.status[communication.status]
+								.label
 					)}
 				>
 					<ThemeIcon
@@ -52,8 +53,9 @@ export default function CommunicationTimelineItem({
 						size={22}
 						color={t(
 							($) =>
-								$.bookings.view.communications.status[communication.status]
-									.color
+								$.bookings.properties.communications.status[
+									communication.status
+								].color
 						)}
 					>
 						{communication.status === 'SUCCEEDED'
@@ -70,15 +72,23 @@ export default function CommunicationTimelineItem({
 							: ''
 					}
 				>
-					{t(($) => $.bookings.view.communications.types[communication.type])}
+					{t(
+						($) =>
+							$.bookings.properties.communications.types[communication.type]
+					)}
 				</p>
 			}
 		>
 			{communication.sentTimestamp && (
 				<Text size="sm" c="dark">
-					{t(($) => $.bookings.view.communications.sentDate, {
-						date: dayjs(communication.sentTimestamp).fromNow(),
+					{t(($) => $.bookings.properties.communications.sentDate, {
+						date: TimeService(communication.sentTimestamp).fromNow(),
 					})}
+				</Text>
+			)}
+			{communication.error && (
+				<Text size="xs" c="red" w="0" miw="100%">
+					{communication.error}
 				</Text>
 			)}
 		</Timeline.Item>

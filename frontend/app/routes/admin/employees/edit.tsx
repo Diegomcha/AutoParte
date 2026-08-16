@@ -21,30 +21,27 @@ import type { EmployeeDtoPatch } from '~/@types/api';
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
-	return await queryClient.fetchQuery({
-		queryKey: ['employee', id],
-		queryFn: async () => {
-			// Get employee
-			const employee = throwErrors(
-				await api.GET('/api/employees/{id}', {
-					params: { path: { id } },
-				})
-			);
-
-			// Get available accommodations
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const availableAccommodations = throwErrors(
-				await api.GET('/api/accommodations', {
-					params: { query: { size: 0 } },
-				})
-			).content!;
-
-			return {
-				employee,
-				availableAccommodations,
-			};
-		},
-	});
+	return {
+		employee: await queryClient.fetchQuery({
+			queryKey: ['employee', id],
+			queryFn: async () =>
+				throwErrors(
+					await api.GET('/api/employees/{id}', {
+						params: { path: { id } },
+					})
+				),
+		}),
+		availableAccommodations: await queryClient.fetchQuery({
+			queryKey: ['accommodations'],
+			queryFn: async () =>
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				throwErrors(
+					await api.GET('/api/accommodations', {
+						params: { query: { size: 0 } },
+					})
+				).content!,
+		}),
+	};
 }
 
 export default function EditEmployee({

@@ -23,15 +23,18 @@ public class ResponseMapper {
                                 new BatchDto(
                                         BatchDto.BatchDtoStatus.values()[batch.getCodigoEstado() - 1],
                                         batch.getDescEstado(),
-                                        batch.getResultadoComunicaciones().getResultadoComunicacion().stream()
+                                        batch.getResultadoComunicaciones() != null
+                                                ? batch.getResultadoComunicaciones().getResultadoComunicacion().stream()
                                                 .map(comunicacion ->
-                                                        new BatchDto.CommunicationDto(
-                                                                comunicacion.getCodigoComunicacion() != null
-                                                                        ? UUID.fromString(comunicacion.getCodigoComunicacion())
-                                                                        : null,
-                                                                comunicacion.getError()
-                                                        ))
+                                                     new BatchDto.CommunicationDto(
+                                                             comunicacion.getOrden(),
+                                                             comunicacion.getCodigoComunicacion() != null
+                                                             ? UUID.fromString(comunicacion.getCodigoComunicacion())
+                                                             : null,
+                                                             comunicacion.getError()
+                                                     ))
                                                 .toList()
+                                                : null
                                 ))
                 )
                 .collect(Collectors.toMap(
