@@ -182,6 +182,7 @@ jobs:
         if: github.event_name != 'pull_request'
         working-directory: backend
         env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           TAGS: ${{ steps.meta.outputs.tags }}
           IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
         run: |
