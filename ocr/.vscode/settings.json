@@ -3,5 +3,8 @@
     "connectionId": "diegomcha",
     "projectKey": "Diegomcha_AutoParte"
   },
-  "conventionalCommits.scopes": ["ocr"]
+  "conventionalCommits.scopes": ["ocr"],
+  "python.testing.pytestArgs": ["test"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

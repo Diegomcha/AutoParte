@@ -1,3 +1,4 @@
+import traceback
 from typing import Annotated
 
 from fastapi import FastAPI, File, HTTPException
@@ -46,7 +47,8 @@ def mrz_route(image: Annotated[bytes, File()]):
         )
     except Exception as e:
         print("Unexpected error while processing image")
-        print(e)
+        print(traceback.format_exc())
+
         raise HTTPException(
             status_code=500,
             detail=f"Unexpected error while processing image:{str(e)}",
