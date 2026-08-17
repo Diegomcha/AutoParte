@@ -67,7 +67,7 @@ export default function DeleteBooking({
 					{t(($) => $.common.buttons.cancel)}
 				</Button>
 				<Button
-					color="red"
+					color={t(($) => $.bookings.delete.color)}
 					loading={isPending}
 					leftSection={<TrashIcon weight="bold" />}
 					onClick={() => {

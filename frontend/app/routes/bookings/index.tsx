@@ -40,6 +40,7 @@ import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import CommunicationTimelineItem from '~/component/CommunicationTimelineItem';
+import ComplexRequiredAsterisk from '~/component/ComplexRequiredLabel';
 import TimeService from '~/services/TimeService';
 import Validators from '~/services/Validators';
 import { useEffect, useState } from 'react';
@@ -400,7 +401,12 @@ export default function BookingsPage({
 									<Select
 										key={form.key('payment.type')}
 										name="payment.type"
-										label={t(($) => $.bookings.properties.payment.type.label)}
+										label={
+											<>
+												{t(($) => $.bookings.properties.payment.type.label)}
+												<ComplexRequiredAsterisk action="confirm" />
+											</>
+										}
 										data={Object.entries(
 											t(($) => $.bookings.properties.payment.type.options, {
 												returnObjects: true,
@@ -484,7 +490,9 @@ export default function BookingsPage({
 								</SimpleGrid>
 							</Fieldset>
 						</Stack>
+						{/* Right panel */}
 						<Stack>
+							{/* Communications log */}
 							<Fieldset
 								legend={t(($) => $.bookings.properties.communications.title)}
 								className="grow"
@@ -523,6 +531,7 @@ export default function BookingsPage({
 									</Timeline>
 								</ScrollArea.Autosize>
 							</Fieldset>
+							{/* Action buttons */}
 							<Stack
 								gap="xs"
 								hidden={
@@ -536,7 +545,7 @@ export default function BookingsPage({
 									component={!form.isDirty() ? Link : undefined}
 									to={`/accommodations/${accommodationId}/bookings/${bookingId}/confirm`}
 									leftSection={<CheckCircleIcon weight="bold" />}
-									color="teal"
+									color={t(($) => $.bookings.confirm.color)}
 									hidden={booking.status !== 'CONFIRMATION_READY'}
 									disabled={form.isDirty()}
 								>
@@ -546,7 +555,7 @@ export default function BookingsPage({
 									component={!form.isDirty() ? Link : undefined}
 									to={`/accommodations/${accommodationId}/bookings/${bookingId}/check-in`}
 									leftSection={<SuitcaseIcon weight="bold" />}
-									color="cyan"
+									color={t(($) => $.bookings.checkIn.color)}
 									hidden={booking.status !== 'CHECK_IN_READY'}
 									disabled={form.isDirty()}
 								>
@@ -556,7 +565,7 @@ export default function BookingsPage({
 									component={!form.isDirty() ? Link : undefined}
 									to={`/accommodations/${accommodationId}/bookings/${bookingId}/request-self-check-in`}
 									leftSection={<PaperPlaneTiltIcon weight="bold" />}
-									color="violet"
+									color={t(($) => $.bookings.requestSelfCheckIn.color)}
 									hidden={
 										booking.selfCheckInRequested || !booking.canBeModified
 									}
@@ -585,7 +594,11 @@ export default function BookingsPage({
 											<XIcon weight="bold" />
 										)
 									}
-									color="red"
+									color={t(($) =>
+										booking.canBeDeleted
+											? $.bookings.delete.color
+											: $.bookings.cancel.color
+									)}
 									disabled={form.isDirty()}
 									hidden={['PENDING_CANCELLATION', 'CANCELLED'].includes(
 										booking.status

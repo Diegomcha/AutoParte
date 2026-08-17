@@ -24,6 +24,7 @@ import {
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import AddressSelect from '~/component/AddressSelect';
+import ComplexRequiredAsterisk from '~/component/ComplexRequiredLabel';
 import CountrySelect from '~/component/CountrySelect';
 import PhoneInput, { isValidPhoneNumber } from '~/component/PhoneInput';
 import TimeService from '~/services/TimeService';
@@ -130,7 +131,6 @@ export default function BookingPeople({
 	const [personId, setPersonId] = useState(people.at(0)?.id ?? null);
 
 	const form = useForm({
-		mode: 'uncontrolled',
 		initialValues: getInitialValues(people, personId),
 		validate: {
 			personalInfo: {
@@ -166,14 +166,14 @@ export default function BookingPeople({
 			},
 			document: {
 				number: (value) => {
-					if (form.getValues().document.type) {
+					if (form.values.document.type) {
 						if (isNotEmpty()(value))
 							return t(
 								($) => $.people.properties.document.number.errors.undefined
 							);
 
 						if (
-							['NIF', 'NIE'].includes(form.getValues().document.type ?? '') &&
+							['NIF', 'NIE'].includes(form.values.document.type) &&
 							!isValidNif(value)
 						)
 							return t(
@@ -182,7 +182,7 @@ export default function BookingPeople({
 					}
 				},
 				supportNumber: (value) => {
-					if (requiresSupportNumber(form.getValues().document.type)) {
+					if (requiresSupportNumber(form.values.document.type)) {
 						if (isNotEmpty()(value))
 							return t(
 								($) =>
@@ -221,6 +221,13 @@ export default function BookingPeople({
 			}) satisfies PersonDtoRequest,
 	});
 
+	const isAdult = form.values.personalInfo.birthDate
+		? TimeService().diff(
+				TimeService(form.values.personalInfo.birthDate),
+				'year'
+			) >= 18
+		: undefined;
+
 	useEffect(() => {
 		const address = (
 			location.state as { address?: AddressDtoResponse } | undefined
@@ -243,7 +250,7 @@ export default function BookingPeople({
 	useEffect(() => {
 		form.clearFieldError('document.number');
 		form.clearFieldError('document.supportNumber');
-	}, [form.getValues().document.type]);
+	}, [form.values.document.type]);
 
 	const { mutate: save, isPending: isSaving } = useMutation({
 		throwOnError: true,
@@ -296,6 +303,9 @@ export default function BookingPeople({
 				title={t(($) => $.people.title)}
 				size="auto"
 			>
+				<Text size="xs" c="gray" mb={'sm'}>
+					{t(($) => $.people.requirement)}
+				</Text>
 				{/* People switcher */}
 				<Tabs
 					mb="md"
@@ -362,9 +372,17 @@ export default function BookingPeople({
 								/>
 								<TextInput
 									key={form.key('personalInfo.secondSurname')}
-									label={t(
-										($) => $.people.properties.personalInfo.secondSurname.label
-									)}
+									label={
+										<>
+											{t(
+												($) =>
+													$.people.properties.personalInfo.secondSurname.label
+											)}
+											{form.values.document.type === 'NIF' && (
+												<ComplexRequiredAsterisk action="checkIn" />
+											)}
+										</>
+									}
 									readOnly={!booking.canBeModified}
 									{...form.getInputProps('personalInfo.secondSurname')}
 								/>
@@ -380,9 +398,14 @@ export default function BookingPeople({
 								/>
 								<DateInput
 									key={form.key('personalInfo.birthDate')}
-									label={t(
-										($) => $.people.properties.personalInfo.birthDate.label
-									)}
+									label={
+										<>
+											{t(
+												($) => $.people.properties.personalInfo.birthDate.label
+											)}
+											{<ComplexRequiredAsterisk action="checkIn" />}
+										</>
+									}
 									valueFormat={t(
 										($) => $.people.properties.personalInfo.birthDate.format
 									)}
@@ -411,9 +434,12 @@ export default function BookingPeople({
 								/>
 								<AddressSelect
 									key={form.key('address')}
-									label={t(
-										($) => $.people.properties.personalInfo.address.label
-									)}
+									label={
+										<>
+											{t(($) => $.people.properties.personalInfo.address.label)}
+											{<ComplexRequiredAsterisk action="checkIn" />}
+										</>
+									}
 									addresses={addresses}
 									clearable
 									onNew={() => {
@@ -424,9 +450,17 @@ export default function BookingPeople({
 								/>
 								<Select
 									key={form.key('relationship')}
-									label={t(
-										($) => $.people.properties.personalInfo.relationship.label
-									)}
+									label={
+										<>
+											{t(
+												($) =>
+													$.people.properties.personalInfo.relationship.label
+											)}
+											{isAdult === false && (
+												<ComplexRequiredAsterisk action="checkIn" />
+											)}
+										</>
+									}
 									data={relationships.map((r) => ({
 										value: r,
 										label: t(
@@ -478,7 +512,12 @@ export default function BookingPeople({
 							<SimpleGrid cols={3}>
 								<Select
 									key={form.key('document.type')}
-									label={t(($) => $.people.properties.document.type.label)}
+									label={
+										<>
+											{t(($) => $.people.properties.document.type.label)}
+											{isAdult && <ComplexRequiredAsterisk action="checkIn" />}
+										</>
+									}
 									data={documentTypes.map((dt) => ({
 										value: dt,
 										label: t(
@@ -494,9 +533,9 @@ export default function BookingPeople({
 								<TextInput
 									key={form.key('document.number')}
 									label={t(($) => $.people.properties.document.number.label)}
-									disabled={!form.getValues().document.type}
+									disabled={!form.values.document.type}
 									readOnly={!booking.canBeModified}
-									withAsterisk={!!form.getValues().document.type}
+									withAsterisk={!!form.values.document.type}
 									{...form.getInputProps('document.number')}
 								/>
 								<TextInput
@@ -504,12 +543,10 @@ export default function BookingPeople({
 									label={t(
 										($) => $.people.properties.document.supportNumber.label
 									)}
-									disabled={
-										!requiresSupportNumber(form.getValues().document.type)
-									}
+									disabled={!requiresSupportNumber(form.values.document.type)}
 									readOnly={!booking.canBeModified}
 									withAsterisk={requiresSupportNumber(
-										form.getValues().document.type
+										form.values.document.type
 									)}
 									{...form.getInputProps('document.supportNumber')}
 								/>

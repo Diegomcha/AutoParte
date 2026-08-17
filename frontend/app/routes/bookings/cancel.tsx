@@ -70,7 +70,7 @@ export default function CancelBooking({
 					{t(($) => $.common.buttons.back)}
 				</Button>
 				<Button
-					color="red"
+					color={t(($) => $.bookings.cancel.color)}
 					loading={isPending}
 					leftSection={<XIcon weight="bold" />}
 					onClick={() => {

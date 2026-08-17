@@ -67,7 +67,7 @@ export default function CheckInBooking({
 					{t(($) => $.common.buttons.cancel)}
 				</Button>
 				<Button
-					color="cyan"
+					color={t(($) => $.bookings.checkIn.color)}
 					leftSection={<SuitcaseIcon weight="bold" />}
 					loading={isPending}
 					onClick={() => {

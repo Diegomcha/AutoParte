@@ -39,6 +39,7 @@
 	},
 	"people": {
 		"title": "Gestión de viajeros",
+		"requirement": "Para confirmar la reserva solo se necesitan los datos del titular; para registrar la entrada, los de todos los huéspedes.",
 		"properties": {
 			"personalInfo": {
 				"title": "Información personal",
@@ -337,26 +338,31 @@
 		},
 		"requestSelfCheckIn": {
 			"button": "Solicitar auto-registro",
+			"color": "violet",
 			"title": "Solicitar auto-registro",
 			"description": "Esta acción solicitará el auto-registro de los viajeros."
 		},
 		"confirm": {
 			"button": "Confirmar",
+			"color": "teal",
 			"title": "Confirmar reserva",
 			"description": "Esta acción confirmará la reserva y enviará la información al ministerio."
 		},
 		"checkIn": {
 			"button": "Registrar entrada",
+			"color": "cyan",
 			"title": "Registrar entrada",
 			"description": "Esta acción registrará la entrada de los viajeros en el alojamiento informando al ministerio."
 		},
 		"cancel": {
 			"button": "Cancelar",
+			"color": "orange",
 			"title": "Cancelar reserva",
 			"description": "Esta acción cancelará la reserva y propagará dicha cancelación al ministerio en caso de haber confirmado la reserva previamente."
 		},
 		"delete": {
 			"button": "Eliminar",
+			"color": "red",
 			"title": "Eliminar reserva",
 			"description": "Esta acción eliminará la reserva de forma permanente y no podrá ser recuperada."
 		}
@@ -595,5 +601,11 @@
 		"new": "Nueva dirección",
 		"current": "Dirección actual",
 		"other": "Otras direcciones de la reserva"
+	},
+	"complexRequiredLabel": {
+		"tooltips": {
+			"confirm": "Requerido para poder confirmar la reserva",
+			"checkIn": "Requerido para poder registrar la entrada de la reserva"
+		}
 	}
 }

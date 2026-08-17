@@ -67,7 +67,7 @@ export default function ConfirmBooking({
 					{t(($) => $.common.buttons.cancel)}
 				</Button>
 				<Button
-					color="teal"
+					color={t(($) => $.bookings.confirm.color)}
 					leftSection={<CheckCircleIcon weight="bold" />}
 					loading={isPending}
 					onClick={() => {
