@@ -18,18 +18,17 @@ public class BookingSpecs {
             Path<Instant> startTime = root.get("startTime");
             Path<Instant> endTime = root.get("endTime");
 
-            var startTimePredicate = cb.conjunction();
-            var endTimePredicate = cb.conjunction();
-            if (rangeStart != null) {
-                startTimePredicate = cb.and(startTimePredicate, cb.greaterThanOrEqualTo(startTime, rangeStart));
-                endTimePredicate = cb.and(endTimePredicate, cb.greaterThanOrEqualTo(endTime, rangeStart));
-            }
-            if (rangeEnd != null) {
-                startTimePredicate = cb.and(startTimePredicate, cb.lessThanOrEqualTo(startTime, rangeEnd));
-                endTimePredicate = cb.and(endTimePredicate, cb.lessThanOrEqualTo(endTime, rangeEnd));
-            }
+            var outsideRange = cb.disjunction();
+            if (rangeStart != null) // Check if the booking ends before the range starts
+                outsideRange = cb.or(outsideRange, cb.lessThan(endTime, rangeStart));
 
-            return cb.and(cb.equal(accommodationIdPath, accommodationId), cb.or(startTimePredicate, endTimePredicate));
+            if (rangeEnd != null) // Check if the booking starts after the range ends
+                outsideRange = cb.or(outsideRange, cb.greaterThan(startTime, rangeEnd));
+
+            return cb.and(
+                    cb.equal(accommodationIdPath, accommodationId),
+                    cb.not(outsideRange) // Must not be outside the range
+            );
         };
     }
 }
