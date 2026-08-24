@@ -10,6 +10,7 @@ import {
 	Text,
 	Title,
 } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
 import { NavigationProgress, nprogress } from '@mantine/nprogress';
 import * as Sentry from '@sentry/react-router';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -53,6 +54,7 @@ export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
 						<NavigationProgress />
 						{children}
 					</QueryClientProvider>
+					<Notifications />
 				</MantineProvider>
 				<ScrollRestoration />
 				<Scripts />

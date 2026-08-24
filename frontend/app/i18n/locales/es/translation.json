@@ -190,8 +190,11 @@
 		}
 	},
 	"bookings": {
-		"noAccommodations": "No hay alojamientos disponibles",
-		"noAccommodationsAdmin": "No hay alojamientos disponibles. Por favor, contacta con el administrador.",
+		"errors": {
+			"noAccommodations": "No hay alojamientos disponibles. Por favor, contacta con el administrador.",
+			"noAccommodationsAdmin": "No hay alojamientos disponibles.",
+			"cannotChangeAccommodation": "No se puede cambiar el alojamiento de la reserva."
+		},
 		"properties": {
 			"details": {
 				"title": "Detalles",
@@ -606,6 +609,20 @@
 		"tooltips": {
 			"confirm": "Requerido para poder confirmar la reserva",
 			"checkIn": "Requerido para poder registrar la entrada de la reserva"
+		}
+	},
+	"notifications": {
+		"error": {
+			"title": "Error",
+			"color": "red"
+		},
+		"warning": {
+			"title": "Advertencia",
+			"color": "yellow"
+		},
+		"success": {
+			"title": "Éxito",
+			"color": "green"
 		}
 	}
 }

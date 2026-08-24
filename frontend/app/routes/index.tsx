@@ -10,10 +10,11 @@ import {
 } from '@mantine/core';
 import { ResourcesSchedule } from '@mantine/schedule';
 import { CaretRightIcon, UserCircleIcon } from '@phosphor-icons/react';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import api, { throwErrors } from '~/api';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import api, { queryClient, throwErrors } from '~/api';
 import { lang } from '~/i18n';
 import AuthService from '~/services/AuthService';
+import NotificationsService from '~/services/NotificationsService';
 import TimeService from '~/services/TimeService';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -83,6 +84,64 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 		},
 	});
 
+	const { mutate: createBooking } = useMutation({
+		throwOnError: true,
+		mutationFn: async ({
+			accommodationId,
+			startTime,
+			endTime,
+		}: {
+			accommodationId: string;
+			startTime: Date;
+			endTime: Date;
+		}) =>
+			throwErrors(
+				await api.POST('/api/accommodations/{accommodationId}/bookings', {
+					params: { path: { accommodationId } },
+					body: {
+						startTime: startTime.toISOString(),
+						endTime: endTime.toISOString(),
+						numberOfPeople: 1,
+					},
+				})
+			),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: ['bookings'],
+			});
+		},
+	});
+
+	const { mutate: updateBooking } = useMutation({
+		throwOnError: true,
+		mutationFn: async ({
+			accommodationId,
+			booking,
+			newStart,
+			newEnd,
+		}: {
+			accommodationId: string;
+			booking: BookingDtoResponse;
+			newStart: Date;
+			newEnd: Date;
+		}) =>
+			throwErrors(
+				await api.PUT('/api/accommodations/{accommodationId}/bookings/{id}', {
+					params: { path: { accommodationId, id: booking.id } },
+					body: {
+						...booking,
+						startTime: newStart.toISOString(),
+						endTime: newEnd.toISOString(),
+					},
+				})
+			),
+		onSuccess: async () => {
+			await queryClient.invalidateQueries({
+				queryKey: ['bookings'],
+			});
+		},
+	});
+
 	const resources: ScheduleResourceData[] = Array.from(data.keys()).map(
 		(accommodation) => ({
 			id: accommodation.id,
@@ -107,16 +166,18 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 						holderName: booking.holderName,
 					}
 				),
-				start: new Date(booking.startTime),
-				end: new Date(booking.endTime),
+				start: TimeService(booking.startTime).toDate(),
+				end: TimeService(booking.endTime).toDate(),
 				color: t(
 					($) =>
 						$.bookings.properties.details.status.states[booking.status].color
 				),
+				display: booking.canBeModified ? 'default' : 'background',
 				payload: booking,
 			}))
 	);
 
+	// TODO: In weekly view the events which span multiple days are not displayed correctly. I need to create a new issue to investigate further.
 	return (
 		<AppShell header={{ height: 60 }} padding="md">
 			<AppShell.Header px="md">
@@ -164,8 +225,8 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 						<Stack align="center">
 							<Text ta="center" size="lg">
 								{isAdmin
-									? t(($) => $.bookings.noAccommodationsAdmin)
-									: t(($) => $.bookings.noAccommodations)}
+									? t(($) => $.bookings.errors.noAccommodationsAdmin)
+									: t(($) => $.bookings.errors.noAccommodations)}
 							</Text>
 						</Stack>
 					</Center>
@@ -175,28 +236,56 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 						onDateChange={setDate}
 						view={view}
 						onViewChange={setView}
+						withDragSlotSelect
+						withEventResize
+						withEventsDragAndDrop
+						onTimeSlotClick={({ resourceId, slotStart, slotEnd }) => {
+							createBooking({
+								accommodationId: resourceId as string,
+								startTime: TimeService(slotStart).toDate(),
+								endTime: TimeService(slotEnd).toDate(),
+							});
+						}}
+						onDayClick={({ resourceId, date }) => {
+							createBooking({
+								accommodationId: resourceId as string,
+								startTime: TimeService(date).toDate(),
+								endTime: TimeService(date).add(1, 'day').toDate(),
+							});
+						}}
+						onSlotDragEnd={({ resourceId, rangeStart, rangeEnd }) => {
+							createBooking({
+								accommodationId: resourceId as string,
+								startTime: TimeService(rangeStart).toDate(),
+								endTime: TimeService(rangeEnd).toDate(),
+							});
+						}}
+						onEventDrop={({ newEnd, newStart, resourceId, event }) => {
+							if (event.resourceId !== resourceId)
+								NotificationsService.error(
+									t(($) => $.bookings.errors.cannotChangeAccommodation)
+								);
+							else
+								updateBooking({
+									accommodationId: event.resourceId as string,
+									booking: event.payload as BookingDtoResponse,
+									newStart: TimeService(newStart).toDate(),
+									newEnd: TimeService(newEnd).toDate(),
+								});
+						}}
+						onEventResize={({ newEnd, newStart, event }) => {
+							updateBooking({
+								accommodationId: event.resourceId as string,
+								booking: event.payload as BookingDtoResponse,
+								newStart: TimeService(newStart).toDate(),
+								newEnd: TimeService(newEnd).toDate(),
+							});
+						}}
 						onEventClick={(event) =>
 							void navigate(
 								`/accommodations/${event.resourceId as string}/bookings/${event.id as string}`
 							)
 						}
-						// TODO: REMOVE THIS!
-						onDayClick={({ resourceId }) => {
-							void api.POST('/api/accommodations/{accommodationId}/bookings', {
-								params: {
-									path: {
-										accommodationId: resourceId as string,
-									},
-								},
-								body: {
-									startTime: new Date().toISOString(),
-									endTime: new Date(
-										Date.now() + 24 * 60 * 60 * 1000
-									).toISOString(),
-									numberOfPeople: 1,
-								},
-							});
-						}}
 						events={events}
 						resources={resources}
 						locale={lang}
