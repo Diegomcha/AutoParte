@@ -5,6 +5,7 @@ import {
 	Group,
 	HoverCard,
 	Menu,
+	Splitter,
 	Stack,
 	Text,
 	Title,
@@ -15,10 +16,12 @@ import { CaretRightIcon, UserCircleIcon } from '@phosphor-icons/react';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import BookingHoverCard from '~/component/BookingHoverCard';
+import BookingStatusBadge from '~/component/BookingStatusBadge';
 import { lang } from '~/i18n';
 import AuthService from '~/services/AuthService';
 import NotificationsService from '~/services/NotificationsService';
 import TimeService from '~/services/TimeService';
+import { DataTable, useDataTableColumns } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate } from 'react-router';
@@ -87,6 +90,111 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 		},
 	});
 
+	const resources: ScheduleResourceData[] = Array.from(accommodations).map(
+		(accommodation) => ({
+			id: accommodation.id,
+			label: accommodation.name,
+			payload: accommodation,
+		})
+	);
+
+	const events: ScheduleEventData[] = Array.from(data.entries()).flatMap(
+		([accommodation, bookings]) =>
+			bookings.map<ScheduleEventData>((booking) => ({
+				resourceId: accommodation.id,
+				id: booking.id,
+				title: t(
+					($) =>
+						booking.holderName
+							? $.bookings.properties.details.name.withHolder
+							: $.bookings.properties.details.name.noHolder,
+					{
+						status: booking.status,
+						numberOfPeople: booking.numberOfPeople,
+						holderName: booking.holderName,
+					}
+				),
+				start: TimeService(booking.startTime).toDate(),
+				end: TimeService(booking.endTime).toDate(),
+				color: t(
+					($) =>
+						$.bookings.properties.details.status.states[booking.status].color
+				),
+				display: booking.canBeModified ? 'default' : 'background',
+				payload: booking,
+			}))
+	);
+
+	// Table state
+
+	const columnsKey = 'bookings-table-columns';
+	const { effectiveColumns } = useDataTableColumns<
+		BookingDtoResponse & { accommodation: AccommodationDtoResponse }
+	>({
+		key: columnsKey,
+		columns: [
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'accommodation',
+				title: t(($) => $.bookings.properties.details.accommodation),
+				render: (booking) => booking.accommodation.name,
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'status',
+				title: t(($) => $.bookings.properties.details.status.label),
+				render: (booking) => <BookingStatusBadge status={booking.status} />,
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'holderName',
+				title: t(($) => $.bookings.properties.details.holderName.label),
+				render: (booking) =>
+					booking.holderName ??
+					t(($) => $.bookings.properties.details.holderName.undefined),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'startTime',
+				title: t(($) => $.bookings.properties.details.startTime),
+				render: (booking) => TimeService(booking.startTime).format('LLLL'),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'endTime',
+				title: t(($) => $.bookings.properties.details.endTime),
+				render: (booking) => TimeService(booking.endTime).format('LLLL'),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'numberOfPeople',
+				title: t(($) => $.bookings.properties.details.numberOfPeople.label),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'numberOfRooms',
+				title: t(($) => $.bookings.properties.details.numberOfRooms.label),
+				render: (booking) =>
+					booking.numberOfRooms ??
+					t(($) => $.bookings.properties.details.numberOfRooms.undefined),
+			},
+		],
+	});
+
 	const { mutate: createBooking } = useMutation({
 		throwOnError: true,
 		mutationFn: async ({
@@ -145,40 +253,9 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 		},
 	});
 
-	const resources: ScheduleResourceData[] = Array.from(data.keys()).map(
-		(accommodation) => ({
-			id: accommodation.id,
-			label: accommodation.name,
-			payload: accommodation,
-		})
-	);
-
-	const events: ScheduleEventData[] = Array.from(data.entries()).flatMap(
-		([accommodation, bookings]) =>
-			bookings.map<ScheduleEventData>((booking) => ({
-				resourceId: accommodation.id,
-				id: booking.id,
-				title: t(
-					($) =>
-						booking.holderName
-							? $.bookings.properties.details.name.withHolder
-							: $.bookings.properties.details.name.noHolder,
-					{
-						status: booking.status,
-						numberOfPeople: booking.numberOfPeople,
-						holderName: booking.holderName,
-					}
-				),
-				start: TimeService(booking.startTime).toDate(),
-				end: TimeService(booking.endTime).toDate(),
-				color: t(
-					($) =>
-						$.bookings.properties.details.status.states[booking.status].color
-				),
-				display: booking.canBeModified ? 'default' : 'background',
-				payload: booking,
-			}))
-	);
+	function showBookingDetails(accommodationId: string, bookingId: string) {
+		void navigate(`/accommodations/${accommodationId}/bookings/${bookingId}`);
+	}
 
 	return (
 		<AppShell header={{ height: 60 }} padding="md">
@@ -233,72 +310,103 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 						</Stack>
 					</Center>
 				) : (
-					<ResourcesSchedule
-						date={date}
-						onDateChange={setDate}
-						view={view}
-						onViewChange={setView}
-						withDragSlotSelect
-						withEventResize
-						withEventsDragAndDrop
-						onTimeSlotClick={({ resourceId, slotStart, slotEnd }) => {
-							createBooking({
-								accommodationId: resourceId as string,
-								startTime: TimeService(slotStart).toDate(),
-								endTime: TimeService(slotEnd).toDate(),
-							});
-						}}
-						onDayClick={({ resourceId, date }) => {
-							createBooking({
-								accommodationId: resourceId as string,
-								startTime: TimeService(date).toDate(),
-								endTime: TimeService(date).add(1, 'day').toDate(),
-							});
-						}}
-						onSlotDragEnd={({ resourceId, rangeStart, rangeEnd }) => {
-							createBooking({
-								accommodationId: resourceId as string,
-								startTime: TimeService(rangeStart).toDate(),
-								endTime: TimeService(rangeEnd).toDate(),
-							});
-						}}
-						onEventDrop={({ newEnd, newStart, resourceId, event }) => {
-							if (event.resourceId !== resourceId)
-								NotificationsService.error(
-									t(($) => $.bookings.errors.cannotChangeAccommodation)
-								);
-							else
-								updateBooking({
-									accommodationId: event.resourceId as string,
-									booking: event.payload as BookingDtoResponse,
-									newStart: TimeService(newStart).toDate(),
-									newEnd: TimeService(newEnd).toDate(),
-								});
-						}}
-						onEventResize={({ newEnd, newStart, event }) => {
-							updateBooking({
-								accommodationId: event.resourceId as string,
-								booking: event.payload as BookingDtoResponse,
-								newStart: TimeService(newStart).toDate(),
-								newEnd: TimeService(newEnd).toDate(),
-							});
-						}}
-						onEventClick={(event) =>
-							void navigate(
-								`/accommodations/${event.resourceId as string}/bookings/${event.id as string}`
-							)
-						}
-						monthViewProps={{
-							renderEvent: renderHoverCard,
-						}}
-						events={events}
-						resources={resources}
-						locale={lang}
-						labels={{
-							...t(($) => $.schedule, { returnObjects: true }),
-							moreLabel: (count) => t(($) => $.schedule.moreLabel, { count }),
-						}}
-					/>
+					<Splitter
+						orientation="vertical"
+						h="calc(100vh - 92px)"
+						handleColor="gray.3"
+					>
+						<Splitter.Pane defaultSize={30} min={10} collapsible mb={'sm'}>
+							<ResourcesSchedule
+								date={date}
+								onDateChange={setDate}
+								view={view}
+								onViewChange={setView}
+								withDragSlotSelect
+								withEventResize
+								withEventsDragAndDrop
+								onTimeSlotClick={({ resourceId, slotStart, slotEnd }) => {
+									createBooking({
+										accommodationId: resourceId as string,
+										startTime: TimeService(slotStart).toDate(),
+										endTime: TimeService(slotEnd).toDate(),
+									});
+								}}
+								onDayClick={({ resourceId, date }) => {
+									createBooking({
+										accommodationId: resourceId as string,
+										startTime: TimeService(date).toDate(),
+										endTime: TimeService(date).add(1, 'day').toDate(),
+									});
+								}}
+								onSlotDragEnd={({ resourceId, rangeStart, rangeEnd }) => {
+									createBooking({
+										accommodationId: resourceId as string,
+										startTime: TimeService(rangeStart).toDate(),
+										endTime: TimeService(rangeEnd).toDate(),
+									});
+								}}
+								onEventDrop={({ newEnd, newStart, resourceId, event }) => {
+									if (event.resourceId !== resourceId)
+										NotificationsService.error(
+											t(($) => $.bookings.errors.cannotChangeAccommodation)
+										);
+									else
+										updateBooking({
+											accommodationId: event.resourceId as string,
+											booking: event.payload as BookingDtoResponse,
+											newStart: TimeService(newStart).toDate(),
+											newEnd: TimeService(newEnd).toDate(),
+										});
+								}}
+								onEventResize={({ newEnd, newStart, event }) => {
+									updateBooking({
+										accommodationId: event.resourceId as string,
+										booking: event.payload as BookingDtoResponse,
+										newStart: TimeService(newStart).toDate(),
+										newEnd: TimeService(newEnd).toDate(),
+									});
+								}}
+								onEventClick={(event) => {
+									showBookingDetails(
+										event.resourceId as string,
+										event.id as string
+									);
+								}}
+								monthViewProps={{
+									renderEvent: renderHoverCard,
+								}}
+								events={events}
+								resources={resources}
+								locale={lang}
+								labels={{
+									...t(($) => $.schedule, { returnObjects: true }),
+									moreLabel: (count) =>
+										t(($) => $.schedule.moreLabel, { count }),
+								}}
+							/>
+						</Splitter.Pane>
+						<Splitter.Pane defaultSize={70} min={10} collapsible mt={'sm'}>
+							<DataTable
+								height="100%"
+								noRecordsText={t(($) => $.bookings.errors.noBookingsInPeriod)}
+								storeColumnsKey={columnsKey}
+								columns={effectiveColumns}
+								records={Array.from(data.entries()).flatMap(
+									([accommodation, bookings]) =>
+										bookings.map((booking) => ({
+											...booking,
+											accommodation,
+										}))
+								)}
+								onRowClick={({ record: booking }) => {
+									showBookingDetails(booking.accommodation.id, booking.id);
+								}}
+								// TODO: Implement client-sided sorting for the table
+								// sortStatus={sortStatus}
+								// onSortStatusChange={setSortStatus}
+							/>
+						</Splitter.Pane>
+					</Splitter>
 				)}
 				<Outlet />
 			</AppShell.Main>

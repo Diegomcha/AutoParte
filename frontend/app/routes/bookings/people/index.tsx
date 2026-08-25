@@ -4,6 +4,7 @@ import {
 	Fieldset,
 	Group,
 	Modal,
+	Scroller,
 	Select,
 	SimpleGrid,
 	Space,
@@ -313,35 +314,44 @@ export default function BookingPeople({
 					onChange={(id) => {
 						setPersonId(id === 'new' ? null : id);
 					}}
+					w={0}
+					miw={'100%'}
 				>
 					<Tabs.List>
-						{people.map((person) => (
-							<Tabs.Tab
-								value={person.id}
-								key={person.id}
-								rightSection={
-									booking.canBeModified && (
-										<ActionIcon
-											size="xs"
-											color="red"
-											component={Link}
-											to={`./${person.id}/delete`}
-										>
-											<XIcon />
-										</ActionIcon>
-									)
-								}
-							>
-								{person.personalInfo.name}{' '}
-								{person.personalInfo.firstSurname.at(0)?.toUpperCase()}.
-							</Tabs.Tab>
-						))}
-						{booking.canBeModified &&
-							booking.numberOfPeople > people.length && (
-								<Tabs.Tab value="new">
-									<PlusIcon size={16} />
+						<Scroller>
+							{people.map((person) => (
+								<Tabs.Tab
+									value={person.id}
+									key={person.id}
+									styles={{
+										tabLabel: {
+											textWrap: 'nowrap',
+										},
+									}}
+									rightSection={
+										booking.canBeModified && (
+											<ActionIcon
+												size="xs"
+												color="red"
+												component={Link}
+												to={`./${person.id}/delete`}
+											>
+												<XIcon />
+											</ActionIcon>
+										)
+									}
+								>
+									{person.personalInfo.name}{' '}
+									{person.personalInfo.firstSurname.at(0)?.toUpperCase()}.
 								</Tabs.Tab>
-							)}
+							))}
+							{booking.canBeModified &&
+								booking.numberOfPeople > people.length && (
+									<Tabs.Tab value="new">
+										<PlusIcon size={16} />
+									</Tabs.Tab>
+								)}
+						</Scroller>
 					</Tabs.List>
 				</Tabs>
 				{/* Person form */}

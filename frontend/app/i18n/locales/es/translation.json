@@ -193,6 +193,7 @@
 		"errors": {
 			"noAccommodations": "No hay alojamientos disponibles. Por favor, contacta con el administrador.",
 			"noAccommodationsAdmin": "No hay alojamientos disponibles.",
+			"noBookingsInPeriod": "No existen reservas en el periodo seleccionado.",
 			"cannotChangeAccommodation": "No se puede cambiar el alojamiento de la reserva."
 		},
 		"properties": {
@@ -202,6 +203,11 @@
 					"noHolder": "{{numberOfPeople}} pax.",
 					"withHolder": "{{numberOfPeople}} pax. - {{holderName}}"
 				},
+				"holderName": {
+					"label": "Titular de la reserva",
+					"undefined": "No definido"
+				},
+				"accommodation": "Alojamiento",
 				"status": {
 					"label": "Estado",
 					"states": {
@@ -258,8 +264,13 @@
 						"tooFew": "Existe información de viajeros para más personas de las indicadas\nPor favor, elimina la información de los viajeros sobrantes"
 					}
 				},
-				"numberOfRooms": "Número de habitaciones",
-				"internetConnection": "Conexión a Internet"
+				"numberOfRooms": {
+					"label": "Número de habitaciones",
+					"undefined": "No definido"
+				},
+				"internetConnection": {
+					"label": "Conexión a Internet"
+				}
 			},
 			"payment": {
 				"title": "Pago",

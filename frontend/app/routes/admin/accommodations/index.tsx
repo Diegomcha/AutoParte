@@ -19,13 +19,14 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import WifiBadge from '~/component/WifiBadge';
 import TimeService from '~/services/TimeService';
-import { DataTable } from 'mantine-datatable';
+import { DataTable, useDataTableColumns } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useRevalidator } from 'react-router';
 import type { AccommodationDtoResponse } from '~/@types/api';
-import type { DataTableColumn, DataTableSortStatus } from 'mantine-datatable';
+import type { DataTableSortStatus } from 'mantine-datatable';
 
+const COLUMNS_STATE_KEY = 'accommodation-table-columns';
 const PAGE_SIZE = 50;
 
 export default function AccommodationsPage() {
@@ -61,100 +62,108 @@ export default function AccommodationsPage() {
 
 	const [selected, setSelected] = useState<AccommodationDtoResponse[]>([]);
 
-	const columns: DataTableColumn<AccommodationDtoResponse>[] = [
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'name',
-			title: t(($) => $.admin.accommodations.properties.name.label),
-		},
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'sesCode',
-			title: t(($) => $.admin.accommodations.properties.sesCode.label),
-		},
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'internetConnection',
-			title: t(
-				($) => $.admin.accommodations.properties.internetConnection.label
-			),
-			render: (accommodation) => (
-				<WifiBadge value={accommodation.internetConnection} />
-			),
-		},
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'createdAt',
-			title: t(($) => $.common.properties.createdAt),
-			render: (entity) => TimeService(entity.createdAt).format('LLLL'),
-		},
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'updatedAt',
-			title: t(($) => $.common.properties.updatedAt),
-			render: (entity) => TimeService(entity.updatedAt).format('LLLL'),
-		},
-		{
-			accessor: 'employees',
-			title: t(($) => $.admin.accommodations.properties.employees.label),
-			render: (accommodation) =>
-				accommodation.employees.length === 0 ? (
-					t(($) => $.admin.accommodations.properties.employees.none)
-				) : (
-					<Badge variant="light">
-						{t(($) => $.admin.accommodations.properties.employees.some, {
-							count: accommodation.employees.length,
-						})}
-					</Badge>
+	const { effectiveColumns } = useDataTableColumns<AccommodationDtoResponse>({
+		key: COLUMNS_STATE_KEY,
+		columns: [
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'name',
+				title: t(($) => $.admin.accommodations.properties.name.label),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'sesCode',
+				title: t(($) => $.admin.accommodations.properties.sesCode.label),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'internetConnection',
+				title: t(
+					($) => $.admin.accommodations.properties.internetConnection.label
 				),
-		},
-		{
-			accessor: 'actions',
-			title: (
-				<Center>
-					<CursorClickIcon weight="bold" />
-				</Center>
-			),
-			textAlign: 'center',
-			width: '0%',
-			render: (accommodation) => (
-				<Group gap={4} wrap="nowrap" justify="center">
-					<ActionIcon
-						component={Link}
-						to={`/admin/accommodations/${accommodation.id}`}
-						size="sm"
-						variant="subtle"
-						color="green"
-					>
-						<EyeIcon weight="bold" />
-					</ActionIcon>
-					<ActionIcon
-						component={Link}
-						to={`/admin/accommodations/${accommodation.id}/edit`}
-						size="sm"
-						variant="subtle"
-						color="blue"
-					>
-						<PencilIcon />
-					</ActionIcon>
-					<ActionIcon
-						component={Link}
-						to={`/admin/accommodations/${accommodation.id}/delete`}
-						size="sm"
-						variant="subtle"
-						color="red"
-					>
-						<TrashIcon />
-					</ActionIcon>
-				</Group>
-			),
-		},
-	];
+				render: (accommodation) => (
+					<WifiBadge value={accommodation.internetConnection} />
+				),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'createdAt',
+				title: t(($) => $.common.properties.createdAt),
+				render: (entity) => TimeService(entity.createdAt).format('LLLL'),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'updatedAt',
+				title: t(($) => $.common.properties.updatedAt),
+				render: (entity) => TimeService(entity.updatedAt).format('LLLL'),
+			},
+			{
+				accessor: 'employees',
+				title: t(($) => $.admin.accommodations.properties.employees.label),
+				render: (accommodation) =>
+					accommodation.employees.length === 0 ? (
+						t(($) => $.admin.accommodations.properties.employees.none)
+					) : (
+						<Badge variant="light">
+							{t(($) => $.admin.accommodations.properties.employees.some, {
+								count: accommodation.employees.length,
+							})}
+						</Badge>
+					),
+			},
+			{
+				accessor: 'actions',
+				title: (
+					<Center>
+						<CursorClickIcon weight="bold" />
+					</Center>
+				),
+				textAlign: 'center',
+				width: '0%',
+				render: (accommodation) => (
+					<Group gap={4} wrap="nowrap" justify="center">
+						<ActionIcon
+							component={Link}
+							to={`/admin/accommodations/${accommodation.id}`}
+							size="sm"
+							variant="subtle"
+							color="green"
+						>
+							<EyeIcon weight="bold" />
+						</ActionIcon>
+						<ActionIcon
+							component={Link}
+							to={`/admin/accommodations/${accommodation.id}/edit`}
+							size="sm"
+							variant="subtle"
+							color="blue"
+						>
+							<PencilIcon />
+						</ActionIcon>
+						<ActionIcon
+							component={Link}
+							to={`/admin/accommodations/${accommodation.id}/delete`}
+							size="sm"
+							variant="subtle"
+							color="red"
+						>
+							<TrashIcon />
+						</ActionIcon>
+					</Group>
+				),
+			},
+		],
+	});
 
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const { mutate: deleteSelected, isPending: isDeleting } = useMutation({
@@ -209,9 +218,10 @@ export default function AccommodationsPage() {
 			</Group>
 			<Divider my="sm" />
 			<DataTable
-				height={'calc(100vh - 93px)'}
+				height="calc(100vh - 93px)"
 				noRecordsText={t(($) => $.admin.accommodations.noRecords)}
-				columns={columns}
+				columns={effectiveColumns}
+				storeColumnsKey={COLUMNS_STATE_KEY}
 				pinLastColumn
 				records={data?.content}
 				page={page}

@@ -1,6 +1,5 @@
 import {
 	ActionIcon,
-	Badge,
 	Button,
 	DataList,
 	Divider,
@@ -38,6 +37,7 @@ import {
 } from '@phosphor-icons/react';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
+import BookingStatusBadge from '~/component/BookingStatusBadge';
 import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import CommunicationTimelineItem from '~/component/CommunicationTimelineItem';
 import ComplexRequiredAsterisk from '~/component/ComplexRequiredLabel';
@@ -48,7 +48,6 @@ import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate, useOutletContext } from 'react-router';
 import type { Route } from './+types/index';
 import type { BookingDtoRequest, BookingDtoResponse } from '~/@types/api';
-import BookingStatusBadge from '~/component/BookingStatusBadge';
 
 interface ContextType {
 	booking: BookingDtoResponse;
@@ -366,7 +365,8 @@ export default function BookingsPage({
 										key={form.key('internetConnection')}
 										name="internetConnection"
 										label={t(
-											($) => $.bookings.properties.details.internetConnection
+											($) =>
+												$.bookings.properties.details.internetConnection.label
 										)}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps('internetConnection')}
@@ -375,7 +375,7 @@ export default function BookingsPage({
 										key={form.key('numberOfRooms')}
 										name="numberOfRooms"
 										label={t(
-											($) => $.bookings.properties.details.numberOfRooms
+											($) => $.bookings.properties.details.numberOfRooms.label
 										)}
 										min={1}
 										readOnly={!booking.canBeModified}

@@ -20,13 +20,14 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import TimeService from '~/services/TimeService';
-import { DataTable } from 'mantine-datatable';
+import { DataTable, useDataTableColumns } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useRevalidator } from 'react-router';
 import type { EmployeeDtoResponse } from '~/@types/api';
-import type { DataTableColumn, DataTableSortStatus } from 'mantine-datatable';
+import type { DataTableSortStatus } from 'mantine-datatable';
 
+const COLUMNS_STATE_KEY = 'employee-table-columns';
 const PAGE_SIZE = 50;
 
 export default function EmployeesPage() {
@@ -62,125 +63,135 @@ export default function EmployeesPage() {
 
 	const [selected, setSelected] = useState<EmployeeDtoResponse[]>([]);
 
-	const columns: DataTableColumn<EmployeeDtoResponse>[] = [
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'enabled',
-			title: t(($) => $.admin.employees.properties.enabled.label),
-			render: (employee) => (
-				<Tooltip
-					label={t(
-						($) => $.admin.employees.properties.enabled.disabledTooltip,
-						{
-							date: employee.disabledAt
-								? TimeService(employee.disabledAt).format('LLL')
-								: null,
-						}
-					)}
-					withArrow
-					disabled={!employee.disabledAt}
-				>
-					<Badge color={employee.enabled ? 'green' : 'gray'} variant="light">
-						{employee.enabled
-							? t(($) => $.admin.employees.properties.enabled.states.enabled)
-							: t(($) => $.admin.employees.properties.enabled.states.disabled)}
-					</Badge>
-				</Tooltip>
-			),
-		},
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'name',
-			title: t(($) => $.admin.employees.properties.name.label),
-			render: (employee) => `${employee.name} ${employee.surname}`,
-		},
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'email',
-			title: t(($) => $.admin.employees.properties.email.label),
-		},
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'createdAt',
-			title: t(($) => $.common.properties.createdAt),
-			render: (entity) => TimeService(entity.createdAt).format('LLLL'),
-		},
-		{
-			sortable: true,
-			resizable: true,
-			accessor: 'updatedAt',
-			title: t(($) => $.common.properties.updatedAt),
-			render: (entity) => TimeService(entity.updatedAt).format('LLLL'),
-		},
-		{
-			accessor: 'accommodations',
-			title: t(($) => $.admin.employees.properties.accommodations.label),
-			render: (employee) =>
-				employee.accommodations.length === 0 ? (
-					t(($) => $.admin.employees.properties.accommodations.none)
-				) : (
-					<Badge variant="light">
-						{t(($) => $.admin.employees.properties.accommodations.some, {
-							count: employee.accommodations.length,
-						})}
-					</Badge>
+	const { effectiveColumns } = useDataTableColumns<EmployeeDtoResponse>({
+		key: COLUMNS_STATE_KEY,
+		columns: [
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'enabled',
+				title: t(($) => $.admin.employees.properties.enabled.label),
+				render: (employee) => (
+					<Tooltip
+						label={t(
+							($) => $.admin.employees.properties.enabled.disabledTooltip,
+							{
+								date: employee.disabledAt
+									? TimeService(employee.disabledAt).format('LLL')
+									: null,
+							}
+						)}
+						withArrow
+						disabled={!employee.disabledAt}
+					>
+						<Badge color={employee.enabled ? 'green' : 'gray'} variant="light">
+							{employee.enabled
+								? t(($) => $.admin.employees.properties.enabled.states.enabled)
+								: t(
+										($) => $.admin.employees.properties.enabled.states.disabled
+									)}
+						</Badge>
+					</Tooltip>
 				),
-		},
-		{
-			accessor: 'actions',
-			title: (
-				<Center>
-					<CursorClickIcon weight="bold" />
-				</Center>
-			),
-			textAlign: 'center',
-			width: '0%',
-			render: (employee) => (
-				<Group gap={4} wrap="nowrap" justify="center">
-					<ActionIcon
-						component={Link}
-						to={`/admin/employees/${employee.id}`}
-						size="sm"
-						variant="subtle"
-						color="green"
-					>
-						<EyeIcon weight="bold" />
-					</ActionIcon>
-					<ActionIcon
-						component={Link}
-						to={`/admin/employees/${employee.id}/edit`}
-						size="sm"
-						variant="subtle"
-						color="blue"
-					>
-						<PencilIcon />
-					</ActionIcon>
-					<ActionIcon
-						component={Link}
-						to={`/admin/employees/${employee.id}/reset-password`}
-						size="sm"
-						variant="subtle"
-						color="orange"
-					>
-						<PasswordIcon />
-					</ActionIcon>
-					<ActionIcon
-						component={Link}
-						to={`/admin/employees/${employee.id}/delete`}
-						size="sm"
-						variant="subtle"
-						color="red"
-					>
-						<TrashIcon />
-					</ActionIcon>
-				</Group>
-			),
-		},
-	];
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'name',
+				title: t(($) => $.admin.employees.properties.name.label),
+				render: (employee) => `${employee.name} ${employee.surname}`,
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'email',
+				title: t(($) => $.admin.employees.properties.email.label),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'createdAt',
+				title: t(($) => $.common.properties.createdAt),
+				render: (entity) => TimeService(entity.createdAt).format('LLLL'),
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'updatedAt',
+				title: t(($) => $.common.properties.updatedAt),
+				render: (entity) => TimeService(entity.updatedAt).format('LLLL'),
+			},
+			{
+				accessor: 'accommodations',
+				title: t(($) => $.admin.employees.properties.accommodations.label),
+				render: (employee) =>
+					employee.accommodations.length === 0 ? (
+						t(($) => $.admin.employees.properties.accommodations.none)
+					) : (
+						<Badge variant="light">
+							{t(($) => $.admin.employees.properties.accommodations.some, {
+								count: employee.accommodations.length,
+							})}
+						</Badge>
+					),
+			},
+			{
+				accessor: 'actions',
+				title: (
+					<Center>
+						<CursorClickIcon weight="bold" />
+					</Center>
+				),
+				textAlign: 'center',
+				width: '0%',
+				render: (employee) => (
+					<Group gap={4} wrap="nowrap" justify="center">
+						<ActionIcon
+							component={Link}
+							to={`/admin/employees/${employee.id}`}
+							size="sm"
+							variant="subtle"
+							color="green"
+						>
+							<EyeIcon weight="bold" />
+						</ActionIcon>
+						<ActionIcon
+							component={Link}
+							to={`/admin/employees/${employee.id}/edit`}
+							size="sm"
+							variant="subtle"
+							color="blue"
+						>
+							<PencilIcon />
+						</ActionIcon>
+						<ActionIcon
+							component={Link}
+							to={`/admin/employees/${employee.id}/reset-password`}
+							size="sm"
+							variant="subtle"
+							color="orange"
+						>
+							<PasswordIcon />
+						</ActionIcon>
+						<ActionIcon
+							component={Link}
+							to={`/admin/employees/${employee.id}/delete`}
+							size="sm"
+							variant="subtle"
+							color="red"
+						>
+							<TrashIcon />
+						</ActionIcon>
+					</Group>
+				),
+			},
+		],
+	});
 
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 	const { mutate: deleteSelected, isPending: isDeleting } = useMutation({
@@ -237,7 +248,8 @@ export default function EmployeesPage() {
 			<DataTable
 				height={'calc(100vh - 93px)'}
 				noRecordsText={t(($) => $.admin.employees.noRecords)}
-				columns={columns}
+				storeColumnsKey={COLUMNS_STATE_KEY}
+				columns={effectiveColumns}
 				pinLastColumn
 				records={data?.content}
 				page={page}
