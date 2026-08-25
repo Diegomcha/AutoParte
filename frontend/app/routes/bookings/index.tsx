@@ -48,6 +48,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate, useOutletContext } from 'react-router';
 import type { Route } from './+types/index';
 import type { BookingDtoRequest, BookingDtoResponse } from '~/@types/api';
+import BookingStatusBadge from '~/component/BookingStatusBadge';
 
 interface ContextType {
 	booking: BookingDtoResponse;
@@ -284,21 +285,7 @@ export default function BookingsPage({
 											</Group>
 										</DataList.ItemLabel>
 										<DataList.ItemValue>
-											<Badge
-												color={t(
-													($) =>
-														$.bookings.properties.details.status.states[
-															booking.status
-														].color
-												)}
-											>
-												{t(
-													($) =>
-														$.bookings.properties.details.status.states[
-															booking.status
-														].label
-												)}
-											</Badge>
+											<BookingStatusBadge status={booking.status} />
 										</DataList.ItemValue>
 									</DataList.Item>
 									<DataList.Item>

@@ -3,15 +3,18 @@ import {
 	Button,
 	Center,
 	Group,
+	HoverCard,
 	Menu,
 	Stack,
 	Text,
 	Title,
+	UnstyledButton,
 } from '@mantine/core';
 import { ResourcesSchedule } from '@mantine/schedule';
 import { CaretRightIcon, UserCircleIcon } from '@phosphor-icons/react';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
+import BookingHoverCard from '~/component/BookingHoverCard';
 import { lang } from '~/i18n';
 import AuthService from '~/services/AuthService';
 import NotificationsService from '~/services/NotificationsService';
@@ -177,7 +180,6 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 			}))
 	);
 
-	// TODO: In weekly view the events which span multiple days are not displayed correctly. I need to create a new issue to investigate further.
 	return (
 		<AppShell header={{ height: 60 }} padding="md">
 			<AppShell.Header px="md">
@@ -286,6 +288,9 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 								`/accommodations/${event.resourceId as string}/bookings/${event.id as string}`
 							)
 						}
+						monthViewProps={{
+							renderEvent: renderHoverCard,
+						}}
 						events={events}
 						resources={resources}
 						locale={lang}
@@ -316,4 +321,22 @@ function getDateRange(unit: ResourcesScheduleViewLevel, date: Date | string) {
 		startRange: baseDate.startOf(rangeUnit).toISOString(),
 		endRange: baseDate.endOf(rangeUnit).toISOString(),
 	};
+}
+
+function renderHoverCard(
+	event: ScheduleEventData,
+	props: React.ComponentPropsWithoutRef<'button'> & {
+		children: React.ReactNode;
+	}
+): React.ReactElement {
+	return (
+		<HoverCard closeDelay={0} transitionProps={{ duration: 0 }}>
+			<HoverCard.Target>
+				<UnstyledButton {...props} />
+			</HoverCard.Target>
+			<HoverCard.Dropdown>
+				<BookingHoverCard booking={event.payload as BookingDtoResponse} />
+			</HoverCard.Dropdown>
+		</HoverCard>
+	);
 }
