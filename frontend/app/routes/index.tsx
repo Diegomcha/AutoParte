@@ -17,10 +17,12 @@ import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import api, { queryClient, throwErrors } from '~/api';
 import BookingHoverCard from '~/component/BookingHoverCard';
 import BookingStatusBadge from '~/component/BookingStatusBadge';
+import WifiBadge from '~/component/WifiBadge';
 import { lang } from '~/i18n';
 import AuthService from '~/services/AuthService';
 import NotificationsService from '~/services/NotificationsService';
 import TimeService from '~/services/TimeService';
+import sortBy from 'lodash/sortBy';
 import { DataTable, useDataTableColumns } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +37,7 @@ import type {
 	AccommodationDtoResponse,
 	BookingDtoResponse,
 } from '~/@types/api';
+import type { DataTableSortStatus } from 'mantine-datatable';
 
 // Ensure the user is authenticated before allowing access to any protected routes.
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
@@ -47,6 +50,8 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 		isAdmin: await AuthService.isAdmin(),
 	};
 }
+
+const COLUMNS_STATE_KEY = 'bookings-table-columns';
 
 export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 	const { account, isAdmin } = loaderData;
@@ -90,6 +95,8 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 		},
 	});
 
+	// * Schedule state
+
 	const resources: ScheduleResourceData[] = Array.from(accommodations).map(
 		(accommodation) => ({
 			id: accommodation.id,
@@ -125,13 +132,32 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 			}))
 	);
 
-	// Table state
+	// * Table state
 
-	const columnsKey = 'bookings-table-columns';
+	const [tableSortStatus, setTableSortStatus] = useState<
+		DataTableSortStatus<
+			BookingDtoResponse & { accommodation: AccommodationDtoResponse }
+		>
+	>({
+		columnAccessor: 'id',
+		direction: 'asc',
+	});
+
+	const bookings = Array.from(data.entries()).flatMap(
+		([accommodation, bookings]) =>
+			bookings.map((booking) => ({
+				...booking,
+				accommodation,
+			}))
+	);
+
+	const tableRecords = sortBy(bookings, tableSortStatus.columnAccessor);
+	if (tableSortStatus.direction === 'desc') tableRecords.reverse();
+
 	const { effectiveColumns } = useDataTableColumns<
 		BookingDtoResponse & { accommodation: AccommodationDtoResponse }
 	>({
-		key: columnsKey,
+		key: COLUMNS_STATE_KEY,
 		columns: [
 			{
 				draggable: true,
@@ -192,8 +218,18 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 					booking.numberOfRooms ??
 					t(($) => $.bookings.properties.details.numberOfRooms.undefined),
 			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
+				accessor: 'internetConnection',
+				title: t(($) => $.bookings.properties.details.internetConnection.label),
+				render: (booking) => <WifiBadge value={booking.internetConnection} />,
+			},
 		],
 	});
+
+	// * Actions
 
 	const { mutate: createBooking } = useMutation({
 		throwOnError: true,
@@ -256,6 +292,8 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 	function showBookingDetails(accommodationId: string, bookingId: string) {
 		void navigate(`/accommodations/${accommodationId}/bookings/${bookingId}`);
 	}
+
+	// * Render
 
 	return (
 		<AppShell header={{ height: 60 }} padding="md">
@@ -389,21 +427,14 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 							<DataTable
 								height="100%"
 								noRecordsText={t(($) => $.bookings.errors.noBookingsInPeriod)}
-								storeColumnsKey={columnsKey}
+								storeColumnsKey={COLUMNS_STATE_KEY}
 								columns={effectiveColumns}
-								records={Array.from(data.entries()).flatMap(
-									([accommodation, bookings]) =>
-										bookings.map((booking) => ({
-											...booking,
-											accommodation,
-										}))
-								)}
+								records={tableRecords}
 								onRowClick={({ record: booking }) => {
 									showBookingDetails(booking.accommodation.id, booking.id);
 								}}
-								// TODO: Implement client-sided sorting for the table
-								// sortStatus={sortStatus}
-								// onSortStatusChange={setSortStatus}
+								sortStatus={tableSortStatus}
+								onSortStatusChange={setTableSortStatus}
 							/>
 						</Splitter.Pane>
 					</Splitter>
