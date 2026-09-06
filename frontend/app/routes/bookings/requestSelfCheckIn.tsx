@@ -1,26 +1,20 @@
 import { Button, Group, Modal } from '@mantine/core';
 import { PaperPlaneTiltIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import type { Route } from './+types/confirm';
+import type { Route } from './+types/requestSelfCheckIn';
 
 export async function clientLoader({
 	params: { accommodationId, bookingId },
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
-	const booking = await queryClient.fetchQuery({
-		queryKey: ['bookings', accommodationId, bookingId],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/accommodations/{accommodationId}/bookings/{id}', {
-					params: { path: { accommodationId, id: bookingId } },
-				})
-			),
-	});
+	const booking = await queryClient.query(
+		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
+	);
 
 	if (['PENDING_CANCELLATION', 'CANCELLED'].includes(booking.status))
 		throw Validators.throwValidationErrorResponse(
@@ -38,25 +32,12 @@ export default function RequestSelfCheckInForBooking({
 		void navigate('..');
 	}
 
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async () =>
-			throwErrors(
-				await api.POST(
-					'/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in',
-					{
-						params: { path: { accommodationId, id: bookingId } },
-					}
-				)
-			),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['bookings'],
-			});
-
-			goBack();
-		},
-	});
+	const { mutate, isPending } = useMutation(
+		queryFactory.accommodations.bookings.requestSelfCheckIn(
+			accommodationId,
+			bookingId
+		)
+	);
 
 	return (
 		<Modal
@@ -75,7 +56,9 @@ export default function RequestSelfCheckInForBooking({
 					color="violet"
 					loading={isPending}
 					onClick={() => {
-						mutate();
+						mutate(undefined, {
+							onSuccess: goBack,
+						});
 					}}
 				>
 					{t(($) => $.bookings.requestSelfCheckIn.button)}

@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.api.address.dto;
 
+import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotBlank;
 import me.diegomcha.autoparte.core.validation.annotations.CountryCode;
 import me.diegomcha.autoparte.core.validation.annotations.NullableNotBlank;
@@ -11,6 +12,6 @@ public record AddressDtoRequest(
         @NullableNotBlank String addressLine2,
         @NotBlank String municipality,
         @NotBlank String postalCode,
-        @CountryCode String country
+        @Nonnull @CountryCode String country
 ) {
 }

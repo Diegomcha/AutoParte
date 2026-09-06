@@ -10,12 +10,12 @@ import {
 import { isNotEmpty, useForm } from '@mantine/form';
 import { FloppyDiskIcon } from '@phosphor-icons/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
 import CountrySelect from '~/component/CountrySelect';
+import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+import { useNewAddressHandler } from '.';
 import type { Route } from './+types/newAddress';
 import type { AddressDtoRequest } from '~/@types/api';
 import type { CountryCode } from '~/services/CountryService';
@@ -25,17 +25,14 @@ export async function clientLoader({
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
+	const [countries, spanishProvinces] = await Promise.all([
+		queryClient.query(queryFactory.catalogue.countries.list()),
+		queryClient.query(queryFactory.catalogue.countries.spanishProvinces.list()),
+	]);
+
 	return {
-		countries: await queryClient.fetchQuery({
-			queryKey: ['catalogue', 'countries'],
-			queryFn: async () =>
-				throwErrors(await api.GET('/api/catalogue/countries')),
-		}),
-		spanishProvinces: await queryClient.fetchQuery({
-			queryKey: ['catalogue', 'countries', 'ESP', 'provinces'],
-			queryFn: async () =>
-				throwErrors(await api.GET('/api/catalogue/countries/ESP/provinces')),
-		}),
+		countries,
+		spanishProvinces,
 	};
 }
 
@@ -44,6 +41,12 @@ export default function CreatePersonAddress({
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+
+	const handleNewAddress = useNewAddressHandler();
+
+	function goBack() {
+		void navigate('..');
+	}
 
 	const form = useForm<AddressDtoRequest & { province?: string | null }>({
 		initialValues: {
@@ -87,105 +90,64 @@ export default function CreatePersonAddress({
 							values.province! + values.municipality
 						: values.municipality,
 			}) satisfies AddressDtoRequest,
+		onValuesChange: (values, prevValues) => {
+			if (values.country !== prevValues.country) {
+				form.resetField('province');
+				form.resetField('municipality');
+				form.resetField('postalCode');
+			}
+
+			// TODO: This does not work as expected
+			if (values.province !== prevValues.province) {
+				form.resetField('municipality');
+				form.resetField('postalCode');
+			}
+
+			// TODO: This does not work as expected
+			if (values.municipality !== prevValues.municipality)
+				form.resetField('postalCode');
+		},
 	});
 
 	const {
 		data: spanishMunicipalities,
 		isLoading: isSpanishMunicipalitiesLoading,
 	} = useQuery({
-		throwOnError: true,
-		queryKey: [
-			'catalogue',
-			'countries',
-			'ESP',
-			'provinces',
-			form.values.province,
-			'municipalities',
-		],
-		queryFn: async () =>
-			form.values.province
-				? throwErrors(
-						await api.GET(
-							'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities',
-							{
-								params: { path: { provinceCode: form.values.province } },
-							}
-						)
-					)
-				: {},
+		...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
+			form.values.province ?? 'unexistant-province-code'
+		),
+		enabled: !!form.values.province,
 	});
 
 	const { data: spanishPostalCodes, isLoading: isSpanishPostalCodesLoading } =
 		useQuery({
-			throwOnError: true,
-			queryKey: [
-				'catalogue',
-				'countries',
-				'ESP',
-				'provinces',
-				form.values.province,
-				'municipalities',
-				form.values.municipality,
-				'postal-codes',
-			],
-			queryFn: async () =>
-				form.values.province && form.values.municipality
-					? throwErrors(
-							await api.GET(
-								'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities/{municipalityCode}/postal-codes',
-								{
-									params: {
-										path: {
-											provinceCode: form.values.province,
-											municipalityCode: form.values.municipality,
-										},
-									},
-								}
-							)
-						)
-					: [],
+			...queryFactory.catalogue.countries.spanishProvinces.municipalities.postalCodes.list(
+				form.values.province ?? 'unexistant-province-code',
+				form.values.municipality || 'unexistant-municipality-code'
+			),
+			enabled: !!form.values.province && !!form.values.municipality,
 		});
 
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async (address: AddressDtoRequest) =>
-			throwErrors(
-				await api.POST('/api/addresses', {
-					body: address,
-				})
-			),
-		onSuccess: async (created) => {
-			const address = await queryClient.fetchQuery({
-				queryKey: ['addresses', created.id],
-				queryFn: async () =>
-					throwErrors(
-						await api.GET('/api/addresses/{id}', {
-							params: { path: { id: created.id } },
-						})
-					),
-			});
-			await navigate('..', { state: { address } });
-		},
-	});
-
-	useEffect(() => {
-		form.resetField('province');
-		form.resetField('municipality');
-		form.resetField('postalCode');
-	}, [form.values.country]);
+	const { mutate, isPending } = useMutation(queryFactory.addresses.create());
 
 	return (
 		<Drawer
 			opened
-			onClose={() => {
-				void navigate('..');
-			}}
+			onClose={goBack}
 			title={t(($) => $.people.newAddress.title)}
 			size="auto"
 		>
 			<form
 				onSubmit={form.onSubmit((address) => {
-					mutate(address);
+					mutate(address, {
+						onSuccess: (created) =>
+							void queryClient
+								.query(queryFactory.addresses.detail(created.id))
+								.then((address) => {
+									handleNewAddress(address);
+									goBack();
+								}),
+					});
 				})}
 				onReset={form.onReset}
 			>
@@ -197,18 +159,21 @@ export default function CreatePersonAddress({
 									($) => $.people.newAddress.properties.addressLine1.label
 								)}
 								withAsterisk
+								key={form.key('addressLine1')}
 								{...form.getInputProps('addressLine1')}
 							/>
 							<TextInput
 								label={t(
 									($) => $.people.newAddress.properties.addressLine2.label
 								)}
+								key={form.key('addressLine2')}
 								{...form.getInputProps('addressLine2')}
 							/>
 							<CountrySelect
 								countries={countries as CountryCode[]}
 								label={t(($) => $.people.newAddress.properties.country.label)}
 								withAsterisk
+								key={form.key('country')}
 								{...form.getInputProps('country')}
 							/>
 							<Select
@@ -223,6 +188,7 @@ export default function CreatePersonAddress({
 								disabled={form.values.country !== 'ESP'}
 								searchable
 								checkIconPosition="right"
+								key={form.key('province')}
 								{...form.getInputProps('province')}
 							/>
 							{form.values.country === 'ESP' ? (
@@ -245,6 +211,7 @@ export default function CreatePersonAddress({
 										loading={isSpanishMunicipalitiesLoading}
 										searchable
 										checkIconPosition="right"
+										key={form.key('municipality')}
 										{...form.getInputProps('municipality')}
 									/>
 									<Select
@@ -259,6 +226,7 @@ export default function CreatePersonAddress({
 										loading={isSpanishPostalCodesLoading}
 										searchable
 										checkIconPosition="right"
+										key={form.key('postalCode')}
 										{...form.getInputProps('postalCode')}
 									/>
 								</>
@@ -270,6 +238,7 @@ export default function CreatePersonAddress({
 										)}
 										withAsterisk
 										disabled={!form.values.country}
+										key={form.key('municipality')}
 										{...form.getInputProps('municipality')}
 									/>
 									<TextInput
@@ -278,6 +247,7 @@ export default function CreatePersonAddress({
 										)}
 										withAsterisk
 										disabled={!form.values.country}
+										key={form.key('postalCode')}
 										{...form.getInputProps('postalCode')}
 									/>
 								</>
@@ -296,23 +266,5 @@ export default function CreatePersonAddress({
 				</Stack>
 			</form>
 		</Drawer>
-		// <Modal opened onClose={goBack} title={t(($) => $.people.delete.title)}>
-		// 	{t(($) => $.people.delete.description)}
-
-		// 	<Group justify="right" mt="md" gap="xs">
-		// 		<Button onClick={goBack} color="gray">
-		// 			{t(($) => $.common.buttons.cancel)}
-		// 		</Button>
-		// 		<Button
-		// 			color="red"
-		// 			loading={isPending}
-		// 			onClick={() => {
-		// 				mutate();
-		// 			}}
-		// 		>
-		// 			{t(($) => $.common.buttons.delete)}
-		// 		</Button>
-		// 	</Group>
-		// </Modal>
 	);
 }

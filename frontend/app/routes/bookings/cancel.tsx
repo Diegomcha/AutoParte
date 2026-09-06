@@ -1,7 +1,7 @@
 import { Button, Group, Modal } from '@mantine/core';
 import { XIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -12,15 +12,9 @@ export async function clientLoader({
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
-	const booking = await queryClient.fetchQuery({
-		queryKey: ['bookings', accommodationId, bookingId],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/accommodations/{accommodationId}/bookings/{id}', {
-					params: { path: { accommodationId, id: bookingId } },
-				})
-			),
-	});
+	const booking = await queryClient.query(
+		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
+	);
 
 	if (
 		booking.status === 'PENDING_CANCELLATION' ||
@@ -41,25 +35,9 @@ export default function CancelBooking({
 		void navigate('..');
 	}
 
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async () =>
-			throwErrors(
-				await api.POST(
-					'/api/accommodations/{accommodationId}/bookings/{id}/cancel',
-					{
-						params: { path: { accommodationId, id: bookingId } },
-					}
-				)
-			),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['bookings'],
-			});
-
-			goBack();
-		},
-	});
+	const { mutate, isPending } = useMutation(
+		queryFactory.accommodations.bookings.cancel(accommodationId, bookingId)
+	);
 
 	return (
 		<Modal opened onClose={goBack} title={t(($) => $.bookings.cancel.title)}>
@@ -74,7 +52,9 @@ export default function CancelBooking({
 					loading={isPending}
 					leftSection={<XIcon weight="bold" />}
 					onClick={() => {
-						mutate();
+						mutate(undefined, {
+							onSuccess: goBack,
+						});
 					}}
 				>
 					{t(($) => $.bookings.cancel.button)}

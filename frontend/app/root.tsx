@@ -27,7 +27,7 @@ import {
 	useFetchers,
 	useNavigation,
 } from 'react-router';
-import { ApiErrorResponse, queryClient } from './api';
+import { ApiErrorResponse, queryClient } from './services/Api';
 import AuthService from './services/AuthService';
 import { ValidationErrorResponse } from './services/Validators';
 import { theme } from './theme';

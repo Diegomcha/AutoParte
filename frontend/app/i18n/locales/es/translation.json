@@ -19,7 +19,8 @@
 			"deleteSelected": "Eliminar seleccionados",
 			"cancel": "Cancelar",
 			"reset": "Restablecer",
-			"back": "Volver"
+			"back": "Volver",
+			"export": "Exportar"
 		},
 		"actionButtons": {
 			"view": "Ver",
@@ -612,8 +613,8 @@
 		}
 	},
 	"addressSelect": {
-		"new": "Nueva dirección",
 		"current": "Dirección actual",
+		"new": "Nuevas direcciones",
 		"other": "Otras direcciones de la reserva"
 	},
 	"complexRequiredLabel": {

@@ -23,15 +23,16 @@ import {
 	XIcon,
 } from '@phosphor-icons/react';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
 import AddressSelect from '~/component/AddressSelect';
 import ComplexRequiredAsterisk from '~/component/ComplexRequiredLabel';
 import CountrySelect from '~/component/CountrySelect';
 import PhoneInput, { isValidPhoneNumber } from '~/component/PhoneInput';
+import { queryClient, queryFactory } from '~/services/Api';
 import TimeService from '~/services/TimeService';
+import Validators from '~/services/Validators';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router';
+import { Link, Outlet, useNavigate, useOutletContext } from 'react-router';
 import { useBooking } from '..';
 import type { Route } from './+types/index';
 import type {
@@ -41,56 +42,51 @@ import type {
 } from '~/@types/api';
 import type { CountryCode } from '~/services/CountryService';
 
+interface ContextType {
+	handleNewAddress: (newAddress: AddressDtoResponse) => void;
+	resetPerson: () => void;
+}
+
 export async function clientLoader({
 	params: { accommodationId, bookingId },
 }: Route.ClientLoaderArgs) {
-	await queryClient.prefetchQuery({
-		queryKey: ['bookings', accommodationId, bookingId, 'people'],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET(
-					'/api/accommodations/{accommodationId}/bookings/{bookingId}/people',
-					{
-						params: { path: { accommodationId, bookingId } },
-					}
-				)
-			),
-	});
+	Validators.validateUuids(accommodationId, bookingId);
 
-	await queryClient.prefetchQuery({
-		queryKey: ['bookings', accommodationId, bookingId, 'addresses'],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET(
-					'/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses',
-					{
-						params: { path: { accommodationId, bookingId } },
-					}
-				)
-			),
-	});
+	const [
+		_people,
+		_addresses,
+		countries,
+		genders,
+		relationships,
+		documentTypes,
+	] = await Promise.all([
+		// Pre-fetch people and addresses
+		queryClient.query(
+			queryFactory.accommodations.bookings.people.list(
+				accommodationId,
+				bookingId
+			)
+		),
+		queryClient.query(
+			queryFactory.accommodations.bookings.addresses.list(
+				accommodationId,
+				bookingId
+			)
+		),
+		// Catalogues
+		queryClient.query(queryFactory.catalogue.countries.list()),
+		queryClient.query(queryFactory.catalogue.genders()),
+		queryClient.query(queryFactory.catalogue.relationships()),
+		queryClient.query(queryFactory.catalogue.documentTypes()),
+	]);
 
 	return {
-		countries: await queryClient.fetchQuery({
-			queryKey: ['catalogue', 'countries'],
-			queryFn: async () =>
-				throwErrors(await api.GET('/api/catalogue/countries')),
-		}),
-		genders: await queryClient.fetchQuery({
-			queryKey: ['catalogue', 'genders'],
-			queryFn: async () =>
-				throwErrors(await api.GET('/api/catalogue/person/genders')),
-		}),
-		relationships: await queryClient.fetchQuery({
-			queryKey: ['catalogue', 'relationships'],
-			queryFn: async () =>
-				throwErrors(await api.GET('/api/catalogue/person/relationships')),
-		}),
-		documentTypes: await queryClient.fetchQuery({
-			queryKey: ['catalogue', 'documentTypes'],
-			queryFn: async () =>
-				throwErrors(await api.GET('/api/catalogue/document/types')),
-		}),
+		// people,
+		// addresses,
+		countries,
+		genders,
+		relationships,
+		documentTypes,
 	};
 }
 
@@ -100,36 +96,44 @@ export default function BookingPeople({
 }: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
-	const location = useLocation();
 	const { booking } = useBooking();
 
-	const { data: people } = useSuspenseQuery({
-		queryKey: ['bookings', accommodationId, bookingId, 'people'],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET(
-					'/api/accommodations/{accommodationId}/bookings/{bookingId}/people',
-					{
-						params: { path: { accommodationId, bookingId } },
-					}
-				)
-			),
-	});
-
-	const { data: addresses } = useSuspenseQuery({
-		queryKey: ['bookings', accommodationId, bookingId, 'addresses'],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET(
-					'/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses',
-					{
-						params: { path: { accommodationId, bookingId } },
-					}
-				)
-			),
-	});
+	const { data: people } = useSuspenseQuery(
+		queryFactory.accommodations.bookings.people.list(accommodationId, bookingId)
+	);
 
 	const [personId, setPersonId] = useState(people.at(0)?.id ?? null);
+
+	function changePerson(id: string | null) {
+		setPersonId(id);
+
+		form.setInitialValues(getInitialValues(people, id));
+		form.reset();
+	}
+
+	function resetPerson() {
+		changePerson(people.at(0)?.id ?? null);
+	}
+
+	// TODO: remove this effect
+	useEffect(() => {
+		form.setInitialValues(getInitialValues(people, personId));
+		form.reset();
+	}, [people]);
+
+	const { data: addresses } = useSuspenseQuery(
+		queryFactory.accommodations.bookings.addresses.list(
+			accommodationId,
+			bookingId
+		)
+	);
+
+	const [newAddresses, setNewAddresses] = useState<AddressDtoResponse[]>([]);
+
+	function handleNewAddress(newAddress: AddressDtoResponse) {
+		setNewAddresses((prev) => [...prev, newAddress]);
+		form.setFieldValue('address', newAddress.id);
+	}
 
 	const form = useForm({
 		initialValues: getInitialValues(people, personId),
@@ -220,6 +224,12 @@ export default function BookingPeople({
 				address: values.address ?? undefined,
 				relationship: values.relationship ?? undefined,
 			}) satisfies PersonDtoRequest,
+		onValuesChange: (values, prevValues) => {
+			if (values.document.type !== prevValues.document.type) {
+				form.clearFieldError('document.number');
+				form.clearFieldError('document.supportNumber');
+			}
+		},
 	});
 
 	const isAdult = form.values.personalInfo.birthDate
@@ -229,70 +239,21 @@ export default function BookingPeople({
 			) >= 18
 		: undefined;
 
-	useEffect(() => {
-		const address = (
-			location.state as { address?: AddressDtoResponse } | undefined
-		)?.address;
-		if (address) {
-			addresses.push(address);
-			form.setFieldValue('address', address.id);
-		}
-	}, [location.state]);
+	const { mutate: create, isPending: isCreating } = useMutation(
+		queryFactory.accommodations.bookings.people.create(
+			accommodationId,
+			bookingId
+		)
+	);
+	const { mutate: update, isPending: isUpdating } = useMutation(
+		queryFactory.accommodations.bookings.people.update(
+			accommodationId,
+			bookingId,
+			personId ?? 'non-existent-id'
+		)
+	);
 
-	useEffect(() => {
-		// If personId stopped being in the people list, set it to the first person or null if there are no people
-		if (personId && !people.some((p) => p.id === personId))
-			setPersonId(people.at(0)?.id ?? null);
-
-		form.setInitialValues(getInitialValues(people, personId));
-		form.reset();
-	}, [personId, people]);
-
-	useEffect(() => {
-		form.clearFieldError('document.number');
-		form.clearFieldError('document.supportNumber');
-	}, [form.values.document.type]);
-
-	const { mutate: save, isPending: isSaving } = useMutation({
-		throwOnError: true,
-		mutationFn: async (values: PersonDtoRequest) =>
-			personId != null
-				? (throwErrors(
-						await api.PUT(
-							'/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}',
-							{
-								params: {
-									path: {
-										accommodationId,
-										bookingId,
-										id: personId,
-									},
-								},
-								body: values,
-							}
-						)
-					) as undefined) // PUT returns no content
-				: throwErrors(
-						await api.POST(
-							'/api/accommodations/{accommodationId}/bookings/{bookingId}/people',
-							{
-								params: {
-									path: {
-										accommodationId,
-										bookingId,
-									},
-								},
-								body: values,
-							}
-						)
-					),
-		onSuccess: async (created) => {
-			await queryClient.invalidateQueries({
-				queryKey: ['bookings', accommodationId, bookingId],
-			});
-			if (created != null) setPersonId(created.id);
-		},
-	});
+	const isSaving = isUpdating || isCreating;
 
 	return (
 		<>
@@ -312,7 +273,7 @@ export default function BookingPeople({
 					mb="md"
 					value={personId ?? 'new'}
 					onChange={(id) => {
-						setPersonId(id === 'new' ? null : id);
+						changePerson(id !== 'new' ? id : null);
 					}}
 					w={0}
 					miw={'100%'}
@@ -357,7 +318,15 @@ export default function BookingPeople({
 				{/* Person form */}
 				<form
 					onSubmit={form.onSubmit((values) => {
-						save(values);
+						// Handle updating
+						if (personId != null) update(values);
+						// Handle creating
+						else
+							create(values, {
+								onSuccess: (created) => {
+									changePerson(created.id);
+								},
+							});
 					})}
 					onReset={form.onReset}
 				>
@@ -450,7 +419,8 @@ export default function BookingPeople({
 											{<ComplexRequiredAsterisk action="checkIn" />}
 										</>
 									}
-									addresses={addresses}
+									bookingAddresses={addresses}
+									newAddresses={newAddresses}
 									clearable
 									onNew={() => {
 										void navigate('new-address');
@@ -600,9 +570,24 @@ export default function BookingPeople({
 					</Stack>
 				</form>
 			</Modal>
-			<Outlet />
+			<Outlet
+				context={
+					{
+						handleNewAddress,
+						resetPerson,
+					} satisfies ContextType
+				}
+			/>
 		</>
 	);
+}
+
+export function useNewAddressHandler() {
+	return useOutletContext<ContextType>().handleNewAddress;
+}
+
+export function useResetPerson() {
+	return useOutletContext<ContextType>().resetPerson;
 }
 
 function getInitialValues(

@@ -6,6 +6,7 @@ import {
 	Fieldset,
 	Group,
 	MaskInput,
+	Menu,
 	Modal,
 	NumberInput,
 	ScrollArea,
@@ -25,7 +26,10 @@ import {
 	CaretLeftIcon,
 	CheckCircleIcon,
 	ClockIcon,
+	ExportIcon,
 	EyeIcon,
+	FileCsvIcon,
+	FilePdfIcon,
 	FloppyDiskIcon,
 	PaperPlaneTiltIcon,
 	PulseIcon,
@@ -35,19 +39,21 @@ import {
 	UserListIcon,
 	XIcon,
 } from '@phosphor-icons/react';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
 import BookingStatusBadge from '~/component/BookingStatusBadge';
 import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import CommunicationTimelineItem from '~/component/CommunicationTimelineItem';
 import ComplexRequiredAsterisk from '~/component/ComplexRequiredLabel';
+import BookingPDF from '~/component/pdf/BookingPDF';
+import { queryClient, queryFactory } from '~/services/Api';
 import TimeService from '~/services/TimeService';
 import Validators from '~/services/Validators';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate, useOutletContext } from 'react-router';
 import type { Route } from './+types/index';
-import type { BookingDtoRequest, BookingDtoResponse } from '~/@types/api';
+import type { BookingDtoResponse } from '~/@types/api';
 
 interface ContextType {
 	booking: BookingDtoResponse;
@@ -58,15 +64,9 @@ export async function clientLoader({
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
-	await queryClient.prefetchQuery({
-		queryKey: ['bookings', accommodationId, bookingId],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/accommodations/{accommodationId}/bookings/{id}', {
-					params: { path: { accommodationId, id: bookingId } },
-				})
-			),
-	});
+	await queryClient.query(
+		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
+	);
 }
 
 export default function BookingsPage({
@@ -75,15 +75,9 @@ export default function BookingsPage({
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
-	const { data: booking } = useSuspenseQuery({
-		queryKey: ['bookings', accommodationId, bookingId],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/accommodations/{accommodationId}/bookings/{id}', {
-					params: { path: { accommodationId, id: bookingId } },
-				})
-			),
-	});
+	const { data: booking } = useSuspenseQuery(
+		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
+	);
 
 	// MaskInput requires a rerrender to reset the input value
 	const [maskKey, setMaskKey] = useState(false);
@@ -95,7 +89,21 @@ export default function BookingsPage({
 
 	// Some are '' others null depending on how the mantine inputs behave... It's not ideal
 	const form = useForm({
-		initialValues: getInitialValues(booking),
+		initialValues: {
+			date: [booking.startTime, booking.endTime],
+			numberOfPeople: booking.numberOfPeople,
+			payment: {
+				type: booking.payment?.type ?? null,
+				mean: booking.payment?.mean ?? '',
+				holder: booking.payment?.holder ?? '',
+				date: booking.payment?.date ?? null,
+				expiryDate: booking.payment?.expiryDate
+					? TimeService(booking.payment.expiryDate).format('MM / YY')
+					: '',
+			},
+			numberOfRooms: booking.numberOfRooms ?? '',
+			internetConnection: String(booking.internetConnection ?? undefined),
+		},
 		validate: {
 			date: (value) =>
 				(value[0] == null || value[1] == null) &&
@@ -140,9 +148,11 @@ export default function BookingsPage({
 							date: values.payment.date
 								? TimeService(values.payment.date).toISOString()
 								: undefined,
-							expiryDate: values.payment.expiryDate
-								? TimeService(values.payment.expiryDate, 'MMYY').toISOString()
-								: undefined,
+							expiryDate:
+								values.payment.type === 'CREDIT_CARD' &&
+								values.payment.expiryDate
+									? TimeService(values.payment.expiryDate, 'MMYY').toISOString()
+									: undefined,
 						},
 			numberOfRooms: values.numberOfRooms
 				? Number(values.numberOfRooms)
@@ -152,50 +162,16 @@ export default function BookingsPage({
 					? undefined
 					: values.internetConnection === 'true',
 		}),
-	});
-
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async (values: BookingDtoRequest) => {
-			const response = await api.PUT(
-				'/api/accommodations/{accommodationId}/bookings/{id}',
-				{
-					params: {
-						path: { accommodationId, id: bookingId },
-					},
-					body: values,
-				}
-			);
-
-			// Handle more people info. than slots (409)
-			if (!response.response.ok && response.response.status === 409) {
-				form.setFieldError(
-					'numberOfPeople',
-					t(($) => $.bookings.properties.details.numberOfPeople.errors.tooFew)
-				);
-				return false;
-			}
-
-			throwErrors(response);
-			return true;
-		},
-		onSuccess: async (success) => {
-			if (success) {
-				await queryClient.invalidateQueries({
-					queryKey: ['bookings'],
-				});
+		onValuesChange: (values, previous) => {
+			if (values.payment.type !== previous.payment.type) {
+				form.clearFieldError('payment.expiryDate');
 			}
 		},
 	});
 
-	useEffect(() => {
-		form.clearFieldError('payment.expiryDate');
-	}, [form.values.payment.type]);
-
-	useEffect(() => {
-		form.setInitialValues(getInitialValues(booking));
-		resetForm();
-	}, [booking]);
+	const { mutate, isPending } = useMutation(
+		queryFactory.accommodations.bookings.update(accommodationId, bookingId)
+	);
 
 	return (
 		<>
@@ -208,8 +184,24 @@ export default function BookingsPage({
 				size="auto"
 			>
 				<form
+					key={booking.id}
 					onSubmit={form.onSubmit((data) => {
-						mutate(data);
+						mutate(data, {
+							onSuccess: (success) => {
+								// Handle more people info than slots (409)
+								if (!success)
+									form.setFieldError(
+										'numberOfPeople',
+										t(
+											($) =>
+												$.bookings.properties.details.numberOfPeople.errors
+													.tooFew
+										)
+									);
+								// Handle success
+								else form.resetDirty();
+							},
+						});
 					})}
 					onReset={() => {
 						resetForm();
@@ -230,22 +222,50 @@ export default function BookingsPage({
 						<Group>
 							{booking.canBeModified ? (
 								<>
-									<Button
-										type="reset"
-										color="gray"
-										leftSection={<ArrowUUpLeftIcon weight="bold" size={16} />}
-										loading={isPending}
-										hidden={!form.isDirty() || !booking.canBeModified}
-									>
-										{t(($) => $.common.buttons.reset)}
-									</Button>
+									{!form.isDirty() ? (
+										<Menu width={120}>
+											<Menu.Target>
+												<Button
+													leftSection={<ExportIcon weight="bold" size={16} />}
+													color="grape"
+													loading={isPending}
+												>
+													{t(($) => $.common.buttons.export)}
+												</Button>
+											</Menu.Target>
+											<Menu.Dropdown>
+												<Menu.Label>Formato</Menu.Label>
+												<Menu.Item
+													component={PDFDownloadLink}
+													document={<BookingPDF />}
+													fileName={`booking-${booking.id}.pdf`}
+													leftSection={<FilePdfIcon weight="bold" size={16} />}
+												>
+													PDF
+												</Menu.Item>
+												<Menu.Item
+													leftSection={<FileCsvIcon weight="bold" size={16} />}
+												>
+													CSV
+												</Menu.Item>
+											</Menu.Dropdown>
+										</Menu>
+									) : (
+										<Button
+											type="reset"
+											color="gray"
+											leftSection={<ArrowUUpLeftIcon weight="bold" size={16} />}
+											loading={isPending}
+										>
+											{t(($) => $.common.buttons.reset)}
+										</Button>
+									)}
 									<Button
 										type="submit"
 										color="green"
 										leftSection={<FloppyDiskIcon weight="bold" size={16} />}
-										loading={isPending}
 										disabled={!form.isDirty()}
-										hidden={!booking.canBeModified}
+										loading={isPending}
 									>
 										{t(($) => $.common.buttons.save)}
 									</Button>
@@ -535,6 +555,7 @@ export default function BookingsPage({
 									color={t(($) => $.bookings.confirm.color)}
 									hidden={booking.status !== 'CONFIRMATION_READY'}
 									disabled={form.isDirty()}
+									loading={isPending}
 								>
 									{t(($) => $.bookings.confirm.button)}
 								</Button>
@@ -545,6 +566,7 @@ export default function BookingsPage({
 									color={t(($) => $.bookings.checkIn.color)}
 									hidden={booking.status !== 'CHECK_IN_READY'}
 									disabled={form.isDirty()}
+									loading={isPending}
 								>
 									{t(($) => $.bookings.checkIn.button)}
 								</Button>
@@ -557,6 +579,7 @@ export default function BookingsPage({
 										booking.selfCheckInRequested || !booking.canBeModified
 									}
 									disabled={form.isDirty()}
+									loading={isPending}
 								>
 									{t(($) => $.bookings.requestSelfCheckIn.button)}
 								</Button>
@@ -590,6 +613,7 @@ export default function BookingsPage({
 									hidden={['PENDING_CANCELLATION', 'CANCELLED'].includes(
 										booking.status
 									)}
+									loading={isPending}
 								>
 									{booking.canBeDeleted
 										? t(($) => $.bookings.delete.button)
@@ -607,22 +631,4 @@ export default function BookingsPage({
 
 export function useBooking() {
 	return useOutletContext<ContextType>();
-}
-
-function getInitialValues(booking: BookingDtoResponse) {
-	return {
-		date: [booking.startTime, booking.endTime],
-		numberOfPeople: booking.numberOfPeople,
-		payment: {
-			type: booking.payment?.type ?? null,
-			mean: booking.payment?.mean ?? '',
-			holder: booking.payment?.holder ?? '',
-			date: booking.payment?.date ?? null,
-			expiryDate: booking.payment?.expiryDate
-				? TimeService(booking.payment.expiryDate).format('MM / YY')
-				: '',
-		},
-		numberOfRooms: booking.numberOfRooms ?? '',
-		internetConnection: String(booking.internetConnection ?? undefined),
-	};
 }

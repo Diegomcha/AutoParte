@@ -1,7 +1,7 @@
 import { Button, Group, Modal } from '@mantine/core';
 import { SuitcaseIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -12,15 +12,9 @@ export async function clientLoader({
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
-	const booking = await queryClient.fetchQuery({
-		queryKey: ['bookings', accommodationId, bookingId],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/accommodations/{accommodationId}/bookings/{id}', {
-					params: { path: { accommodationId, id: bookingId } },
-				})
-			),
-	});
+	const booking = await queryClient.query(
+		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
+	);
 
 	if (booking.status !== 'CHECK_IN_READY')
 		throw Validators.throwValidationErrorResponse(
@@ -38,25 +32,9 @@ export default function CheckInBooking({
 		void navigate('..');
 	}
 
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async () =>
-			throwErrors(
-				await api.POST(
-					'/api/accommodations/{accommodationId}/bookings/{id}/check-in',
-					{
-						params: { path: { accommodationId, id: bookingId } },
-					}
-				)
-			),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['bookings'],
-			});
-
-			goBack();
-		},
-	});
+	const { mutate, isPending } = useMutation(
+		queryFactory.accommodations.bookings.checkIn(accommodationId, bookingId)
+	);
 
 	return (
 		<Modal opened onClose={goBack} title={t(($) => $.bookings.checkIn.title)}>
@@ -71,7 +49,9 @@ export default function CheckInBooking({
 					leftSection={<SuitcaseIcon weight="bold" />}
 					loading={isPending}
 					onClick={() => {
-						mutate();
+						mutate(undefined, {
+							onSuccess: goBack,
+						});
 					}}
 				>
 					{t(($) => $.bookings.checkIn.button)}

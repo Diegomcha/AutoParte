@@ -1,9 +1,10 @@
 import { Button, Group, Modal } from '@mantine/core';
 import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import { queryFactory, queryClient } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+import { useResetPerson } from '.';
 import type { Route } from './+types/delete';
 
 export async function clientLoader({
@@ -11,18 +12,13 @@ export async function clientLoader({
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId, id);
 
-	await queryClient.fetchQuery({
-		queryKey: ['bookings', accommodationId, bookingId, 'people', id],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET(
-					'/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}',
-					{
-						params: { path: { accommodationId, bookingId, id } },
-					}
-				)
-			),
-	});
+	await queryClient.query(
+		queryFactory.accommodations.bookings.people.detail(
+			accommodationId,
+			bookingId,
+			id
+		)
+	);
 }
 
 export default function DeletePerson({
@@ -31,29 +27,19 @@ export default function DeletePerson({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
+	const resetPerson = useResetPerson();
+
 	function goBack() {
 		void navigate('..');
 	}
 
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async () =>
-			throwErrors(
-				await api.DELETE(
-					'/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}',
-					{
-						params: { path: { accommodationId, bookingId, id } },
-					}
-				)
-			),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['bookings', accommodationId, bookingId, 'people'],
-			});
-
-			goBack();
-		},
-	});
+	const { mutate, isPending } = useMutation(
+		queryFactory.accommodations.bookings.people.delete(
+			accommodationId,
+			bookingId,
+			id
+		)
+	);
 
 	return (
 		<Modal opened onClose={goBack} title={t(($) => $.people.delete.title)}>
@@ -67,7 +53,12 @@ export default function DeletePerson({
 					color="red"
 					loading={isPending}
 					onClick={() => {
-						mutate();
+						mutate(undefined, {
+							onSuccess: () => {
+								resetPerson();
+								goBack();
+							},
+						});
 					}}
 				>
 					{t(($) => $.common.buttons.delete)}

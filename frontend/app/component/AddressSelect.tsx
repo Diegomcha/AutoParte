@@ -2,22 +2,24 @@ import { CheckIcon, Group, Select, Text } from '@mantine/core';
 import { useUncontrolled } from '@mantine/hooks';
 import { PlusIcon } from '@phosphor-icons/react';
 import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
-import api, { throwErrors } from '~/api';
 import { lang } from '~/i18n';
+import { _api, _unwrapResponse, queryFactory } from '~/services/Api';
 import CountryService from '~/services/CountryService';
 import { useTranslation } from 'react-i18next';
 import type { AddressDtoResponse } from '~/@types/api';
 import type { CountryCode } from '~/services/CountryService';
 
 export default function AddressSelect({
-	addresses,
+	bookingAddresses,
+	newAddresses,
 	value,
 	defaultValue,
 	onChange,
 	onNew,
 	...props
 }: Select.Props & {
-	addresses: AddressDtoResponse[];
+	bookingAddresses: AddressDtoResponse[];
+	newAddresses: AddressDtoResponse[];
 	value?: string | null;
 	defaultValue?: string | null;
 	onChange?: (value: string | null) => void;
@@ -25,11 +27,11 @@ export default function AddressSelect({
 }) {
 	const { t } = useTranslation();
 
-	const { data: provincesMap } = useSuspenseQuery({
-		queryKey: ['catalogue', 'countries', 'ESP', 'provinces'],
-		queryFn: async () =>
-			throwErrors(await api.GET('/api/catalogue/countries/ESP/provinces')),
-	});
+	const { data: provincesMap } = useSuspenseQuery(
+		queryFactory.catalogue.countries.spanishProvinces.list()
+	);
+
+	const addresses = [...newAddresses, ...bookingAddresses];
 
 	// Fetch municipalities for the unique province codes
 	const municipalityQueries = useSuspenseQueries({
@@ -39,6 +41,7 @@ export default function AddressSelect({
 					.filter((address) => address.country === 'ESP')
 					.map((address) => address.municipality.slice(0, 2))
 			)
+			// eslint-disable-next-line @tanstack/query/prefer-query-options -- Special case for fetching municipalities based on province codes
 		).map((provinceCode) => ({
 			queryKey: [
 				'catalogue',
@@ -47,21 +50,22 @@ export default function AddressSelect({
 				'provinces',
 				provinceCode,
 				'municipalities',
-				'tuple', // Add a unique identifier to avoid query key collisions with other views
+				{ component: 'AddressSelect' },
 			],
-			queryFn: async () => {
-				const response = throwErrors(
-					await api.GET(
-						'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities',
-						{
-							params: {
-								path: { provinceCode },
-							},
-						}
-					)
-				);
-				return [provinceCode, response] as const;
-			},
+			queryFn: async () =>
+				[
+					provinceCode,
+					_unwrapResponse(
+						await _api.GET(
+							'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities',
+							{
+								params: {
+									path: { provinceCode },
+								},
+							}
+						)
+					),
+				] as const,
 		})),
 	});
 
@@ -120,8 +124,20 @@ export default function AddressSelect({
 					items: selectData.filter((addr) => addr.value === _value),
 				},
 				{
+					group: t(($) => $.addressSelect.new),
+					items: selectData.filter(
+						(addr) =>
+							addr.value !== _value &&
+							bookingAddresses.every((bookAddr) => bookAddr.id !== addr.value)
+					),
+				},
+				{
 					group: t(($) => $.addressSelect.other),
-					items: selectData.filter((addr) => addr.value !== _value),
+					items: selectData.filter(
+						(addr) =>
+							addr.value !== _value &&
+							bookingAddresses.some((bookAddr) => bookAddr.id === addr.value)
+					),
 				},
 			]}
 			renderOption={({ checked, option }) => {

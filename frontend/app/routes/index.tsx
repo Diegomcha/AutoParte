@@ -13,12 +13,17 @@ import {
 } from '@mantine/core';
 import { ResourcesSchedule } from '@mantine/schedule';
 import { CaretRightIcon, UserCircleIcon } from '@phosphor-icons/react';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import { useMutation, useSuspenseQueries } from '@tanstack/react-query';
 import BookingHoverCard from '~/component/BookingHoverCard';
 import BookingStatusBadge from '~/component/BookingStatusBadge';
 import WifiBadge from '~/component/WifiBadge';
 import { lang } from '~/i18n';
+import {
+	_api,
+	_unwrapResponse,
+	queryClient,
+	queryFactory,
+} from '~/services/Api';
 import AuthService from '~/services/AuthService';
 import NotificationsService from '~/services/NotificationsService';
 import TimeService from '~/services/TimeService';
@@ -45,17 +50,24 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 		return AuthService.getLoginRedirection(request);
 	}
 
+	const [accommodations, account, isAdmin] = await Promise.all([
+		queryClient.query(queryFactory.accommodations.list()),
+		AuthService.getLoggedInUser(),
+		AuthService.isAdmin(),
+	]);
+
 	return {
-		account: await AuthService.getLoggedInUser(),
-		isAdmin: await AuthService.isAdmin(),
+		accommodations,
+		account,
+		isAdmin,
 	};
 }
 
 const COLUMNS_STATE_KEY = 'bookings-table-columns';
 
-export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
-	const { account, isAdmin } = loaderData;
-
+export default function ProtectedLayout({
+	loaderData: { accommodations, account, isAdmin },
+}: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
@@ -63,36 +75,27 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 	const [view, setView] = useState<ResourcesScheduleViewLevel>('month');
 	const [date, setDate] = useState<string>(new Date().toUTCString());
 
-	const { data: accommodations } = useSuspenseQuery({
-		queryKey: ['accommodations'],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/accommodations', {
-					params: { query: { page: 0, size: 0 } },
-				})
-			).content ?? [],
-	});
-
-	const { data } = useSuspenseQuery({
-		queryKey: ['bookings', view, date],
-		queryFn: async () => {
-			const map = new Map<AccommodationDtoResponse, BookingDtoResponse[]>();
-
-			for (const accommodation of accommodations)
-				map.set(
+	const data = useSuspenseQueries({
+		// eslint-disable-next-line @tanstack/query/prefer-query-options -- Unique case
+		queries: accommodations.map((accommodation) => ({
+			queryKey: [
+				...queryFactory.accommodations.bookings.list(accommodation.id).queryKey,
+				getDateRange(view, date),
+			],
+			queryFn: async () =>
+				[
 					accommodation,
-					throwErrors(
-						await api.GET('/api/accommodations/{accommodationId}/bookings', {
+					_unwrapResponse(
+						await _api.GET('/api/accommodations/{accommodationId}/bookings', {
 							params: {
 								path: { accommodationId: accommodation.id },
 								query: { page: 0, size: 0, ...getDateRange(view, date) },
 							},
 						})
-					).content ?? []
-				);
-
-			return map;
-		},
+					).content ?? [],
+				] as const,
+		})),
+		combine: (results) => new Map(results.map((result) => result.data)),
 	});
 
 	// * Schedule state
@@ -231,63 +234,13 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 
 	// * Actions
 
-	const { mutate: createBooking } = useMutation({
-		throwOnError: true,
-		mutationFn: async ({
-			accommodationId,
-			startTime,
-			endTime,
-		}: {
-			accommodationId: string;
-			startTime: Date;
-			endTime: Date;
-		}) =>
-			throwErrors(
-				await api.POST('/api/accommodations/{accommodationId}/bookings', {
-					params: { path: { accommodationId } },
-					body: {
-						startTime: startTime.toISOString(),
-						endTime: endTime.toISOString(),
-						numberOfPeople: 1,
-					},
-				})
-			),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['bookings'],
-			});
-		},
-	});
+	const { mutate: createBooking } = useMutation(
+		queryFactory.accommodations.bookings.create()
+	);
 
-	const { mutate: updateBooking } = useMutation({
-		throwOnError: true,
-		mutationFn: async ({
-			accommodationId,
-			booking,
-			newStart,
-			newEnd,
-		}: {
-			accommodationId: string;
-			booking: BookingDtoResponse;
-			newStart: Date;
-			newEnd: Date;
-		}) =>
-			throwErrors(
-				await api.PUT('/api/accommodations/{accommodationId}/bookings/{id}', {
-					params: { path: { accommodationId, id: booking.id } },
-					body: {
-						...booking,
-						startTime: newStart.toISOString(),
-						endTime: newEnd.toISOString(),
-					},
-				})
-			),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({
-				queryKey: ['bookings'],
-			});
-		},
-	});
+	const { mutate: updateBookingRange } = useMutation(
+		queryFactory.accommodations.bookings.updateRange()
+	);
 
 	function showBookingDetails(accommodationId: string, bookingId: string) {
 		void navigate(`/accommodations/${accommodationId}/bookings/${bookingId}`);
@@ -389,7 +342,7 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 											t(($) => $.bookings.errors.cannotChangeAccommodation)
 										);
 									else
-										updateBooking({
+										updateBookingRange({
 											accommodationId: event.resourceId as string,
 											booking: event.payload as BookingDtoResponse,
 											newStart: TimeService(newStart).toDate(),
@@ -397,7 +350,7 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
 										});
 								}}
 								onEventResize={({ newEnd, newStart, event }) => {
-									updateBooking({
+									updateBookingRange({
 										accommodationId: event.resourceId as string,
 										booking: event.payload as BookingDtoResponse,
 										newStart: TimeService(newStart).toDate(),
@@ -449,7 +402,7 @@ export default function ProtectedLayout({ loaderData }: Route.ComponentProps) {
  * Gets the start and end date of a given date range based on the specified unit (day, week, month).
  * @param unit Unit of time to determine the range (day, week, month)
  * @param date The date to determine the range for. Can be a Date object or a string.
- * @returns A tuple containing the start and end date of the range in ISO string format.
+ * @returns An object containing the start and end date of the range in ISO string format.
  */
 function getDateRange(unit: ResourcesScheduleViewLevel, date: Date | string) {
 	const baseDate = TimeService(date);
