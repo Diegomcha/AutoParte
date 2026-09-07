@@ -39,13 +39,12 @@ import {
 	UserListIcon,
 	XIcon,
 } from '@phosphor-icons/react';
-import { PDFDownloadLink } from '@react-pdf/renderer';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import BookingStatusBadge from '~/component/BookingStatusBadge';
 import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
 import CommunicationTimelineItem from '~/component/CommunicationTimelineItem';
 import ComplexRequiredAsterisk from '~/component/ComplexRequiredLabel';
-import BookingPDF from '~/component/pdf/BookingPDF';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
 import { queryClient, queryFactory } from '~/services/Api';
 import TimeService from '~/services/TimeService';
 import Validators from '~/services/Validators';
@@ -74,6 +73,8 @@ export default function BookingsPage({
 }: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+
+	const { opened, close } = useStaticModalTransition(() => void navigate(`/`));
 
 	const { data: booking } = useSuspenseQuery(
 		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
@@ -176,11 +177,9 @@ export default function BookingsPage({
 	return (
 		<>
 			<Modal
-				opened
+				opened={opened}
 				withCloseButton={false}
-				onClose={() => {
-					void navigate('/');
-				}}
+				onClose={close}
 				size="auto"
 			>
 				<form
@@ -210,8 +209,7 @@ export default function BookingsPage({
 					{/* Header */}
 					<Group justify="space-between" align="center">
 						<Button
-							component={Link}
-							to="/"
+							onClick={close}
 							leftSection={<CaretLeftIcon weight="bold" size={16} />}
 						>
 							{t(($) => $.common.buttons.back)}
@@ -236,9 +234,9 @@ export default function BookingsPage({
 											<Menu.Dropdown>
 												<Menu.Label>Formato</Menu.Label>
 												<Menu.Item
-													component={PDFDownloadLink}
-													document={<BookingPDF />}
-													fileName={`booking-${booking.id}.pdf`}
+													// component={PDFDownloadLink}
+													// document={<BookingPDF />}
+													// fileName={`booking-${booking.id}.pdf`}
 													leftSection={<FilePdfIcon weight="bold" size={16} />}
 												>
 													PDF

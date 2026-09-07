@@ -1,76 +1,56 @@
 import { Button, Group, Modal } from '@mantine/core';
+import { TrashIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
+import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
-import { useNavigate, useRevalidator } from 'react-router';
+import { useNavigate } from 'react-router';
 import type { Route } from './+types/delete';
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
-	await queryClient.fetchQuery({
-		queryKey: ['employee', id],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/employees/{id}', {
-					params: { path: { id } },
-				})
-			),
-	});
+	await queryClient.query(queryFactory.employees.detail(id));
 }
 
 export default function DeleteEmployee({
 	params: { id },
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const revalidator = useRevalidator();
 	const { t } = useTranslation();
 
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async () =>
-			throwErrors(
-				await api.DELETE('/api/employees/{id}', {
-					params: { path: { id } },
-				})
-			),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['employees'] });
-			await revalidator.revalidate();
+	const { opened, close } = useStaticModalTransition(
+		() => void navigate('/admin/employees')
+	);
 
-			await navigate('/admin/employees');
-		},
-	});
+	const { mutate, isPending } = useMutation(queryFactory.employees.delete(id));
 
 	return (
-		<>
-			<div hidden={revalidator.state === 'idle'}>Revalidating...</div>
-			<Modal
-				opened
-				onClose={() => void navigate('/admin/employees')}
-				title={t(($) => $.admin.employees.delete.title)}
-			>
-				{t(($) => $.admin.employees.delete.description)}
+		<Modal
+			opened={opened}
+			onClose={close}
+			title={t(($) => $.admin.employees.delete.title)}
+		>
+			{t(($) => $.admin.employees.delete.description)}
 
-				<Group justify="right" mt="md" gap="xs">
-					<Button
-						onClick={() => void navigate('/admin/employees')}
-						color="gray"
-					>
-						{t(($) => $.common.buttons.cancel)}
-					</Button>
-					<Button
-						color="red"
-						loading={isPending}
-						onClick={() => {
-							mutate();
-						}}
-					>
-						{t(($) => $.common.buttons.delete)}
-					</Button>
-				</Group>
-			</Modal>
-		</>
+			<Group justify="right" mt="md" gap="xs">
+				<Button onClick={close} color="gray">
+					{t(($) => $.common.buttons.cancel)}
+				</Button>
+				<Button
+					color="red"
+					loading={isPending}
+					onClick={() => {
+						mutate(undefined, {
+							onSuccess: close,
+						});
+					}}
+					leftSection={<TrashIcon weight="bold" />}
+				>
+					{t(($) => $.common.buttons.delete)}
+				</Button>
+			</Group>
+		</Modal>
 	);
 }

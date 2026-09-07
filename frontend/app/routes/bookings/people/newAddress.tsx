@@ -11,6 +11,7 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { FloppyDiskIcon } from '@phosphor-icons/react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import CountrySelect from '~/component/CountrySelect';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
 import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
@@ -42,11 +43,8 @@ export default function CreatePersonAddress({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
+	const { opened, close } = useStaticModalTransition(() => void navigate('..'));
 	const handleNewAddress = useNewAddressHandler();
-
-	function goBack() {
-		void navigate('..');
-	}
 
 	const form = useForm<AddressDtoRequest & { province?: string | null }>({
 		initialValues: {
@@ -132,8 +130,8 @@ export default function CreatePersonAddress({
 
 	return (
 		<Drawer
-			opened
-			onClose={goBack}
+			opened={opened}
+			onClose={close}
 			title={t(($) => $.people.newAddress.title)}
 			size="auto"
 		>
@@ -145,7 +143,7 @@ export default function CreatePersonAddress({
 								.query(queryFactory.addresses.detail(created.id))
 								.then((address) => {
 									handleNewAddress(address);
-									goBack();
+									close();
 								}),
 					});
 				})}

@@ -2,17 +2,23 @@ import { Button, Group, Modal, TextInput, useModalsStack } from '@mantine/core';
 import { isEmail, isNotEmpty, useForm } from '@mantine/form';
 import { UserCirclePlusIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
 import EmployeeCredsModal from '~/component/EmployeeCredsModal';
+import useStaticModalStackTransition from '~/hooks/useStaticModalStackTransition';
+import { queryFactory } from '~/services/Api';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import type { EmployeeDtoCreate } from '~/@types/api';
 
 export default function NewEmployee() {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
 	const stack = useModalsStack(['new', 'created']);
+	const { close } = useStaticModalStackTransition(
+		stack,
+		'new',
+		() => void navigate('/admin/employees')
+	);
+
 	const form = useForm({
 		initialValues: {
 			name: '',
@@ -33,47 +39,33 @@ export default function NewEmployee() {
 	});
 
 	const {
-		mutate,
+		mutate: create,
 		data: created,
-		isPending,
-	} = useMutation({
-		throwOnError: true,
-		mutationFn: async (values: EmployeeDtoCreate) => {
-			const response = await api.POST('/api/employees', {
-				body: values,
-			});
-
-			// Handle email conflict error (409)
-			if (!response.response.ok && response.response.status === 409) {
-				form.setFieldError(
-					'email',
-					t(($) => $.admin.employees.properties.email.errors.emailInUse)
-				);
-				return false;
-			}
-
-			return throwErrors(response);
-		},
-		onSuccess: async (success) => {
-			if (success) {
-				stack.open('created');
-
-				await queryClient.invalidateQueries({ queryKey: ['employees'] });
-			}
-		},
-	});
+		isPending: isCreating,
+	} = useMutation(queryFactory.employees.create());
 
 	return (
 		<Modal.Stack>
 			<Modal
 				{...stack.register('new')}
-				opened
-				onClose={() => void navigate('/admin/employees')}
+				onClose={close}
 				title={t(($) => $.admin.employees.new.title)}
 			>
 				<form
 					onSubmit={form.onSubmit((data) => {
-						mutate(data);
+						create(data, {
+							onSuccess: (created) => {
+								if (created) stack.open('created');
+								else
+									form.setFieldError(
+										'email',
+										t(
+											($) =>
+												$.admin.employees.properties.email.errors.emailInUse
+										)
+									);
+							},
+						});
 					})}
 				>
 					<Group grow>
@@ -99,7 +91,7 @@ export default function NewEmployee() {
 					<Group justify="right" mt="md">
 						<Button
 							type="submit"
-							loading={isPending}
+							loading={isCreating}
 							leftSection={<UserCirclePlusIcon />}
 						>
 							{t(($) => $.common.buttons.create)}
@@ -111,7 +103,7 @@ export default function NewEmployee() {
 				<EmployeeCredsModal
 					{...stack.register('created')}
 					creds={created}
-					onClose={() => void navigate('/admin/employees')}
+					onClose={close}
 					title={t(($) => $.admin.employees.new.created.title)}
 					description={t(($) => $.admin.employees.new.created.description)}
 				/>

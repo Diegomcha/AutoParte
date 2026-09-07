@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-router';
 import {
 	MutationObserver,
 	mutationOptions,
@@ -5,10 +6,18 @@ import {
 	queryOptions,
 } from '@tanstack/react-query';
 import createFetchClient from 'openapi-fetch';
+import NotificationsService from './NotificationsService';
 import type {
+	AccommodationDtoRequest,
+	AccommodationDtoResponse,
 	AddressDtoRequest,
 	BookingDtoRequest,
 	BookingDtoResponse,
+	ConfigDtoRequest,
+	EmployeeDtoCreate,
+	EmployeeDtoPatch,
+	EmployeeDtoResponse,
+	PageMetadata,
 	paths,
 	PersonDtoRequest,
 	ProblemDetail,
@@ -48,10 +57,283 @@ const queryClient = new QueryClient({
 			},
 			throwOnError: true, // Throw errors for queries to be caught
 		},
+		mutations: {
+			onError: (error) => {
+				NotificationsService.error(`An error occurred: ${error.message}`); // TODO: localize this message
+				Sentry.captureException(error);
+			},
+		},
 	},
 });
 
+interface Sort {
+	columnAccessor: string;
+	direction?: 'asc' | 'desc';
+}
+
+interface RequiredPagedModel<T> {
+	content: T[];
+	page: Required<PageMetadata>;
+}
+
+const DEFAULT_PAGE_SIZE = 20;
+
+function mapSorting(sorting: Sort[] | undefined): string[] | undefined {
+	return sorting?.map((s) =>
+		s.direction != null
+			? `${s.columnAccessor},${s.direction}`
+			: s.columnAccessor
+	);
+}
+
 const queryFactory = {
+	configuration: {
+		get: () =>
+			queryOptions({
+				queryKey: ['configuration'],
+				queryFn: async () => unwrapResponse(await api.GET('/api/config')),
+			}),
+		update: () =>
+			mutationOptions({
+				mutationFn: async (data: ConfigDtoRequest) =>
+					unwrapResponse(
+						await api.PUT('/api/config', {
+							body: data,
+						})
+					),
+				onSuccess: async () => {
+					await queryClient.invalidateQueries(queryFactory.configuration.get());
+				},
+			}),
+		validateSesCreds: () =>
+			mutationOptions({
+				mutationFn: async () => {
+					const res = await api.POST('/api/config/validate-ses');
+
+					// Handle unauthorized error (401)
+					if (res.response.status === 401) return false;
+
+					unwrapResponse(res);
+
+					return true;
+				},
+				onSuccess: async () => {
+					await queryClient.invalidateQueries(queryFactory.configuration.get());
+				},
+			}),
+	},
+	employees: {
+		list: () =>
+			queryOptions({
+				queryKey: ['employees'],
+				queryFn: async () =>
+					unwrapResponse(
+						await api.GET('/api/employees', {
+							params: { query: { page: 0, size: 0 } },
+						})
+					).content ?? [],
+			}),
+		pagedList: ({
+			page,
+			size,
+			sorting,
+		}: {
+			page?: number;
+			size?: number;
+			sorting?: Sort[];
+		} = {}) =>
+			queryOptions({
+				queryKey: ['employees', { page, size, sorting }],
+				queryFn: async () =>
+					unwrapResponse(
+						await api.GET('/api/employees', {
+							params: {
+								query: {
+									page,
+									size,
+									sort: mapSorting(sorting),
+								},
+							},
+						})
+					) as RequiredPagedModel<EmployeeDtoResponse>,
+			}),
+		detail: (employeeId: string) =>
+			queryOptions({
+				queryKey: ['employees', employeeId],
+				queryFn: async () =>
+					unwrapResponse(
+						await api.GET('/api/employees/{id}', {
+							params: { path: { id: employeeId } },
+						})
+					),
+			}),
+		update: (employeeId: string) =>
+			mutationOptions({
+				mutationFn: async (values: EmployeeDtoPatch) => {
+					const response = await api.PATCH('/api/employees/{id}', {
+						params: { path: { id: employeeId } },
+						body: values,
+					});
+
+					// Handle email conflict error (409)
+					if (!response.response.ok && response.response.status === 409)
+						return false;
+
+					unwrapResponse(response);
+
+					return true;
+				},
+				onSuccess: async (success) => {
+					if (success)
+						await queryClient.invalidateQueries(queryFactory.employees.list());
+				},
+			}),
+		create: () =>
+			mutationOptions({
+				mutationFn: async (employee: EmployeeDtoCreate) => {
+					const response = await api.POST('/api/employees', {
+						body: employee,
+					});
+
+					// Handle email conflict error (409)
+					if (!response.response.ok && response.response.status === 409)
+						return false;
+
+					return unwrapResponse(response);
+				},
+				onSuccess: async (createdEmployee) => {
+					if (createdEmployee)
+						await queryClient.invalidateQueries(queryFactory.employees.list());
+				},
+			}),
+		delete: (employeeId: string) =>
+			mutationOptions({
+				mutationFn: async () =>
+					unwrapResponse(
+						await api.DELETE('/api/employees/{id}', {
+							params: { path: { id: employeeId } },
+						})
+					),
+				onSuccess: async () => {
+					queryClient.removeQueries(queryFactory.employees.detail(employeeId));
+					await queryClient.invalidateQueries(queryFactory.employees.list());
+				},
+			}),
+		deleteMultiple: () =>
+			mutationOptions({
+				mutationFn: async (employeeIds: string[]) =>
+					await Promise.all(
+						employeeIds.map(async (employeeId) =>
+							unwrapResponse(
+								await api.DELETE('/api/employees/{id}', {
+									params: { path: { id: employeeId } },
+								})
+							)
+						)
+					),
+				onSuccess: async (_, employeeIds) => {
+					employeeIds.forEach((employeeId) => {
+						queryClient.removeQueries(
+							queryFactory.employees.detail(employeeId)
+						);
+					});
+					await queryClient.invalidateQueries(queryFactory.employees.list());
+				},
+			}),
+		resetPassword: (employeeId: string) =>
+			mutationOptions({
+				mutationFn: async () =>
+					unwrapResponse(
+						await api.POST('/api/employees/{id}/reset-password', {
+							params: { path: { id: employeeId } },
+						})
+					),
+			}),
+		accommodations: {
+			link: (employeeId: string) =>
+				mutationOptions({
+					mutationFn: async (accommodationId: string) =>
+						unwrapResponse(
+							await api.POST(
+								'/api/accommodations/{accommodationId}/employees/{employeeId}',
+								{
+									params: { path: { accommodationId, employeeId } },
+								}
+							)
+						),
+					onSuccess: async () => {
+						await Promise.all([
+							queryClient.invalidateQueries(queryFactory.accommodations.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list()),
+						]);
+					},
+				}),
+			linkMultiple: (employeeId: string) =>
+				mutationOptions({
+					mutationFn: async (accommodationIds: string[]) => {
+						await Promise.all(
+							accommodationIds.map(async (accommodationId) =>
+								unwrapResponse(
+									await api.POST(
+										'/api/accommodations/{accommodationId}/employees/{employeeId}',
+										{
+											params: { path: { accommodationId, employeeId } },
+										}
+									)
+								)
+							)
+						);
+					},
+					onSuccess: async () => {
+						await Promise.all([
+							queryClient.invalidateQueries(queryFactory.accommodations.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list()),
+						]);
+					},
+				}),
+			unlink: (employeeId: string) =>
+				mutationOptions({
+					mutationFn: async (accommodationId: string) =>
+						unwrapResponse(
+							await api.DELETE(
+								'/api/accommodations/{accommodationId}/employees/{employeeId}',
+								{
+									params: { path: { accommodationId, employeeId } },
+								}
+							)
+						),
+					onSuccess: async () => {
+						await Promise.all([
+							queryClient.invalidateQueries(queryFactory.accommodations.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list()),
+						]);
+					},
+				}),
+			unlinkMultiple: (employeeId: string) =>
+				mutationOptions({
+					mutationFn: async (accommodationIds: string[]) => {
+						await Promise.all(
+							accommodationIds.map(async (accommodationId) =>
+								unwrapResponse(
+									await api.DELETE(
+										'/api/accommodations/{accommodationId}/employees/{employeeId}',
+										{
+											params: { path: { accommodationId, employeeId } },
+										}
+									)
+								)
+							)
+						);
+					},
+					onSuccess: async () => {
+						await Promise.all([
+							queryClient.invalidateQueries(queryFactory.accommodations.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list()),
+						]);
+					},
+				}),
+		},
+	},
 	accommodations: {
 		list: () =>
 			queryOptions({
@@ -63,6 +345,30 @@ const queryFactory = {
 						})
 					).content ?? [],
 			}),
+		pagedList: ({
+			page,
+			size,
+			sorting,
+		}: {
+			page?: number;
+			size?: number;
+			sorting?: Sort[];
+		} = {}) =>
+			queryOptions({
+				queryKey: ['accommodations', { page, size, sorting }],
+				queryFn: async () =>
+					unwrapResponse(
+						await api.GET('/api/accommodations', {
+							params: {
+								query: {
+									page,
+									size,
+									sort: mapSorting(sorting),
+								},
+							},
+						})
+					) as RequiredPagedModel<AccommodationDtoResponse>,
+			}),
 		detail: (accommodationId: string) =>
 			queryOptions({
 				queryKey: ['accommodations', accommodationId],
@@ -73,6 +379,179 @@ const queryFactory = {
 						})
 					),
 			}),
+		create: () =>
+			mutationOptions({
+				mutationFn: async (accommodation: AccommodationDtoRequest) => {
+					const response = await api.POST('/api/accommodations', {
+						body: accommodation,
+					});
+
+					// Handle conflicts error (409)
+					if (!response.response.ok && response.response.status === 409) {
+						const problem = response.error as ProblemDetail;
+
+						if (problem.detail?.includes('name'))
+							return [false, 'NAME_IN_USE'] as const;
+						else return [false, 'SES_CODE_IN_USE'] as const;
+					}
+
+					return [unwrapResponse(response), null] as const;
+				},
+				onSuccess: async ([createdEmployee]) => {
+					if (createdEmployee)
+						await queryClient.invalidateQueries(queryFactory.employees.list());
+				},
+			}),
+		update: (accommodationId: string) =>
+			mutationOptions({
+				mutationFn: async (accommodation: AccommodationDtoRequest) => {
+					const response = await api.PUT('/api/accommodations/{id}', {
+						params: { path: { id: accommodationId } },
+						body: accommodation,
+					});
+
+					// Handle conflicts error (409)
+					if (!response.response.ok && response.response.status === 409) {
+						const problem = response.error as ProblemDetail;
+
+						if (problem.detail?.includes('name'))
+							return [false, 'NAME_IN_USE'] as const;
+						else return [false, 'SES_CODE_IN_USE'] as const;
+					}
+
+					unwrapResponse(response);
+
+					return [true, null] as const;
+				},
+				onSuccess: async ([updatedEmployee]) => {
+					if (updatedEmployee)
+						await queryClient.invalidateQueries(queryFactory.employees.list());
+				},
+			}),
+		delete: (accommodationId: string) =>
+			mutationOptions({
+				mutationFn: async () =>
+					unwrapResponse(
+						await api.DELETE('/api/accommodations/{id}', {
+							params: { path: { id: accommodationId } },
+						})
+					),
+				onSuccess: async () => {
+					queryClient.removeQueries(
+						queryFactory.accommodations.detail(accommodationId)
+					);
+					await queryClient.invalidateQueries(
+						queryFactory.accommodations.list()
+					);
+				},
+			}),
+		deleteMultiple: () =>
+			mutationOptions({
+				mutationFn: async (accommodationIds: string[]) =>
+					await Promise.all(
+						accommodationIds.map(async (accommodationId) =>
+							unwrapResponse(
+								await api.DELETE('/api/accommodations/{id}', {
+									params: { path: { id: accommodationId } },
+								})
+							)
+						)
+					),
+				onSuccess: async (_, accommodationIds) => {
+					accommodationIds.forEach((accommodationId) => {
+						queryClient.removeQueries(
+							queryFactory.accommodations.detail(accommodationId)
+						);
+					});
+					await queryClient.invalidateQueries(
+						queryFactory.accommodations.list()
+					);
+				},
+			}),
+		employees: {
+			link: (accommodationId: string) =>
+				mutationOptions({
+					mutationFn: async (employeeId: string) =>
+						unwrapResponse(
+							await api.POST(
+								'/api/accommodations/{accommodationId}/employees/{employeeId}',
+								{
+									params: { path: { accommodationId, employeeId } },
+								}
+							)
+						),
+					onSuccess: async () => {
+						await Promise.all([
+							queryClient.invalidateQueries(queryFactory.accommodations.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list()),
+						]);
+					},
+				}),
+			linkMultiple: (accommodationId: string) =>
+				mutationOptions({
+					mutationFn: async (employeeIds: string[]) => {
+						await Promise.all(
+							employeeIds.map(async (employeeId) =>
+								unwrapResponse(
+									await api.POST(
+										'/api/accommodations/{accommodationId}/employees/{employeeId}',
+										{
+											params: { path: { accommodationId, employeeId } },
+										}
+									)
+								)
+							)
+						);
+					},
+					onSuccess: async () => {
+						await Promise.all([
+							queryClient.invalidateQueries(queryFactory.accommodations.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list()),
+						]);
+					},
+				}),
+			unlink: (accommodationId: string) =>
+				mutationOptions({
+					mutationFn: async (employeeId: string) =>
+						unwrapResponse(
+							await api.DELETE(
+								'/api/accommodations/{accommodationId}/employees/{employeeId}',
+								{
+									params: { path: { accommodationId, employeeId } },
+								}
+							)
+						),
+					onSuccess: async () => {
+						await Promise.all([
+							queryClient.invalidateQueries(queryFactory.accommodations.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list()),
+						]);
+					},
+				}),
+			unlinkMultiple: (accommodationId: string) =>
+				mutationOptions({
+					mutationFn: async (employeeIds: string[]) => {
+						await Promise.all(
+							employeeIds.map(async (employeeId) =>
+								unwrapResponse(
+									await api.DELETE(
+										'/api/accommodations/{accommodationId}/employees/{employeeId}',
+										{
+											params: { path: { accommodationId, employeeId } },
+										}
+									)
+								)
+							)
+						);
+					},
+					onSuccess: async () => {
+						await Promise.all([
+							queryClient.invalidateQueries(queryFactory.accommodations.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list()),
+						]);
+					},
+				}),
+		},
 		bookings: {
 			list: (accommodationId: string) =>
 				queryOptions({
@@ -117,7 +596,7 @@ const queryFactory = {
 						accommodationId: string;
 						startTime: Date;
 						endTime: Date;
-					}) => {
+					}) =>
 						unwrapResponse(
 							await api.POST('/api/accommodations/{accommodationId}/bookings', {
 								params: { path: { accommodationId } },
@@ -127,10 +606,8 @@ const queryFactory = {
 									numberOfPeople: 1,
 								},
 							})
-						);
-						return accommodationId;
-					},
-					onSuccess: async (accommodationId) => {
+						),
+					onSuccess: async (_, { accommodationId }) => {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
@@ -175,7 +652,7 @@ const queryFactory = {
 						booking: BookingDtoResponse;
 						newStart: Date;
 						newEnd: Date;
-					}) => {
+					}) =>
 						unwrapResponse(
 							await api.PUT(
 								'/api/accommodations/{accommodationId}/bookings/{id}',
@@ -188,10 +665,8 @@ const queryFactory = {
 									},
 								}
 							)
-						);
-						return accommodationId;
-					},
-					onSuccess: async (accommodationId) => {
+						),
+					onSuccess: async (_, { accommodationId }) => {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
@@ -675,11 +1150,12 @@ class ApiErrorResponse extends Error implements ErrorResponse {
 }
 
 export {
-	queryClient,
-	queryFactory,
-	executeMutation,
-	ApiErrorResponse,
 	// Should not be used directly unless custom query/mutation logic is needed. Use queryFactory and executeMutation instead.
 	api as _api,
 	unwrapResponse as _unwrapResponse,
+	ApiErrorResponse,
+	DEFAULT_PAGE_SIZE,
+	executeMutation,
+	queryClient,
+	queryFactory,
 };

@@ -6,41 +6,25 @@ import {
 	MultiSelect,
 	Stack,
 	TextInput,
-	useModalsStack,
 } from '@mantine/core';
 import { isEmail, isNotEmpty, useForm } from '@mantine/form';
 import { CheckCircleIcon, FloppyDiskIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
+import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import type { Route } from './+types/edit';
-import type { EmployeeDtoPatch } from '~/@types/api';
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
 	return {
-		employee: await queryClient.fetchQuery({
-			queryKey: ['employee', id],
-			queryFn: async () =>
-				throwErrors(
-					await api.GET('/api/employees/{id}', {
-						params: { path: { id } },
-					})
-				),
-		}),
-		availableAccommodations: await queryClient.fetchQuery({
-			queryKey: ['accommodations'],
-			queryFn: async () =>
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				throwErrors(
-					await api.GET('/api/accommodations', {
-						params: { query: { size: 0 } },
-					})
-				).content!,
-		}),
+		employee: await queryClient.query(queryFactory.employees.detail(id)),
+		availableAccommodations: await queryClient.query(
+			queryFactory.accommodations.list()
+		),
 	};
 }
 
@@ -50,7 +34,10 @@ export default function EditEmployee({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const stack = useModalsStack(['editor', 'edited']);
+	const { opened, close } = useStaticModalTransition(
+		() => void navigate('/admin/employees')
+	);
+
 	const form = useForm({
 		initialValues: {
 			enabled: employee.enabled,
@@ -74,88 +61,54 @@ export default function EditEmployee({
 		},
 	});
 
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async (
-			values: EmployeeDtoPatch & { accommodations: string[] }
-		) => {
-			const newAccommodations = values.accommodations.filter(
-				(accommodationId) =>
-					!employee.accommodations.some(
-						(accommodation) => accommodation.id === accommodationId
-					)
-			);
-			const removedAccommodations = employee.accommodations.filter(
-				(accommodation) => !values.accommodations.includes(accommodation.id)
-			);
-
-			// Requests
-
-			const res = await api.PATCH(`/api/employees/{id}`, {
-				body: values,
-				params: { path: { id: employee.id } },
-			});
-
-			await Promise.all([
-				...newAccommodations.map(async (accommodationId) =>
-					throwErrors(
-						await api.POST(
-							'/api/accommodations/{accommodationId}/employees/{employeeId}',
-							{
-								params: { path: { accommodationId, employeeId: employee.id } },
-							}
-						)
-					)
-				),
-				...removedAccommodations.map(async (accommodation) =>
-					throwErrors(
-						await api.DELETE(
-							'/api/accommodations/{accommodationId}/employees/{employeeId}',
-							{
-								params: {
-									path: {
-										accommodationId: accommodation.id,
-										employeeId: employee.id,
-									},
-								},
-							}
-						)
-					)
-				),
-			]);
-
-			// Handle email conflict error (409)
-			if (!res.response.ok && res.response.status === 409) {
-				form.setFieldError(
-					'email',
-					t(($) => $.admin.employees.properties.email.errors.emailInUse)
-				);
-				return false;
-			}
-
-			throwErrors(res);
-
-			return true;
-		},
-		onSuccess: async (success) => {
-			if (success) {
-				await queryClient.invalidateQueries({ queryKey: ['employees'] });
-
-				await navigate('/admin/employees');
-			}
-		},
-	});
+	const { mutate: edit, isPending: isEditing } = useMutation(
+		queryFactory.employees.update(employee.id)
+	);
+	const { mutate: linkAccommodations, isPending: isLinkingAccommodations } =
+		useMutation(
+			queryFactory.employees.accommodations.linkMultiple(employee.id)
+		);
+	const { mutate: unlinkAccommodations, isPending: isUnlinkingAccommodations } =
+		useMutation(
+			queryFactory.employees.accommodations.unlinkMultiple(employee.id)
+		);
+	const isPending =
+		isEditing || isLinkingAccommodations || isUnlinkingAccommodations;
 
 	return (
 		<Modal
-			{...stack.register('editor')}
-			opened
-			onClose={() => void navigate('/admin/employees')}
+			opened={opened}
+			onClose={close}
 			title={t(($) => $.admin.employees.edit.title)}
 		>
 			<form
 				onSubmit={form.onSubmit((data) => {
-					mutate(data);
+					edit(data, {
+						onSuccess: (success) => {
+							if (!success) {
+								form.setFieldError(
+									'email',
+									t(($) => $.admin.employees.properties.email.errors.emailInUse)
+								);
+								return;
+							}
+
+							// Determine which accommodations were added and which were removed & perform the necessary link/unlink operations
+							const { addedAccommodations, removedAccommodations } =
+								extractAccommodationsChange(
+									employee.accommodations.map((a) => a.id),
+									data.accommodations
+								);
+
+							linkAccommodations(addedAccommodations, {
+								onSuccess: () => {
+									unlinkAccommodations(removedAccommodations, {
+										onSuccess: close,
+									});
+								},
+							});
+						},
+					});
 				})}
 			>
 				<Stack gap="xs">
@@ -217,4 +170,24 @@ export default function EditEmployee({
 			</form>
 		</Modal>
 	);
+}
+
+/**
+ * Compares the old and new accommodations assigned to an employee and returns the added and removed accommodations.
+ * @param oldAccommodations Old accommodation ids assigned to the employee
+ * @param newAccommodations New accommodation ids assigned to the employee
+ * @returns An object containing the added and removed accommodations
+ */
+function extractAccommodationsChange(
+	oldAccommodations: string[],
+	newAccommodations: string[]
+) {
+	return {
+		addedAccommodations: newAccommodations.filter(
+			(newAccommodation) => !oldAccommodations.includes(newAccommodation)
+		),
+		removedAccommodations: oldAccommodations.filter(
+			(oldAccommodation) => !newAccommodations.includes(oldAccommodation)
+		),
+	};
 }

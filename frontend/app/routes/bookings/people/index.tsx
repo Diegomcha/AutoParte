@@ -27,6 +27,7 @@ import AddressSelect from '~/component/AddressSelect';
 import ComplexRequiredAsterisk from '~/component/ComplexRequiredLabel';
 import CountrySelect from '~/component/CountrySelect';
 import PhoneInput, { isValidPhoneNumber } from '~/component/PhoneInput';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
 import { queryClient, queryFactory } from '~/services/Api';
 import TimeService from '~/services/TimeService';
 import Validators from '~/services/Validators';
@@ -81,8 +82,6 @@ export async function clientLoader({
 	]);
 
 	return {
-		// people,
-		// addresses,
 		countries,
 		genders,
 		relationships,
@@ -96,6 +95,8 @@ export default function BookingPeople({
 }: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+
+	const { opened, close } = useStaticModalTransition(() => void navigate('..'));
 	const { booking } = useBooking();
 
 	const { data: people } = useSuspenseQuery(
@@ -112,11 +113,14 @@ export default function BookingPeople({
 	}
 
 	function resetPerson() {
-		changePerson(people.at(0)?.id ?? null);
+		// changePerson(people.at(0)?.id ?? null);
 	}
 
 	// TODO: remove this effect
 	useEffect(() => {
+		if (personId && people.every((p) => p.id !== personId))
+			setPersonId(people.at(0)?.id ?? null);
+
 		form.setInitialValues(getInitialValues(people, personId));
 		form.reset();
 	}, [people]);
@@ -258,10 +262,8 @@ export default function BookingPeople({
 	return (
 		<>
 			<Modal
-				opened
-				onClose={() => {
-					void navigate('..');
-				}}
+				opened={opened}
+				onClose={close}
 				title={t(($) => $.people.title)}
 				size="auto"
 			>
@@ -534,8 +536,9 @@ export default function BookingPeople({
 						</Fieldset>
 						<Group>
 							<Button
+								component={Link}
+								to="./scan" // TODO: Implementar
 								leftSection={<ScanIcon weight="bold" size={16} />}
-								onClick={() => navigate('./scan')} // TODO: Cambia la ruta según tu configuración de React Router
 								hidden={!booking.canBeModified}
 							>
 								{t(($) => $.people.scan.button)}

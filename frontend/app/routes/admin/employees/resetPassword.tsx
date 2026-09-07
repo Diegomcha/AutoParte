@@ -1,8 +1,9 @@
 import { Button, Group, Modal, Text, useModalsStack } from '@mantine/core';
 import { ClockClockwiseIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
 import EmployeeCredsModal from '~/component/EmployeeCredsModal';
+import useStaticModalStackTransition from '~/hooks/useStaticModalStackTransition';
+import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -11,15 +12,7 @@ import type { Route } from './+types/resetPassword';
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
-	await queryClient.fetchQuery({
-		queryKey: ['employee', id],
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/employees/{id}', {
-					params: { path: { id } },
-				})
-			),
-	});
+	await queryClient.query(queryFactory.employees.detail(id));
 }
 
 export default function ResetPasswordEmployee({
@@ -29,30 +22,23 @@ export default function ResetPasswordEmployee({
 	const { t } = useTranslation();
 
 	const stack = useModalsStack(['confirmation', 'credentials']);
+	const { close } = useStaticModalStackTransition(
+		stack,
+		'confirmation',
+		() => void navigate('/admin/employees')
+	);
 
 	const {
 		mutate,
 		isPending,
 		data: creds,
-	} = useMutation({
-		throwOnError: true,
-		mutationFn: async () =>
-			throwErrors(
-				await api.POST('/api/employees/{id}/reset-password', {
-					params: { path: { id } },
-				})
-			),
-		onSuccess: () => {
-			stack.open('credentials');
-		},
-	});
+	} = useMutation(queryFactory.employees.resetPassword(id));
 
 	return (
 		<Modal.Stack>
 			<Modal
 				{...stack.register('confirmation')}
-				opened
-				onClose={() => void navigate('/admin/employees')}
+				onClose={close}
 				title={t(($) => $.admin.employees.resetPassword.title)}
 			>
 				<Text>{t(($) => $.admin.employees.resetPassword.description)}</Text>
@@ -62,7 +48,11 @@ export default function ResetPasswordEmployee({
 						loading={isPending}
 						leftSection={<ClockClockwiseIcon />}
 						onClick={() => {
-							mutate();
+							mutate(undefined, {
+								onSuccess: () => {
+									stack.open('credentials');
+								},
+							});
 						}}
 					>
 						{t(($) => $.admin.employees.resetPassword.button)}
@@ -73,7 +63,7 @@ export default function ResetPasswordEmployee({
 				<EmployeeCredsModal
 					{...stack.register('credentials')}
 					creds={creds}
-					onClose={() => void navigate('/admin/employees')}
+					onClose={close}
 					title={t(($) => $.admin.employees.resetPassword.done.title)}
 					description={t(
 						($) => $.admin.employees.resetPassword.done.description

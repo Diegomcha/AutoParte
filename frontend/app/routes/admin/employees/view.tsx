@@ -1,6 +1,7 @@
 import { Badge, Chip, DataList, Divider, Modal, Stack } from '@mantine/core';
 import { CheckCircleIcon } from '@phosphor-icons/react';
-import api, { queryClient, throwErrors } from '~/api';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
+import { queryClient, queryFactory } from '~/services/Api';
 import TimeService from '~/services/TimeService';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
@@ -11,15 +12,7 @@ export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
 	return {
-		employee: await queryClient.fetchQuery({
-			queryKey: ['employee', id],
-			queryFn: async () =>
-				throwErrors(
-					await api.GET('/api/employees/{id}', {
-						params: { path: { id } },
-					})
-				),
-		}),
+		employee: await queryClient.query(queryFactory.employees.detail(id)),
 	};
 }
 
@@ -28,11 +21,15 @@ export default function ViewEmployee({
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
+	
+	const { opened, close } = useStaticModalTransition(
+		() => void navigate('/admin/employees')
+	);
 
 	return (
 		<Modal
-			opened
-			onClose={() => void navigate('/admin/employees')}
+			opened={opened}
+			onClose={close}
 			title={t(($) => $.admin.employees.view.title)}
 		>
 			<DataList labelWidth={160}>

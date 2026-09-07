@@ -5,7 +5,6 @@ import {
 	Center,
 	Divider,
 	Group,
-	Modal,
 	Title,
 } from '@mantine/core';
 import {
@@ -15,23 +14,26 @@ import {
 	PlusIcon,
 	TrashIcon,
 } from '@phosphor-icons/react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import { useQuery } from '@tanstack/react-query';
+import AdminDeleteModal from '~/component/AdminDeleteModal';
 import WifiBadge from '~/component/WifiBadge';
+import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from '~/services/Api';
 import TimeService from '~/services/TimeService';
 import { DataTable, useDataTableColumns } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useRevalidator } from 'react-router';
+import { Link, Outlet } from 'react-router';
 import type { AccommodationDtoResponse } from '~/@types/api';
 import type { DataTableSortStatus } from 'mantine-datatable';
 
 const COLUMNS_STATE_KEY = 'accommodation-table-columns';
-const PAGE_SIZE = 50;
+
+export async function clientLoader() {
+	await queryClient.query(queryFactory.accommodations.pagedList());
+}
 
 export default function AccommodationsPage() {
 	const { t } = useTranslation();
-	const revalidator = useRevalidator();
 
 	// Async data fetching
 
@@ -42,25 +44,15 @@ export default function AccommodationsPage() {
 		columnAccessor: 'id',
 		direction: 'asc',
 	});
-
-	const { data, isLoading } = useQuery({
-		queryKey: ['accommodations', page, sortStatus],
-		throwOnError: true,
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/accommodations', {
-					params: {
-						query: {
-							page: page,
-							size: PAGE_SIZE,
-							sort: [`${sortStatus.columnAccessor},${sortStatus.direction}`],
-						},
-					},
-				})
-			),
-	});
-
 	const [selected, setSelected] = useState<AccommodationDtoResponse[]>([]);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+	const { data, isLoading } = useQuery(
+		queryFactory.accommodations.pagedList({
+			page,
+			sorting: [sortStatus],
+		})
+	);
 
 	const { effectiveColumns } = useDataTableColumns<AccommodationDtoResponse>({
 		key: COLUMNS_STATE_KEY,
@@ -165,32 +157,8 @@ export default function AccommodationsPage() {
 		],
 	});
 
-	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-	const { mutate: deleteSelected, isPending: isDeleting } = useMutation({
-		throwOnError: true,
-		mutationFn: async () => {
-			await Promise.all(
-				selected.map(async (accommodation) => {
-					throwErrors(
-						await api.DELETE('/api/accommodations/{id}', {
-							params: { path: { id: accommodation.id } },
-						})
-					);
-				})
-			);
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['accommodations'] });
-			await revalidator.revalidate();
-
-			setSelected([]);
-			setDeleteModalOpen(false);
-		},
-	});
-
 	return (
 		<>
-			<div hidden={revalidator.state === 'idle'}>Revalidating...</div>
 			<Group justify="space-between">
 				<Title order={2}>{t(($) => $.admin.accommodations.title)}</Title>
 				<Group>
@@ -227,46 +195,28 @@ export default function AccommodationsPage() {
 				page={page}
 				onPageChange={setPage}
 				fetching={isLoading}
-				totalRecords={data?.page?.totalElements}
-				recordsPerPage={PAGE_SIZE}
+				totalRecords={data?.page.totalElements}
+				recordsPerPage={data?.page.size ?? DEFAULT_PAGE_SIZE}
 				sortStatus={sortStatus}
 				onSortStatusChange={setSortStatus}
 				selectedRecords={selected}
 				onSelectedRecordsChange={setSelected}
 			/>
 			<Outlet />
-			<Modal
-				opened={deleteModalOpen}
-				onClose={() => {
-					setDeleteModalOpen(false);
+			<AdminDeleteModal
+				mutation={queryFactory.employees.deleteMultiple()}
+				selected={selected}
+				setSelected={setSelected}
+				deleteModalOpen={deleteModalOpen}
+				setDeleteModalOpen={setDeleteModalOpen}
+				messages={{
+					title: t(($) => $.admin.accommodations.deleteMultiple.title),
+					description: (count: number) =>
+						t(($) => $.admin.accommodations.deleteMultiple.description, {
+							count,
+						}),
 				}}
-				title={t(($) => $.admin.accommodations.deleteMultiple.title)}
-			>
-				{t(($) => $.admin.accommodations.deleteMultiple.description, {
-					count: selected.length,
-				})}
-
-				<Group justify="right" mt="md" gap="xs">
-					<Button
-						disabled={isDeleting}
-						onClick={() => {
-							setDeleteModalOpen(false);
-						}}
-						color="gray"
-					>
-						{t(($) => $.common.buttons.cancel)}
-					</Button>
-					<Button
-						color="red"
-						onClick={() => {
-							deleteSelected();
-						}}
-						loading={isDeleting}
-					>
-						{t(($) => $.common.buttons.delete)}
-					</Button>
-				</Group>
-			</Modal>
+			/>
 		</>
 	);
 }

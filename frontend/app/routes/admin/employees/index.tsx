@@ -5,7 +5,6 @@ import {
 	Center,
 	Divider,
 	Group,
-	Modal,
 	Title,
 	Tooltip,
 } from '@mantine/core';
@@ -17,24 +16,25 @@ import {
 	PlusIcon,
 	TrashIcon,
 } from '@phosphor-icons/react';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import { useQuery } from '@tanstack/react-query';
+import AdminDeleteModal from '~/component/AdminDeleteModal';
+import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from '~/services/Api';
 import TimeService from '~/services/TimeService';
 import { DataTable, useDataTableColumns } from 'mantine-datatable';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useRevalidator } from 'react-router';
+import { Link, Outlet } from 'react-router';
 import type { EmployeeDtoResponse } from '~/@types/api';
 import type { DataTableSortStatus } from 'mantine-datatable';
 
 const COLUMNS_STATE_KEY = 'employee-table-columns';
-const PAGE_SIZE = 50;
+
+export async function clientLoader() {
+	await queryClient.query(queryFactory.employees.pagedList());
+}
 
 export default function EmployeesPage() {
 	const { t } = useTranslation();
-	const revalidator = useRevalidator();
-
-	// Async data fetching
 
 	const [page, setPage] = useState(0);
 	const [sortStatus, setSortStatus] = useState<
@@ -43,25 +43,15 @@ export default function EmployeesPage() {
 		columnAccessor: 'id',
 		direction: 'asc',
 	});
-
-	const { data, isLoading } = useQuery({
-		queryKey: ['employees', page, sortStatus],
-		throwOnError: true,
-		queryFn: async () =>
-			throwErrors(
-				await api.GET('/api/employees', {
-					params: {
-						query: {
-							page: page,
-							size: PAGE_SIZE,
-							sort: [`${sortStatus.columnAccessor},${sortStatus.direction}`],
-						},
-					},
-				})
-			),
-	});
-
 	const [selected, setSelected] = useState<EmployeeDtoResponse[]>([]);
+	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+	const { data, isLoading } = useQuery(
+		queryFactory.employees.pagedList({
+			page,
+			sorting: [sortStatus],
+		})
+	);
 
 	const { effectiveColumns } = useDataTableColumns<EmployeeDtoResponse>({
 		key: COLUMNS_STATE_KEY,
@@ -193,32 +183,8 @@ export default function EmployeesPage() {
 		],
 	});
 
-	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-	const { mutate: deleteSelected, isPending: isDeleting } = useMutation({
-		throwOnError: true,
-		mutationFn: async () => {
-			await Promise.all(
-				selected.map(async (employee) => {
-					throwErrors(
-						await api.DELETE('/api/employees/{id}', {
-							params: { path: { id: employee.id } },
-						})
-					);
-				})
-			);
-		},
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['employees'] });
-			await revalidator.revalidate();
-
-			setSelected([]);
-			setDeleteModalOpen(false);
-		},
-	});
-
 	return (
 		<>
-			<div hidden={revalidator.state === 'idle'}>Revalidating...</div>
 			<Group justify="space-between">
 				<Title order={2}>{t(($) => $.admin.employees.title)}</Title>
 				<Group>
@@ -255,46 +221,26 @@ export default function EmployeesPage() {
 				page={page}
 				onPageChange={setPage}
 				fetching={isLoading}
-				totalRecords={data?.page?.totalElements}
-				recordsPerPage={PAGE_SIZE}
+				totalRecords={data?.page.totalElements}
+				recordsPerPage={data?.page.size ?? DEFAULT_PAGE_SIZE}
 				sortStatus={sortStatus}
 				onSortStatusChange={setSortStatus}
 				selectedRecords={selected}
 				onSelectedRecordsChange={setSelected}
 			/>
 			<Outlet />
-			<Modal
-				opened={deleteModalOpen}
-				onClose={() => {
-					setDeleteModalOpen(false);
+			<AdminDeleteModal
+				mutation={queryFactory.employees.deleteMultiple()}
+				selected={selected}
+				setSelected={setSelected}
+				deleteModalOpen={deleteModalOpen}
+				setDeleteModalOpen={setDeleteModalOpen}
+				messages={{
+					title: t(($) => $.admin.employees.deleteMultiple.title),
+					description: (count: number) =>
+						t(($) => $.admin.employees.deleteMultiple.description, { count }),
 				}}
-				title={t(($) => $.admin.employees.deleteMultiple.title)}
-			>
-				{t(($) => $.admin.employees.deleteMultiple.description, {
-					count: selected.length,
-				})}
-
-				<Group justify="right" mt="md" gap="xs">
-					<Button
-						disabled={isDeleting}
-						onClick={() => {
-							setDeleteModalOpen(false);
-						}}
-						color="gray"
-					>
-						{t(($) => $.common.buttons.cancel)}
-					</Button>
-					<Button
-						color="red"
-						onClick={() => {
-							deleteSelected();
-						}}
-						loading={isDeleting}
-					>
-						{t(($) => $.common.buttons.delete)}
-					</Button>
-				</Group>
-			</Modal>
+			/>
 		</>
 	);
 }

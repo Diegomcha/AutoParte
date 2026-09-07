@@ -17,25 +17,18 @@ import {
 	FloppyDiskIcon,
 	SpinnerIcon,
 } from '@phosphor-icons/react';
-import { useMutation } from '@tanstack/react-query';
-import api, { queryClient, throwErrors } from '~/api';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import { queryClient, queryFactory } from '~/services/Api';
 import { useTranslation } from 'react-i18next';
-import type { Route } from './+types/configuration';
-import type { ConfigDtoRequest } from '~/@types/api';
 
 export async function clientLoader() {
-	return {
-		config: await queryClient.fetchQuery({
-			queryKey: ['configuration'],
-			queryFn: async () => throwErrors(await api.GET('/api/config')),
-		}),
-	};
+	await queryClient.query(queryFactory.configuration.get());
 }
 
-export default function ConfigPage({
-	loaderData: { config },
-}: Route.ComponentProps) {
+export default function ConfigPage() {
 	const { t } = useTranslation();
+
+	const { data: config } = useSuspenseQuery(queryFactory.configuration.get());
 
 	const form = useForm({
 		initialValues: config,
@@ -44,44 +37,41 @@ export default function ConfigPage({
 		},
 	});
 
+	const { mutate, isPending } = useMutation(
+		queryFactory.configuration.update()
+	);
+
 	const {
-		mutate: validate,
-		isPending: isValidating,
+		mutate: validateSesCreds,
+		isPending: isValidatingSesCreds,
 		isError: isValidationError,
-	} = useMutation({
-		mutationFn: async () => {
-			const res = await api.POST('/api/config/validate-ses');
+		data: isSesCredsValidUpdated,
+	} = useMutation(queryFactory.configuration.validateSesCreds());
 
-			// Handle unauthorized error (401)
-			if (res.response.status === 401) return false;
+	const isSesCredsValid =
+		!isValidationError &&
+		(isSesCredsValidUpdated ?? config.sesCredentialsValid);
 
-			throwErrors(res);
-
-			return true;
-		},
-		onSuccess: (success) => {
-			form.setFieldValue('sesCredentialsValid', success);
-		},
-	});
-
-	const { mutate, isPending } = useMutation({
-		throwOnError: true,
-		mutationFn: async (data: ConfigDtoRequest) =>
-			throwErrors(
-				await api.PUT('/api/config', {
-					body: data,
-				})
-			),
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['configuration'] });
-			validate();
-		},
-	});
+	let validationStatusText = t(($) =>
+		isSesCredsValid
+			? $.admin.config.sesValidation.valid
+			: $.admin.config.sesValidation.invalid
+	);
+	if (isValidationError)
+		validationStatusText = t(($) => $.admin.config.sesValidation.error);
+	if (isValidatingSesCreds)
+		validationStatusText = t(($) => $.admin.config.sesValidation.validating);
 
 	return (
 		<form
 			onSubmit={form.onSubmit((data) => {
-				mutate(data);
+				mutate(data, {
+					onSuccess: () => {
+						form.resetDirty();
+
+						validateSesCreds();
+					},
+				});
 			})}
 			onReset={form.onReset}
 		>
@@ -92,15 +82,17 @@ export default function ConfigPage({
 						type="reset"
 						color="gray"
 						leftSection={<ArrowUUpLeftIcon weight="bold" size={16} />}
-						disabled={isPending}
+						loading={isPending}
+						hidden={!form.isDirty()}
 					>
-						{t(($) => $.common.buttons.cancel)}
+						{t(($) => $.common.buttons.reset)}
 					</Button>
 					<Button
 						type="submit"
-						loading={isPending}
 						color="green"
 						leftSection={<FloppyDiskIcon weight="bold" size={16} />}
+						loading={isPending}
+						disabled={!form.isDirty()}
 					>
 						{t(($) => $.common.buttons.save)}
 					</Button>
@@ -142,24 +134,17 @@ export default function ConfigPage({
 						<Divider my="sm" />
 						<Center>
 							<Chip
-								key={form.key('sesCredentialsValid')}
-								name="sesCredentialsValid"
 								color="green"
 								variant="light"
 								icon={
-									isValidating ? (
+									isValidatingSesCreds ? (
 										<SpinnerIcon className="animate-spin" />
 									) : undefined
 								}
-								checked={form.getValues().sesCredentialsValid}
+								checked={isValidatingSesCreds || isSesCredsValid}
+								disabled={form.isDirty() || isValidatingSesCreds}
 							>
-								{isValidating
-									? t(($) => $.admin.config.sesValidation.validating)
-									: isValidationError
-										? t(($) => $.admin.config.sesValidation.error)
-										: form.getValues().sesCredentialsValid
-											? t(($) => $.admin.config.sesValidation.valid)
-											: t(($) => $.admin.config.sesValidation.invalid)}
+								{validationStatusText}
 							</Chip>
 						</Center>
 					</Fieldset>

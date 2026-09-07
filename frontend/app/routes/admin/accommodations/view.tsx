@@ -1,6 +1,7 @@
 import { Badge, DataList, Divider, Modal, Stack } from '@mantine/core';
-import api, { queryClient, throwErrors } from '~/api';
 import WifiBadge from '~/component/WifiBadge';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
+import { queryClient, queryFactory } from '~/services/Api';
 import TimeService from '~/services/TimeService';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
@@ -11,15 +12,9 @@ export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
 	return {
-		accommodation: await queryClient.fetchQuery({
-			queryKey: ['accommodations', id],
-			queryFn: async () =>
-				throwErrors(
-					await api.GET('/api/accommodations/{id}', {
-						params: { path: { id } },
-					})
-				),
-		}),
+		accommodation: await queryClient.query(
+			queryFactory.accommodations.detail(id)
+		),
 	};
 }
 
@@ -29,10 +24,14 @@ export default function ViewAccommodation({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
+	const { opened, close } = useStaticModalTransition(
+		() => void navigate('/admin/accommodations')
+	);
+
 	return (
 		<Modal
-			opened
-			onClose={() => void navigate('/admin/accommodations')}
+			opened={opened}
+			onClose={close}
 			title={t(($) => $.admin.accommodations.view.title)}
 		>
 			<DataList labelWidth={160}>

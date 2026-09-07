@@ -1,6 +1,7 @@
 import { Button, Group, Modal } from '@mantine/core';
 import { SuitcaseIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
 import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
@@ -28,20 +29,22 @@ export default function CheckInBooking({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	function goBack() {
-		void navigate('..');
-	}
+	const { opened, close } = useStaticModalTransition(() => void navigate('..'));
 
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.checkIn(accommodationId, bookingId)
 	);
 
 	return (
-		<Modal opened onClose={goBack} title={t(($) => $.bookings.checkIn.title)}>
+		<Modal
+			opened={opened}
+			onClose={close}
+			title={t(($) => $.bookings.checkIn.title)}
+		>
 			{t(($) => $.bookings.checkIn.description)}
 
 			<Group justify="right" mt="md" gap="xs">
-				<Button onClick={goBack} color="gray">
+				<Button onClick={close} color="gray">
 					{t(($) => $.common.buttons.cancel)}
 				</Button>
 				<Button
@@ -50,7 +53,7 @@ export default function CheckInBooking({
 					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: goBack,
+							onSuccess: close,
 						});
 					}}
 				>
