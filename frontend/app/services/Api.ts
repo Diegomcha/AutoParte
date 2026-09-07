@@ -952,6 +952,7 @@ const queryFactory = {
 		countries: {
 			list: () =>
 				queryOptions({
+					staleTime: Infinity,
 					queryKey: ['catalogue', 'countries'],
 					queryFn: async () =>
 						unwrapResponse(await api.GET('/api/catalogue/countries')),
@@ -959,6 +960,7 @@ const queryFactory = {
 			spanishProvinces: {
 				list: () =>
 					queryOptions({
+						staleTime: Infinity,
 						queryKey: [
 							...queryFactory.catalogue.countries.list().queryKey,
 							'ESP',
@@ -972,6 +974,7 @@ const queryFactory = {
 				municipalities: {
 					list: (provinceCode: string) =>
 						queryOptions({
+							staleTime: Infinity,
 							queryKey: [
 								...queryFactory.catalogue.countries.spanishProvinces.list()
 									.queryKey,
@@ -989,6 +992,7 @@ const queryFactory = {
 					postalCodes: {
 						list: (provinceCode: string, municipalityCode: string) =>
 							queryOptions({
+								staleTime: Infinity,
 								queryKey: [
 									...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
 										provinceCode
@@ -1017,18 +1021,21 @@ const queryFactory = {
 		},
 		genders: () =>
 			queryOptions({
+				staleTime: Infinity,
 				queryKey: ['catalogue', 'genders'],
 				queryFn: async () =>
 					unwrapResponse(await api.GET('/api/catalogue/person/genders')),
 			}),
 		relationships: () =>
 			queryOptions({
+				staleTime: Infinity,
 				queryKey: ['catalogue', 'relationships'],
 				queryFn: async () =>
 					unwrapResponse(await api.GET('/api/catalogue/person/relationships')),
 			}),
 		documentTypes: () =>
 			queryOptions({
+				staleTime: Infinity,
 				queryKey: ['catalogue', 'documentTypes'],
 				queryFn: async () =>
 					unwrapResponse(await api.GET('/api/catalogue/document/types')),

@@ -53,7 +53,7 @@ class PersonService {
     public List<PersonDtoResponse> getPeople(UUID accommodationId, UUID bookingId) throws ResourceNotFoundException {
         this.ensureBookingExists(accommodationId, bookingId);
 
-        return personMapper.toResponse(personRepo.findByBookingAccommodationIdAndBookingId(accommodationId, bookingId));
+        return personMapper.toResponse(personRepo.findByBookingAccommodationIdAndBookingIdOrderById(accommodationId, bookingId));
     }
 
     /**

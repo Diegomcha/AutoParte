@@ -1,37 +1,58 @@
 import { CheckIcon, Group, Select, Text } from '@mantine/core';
 import { useUncontrolled } from '@mantine/hooks';
 import { PlusIcon } from '@phosphor-icons/react';
-import { useSuspenseQueries, useSuspenseQuery } from '@tanstack/react-query';
+import { useSuspenseQueries } from '@tanstack/react-query';
 import { lang } from '~/i18n';
 import { _api, _unwrapResponse, queryFactory } from '~/services/Api';
 import CountryService from '~/services/CountryService';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { AddressDtoResponse } from '~/@types/api';
+import NewAddressForm from './NewAddressForm';
 import type { CountryCode } from '~/services/CountryService';
 
 export default function AddressSelect({
-	bookingAddresses,
-	newAddresses,
+	accommodationId,
+	bookingId,
 	value,
 	defaultValue,
 	onChange,
-	onNew,
 	...props
 }: Select.Props & {
-	bookingAddresses: AddressDtoResponse[];
-	newAddresses: AddressDtoResponse[];
+	accommodationId: string;
+	bookingId: string;
 	value?: string | null;
 	defaultValue?: string | null;
 	onChange?: (value: string | null) => void;
-	onNew?: () => void;
 }) {
 	const { t } = useTranslation();
 
-	const { data: provincesMap } = useSuspenseQuery(
-		queryFactory.catalogue.countries.spanishProvinces.list()
-	);
+	const { provincesMap, bookingAddresses } = useSuspenseQueries({
+		queries: [
+			queryFactory.catalogue.countries.spanishProvinces.list(),
+			queryFactory.accommodations.bookings.addresses.list(
+				accommodationId,
+				bookingId
+			),
+		],
+		combine: (result) => ({
+			provincesMap: result[0].data,
+			bookingAddresses: result[1].data,
+		}),
+	});
 
-	const addresses = [...newAddresses, ...bookingAddresses];
+	const [newAddressesCache, setNewAddressesCache] = useState<string[]>([]);
+	const newAddresses = useSuspenseQueries({
+		queries: newAddressesCache.map((addressId) =>
+			queryFactory.addresses.detail(addressId)
+		),
+		combine: (result) => result.map((res) => res.data),
+	})
+		// Remove duplicates that are already in bookingAddresses
+		.filter((address) =>
+			bookingAddresses.every((bookAddr) => bookAddr.id !== address.id)
+		);
+
+	const addresses = bookingAddresses.concat(newAddresses);
 
 	// Fetch municipalities for the unique province codes
 	const municipalityQueries = useSuspenseQueries({
@@ -44,12 +65,9 @@ export default function AddressSelect({
 			// eslint-disable-next-line @tanstack/query/prefer-query-options -- Special case for fetching municipalities based on province codes
 		).map((provinceCode) => ({
 			queryKey: [
-				'catalogue',
-				'countries',
-				'ESP',
-				'provinces',
-				provinceCode,
-				'municipalities',
+				...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
+					provinceCode
+				).queryKey,
 				{ component: 'AddressSelect' },
 			],
 			queryFn: async () =>
@@ -109,73 +127,88 @@ export default function AddressSelect({
 		onChange,
 	});
 
+	const [openNewAddressForm, setOpenNewAddressForm] = useState(false);
+
 	return (
-		<Select
-			{...props}
-			value={_value}
-			onChange={(values) => {
-				if (values === '$new') onNew?.();
-				else handleChange(values);
-			}}
-			data={[
-				'$new',
-				{
-					group: t(($) => $.addressSelect.current),
-					items: selectData.filter((addr) => addr.value === _value),
-				},
-				{
-					group: t(($) => $.addressSelect.new),
-					items: selectData.filter(
-						(addr) =>
-							addr.value !== _value &&
-							bookingAddresses.every((bookAddr) => bookAddr.id !== addr.value)
-					),
-				},
-				{
-					group: t(($) => $.addressSelect.other),
-					items: selectData.filter(
-						(addr) =>
-							addr.value !== _value &&
-							bookingAddresses.some((bookAddr) => bookAddr.id === addr.value)
-					),
-				},
-			]}
-			renderOption={({ checked, option }) => {
-				// Display a special option for creating a new address
-				if (option.value === '$new') {
+		<>
+			<Select
+				{...props}
+				value={_value}
+				onChange={(value) => {
+					if (value === '$new') setOpenNewAddressForm(true);
+					else handleChange(value);
+				}}
+				data={[
+					'$new',
+					{
+						group: t(($) => $.addressSelect.current),
+						items: selectData.filter((addr) => addr.value === _value),
+					},
+					{
+						group: t(($) => $.addressSelect.new),
+						items: selectData.filter(
+							(addr) =>
+								addr.value !== _value &&
+								bookingAddresses.every((bookAddr) => bookAddr.id !== addr.value)
+						),
+					},
+					{
+						group: t(($) => $.addressSelect.other),
+						items: selectData.filter(
+							(addr) =>
+								addr.value !== _value &&
+								bookingAddresses.some((bookAddr) => bookAddr.id === addr.value)
+						),
+					},
+				]}
+				renderOption={({ checked, option }) => {
+					// Display a special option for creating a new address
+					if (option.value === '$new') {
+						return (
+							<Group gap="xs" h={'100%'} w={'100%'} wrap="nowrap">
+								<PlusIcon width="1em" />
+								<Text size="sm">{t(($) => $.addressSelect.new)}</Text>
+							</Group>
+						);
+					}
+
+					// Display the address details for existing addresses
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know that the address exists in the map.
+					const address = addressMap[option.value]!;
+
 					return (
-						<Group gap="xs" h={'100%'} w={'100%'} wrap="nowrap">
-							<PlusIcon width="1em" />
-							<Text size="sm">{t(($) => $.addressSelect.new)}</Text>
+						<Group gap="xs" wrap="nowrap">
+							<div>
+								<Text fw={'bold'} size="sm">
+									{address.addressLine1}
+									{address.addressLine2 && ` / ${address.addressLine2}`}
+								</Text>
+								<Text size="sm">
+									{address.postalCode} · {address.municipalityLabel} ·{' '}
+									{CountryService.getFlag(address.country as CountryCode)}{' '}
+									{address.countryLabel}
+								</Text>
+							</div>
+							{checked && <CheckIcon width="1em" />}
 						</Group>
 					);
-				}
-
-				// Display the address details for existing addresses
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- We know that the address exists in the map.
-				const address = addressMap[option.value]!;
-
-				return (
-					<Group gap="xs" wrap="nowrap">
-						<div>
-							<Text fw={'bold'} size="sm">
-								{address.addressLine1}
-								{address.addressLine2 && ` / ${address.addressLine2}`}
-							</Text>
-							<Text size="sm">
-								{address.postalCode} · {address.municipalityLabel} ·{' '}
-								{CountryService.getFlag(address.country as CountryCode)}{' '}
-								{address.countryLabel}
-							</Text>
-						</div>
-						{checked && <CheckIcon width="1em" />}
-					</Group>
-				);
-			}}
-			comboboxProps={{
-				position: 'bottom-start',
-				width: 'auto',
-			}}
-		/>
+				}}
+				comboboxProps={{
+					position: 'bottom-start',
+					width: 'auto',
+				}}
+			/>
+			<NewAddressForm
+				opened={openNewAddressForm}
+				onClose={() => {
+					setOpenNewAddressForm(false);
+				}}
+				handleNewAddress={(addressId) => {
+					setOpenNewAddressForm(false);
+					setNewAddressesCache((prev) => [...prev, addressId]);
+					handleChange(addressId);
+				}}
+			/>
+		</>
 	);
 }

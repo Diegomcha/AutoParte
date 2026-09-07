@@ -9,42 +9,41 @@ import {
 } from '@mantine/core';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { FloppyDiskIcon } from '@phosphor-icons/react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+	useMutation,
+	useQueries,
+	useSuspenseQueries,
+} from '@tanstack/react-query';
 import CountrySelect from '~/component/CountrySelect';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryClient, queryFactory } from '~/services/Api';
-import Validators from '~/services/Validators';
+import { queryFactory } from '~/services/Api';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import { useNewAddressHandler } from '.';
-import type { Route } from './+types/newAddress';
 import type { AddressDtoRequest } from '~/@types/api';
 import type { CountryCode } from '~/services/CountryService';
 
-export async function clientLoader({
-	params: { accommodationId, bookingId },
-}: Route.ClientLoaderArgs) {
-	Validators.validateUuids(accommodationId, bookingId);
-
-	const [countries, spanishProvinces] = await Promise.all([
-		queryClient.query(queryFactory.catalogue.countries.list()),
-		queryClient.query(queryFactory.catalogue.countries.spanishProvinces.list()),
-	]);
-
-	return {
-		countries,
-		spanishProvinces,
-	};
+export interface NewAddressFormProps extends React.ComponentProps<
+	typeof Drawer
+> {
+	handleNewAddress?: (addressId: string) => void;
 }
 
-export default function CreatePersonAddress({
-	loaderData: { countries, spanishProvinces },
-}: Route.ComponentProps) {
-	const navigate = useNavigate();
+export default function NewAddressForm({
+	handleNewAddress,
+	...props
+}: Readonly<NewAddressFormProps>) {
 	const { t } = useTranslation();
 
-	const { opened, close } = useStaticModalTransition(() => void navigate('..'));
-	const handleNewAddress = useNewAddressHandler();
+	const { countries, spanishProvinces } = useSuspenseQueries({
+		queries: [
+			queryFactory.catalogue.countries.list(),
+			queryFactory.catalogue.countries.spanishProvinces.list(),
+		],
+		combine: (result) => {
+			return {
+				countries: result[0].data,
+				spanishProvinces: result[1].data,
+			};
+		},
+	});
 
 	const form = useForm<AddressDtoRequest & { province?: string | null }>({
 		initialValues: {
@@ -107,46 +106,45 @@ export default function CreatePersonAddress({
 		},
 	});
 
-	const {
-		data: spanishMunicipalities,
-		isLoading: isSpanishMunicipalitiesLoading,
-	} = useQuery({
-		...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
-			form.values.province ?? 'unexistant-province-code'
-		),
-		enabled: !!form.values.province,
+	const [
+		{ data: spanishMunicipalities, isLoading: isSpanishMunicipalitiesLoading },
+		{ data: spanishPostalCodes, isLoading: isSpanishPostalCodesLoading },
+	] = useQueries({
+		queries: [
+			{
+				...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
+					form.values.province ?? 'unexistant-province-code'
+				),
+				enabled: !!form.values.province,
+			},
+			{
+				...queryFactory.catalogue.countries.spanishProvinces.municipalities.postalCodes.list(
+					form.values.province ?? 'unexistant-province-code',
+					form.values.municipality || 'unexistant-municipality-code'
+				),
+				enabled: !!form.values.province && !!form.values.municipality,
+			},
+		],
 	});
-
-	const { data: spanishPostalCodes, isLoading: isSpanishPostalCodesLoading } =
-		useQuery({
-			...queryFactory.catalogue.countries.spanishProvinces.municipalities.postalCodes.list(
-				form.values.province ?? 'unexistant-province-code',
-				form.values.municipality || 'unexistant-municipality-code'
-			),
-			enabled: !!form.values.province && !!form.values.municipality,
-		});
 
 	const { mutate, isPending } = useMutation(queryFactory.addresses.create());
 
 	return (
-		<Drawer
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.people.newAddress.title)}
-			size="auto"
-		>
+		<Drawer title={t(($) => $.people.newAddress.title)} size="auto" {...props}>
 			<form
-				onSubmit={form.onSubmit((address) => {
-					mutate(address, {
-						onSuccess: (created) =>
-							void queryClient
-								.query(queryFactory.addresses.detail(created.id))
-								.then((address) => {
-									handleNewAddress(address);
-									close();
-								}),
-					});
-				})}
+				onSubmit={(e) => {
+					// Prevent the form submission from bubbling up to the parent form (if any) and triggering its submission.
+					e.stopPropagation();
+
+					form.onSubmit((address) => {
+						mutate(address, {
+							onSuccess: (created) => {
+								handleNewAddress?.(created.id);
+								form.reset();
+							},
+						});
+					})(e);
+				}}
 				onReset={form.onReset}
 			>
 				<Stack>

@@ -7,9 +7,12 @@ export default [
 			'/accommodations/:accommodationId/bookings/:bookingId',
 			'./routes/bookings/index.tsx',
 			[
-				route('people', './routes/bookings/people/index.tsx', [
-					route(':id/delete', './routes/bookings/people/delete.tsx'),
-					route('new-address', './routes/bookings/people/newAddress.tsx'),
+				route('people', './routes/bookings/people/layout.tsx', [
+					index('./routes/bookings/people/index.tsx'),
+					route('new', './routes/bookings/people/new.tsx'),
+					route(':id', './routes/bookings/people/edit.tsx', [
+						route('delete', './routes/bookings/people/delete.tsx'),
+					]),
 				]),
 				route('confirm', './routes/bookings/confirm.tsx'),
 				route('check-in', './routes/bookings/checkIn.tsx'),

@@ -21,7 +21,7 @@ export default function ViewEmployee({
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
-	
+
 	const { opened, close } = useStaticModalTransition(
 		() => void navigate('/admin/employees')
 	);

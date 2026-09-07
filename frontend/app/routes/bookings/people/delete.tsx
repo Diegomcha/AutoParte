@@ -1,10 +1,11 @@
 import { Button, Group, Modal } from '@mantine/core';
+import { TrashIcon } from '@phosphor-icons/react';
 import { useMutation } from '@tanstack/react-query';
-import { queryFactory, queryClient } from '~/services/Api';
+import useStaticModalTransition from '~/hooks/useStaticModalTransition';
+import { queryClient, queryFactory } from '~/services/Api';
 import Validators from '~/services/Validators';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
-import { useResetPerson } from '.';
 import type { Route } from './+types/delete';
 
 export async function clientLoader({
@@ -27,11 +28,12 @@ export default function DeletePerson({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const resetPerson = useResetPerson();
-
-	function goBack() {
-		void navigate('..');
-	}
+	const { opened, close } = useStaticModalTransition(
+		() =>
+			void navigate(
+				`/accommodations/${accommodationId}/bookings/${bookingId}/people`
+			)
+	);
 
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.people.delete(
@@ -42,22 +44,24 @@ export default function DeletePerson({
 	);
 
 	return (
-		<Modal opened onClose={goBack} title={t(($) => $.people.delete.title)}>
+		<Modal
+			opened={opened}
+			onClose={close}
+			title={t(($) => $.people.delete.title)}
+		>
 			{t(($) => $.people.delete.description)}
 
 			<Group justify="right" mt="md" gap="xs">
-				<Button onClick={goBack} color="gray">
+				<Button onClick={close} color="gray">
 					{t(($) => $.common.buttons.cancel)}
 				</Button>
 				<Button
 					color="red"
 					loading={isPending}
+					leftSection={<TrashIcon weight="bold" />}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: () => {
-								resetPerson();
-								goBack();
-							},
+							onSuccess: close,
 						});
 					}}
 				>

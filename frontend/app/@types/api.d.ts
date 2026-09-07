@@ -4,2796 +4,2873 @@
  */
 
 export interface paths {
-    "/api/config": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get current application configuration */
-        get: operations["getConfig"];
-        /** Update application configuration */
-        put: operations["updateConfig"];
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get accommodation by id */
-        get: operations["getAccommodation"];
-        /** Update accommodation */
-        put: operations["updateAccommodation"];
-        post?: never;
-        /** Delete accommodation */
-        delete: operations["deleteAccommodation"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get booking by id for an accommodation */
-        get: operations["getBookingById"];
-        /** Update a booking for an accommodation */
-        put: operations["updateBooking"];
-        post?: never;
-        /** Delete a booking for an accommodation */
-        delete: operations["deleteBooking"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get person by id */
-        get: operations["getPerson"];
-        /** Update person in booking */
-        put: operations["updatePerson"];
-        post?: never;
-        /** Remove person from booking */
-        delete: operations["removePerson"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/ocr/mrz": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Person information extraction from image through MRZ */
-        post: operations["extractPersonInfoFromMrz"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/employees": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List employees */
-        get: operations["getEmployees"];
-        put?: never;
-        /** Create employee */
-        post: operations["createEmployee"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/employees/{id}/reset-password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Reset employee password */
-        post: operations["resetEmployeePassword"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/config/validate-ses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Validate SES credentials */
-        post: operations["validateSesCredentials"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/update-password": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Update current authenticated user's password */
-        post: operations["updatePassword"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Logout */
-        post: operations["logout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Login */
-        post: operations["login"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/addresses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Create address */
-        post: operations["createAddress"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List accommodations */
-        get: operations["getAccommodations"];
-        put?: never;
-        /** Create accommodation */
-        post: operations["createAccommodation"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/employees/{employeeId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Assign employee to accommodation */
-        post: operations["assignEmployeeToAccommodation"];
-        /** Unassign employee from accommodation */
-        delete: operations["unassignEmployeeFromAccommodation"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List bookings for an accommodation */
-        get: operations["getBookingsByAccommodation"];
-        put?: never;
-        /** Create a new booking for an accommodation */
-        post: operations["createBooking"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Request self-check-in for a booking */
-        post: operations["requestSelfCheckInForBooking"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings/{id}/confirm": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Confirm a booking for an accommodation */
-        post: operations["confirmBooking"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings/{id}/check-in": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Check-in a booking for an accommodation */
-        post: operations["checkInBooking"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings/{id}/cancel": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Cancel a booking for an accommodation */
-        post: operations["cancelBooking"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings/{bookingId}/people": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List people */
-        get: operations["getPeople"];
-        put?: never;
-        /** Add person to booking */
-        post: operations["addPerson"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/employees/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get employee by id */
-        get: operations["getEmployee"];
-        put?: never;
-        post?: never;
-        /** Delete employee */
-        delete: operations["deleteEmployee"];
-        options?: never;
-        head?: never;
-        /** Update employee */
-        patch: operations["updateEmployee"];
-        trace?: never;
-    };
-    "/api/catalogue/person/relationships": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get valid relationships */
-        get: operations["getPersonRelationships"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/catalogue/person/genders": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get valid genders */
-        get: operations["getPersonGenders"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/catalogue/payment/types": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get valid payment types */
-        get: operations["getPaymentTypes"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/catalogue/document/types": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get valid document types */
-        get: operations["getDocumentTypes"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/catalogue/countries": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get valid countries */
-        get: operations["getCountries"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/catalogue/countries/ESP/provinces": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get valid Spanish provinces */
-        get: operations["getSpanishProvinces"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get valid Spanish municipalities by province code */
-        get: operations["getSpanishMunicipalities"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities/{municipalityCode}/postal-codes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get valid Spanish postal codes by province and municipality codes */
-        get: operations["getSpanishPostalCodes"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get current authenticated user */
-        get: operations["me"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/addresses/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get address by id */
-        get: operations["getAddressById"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get addresses by booking id */
-        get: operations["getBookingAddresses"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
+	'/api/config': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get current application configuration */
+		get: operations['getConfig'];
+		/** Update application configuration */
+		put: operations['updateConfig'];
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{id}': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get accommodation by id */
+		get: operations['getAccommodation'];
+		/** Update accommodation */
+		put: operations['updateAccommodation'];
+		post?: never;
+		/** Delete accommodation */
+		delete: operations['deleteAccommodation'];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings/{id}': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get booking by id for an accommodation */
+		get: operations['getBookingById'];
+		/** Update a booking for an accommodation */
+		put: operations['updateBooking'];
+		post?: never;
+		/** Delete a booking for an accommodation */
+		delete: operations['deleteBooking'];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get person by id */
+		get: operations['getPerson'];
+		/** Update person in booking */
+		put: operations['updatePerson'];
+		post?: never;
+		/** Remove person from booking */
+		delete: operations['removePerson'];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/ocr/mrz': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Person information extraction from image through MRZ */
+		post: operations['extractPersonInfoFromMrz'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/employees': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** List employees */
+		get: operations['getEmployees'];
+		put?: never;
+		/** Create employee */
+		post: operations['createEmployee'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/employees/{id}/reset-password': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Reset employee password */
+		post: operations['resetEmployeePassword'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/config/validate-ses': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Validate SES credentials */
+		post: operations['validateSesCredentials'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/auth/update-password': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Update current authenticated user's password */
+		post: operations['updatePassword'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/auth/logout': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Logout */
+		post: operations['logout'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/auth/login': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Login */
+		post: operations['login'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/addresses': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Create address */
+		post: operations['createAddress'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** List accommodations */
+		get: operations['getAccommodations'];
+		put?: never;
+		/** Create accommodation */
+		post: operations['createAccommodation'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/employees/{employeeId}': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Assign employee to accommodation */
+		post: operations['assignEmployeeToAccommodation'];
+		/** Unassign employee from accommodation */
+		delete: operations['unassignEmployeeFromAccommodation'];
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** List bookings for an accommodation */
+		get: operations['getBookingsByAccommodation'];
+		put?: never;
+		/** Create a new booking for an accommodation */
+		post: operations['createBooking'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Request self-check-in for a booking */
+		post: operations['requestSelfCheckInForBooking'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings/{id}/confirm': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Confirm a booking for an accommodation */
+		post: operations['confirmBooking'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings/{id}/check-in': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Check-in a booking for an accommodation */
+		post: operations['checkInBooking'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings/{id}/cancel': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		get?: never;
+		put?: never;
+		/** Cancel a booking for an accommodation */
+		post: operations['cancelBooking'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings/{bookingId}/people': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** List people */
+		get: operations['getPeople'];
+		put?: never;
+		/** Add person to booking */
+		post: operations['addPerson'];
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/employees/{id}': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get employee by id */
+		get: operations['getEmployee'];
+		put?: never;
+		post?: never;
+		/** Delete employee */
+		delete: operations['deleteEmployee'];
+		options?: never;
+		head?: never;
+		/** Update employee */
+		patch: operations['updateEmployee'];
+		trace?: never;
+	};
+	'/api/catalogue/person/relationships': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get valid relationships */
+		get: operations['getPersonRelationships'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/catalogue/person/genders': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get valid genders */
+		get: operations['getPersonGenders'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/catalogue/payment/types': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get valid payment types */
+		get: operations['getPaymentTypes'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/catalogue/document/types': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get valid document types */
+		get: operations['getDocumentTypes'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/catalogue/countries': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get valid countries */
+		get: operations['getCountries'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/catalogue/countries/ESP/provinces': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get valid Spanish provinces */
+		get: operations['getSpanishProvinces'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get valid Spanish municipalities by province code */
+		get: operations['getSpanishMunicipalities'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities/{municipalityCode}/postal-codes': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get valid Spanish postal codes by province and municipality codes */
+		get: operations['getSpanishPostalCodes'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/auth/me': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get current authenticated user */
+		get: operations['me'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/addresses/{id}': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get address by id */
+		get: operations['getAddressById'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
+	'/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses': {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		/** Get addresses by booking id */
+		get: operations['getBookingAddresses'];
+		put?: never;
+		post?: never;
+		delete?: never;
+		options?: never;
+		head?: never;
+		patch?: never;
+		trace?: never;
+	};
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        ProblemDetail: {
-            /** Format: uri */
-            type?: string;
-            title?: string;
-            /** Format: int32 */
-            status?: number;
-            detail?: string;
-            /** Format: uri */
-            instance?: string;
-            properties?: {
-                [key: string]: unknown;
-            };
-        };
-        ConfigDtoRequest: {
-            sesUsername?: string;
-            sesPassword?: string;
-            sesLandlordCode?: string;
-            digitalSignatureEnabled: boolean;
-            manualReviewEnabled: boolean;
-        };
-        AccommodationDtoRequest: {
-            name: string;
-            sesCode: string;
-            internetConnection?: boolean;
-        };
-        BookingDtoRequest: {
-            /** Format: date-time */
-            startTime: string;
-            /** Format: date-time */
-            endTime: string;
-            /** Format: int32 */
-            numberOfPeople: number;
-            payment?: components["schemas"]["PaymentDtoRequest"];
-            /** Format: int32 */
-            numberOfRooms?: number;
-            internetConnection?: boolean;
-        };
-        PaymentDtoRequest: {
-            /** @enum {string} */
-            type: "CASH" | "CREDIT_CARD" | "PLATFORM" | "TRANSFER" | "MOBILE" | "GIFT_CARD" | "ON_SITE" | "OTHER";
-            mean?: string;
-            holder?: string;
-            /** Format: date-time */
-            date?: string;
-            /** Format: date-time */
-            expiryDate?: string;
-        };
-        ContactInfoDtoRequest: {
-            phoneNumber1?: string;
-            phoneNumber2?: string;
-            /** Format: email */
-            email?: string;
-        };
-        DocumentDtoRequest: {
-            /** @enum {string} */
-            type: "NIF" | "NIE" | "PASSPORT" | "OTHER";
-            number: string;
-            supportNumber?: string;
-        };
-        PersonDtoRequest: {
-            personalInfo: components["schemas"]["PersonalInfoDtoRequest"];
-            contactInfo: components["schemas"]["ContactInfoDtoRequest"];
-            document?: components["schemas"]["DocumentDtoRequest"];
-            /** Format: uuid */
-            address?: string;
-            /** @enum {string} */
-            relationship?: "GRANDPARENT" | "GREAT_GRANDPARENT" | "GREAT_GRANDCHILD" | "SIBLING_IN_LAW" | "SPOUSE" | "CHILD" | "SIBLING" | "GRANDCHILD" | "PARENT" | "NEPHEW_NIECE" | "PARENT_IN_LAW" | "UNCLE_AUNT" | "SON_DAUGHTER_IN_LAW" | "TUTOR" | "OTHER";
-        };
-        PersonalInfoDtoRequest: {
-            name: string;
-            firstSurname: string;
-            secondSurname?: string;
-            nationality?: string;
-            /** Format: date-time */
-            birthDate?: string;
-            /** @enum {string} */
-            gender?: "MALE" | "FEMALE" | "OTHER";
-        };
-        PartialDocumentDtoRequest: {
-            /** @enum {string} */
-            type: "NIF" | "NIE" | "PASSPORT" | "OTHER";
-            number: string;
-            supportNumber?: string;
-        };
-        PartialPersonDtoRequest: {
-            personalInfo: components["schemas"]["PartialPersonalInfoDtoRequest"];
-            document: components["schemas"]["PartialDocumentDtoRequest"];
-        };
-        PartialPersonalInfoDtoRequest: {
-            name: string;
-            firstSurname: string;
-            secondSurname?: string;
-            nationality: string;
-            /** Format: date-time */
-            birthDate: string;
-            /** @enum {string} */
-            gender: "MALE" | "FEMALE" | "OTHER";
-        };
-        EmployeeDtoCreate: {
-            name: string;
-            surname: string;
-            /** Format: email */
-            email: string;
-        };
-        EmployeeDtoCredentialsResponse: {
-            /** Format: uuid */
-            id: string;
-            email: string;
-            password: string;
-        };
-        UpdatePasswordDto: {
-            username: string;
-            currentPassword: string;
-            newPassword: string;
-        };
-        LoginRequest: {
-            username?: string;
-            password?: string;
-            rememberMe?: boolean;
-        };
-        AddressDtoRequest: {
-            addressLine1: string;
-            addressLine2?: string;
-            municipality: string;
-            postalCode: string;
-            country?: string;
-        };
-        EntityDtoCreated: {
-            /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-        };
-        EmployeeDtoPatch: {
-            enabled?: boolean;
-            name?: string;
-            surname?: string;
-            /** Format: email */
-            email?: string;
-        };
-        EmployeeDtoAccommodationResponse: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-        };
-        EmployeeDtoResponse: {
-            /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            enabled: boolean;
-            /** Format: date-time */
-            disabledAt?: string;
-            name: string;
-            surname: string;
-            email: string;
-            accommodations: components["schemas"]["EmployeeDtoAccommodationResponse"][];
-        };
-        PageMetadata: {
-            /** Format: int64 */
-            size?: number;
-            /** Format: int64 */
-            number?: number;
-            /** Format: int64 */
-            totalElements?: number;
-            /** Format: int64 */
-            totalPages?: number;
-        };
-        PagedModelEmployeeDtoResponse: {
-            content?: components["schemas"]["EmployeeDtoResponse"][];
-            page?: components["schemas"]["PageMetadata"];
-        };
-        ConfigDtoResponse: {
-            sesUsername: string;
-            sesPassword: string;
-            sesLandlordCode: string;
-            sesCredentialsValid: boolean;
-            digitalSignatureEnabled: boolean;
-            manualReviewEnabled: boolean;
-        };
-        AccountDto: {
-            username: string;
-            roles: string[];
-        };
-        AddressDtoResponse: {
-            /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            addressLine1: string;
-            addressLine2?: string;
-            municipality: string;
-            postalCode: string;
-            country: string;
-        };
-        AccommodationDtoEmployeeResponse: {
-            enabled: boolean;
-            /** Format: uuid */
-            id: string;
-            name: string;
-            email: string;
-        };
-        AccommodationDtoResponse: {
-            /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            name: string;
-            sesCode: string;
-            internetConnection?: boolean;
-            employees: components["schemas"]["AccommodationDtoEmployeeResponse"][];
-        };
-        PagedModelAccommodationDtoResponse: {
-            content?: components["schemas"]["AccommodationDtoResponse"][];
-            page?: components["schemas"]["PageMetadata"];
-        };
-        BookingDtoResponse: {
-            /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            /** Format: uuid */
-            createdBy: string;
-            /** Format: uuid */
-            lastModifiedBy: string;
-            /** @enum {string} */
-            status: "DRAFT" | "CONFIRMATION_READY" | "PENDING_CONFIRMATION" | "CONFIRMED" | "CHECK_IN_READY" | "PENDING_CHECK_IN" | "CHECKED_IN" | "PENDING_CANCELLATION" | "CANCELLED";
-            selfCheckInRequested: boolean;
-            canBeModified: boolean;
-            canBeDeleted: boolean;
-            /** Format: date-time */
-            startTime: string;
-            /** Format: date-time */
-            endTime: string;
-            /** Format: int32 */
-            numberOfPeople: number;
-            payment?: components["schemas"]["PaymentDtoResponse"];
-            /** Format: int32 */
-            numberOfRooms?: number;
-            internetConnection?: boolean;
-            holderName?: string;
-            communications: components["schemas"]["CommunicationDtoResponse"][];
-        };
-        CommunicationDtoResponse: {
-            /** Format: uuid */
-            id: string;
-            /** @enum {string} */
-            type: "BOOKING" | "CHECKIN" | "CANCELLATION";
-            /** @enum {string} */
-            status: "PENDING" | "SENT" | "SUCCEEDED" | "FAILED" | "PENDING_VOIDED" | "VOIDED";
-            /** Format: date-time */
-            sentTimestamp?: string;
-            error?: string;
-        };
-        PagedModelBookingDtoResponse: {
-            content?: components["schemas"]["BookingDtoResponse"][];
-            page?: components["schemas"]["PageMetadata"];
-        };
-        PaymentDtoResponse: {
-            /** @enum {string} */
-            type: "CASH" | "CREDIT_CARD" | "PLATFORM" | "TRANSFER" | "MOBILE" | "GIFT_CARD" | "ON_SITE" | "OTHER";
-            mean?: string;
-            holder?: string;
-            /** Format: date-time */
-            date?: string;
-            /** Format: date-time */
-            expiryDate?: string;
-        };
-        ContactInfoDtoResponse: {
-            phoneNumber1?: string;
-            phoneNumber2?: string;
-            email?: string;
-        };
-        DocumentDtoResponse: {
-            /** @enum {string} */
-            type: "NIF" | "NIE" | "PASSPORT" | "OTHER";
-            number: string;
-            supportNumber?: string;
-        };
-        PersonDtoResponse: {
-            /** Format: uuid */
-            id: string;
-            /** Format: date-time */
-            createdAt: string;
-            /** Format: date-time */
-            updatedAt: string;
-            personalInfo: components["schemas"]["PersonalInfoDtoResponse"];
-            contactInfo: components["schemas"]["ContactInfoDtoResponse"];
-            document?: components["schemas"]["DocumentDtoResponse"];
-            /** Format: uuid */
-            address?: string;
-            /** @enum {string} */
-            relationship?: "GRANDPARENT" | "GREAT_GRANDPARENT" | "GREAT_GRANDCHILD" | "SIBLING_IN_LAW" | "SPOUSE" | "CHILD" | "SIBLING" | "GRANDCHILD" | "PARENT" | "NEPHEW_NIECE" | "PARENT_IN_LAW" | "UNCLE_AUNT" | "SON_DAUGHTER_IN_LAW" | "TUTOR" | "OTHER";
-        };
-        PersonalInfoDtoResponse: {
-            name: string;
-            firstSurname: string;
-            secondSurname?: string;
-            nationality?: string;
-            /** Format: date-time */
-            birthDate?: string;
-            /** @enum {string} */
-            gender?: "MALE" | "FEMALE" | "OTHER";
-        };
-    };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+	schemas: {
+		ProblemDetail: {
+			/** Format: uri */
+			type?: string;
+			title?: string;
+			/** Format: int32 */
+			status?: number;
+			detail?: string;
+			/** Format: uri */
+			instance?: string;
+			properties?: {
+				[key: string]: unknown;
+			};
+		};
+		ConfigDtoRequest: {
+			sesUsername?: string;
+			sesPassword?: string;
+			sesLandlordCode?: string;
+			digitalSignatureEnabled: boolean;
+			manualReviewEnabled: boolean;
+		};
+		AccommodationDtoRequest: {
+			name: string;
+			sesCode: string;
+			internetConnection?: boolean;
+		};
+		BookingDtoRequest: {
+			/** Format: date-time */
+			startTime: string;
+			/** Format: date-time */
+			endTime: string;
+			/** Format: int32 */
+			numberOfPeople: number;
+			payment?: components['schemas']['PaymentDtoRequest'];
+			/** Format: int32 */
+			numberOfRooms?: number;
+			internetConnection?: boolean;
+		};
+		PaymentDtoRequest: {
+			/** @enum {string} */
+			type:
+				| 'CASH'
+				| 'CREDIT_CARD'
+				| 'PLATFORM'
+				| 'TRANSFER'
+				| 'MOBILE'
+				| 'GIFT_CARD'
+				| 'ON_SITE'
+				| 'OTHER';
+			mean?: string;
+			holder?: string;
+			/** Format: date-time */
+			date?: string;
+			/** Format: date-time */
+			expiryDate?: string;
+		};
+		ContactInfoDtoRequest: {
+			phoneNumber1?: string;
+			phoneNumber2?: string;
+			/** Format: email */
+			email?: string;
+		};
+		DocumentDtoRequest: {
+			/** @enum {string} */
+			type: 'NIF' | 'NIE' | 'PASSPORT' | 'OTHER';
+			number: string;
+			supportNumber?: string;
+		};
+		PersonDtoRequest: {
+			personalInfo: components['schemas']['PersonalInfoDtoRequest'];
+			contactInfo: components['schemas']['ContactInfoDtoRequest'];
+			document?: components['schemas']['DocumentDtoRequest'];
+			/** Format: uuid */
+			address?: string;
+			/** @enum {string} */
+			relationship?:
+				| 'GRANDPARENT'
+				| 'GREAT_GRANDPARENT'
+				| 'GREAT_GRANDCHILD'
+				| 'SIBLING_IN_LAW'
+				| 'SPOUSE'
+				| 'CHILD'
+				| 'SIBLING'
+				| 'GRANDCHILD'
+				| 'PARENT'
+				| 'NEPHEW_NIECE'
+				| 'PARENT_IN_LAW'
+				| 'UNCLE_AUNT'
+				| 'SON_DAUGHTER_IN_LAW'
+				| 'TUTOR'
+				| 'OTHER';
+		};
+		PersonalInfoDtoRequest: {
+			name: string;
+			firstSurname: string;
+			secondSurname?: string;
+			nationality?: string;
+			/** Format: date-time */
+			birthDate?: string;
+			/** @enum {string} */
+			gender?: 'MALE' | 'FEMALE' | 'OTHER';
+		};
+		PartialDocumentDtoRequest: {
+			/** @enum {string} */
+			type: 'NIF' | 'NIE' | 'PASSPORT' | 'OTHER';
+			number: string;
+			supportNumber?: string;
+		};
+		PartialPersonDtoRequest: {
+			personalInfo: components['schemas']['PartialPersonalInfoDtoRequest'];
+			document: components['schemas']['PartialDocumentDtoRequest'];
+		};
+		PartialPersonalInfoDtoRequest: {
+			name: string;
+			firstSurname: string;
+			secondSurname?: string;
+			nationality: string;
+			/** Format: date-time */
+			birthDate: string;
+			/** @enum {string} */
+			gender: 'MALE' | 'FEMALE' | 'OTHER';
+		};
+		EmployeeDtoCreate: {
+			name: string;
+			surname: string;
+			/** Format: email */
+			email: string;
+		};
+		EmployeeDtoCredentialsResponse: {
+			/** Format: uuid */
+			id: string;
+			email: string;
+			password: string;
+		};
+		UpdatePasswordDto: {
+			username: string;
+			currentPassword: string;
+			newPassword: string;
+		};
+		LoginRequest: {
+			username?: string;
+			password?: string;
+			rememberMe?: boolean;
+		};
+		AddressDtoRequest: {
+			addressLine1: string;
+			addressLine2?: string;
+			municipality: string;
+			postalCode: string;
+			country: string;
+		};
+		EntityDtoCreated: {
+			/** Format: uuid */
+			id: string;
+			/** Format: date-time */
+			createdAt: string;
+		};
+		EmployeeDtoPatch: {
+			enabled?: boolean;
+			name?: string;
+			surname?: string;
+			/** Format: email */
+			email?: string;
+		};
+		EmployeeDtoAccommodationResponse: {
+			/** Format: uuid */
+			id: string;
+			name: string;
+		};
+		EmployeeDtoResponse: {
+			/** Format: uuid */
+			id: string;
+			/** Format: date-time */
+			createdAt: string;
+			/** Format: date-time */
+			updatedAt: string;
+			enabled: boolean;
+			/** Format: date-time */
+			disabledAt?: string;
+			name: string;
+			surname: string;
+			email: string;
+			accommodations: components['schemas']['EmployeeDtoAccommodationResponse'][];
+		};
+		PageMetadata: {
+			/** Format: int64 */
+			size?: number;
+			/** Format: int64 */
+			number?: number;
+			/** Format: int64 */
+			totalElements?: number;
+			/** Format: int64 */
+			totalPages?: number;
+		};
+		PagedModelEmployeeDtoResponse: {
+			content?: components['schemas']['EmployeeDtoResponse'][];
+			page?: components['schemas']['PageMetadata'];
+		};
+		ConfigDtoResponse: {
+			sesUsername: string;
+			sesPassword: string;
+			sesLandlordCode: string;
+			sesCredentialsValid: boolean;
+			digitalSignatureEnabled: boolean;
+			manualReviewEnabled: boolean;
+		};
+		AccountDto: {
+			username: string;
+			roles: string[];
+		};
+		AddressDtoResponse: {
+			/** Format: uuid */
+			id: string;
+			/** Format: date-time */
+			createdAt: string;
+			/** Format: date-time */
+			updatedAt: string;
+			addressLine1: string;
+			addressLine2?: string;
+			municipality: string;
+			postalCode: string;
+			country: string;
+		};
+		AccommodationDtoEmployeeResponse: {
+			enabled: boolean;
+			/** Format: uuid */
+			id: string;
+			name: string;
+			email: string;
+		};
+		AccommodationDtoResponse: {
+			/** Format: uuid */
+			id: string;
+			/** Format: date-time */
+			createdAt: string;
+			/** Format: date-time */
+			updatedAt: string;
+			name: string;
+			sesCode: string;
+			internetConnection?: boolean;
+			employees: components['schemas']['AccommodationDtoEmployeeResponse'][];
+		};
+		PagedModelAccommodationDtoResponse: {
+			content?: components['schemas']['AccommodationDtoResponse'][];
+			page?: components['schemas']['PageMetadata'];
+		};
+		BookingDtoResponse: {
+			/** Format: uuid */
+			id: string;
+			/** Format: date-time */
+			createdAt: string;
+			/** Format: date-time */
+			updatedAt: string;
+			/** Format: uuid */
+			createdBy: string;
+			/** Format: uuid */
+			lastModifiedBy: string;
+			/** @enum {string} */
+			status:
+				| 'DRAFT'
+				| 'CONFIRMATION_READY'
+				| 'PENDING_CONFIRMATION'
+				| 'CONFIRMED'
+				| 'CHECK_IN_READY'
+				| 'PENDING_CHECK_IN'
+				| 'CHECKED_IN'
+				| 'PENDING_CANCELLATION'
+				| 'CANCELLED';
+			selfCheckInRequested: boolean;
+			canBeModified: boolean;
+			canBeDeleted: boolean;
+			/** Format: date-time */
+			startTime: string;
+			/** Format: date-time */
+			endTime: string;
+			/** Format: int32 */
+			numberOfPeople: number;
+			payment?: components['schemas']['PaymentDtoResponse'];
+			/** Format: int32 */
+			numberOfRooms?: number;
+			internetConnection?: boolean;
+			holderName?: string;
+			communications: components['schemas']['CommunicationDtoResponse'][];
+		};
+		CommunicationDtoResponse: {
+			/** Format: uuid */
+			id: string;
+			/** @enum {string} */
+			type: 'BOOKING' | 'CHECKIN' | 'CANCELLATION';
+			/** @enum {string} */
+			status:
+				| 'PENDING'
+				| 'SENT'
+				| 'SUCCEEDED'
+				| 'FAILED'
+				| 'PENDING_VOIDED'
+				| 'VOIDED';
+			/** Format: date-time */
+			sentTimestamp?: string;
+			error?: string;
+		};
+		PagedModelBookingDtoResponse: {
+			content?: components['schemas']['BookingDtoResponse'][];
+			page?: components['schemas']['PageMetadata'];
+		};
+		PaymentDtoResponse: {
+			/** @enum {string} */
+			type:
+				| 'CASH'
+				| 'CREDIT_CARD'
+				| 'PLATFORM'
+				| 'TRANSFER'
+				| 'MOBILE'
+				| 'GIFT_CARD'
+				| 'ON_SITE'
+				| 'OTHER';
+			mean?: string;
+			holder?: string;
+			/** Format: date-time */
+			date?: string;
+			/** Format: date-time */
+			expiryDate?: string;
+		};
+		ContactInfoDtoResponse: {
+			phoneNumber1?: string;
+			phoneNumber2?: string;
+			email?: string;
+		};
+		DocumentDtoResponse: {
+			/** @enum {string} */
+			type: 'NIF' | 'NIE' | 'PASSPORT' | 'OTHER';
+			number: string;
+			supportNumber?: string;
+		};
+		PersonDtoResponse: {
+			/** Format: uuid */
+			id: string;
+			/** Format: date-time */
+			createdAt: string;
+			/** Format: date-time */
+			updatedAt: string;
+			personalInfo: components['schemas']['PersonalInfoDtoResponse'];
+			contactInfo: components['schemas']['ContactInfoDtoResponse'];
+			document?: components['schemas']['DocumentDtoResponse'];
+			/** Format: uuid */
+			address?: string;
+			/** @enum {string} */
+			relationship?:
+				| 'GRANDPARENT'
+				| 'GREAT_GRANDPARENT'
+				| 'GREAT_GRANDCHILD'
+				| 'SIBLING_IN_LAW'
+				| 'SPOUSE'
+				| 'CHILD'
+				| 'SIBLING'
+				| 'GRANDCHILD'
+				| 'PARENT'
+				| 'NEPHEW_NIECE'
+				| 'PARENT_IN_LAW'
+				| 'UNCLE_AUNT'
+				| 'SON_DAUGHTER_IN_LAW'
+				| 'TUTOR'
+				| 'OTHER';
+		};
+		PersonalInfoDtoResponse: {
+			name: string;
+			firstSurname: string;
+			secondSurname?: string;
+			nationality?: string;
+			/** Format: date-time */
+			birthDate?: string;
+			/** @enum {string} */
+			gender?: 'MALE' | 'FEMALE' | 'OTHER';
+		};
+	};
+	responses: never;
+	parameters: never;
+	requestBodies: never;
+	headers: never;
+	pathItems: never;
 }
 export type ProblemDetail = components['schemas']['ProblemDetail'];
 export type ConfigDtoRequest = components['schemas']['ConfigDtoRequest'];
-export type AccommodationDtoRequest = components['schemas']['AccommodationDtoRequest'];
+export type AccommodationDtoRequest =
+	components['schemas']['AccommodationDtoRequest'];
 export type BookingDtoRequest = components['schemas']['BookingDtoRequest'];
 export type PaymentDtoRequest = components['schemas']['PaymentDtoRequest'];
-export type ContactInfoDtoRequest = components['schemas']['ContactInfoDtoRequest'];
+export type ContactInfoDtoRequest =
+	components['schemas']['ContactInfoDtoRequest'];
 export type DocumentDtoRequest = components['schemas']['DocumentDtoRequest'];
 export type PersonDtoRequest = components['schemas']['PersonDtoRequest'];
-export type PersonalInfoDtoRequest = components['schemas']['PersonalInfoDtoRequest'];
-export type PartialDocumentDtoRequest = components['schemas']['PartialDocumentDtoRequest'];
-export type PartialPersonDtoRequest = components['schemas']['PartialPersonDtoRequest'];
-export type PartialPersonalInfoDtoRequest = components['schemas']['PartialPersonalInfoDtoRequest'];
+export type PersonalInfoDtoRequest =
+	components['schemas']['PersonalInfoDtoRequest'];
+export type PartialDocumentDtoRequest =
+	components['schemas']['PartialDocumentDtoRequest'];
+export type PartialPersonDtoRequest =
+	components['schemas']['PartialPersonDtoRequest'];
+export type PartialPersonalInfoDtoRequest =
+	components['schemas']['PartialPersonalInfoDtoRequest'];
 export type EmployeeDtoCreate = components['schemas']['EmployeeDtoCreate'];
-export type EmployeeDtoCredentialsResponse = components['schemas']['EmployeeDtoCredentialsResponse'];
+export type EmployeeDtoCredentialsResponse =
+	components['schemas']['EmployeeDtoCredentialsResponse'];
 export type UpdatePasswordDto = components['schemas']['UpdatePasswordDto'];
 export type LoginRequest = components['schemas']['LoginRequest'];
 export type AddressDtoRequest = components['schemas']['AddressDtoRequest'];
 export type EntityDtoCreated = components['schemas']['EntityDtoCreated'];
 export type EmployeeDtoPatch = components['schemas']['EmployeeDtoPatch'];
-export type EmployeeDtoAccommodationResponse = components['schemas']['EmployeeDtoAccommodationResponse'];
+export type EmployeeDtoAccommodationResponse =
+	components['schemas']['EmployeeDtoAccommodationResponse'];
 export type EmployeeDtoResponse = components['schemas']['EmployeeDtoResponse'];
 export type PageMetadata = components['schemas']['PageMetadata'];
-export type PagedModelEmployeeDtoResponse = components['schemas']['PagedModelEmployeeDtoResponse'];
+export type PagedModelEmployeeDtoResponse =
+	components['schemas']['PagedModelEmployeeDtoResponse'];
 export type ConfigDtoResponse = components['schemas']['ConfigDtoResponse'];
 export type AccountDto = components['schemas']['AccountDto'];
 export type AddressDtoResponse = components['schemas']['AddressDtoResponse'];
-export type AccommodationDtoEmployeeResponse = components['schemas']['AccommodationDtoEmployeeResponse'];
-export type AccommodationDtoResponse = components['schemas']['AccommodationDtoResponse'];
-export type PagedModelAccommodationDtoResponse = components['schemas']['PagedModelAccommodationDtoResponse'];
+export type AccommodationDtoEmployeeResponse =
+	components['schemas']['AccommodationDtoEmployeeResponse'];
+export type AccommodationDtoResponse =
+	components['schemas']['AccommodationDtoResponse'];
+export type PagedModelAccommodationDtoResponse =
+	components['schemas']['PagedModelAccommodationDtoResponse'];
 export type BookingDtoResponse = components['schemas']['BookingDtoResponse'];
-export type CommunicationDtoResponse = components['schemas']['CommunicationDtoResponse'];
-export type PagedModelBookingDtoResponse = components['schemas']['PagedModelBookingDtoResponse'];
+export type CommunicationDtoResponse =
+	components['schemas']['CommunicationDtoResponse'];
+export type PagedModelBookingDtoResponse =
+	components['schemas']['PagedModelBookingDtoResponse'];
 export type PaymentDtoResponse = components['schemas']['PaymentDtoResponse'];
-export type ContactInfoDtoResponse = components['schemas']['ContactInfoDtoResponse'];
+export type ContactInfoDtoResponse =
+	components['schemas']['ContactInfoDtoResponse'];
 export type DocumentDtoResponse = components['schemas']['DocumentDtoResponse'];
 export type PersonDtoResponse = components['schemas']['PersonDtoResponse'];
-export type PersonalInfoDtoResponse = components['schemas']['PersonalInfoDtoResponse'];
+export type PersonalInfoDtoResponse =
+	components['schemas']['PersonalInfoDtoResponse'];
 export type $defs = Record<string, never>;
 export interface operations {
-    getConfig: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ConfigDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    updateConfig: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ConfigDtoRequest"];
-            };
-        };
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AccommodationDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    updateAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AccommodationDtoRequest"];
-            };
-        };
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    deleteAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Accepted */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getBookingById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["BookingDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    updateBooking: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BookingDtoRequest"];
-            };
-        };
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    deleteBooking: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getPerson: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                bookingId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PersonDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    updatePerson: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                bookingId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PersonDtoRequest"];
-            };
-        };
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    removePerson: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                bookingId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    extractPersonInfoFromMrz: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": {
-                    /** Format: binary */
-                    file: string;
-                };
-            };
-        };
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PartialPersonDtoRequest"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Unprocessable Content */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Service Unavailable */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getEmployees: {
-        parameters: {
-            query?: {
-                /** @description Zero-based page index (0..N) */
-                page?: number;
-                /** @description The size of the page to be returned */
-                size?: number;
-                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-                sort?: string[];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagedModelEmployeeDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    createEmployee: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EmployeeDtoCreate"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EmployeeDtoCredentialsResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    resetEmployeePassword: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EmployeeDtoCredentialsResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    validateSesCredentials: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Service Unavailable */
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    updatePassword: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdatePasswordDto"];
-            };
-        };
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    logout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    login: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/x-www-form-urlencoded": components["schemas"]["LoginRequest"];
-            };
-        };
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Unauthorized */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    createAddress: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AddressDtoRequest"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EntityDtoCreated"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getAccommodations: {
-        parameters: {
-            query?: {
-                /** @description Zero-based page index (0..N) */
-                page?: number;
-                /** @description The size of the page to be returned */
-                size?: number;
-                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-                sort?: string[];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagedModelAccommodationDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    createAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AccommodationDtoRequest"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EntityDtoCreated"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    assignEmployeeToAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                employeeId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    unassignEmployeeFromAccommodation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                employeeId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getBookingsByAccommodation: {
-        parameters: {
-            query?: {
-                /** @description Zero-based page index (0..N) */
-                page?: number;
-                /** @description The size of the page to be returned */
-                size?: number;
-                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
-                sort?: string[];
-                startRange?: string;
-                endRange?: string;
-            };
-            header?: never;
-            path: {
-                accommodationId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PagedModelBookingDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    createBooking: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BookingDtoRequest"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EntityDtoCreated"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    requestSelfCheckInForBooking: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    confirmBooking: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    checkInBooking: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Check-in request accepted and is pending processing */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Check-in processed successfully immediately */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    cancelBooking: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getPeople: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                bookingId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["PersonDtoResponse"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    addPerson: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                bookingId: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["PersonDtoRequest"];
-            };
-        };
-        responses: {
-            /** @description Created */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EntityDtoCreated"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getEmployee: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["EmployeeDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    deleteEmployee: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Accepted */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    updateEmployee: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["EmployeeDtoPatch"];
-            };
-        };
-        responses: {
-            /** @description No Content */
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Conflict */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getPersonRelationships: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": string[];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getPersonGenders: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": string[];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getPaymentTypes: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": string[];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getDocumentTypes: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": string[];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getCountries: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": string[];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getSpanishProvinces: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getSpanishMunicipalities: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                provinceCode: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": {
-                        [key: string]: string;
-                    };
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getSpanishPostalCodes: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                provinceCode: string;
-                municipalityCode: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": string[];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    me: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AccountDto"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getAddressById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AddressDtoResponse"];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
-    getBookingAddresses: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                accommodationId: string;
-                bookingId: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["AddressDtoResponse"][];
-                };
-            };
-            /** @description Bad Request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-            /** @description Not Found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/problem+json": components["schemas"]["ProblemDetail"];
-                };
-            };
-        };
-    };
+	getConfig: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['ConfigDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	updateConfig: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['ConfigDtoRequest'];
+			};
+		};
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getAccommodation: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['AccommodationDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	updateAccommodation: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['AccommodationDtoRequest'];
+			};
+		};
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	deleteAccommodation: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Accepted */
+			202: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getBookingById: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['BookingDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	updateBooking: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['BookingDtoRequest'];
+			};
+		};
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	deleteBooking: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getPerson: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				bookingId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['PersonDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	updatePerson: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				bookingId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['PersonDtoRequest'];
+			};
+		};
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	removePerson: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				bookingId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	extractPersonInfoFromMrz: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: {
+			content: {
+				'multipart/form-data': {
+					/** Format: binary */
+					file: string;
+				};
+			};
+		};
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['PartialPersonDtoRequest'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Unprocessable Content */
+			422: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Service Unavailable */
+			503: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getEmployees: {
+		parameters: {
+			query?: {
+				/** @description Zero-based page index (0..N) */
+				page?: number;
+				/** @description The size of the page to be returned */
+				size?: number;
+				/** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+				sort?: string[];
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['PagedModelEmployeeDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	createEmployee: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['EmployeeDtoCreate'];
+			};
+		};
+		responses: {
+			/** @description Created */
+			201: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['EmployeeDtoCredentialsResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	resetEmployeePassword: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['EmployeeDtoCredentialsResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	validateSesCredentials: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Service Unavailable */
+			503: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	updatePassword: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['UpdatePasswordDto'];
+			};
+		};
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	logout: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	login: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/x-www-form-urlencoded': components['schemas']['LoginRequest'];
+			};
+		};
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Unauthorized */
+			401: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	createAddress: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['AddressDtoRequest'];
+			};
+		};
+		responses: {
+			/** @description Created */
+			201: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['EntityDtoCreated'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getAccommodations: {
+		parameters: {
+			query?: {
+				/** @description Zero-based page index (0..N) */
+				page?: number;
+				/** @description The size of the page to be returned */
+				size?: number;
+				/** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+				sort?: string[];
+			};
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['PagedModelAccommodationDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	createAccommodation: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['AccommodationDtoRequest'];
+			};
+		};
+		responses: {
+			/** @description Created */
+			201: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['EntityDtoCreated'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	assignEmployeeToAccommodation: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				employeeId: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	unassignEmployeeFromAccommodation: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				employeeId: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getBookingsByAccommodation: {
+		parameters: {
+			query?: {
+				/** @description Zero-based page index (0..N) */
+				page?: number;
+				/** @description The size of the page to be returned */
+				size?: number;
+				/** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+				sort?: string[];
+				startRange?: string;
+				endRange?: string;
+			};
+			header?: never;
+			path: {
+				accommodationId: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['PagedModelBookingDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	createBooking: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['BookingDtoRequest'];
+			};
+		};
+		responses: {
+			/** @description Created */
+			201: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['EntityDtoCreated'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	requestSelfCheckInForBooking: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	confirmBooking: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	checkInBooking: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Check-in request accepted and is pending processing */
+			202: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Check-in processed successfully immediately */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	cancelBooking: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getPeople: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				bookingId: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['PersonDtoResponse'][];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	addPerson: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				bookingId: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['PersonDtoRequest'];
+			};
+		};
+		responses: {
+			/** @description Created */
+			201: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['EntityDtoCreated'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getEmployee: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['EmployeeDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	deleteEmployee: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description Accepted */
+			202: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	updateEmployee: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody: {
+			content: {
+				'application/json': components['schemas']['EmployeeDtoPatch'];
+			};
+		};
+		responses: {
+			/** @description No Content */
+			204: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content?: never;
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Conflict */
+			409: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getPersonRelationships: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': string[];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getPersonGenders: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': string[];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getPaymentTypes: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': string[];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getDocumentTypes: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': string[];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getCountries: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': string[];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getSpanishProvinces: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': {
+						[key: string]: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getSpanishMunicipalities: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				provinceCode: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': {
+						[key: string]: string;
+					};
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getSpanishPostalCodes: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				provinceCode: string;
+				municipalityCode: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': string[];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	me: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path?: never;
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['AccountDto'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getAddressById: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				id: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['AddressDtoResponse'];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
+	getBookingAddresses: {
+		parameters: {
+			query?: never;
+			header?: never;
+			path: {
+				accommodationId: string;
+				bookingId: string;
+			};
+			cookie?: never;
+		};
+		requestBody?: never;
+		responses: {
+			/** @description OK */
+			200: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'*/*': components['schemas']['AddressDtoResponse'][];
+				};
+			};
+			/** @description Bad Request */
+			400: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+			/** @description Not Found */
+			404: {
+				headers: {
+					[name: string]: unknown;
+				};
+				content: {
+					'application/problem+json': components['schemas']['ProblemDetail'];
+				};
+			};
+		};
+	};
 }

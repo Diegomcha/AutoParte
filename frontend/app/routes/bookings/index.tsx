@@ -628,5 +628,5 @@ export default function BookingsPage({
 }
 
 export function useBooking() {
-	return useOutletContext<ContextType>();
+	return useOutletContext<ContextType>().booking;
 }

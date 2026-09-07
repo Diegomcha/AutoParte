@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PersonRepo extends CrudRepository<Person, UUID> {
-    List<Person> findByBookingAccommodationIdAndBookingId(UUID accommodationId, UUID bookingId);
+    List<Person> findByBookingAccommodationIdAndBookingIdOrderById(UUID accommodationId, UUID bookingId);
     Optional<Person> findByBookingAccommodationIdAndBookingIdAndId(UUID accommodationId, UUID bookingId, UUID id);
 }
