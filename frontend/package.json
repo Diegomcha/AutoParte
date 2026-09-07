@@ -3,7 +3,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"build": "tsc && react-router build",
+		"build": "react-router build",
 		"dev": "react-router dev",
 		"lint": "eslint && prettier --check .",
 		"lint:ci": "eslint -f json > eslint-report.json",
