@@ -1,12 +1,15 @@
-import PersonForm from '~/component/PersonForm';
-import { queryClient, queryFactory } from '~/services/Api';
-import Validators from '~/services/Validators';
-import { Outlet } from 'react-router';
-import { useBooking } from '..';
-import type { Route } from './+types/edit';
+import { Outlet } from "react-router";
+
+import { useBooking } from "..";
+
+import PersonForm from "~/component/PersonForm";
+import { queryClient, queryFactory } from "~/services/Api";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types/edit";
 
 export async function clientLoader({
-	params: { accommodationId, bookingId, id },
+	params: { accommodationId, bookingId, id }
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId, id);
 
@@ -17,13 +20,13 @@ export async function clientLoader({
 				bookingId,
 				id
 			)
-		),
+		)
 	};
 }
 
 export default function EditPerson({
 	params: { accommodationId, bookingId },
-	loaderData: { person },
+	loaderData: { person }
 }: Route.ComponentProps) {
 	const booking = useBooking();
 

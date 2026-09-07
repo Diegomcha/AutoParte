@@ -1,3 +1,5 @@
+import { useSubmit } from "react-router";
+
 import {
 	Button,
 	Center,
@@ -6,14 +8,16 @@ import {
 	PasswordInput,
 	Stack,
 	TextInput,
-	Title,
-} from '@mantine/core';
-import { isNotEmpty, useForm } from '@mantine/form';
-import { useTranslation } from 'react-i18next';
-import { useSubmit } from 'react-router';
-import AuthService from '../../services/AuthService';
-import type { Route } from './+types/login';
-import type { LoginRequest } from '~/@types/api';
+	Title
+} from "@mantine/core";
+import { isNotEmpty, useForm } from "@mantine/form";
+
+import { useTranslation } from "react-i18next";
+
+import AuthService from "../../services/AuthService";
+
+import type { LoginRequest } from "~/@types/api";
+import type { Route } from "./+types/login";
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	if (await AuthService.isAuthenticated())
@@ -26,27 +30,27 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 }
 
 export default function LoginPage({
-	actionData: logInSuccess,
+	actionData: logInSuccess
 }: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const submit = useSubmit();
 
 	const form = useForm({
 		initialValues: {
-			username: '',
-			password: '',
-			rememberMe: false,
+			username: "",
+			password: "",
+			rememberMe: false
 		},
 		validate: {
 			username: isNotEmpty(t(($) => $.auth.login.form.errors.noUsername)),
-			password: isNotEmpty(t(($) => $.auth.login.form.errors.noPassword)),
-		},
+			password: isNotEmpty(t(($) => $.auth.login.form.errors.noPassword))
+		}
 	});
 
 	// Handle login failure by setting a form error on the password field
 	if (logInSuccess === false) {
 		form.setFieldError(
-			'password',
+			"password",
 			t(($) => $.auth.login.form.errors.invalidCredentials)
 		);
 	}
@@ -59,34 +63,34 @@ export default function LoginPage({
 				</Title>
 				<form
 					onSubmit={form.onSubmit((creds) =>
-						submit(creds, { encType: 'application/json', method: 'POST' })
+						submit(creds, { encType: "application/json", method: "POST" })
 					)}
 				>
 					<Stack>
 						<TextInput
-							key={form.key('username')}
+							key={form.key("username")}
 							name="username"
 							label={t(($) => $.auth.login.form.username)}
 							size="md"
 							radius="md"
-							{...form.getInputProps('username')}
+							{...form.getInputProps("username")}
 						/>
 						<PasswordInput
-							key={form.key('password')}
+							key={form.key("password")}
 							name="password"
 							label={t(($) => $.auth.login.form.password)}
 							type="password"
 							size="md"
 							radius="md"
-							{...form.getInputProps('password')}
+							{...form.getInputProps("password")}
 						/>
 						<Checkbox
-							key={form.key('rememberMe')}
+							key={form.key("rememberMe")}
 							name="remember-me"
 							label={t(($) => $.auth.login.form.rememberMe)}
 							size="md"
 							radius="md"
-							{...form.getInputProps('rememberMe')}
+							{...form.getInputProps("rememberMe")}
 						/>
 						<Button
 							type="submit"

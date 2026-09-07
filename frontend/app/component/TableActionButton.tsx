@@ -1,4 +1,4 @@
-import { ActionIcon, Tooltip } from '@mantine/core';
+import { ActionIcon, Tooltip } from "@mantine/core";
 
 export default function TableActionButton({
 	children,

@@ -1,10 +1,11 @@
-import { modulesLocales } from '~/i18n';
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 // Plugins
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-import isoWeek from 'dayjs/plugin/isoWeek';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-import relativeTime from 'dayjs/plugin/relativeTime';
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import isoWeek from "dayjs/plugin/isoWeek";
+import localizedFormat from "dayjs/plugin/localizedFormat";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+import { modulesLocales } from "~/i18n";
 
 dayjs.extend(isoWeek);
 dayjs.extend(relativeTime);

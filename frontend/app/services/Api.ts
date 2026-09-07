@@ -1,12 +1,17 @@
-import * as Sentry from '@sentry/react-router';
+import * as Sentry from "@sentry/react-router";
 import {
 	MutationObserver,
 	mutationOptions,
 	QueryClient,
-	queryOptions,
-} from '@tanstack/react-query';
-import createFetchClient from 'openapi-fetch';
-import NotificationsService from './NotificationsService';
+	queryOptions
+} from "@tanstack/react-query";
+import createFetchClient from "openapi-fetch";
+
+import NotificationsService from "./NotificationsService";
+
+import type { MutationOptions } from "@tanstack/react-query";
+import type { FetchResponse } from "openapi-fetch";
+import type { ErrorResponse } from "react-router";
 import type {
 	AccommodationDtoRequest,
 	AccommodationDtoResponse,
@@ -20,32 +25,29 @@ import type {
 	PageMetadata,
 	paths,
 	PersonDtoRequest,
-	ProblemDetail,
-} from '../@types/api';
-import type { MutationOptions } from '@tanstack/react-query';
-import type { FetchResponse } from 'openapi-fetch';
-import type { ErrorResponse } from 'react-router';
+	ProblemDetail
+} from "../@types/api";
 
-const api = createFetchClient<paths, '*/*'>({
+const api = createFetchClient<paths, "*/*">({
 	querySerializer: {
 		object: {
-			style: 'form',
-			explode: true,
-		},
+			style: "form",
+			explode: true
+		}
 	},
 	headers: {
-		'X-Requested-With': 'XMLHttpRequest',
-		Accept: 'application/json',
+		"X-Requested-With": "XMLHttpRequest",
+		Accept: "application/json"
 	},
-	credentials: 'include',
+	credentials: "include"
 });
 
 // Middleware to include CSRF token from cookies in the request headers
 api.use({
 	async onRequest({ request }) {
-		const csrfToken = await cookieStore.get('XSRF-TOKEN');
-		if (csrfToken?.value) request.headers.set('X-XSRF-TOKEN', csrfToken.value);
-	},
+		const csrfToken = await cookieStore.get("XSRF-TOKEN");
+		if (csrfToken?.value) request.headers.set("X-XSRF-TOKEN", csrfToken.value);
+	}
 });
 
 const queryClient = new QueryClient({
@@ -55,20 +57,20 @@ const queryClient = new QueryClient({
 				if (error.status >= 400 && error.status < 500) return false; // Don't retry for client errors
 				return failureCount < 3; // Retry up to 3 times for server errors
 			},
-			throwOnError: true, // Throw errors for queries to be caught
+			throwOnError: true // Throw errors for queries to be caught
 		},
 		mutations: {
 			onError: (error) => {
 				NotificationsService.error(`An error occurred: ${error.message}`); // TODO: localize this message
 				Sentry.captureException(error);
-			},
-		},
-	},
+			}
+		}
+	}
 });
 
 interface Sort {
 	columnAccessor: string;
-	direction?: 'asc' | 'desc';
+	direction?: "asc" | "desc";
 }
 
 interface RequiredPagedModel<T> {
@@ -90,25 +92,25 @@ const queryFactory = {
 	configuration: {
 		get: () =>
 			queryOptions({
-				queryKey: ['configuration'],
-				queryFn: async () => unwrapResponse(await api.GET('/api/config')),
+				queryKey: ["configuration"],
+				queryFn: async () => unwrapResponse(await api.GET("/api/config"))
 			}),
 		update: () =>
 			mutationOptions({
 				mutationFn: async (data: ConfigDtoRequest) =>
 					unwrapResponse(
-						await api.PUT('/api/config', {
-							body: data,
+						await api.PUT("/api/config", {
+							body: data
 						})
 					),
 				onSuccess: async () => {
 					await queryClient.invalidateQueries(queryFactory.configuration.get());
-				},
+				}
 			}),
 		validateSesCreds: () =>
 			mutationOptions({
 				mutationFn: async () => {
-					const res = await api.POST('/api/config/validate-ses');
+					const res = await api.POST("/api/config/validate-ses");
 
 					// Handle unauthorized error (401)
 					if (res.response.status === 401) return false;
@@ -119,60 +121,60 @@ const queryFactory = {
 				},
 				onSuccess: async () => {
 					await queryClient.invalidateQueries(queryFactory.configuration.get());
-				},
-			}),
+				}
+			})
 	},
 	employees: {
 		list: () =>
 			queryOptions({
-				queryKey: ['employees'],
+				queryKey: ["employees"],
 				queryFn: async () =>
 					unwrapResponse(
-						await api.GET('/api/employees', {
-							params: { query: { page: 0, size: 0 } },
+						await api.GET("/api/employees", {
+							params: { query: { page: 0, size: 0 } }
 						})
-					).content ?? [],
+					).content ?? []
 			}),
 		pagedList: ({
 			page,
 			size,
-			sorting,
+			sorting
 		}: {
 			page?: number;
 			size?: number;
 			sorting?: Sort[];
 		} = {}) =>
 			queryOptions({
-				queryKey: ['employees', { page, size, sorting }],
+				queryKey: ["employees", { page, size, sorting }],
 				queryFn: async () =>
 					unwrapResponse(
-						await api.GET('/api/employees', {
+						await api.GET("/api/employees", {
 							params: {
 								query: {
 									page,
 									size,
-									sort: mapSorting(sorting),
-								},
-							},
+									sort: mapSorting(sorting)
+								}
+							}
 						})
-					) as RequiredPagedModel<EmployeeDtoResponse>,
+					) as RequiredPagedModel<EmployeeDtoResponse>
 			}),
 		detail: (employeeId: string) =>
 			queryOptions({
-				queryKey: ['employees', employeeId],
+				queryKey: ["employees", employeeId],
 				queryFn: async () =>
 					unwrapResponse(
-						await api.GET('/api/employees/{id}', {
-							params: { path: { id: employeeId } },
+						await api.GET("/api/employees/{id}", {
+							params: { path: { id: employeeId } }
 						})
-					),
+					)
 			}),
 		update: (employeeId: string) =>
 			mutationOptions({
 				mutationFn: async (values: EmployeeDtoPatch) => {
-					const response = await api.PATCH('/api/employees/{id}', {
+					const response = await api.PATCH("/api/employees/{id}", {
 						params: { path: { id: employeeId } },
-						body: values,
+						body: values
 					});
 
 					// Handle email conflict error (409)
@@ -186,13 +188,13 @@ const queryFactory = {
 				onSuccess: async (success) => {
 					if (success)
 						await queryClient.invalidateQueries(queryFactory.employees.list());
-				},
+				}
 			}),
 		create: () =>
 			mutationOptions({
 				mutationFn: async (employee: EmployeeDtoCreate) => {
-					const response = await api.POST('/api/employees', {
-						body: employee,
+					const response = await api.POST("/api/employees", {
+						body: employee
 					});
 
 					// Handle email conflict error (409)
@@ -204,20 +206,20 @@ const queryFactory = {
 				onSuccess: async (createdEmployee) => {
 					if (createdEmployee)
 						await queryClient.invalidateQueries(queryFactory.employees.list());
-				},
+				}
 			}),
 		delete: (employeeId: string) =>
 			mutationOptions({
 				mutationFn: async () =>
 					unwrapResponse(
-						await api.DELETE('/api/employees/{id}', {
-							params: { path: { id: employeeId } },
+						await api.DELETE("/api/employees/{id}", {
+							params: { path: { id: employeeId } }
 						})
 					),
 				onSuccess: async () => {
 					queryClient.removeQueries(queryFactory.employees.detail(employeeId));
 					await queryClient.invalidateQueries(queryFactory.employees.list());
-				},
+				}
 			}),
 		deleteMultiple: () =>
 			mutationOptions({
@@ -225,8 +227,8 @@ const queryFactory = {
 					await Promise.all(
 						employeeIds.map(async (employeeId) =>
 							unwrapResponse(
-								await api.DELETE('/api/employees/{id}', {
-									params: { path: { id: employeeId } },
+								await api.DELETE("/api/employees/{id}", {
+									params: { path: { id: employeeId } }
 								})
 							)
 						)
@@ -238,16 +240,16 @@ const queryFactory = {
 						);
 					});
 					await queryClient.invalidateQueries(queryFactory.employees.list());
-				},
+				}
 			}),
 		resetPassword: (employeeId: string) =>
 			mutationOptions({
 				mutationFn: async () =>
 					unwrapResponse(
-						await api.POST('/api/employees/{id}/reset-password', {
-							params: { path: { id: employeeId } },
+						await api.POST("/api/employees/{id}/reset-password", {
+							params: { path: { id: employeeId } }
 						})
-					),
+					)
 			}),
 		accommodations: {
 			link: (employeeId: string) =>
@@ -255,18 +257,18 @@ const queryFactory = {
 					mutationFn: async (accommodationId: string) =>
 						unwrapResponse(
 							await api.POST(
-								'/api/accommodations/{accommodationId}/employees/{employeeId}',
+								"/api/accommodations/{accommodationId}/employees/{employeeId}",
 								{
-									params: { path: { accommodationId, employeeId } },
+									params: { path: { accommodationId, employeeId } }
 								}
 							)
 						),
 					onSuccess: async () => {
 						await Promise.all([
 							queryClient.invalidateQueries(queryFactory.accommodations.list()),
-							queryClient.invalidateQueries(queryFactory.employees.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list())
 						]);
-					},
+					}
 				}),
 			linkMultiple: (employeeId: string) =>
 				mutationOptions({
@@ -275,9 +277,9 @@ const queryFactory = {
 							accommodationIds.map(async (accommodationId) =>
 								unwrapResponse(
 									await api.POST(
-										'/api/accommodations/{accommodationId}/employees/{employeeId}',
+										"/api/accommodations/{accommodationId}/employees/{employeeId}",
 										{
-											params: { path: { accommodationId, employeeId } },
+											params: { path: { accommodationId, employeeId } }
 										}
 									)
 								)
@@ -287,27 +289,27 @@ const queryFactory = {
 					onSuccess: async () => {
 						await Promise.all([
 							queryClient.invalidateQueries(queryFactory.accommodations.list()),
-							queryClient.invalidateQueries(queryFactory.employees.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list())
 						]);
-					},
+					}
 				}),
 			unlink: (employeeId: string) =>
 				mutationOptions({
 					mutationFn: async (accommodationId: string) =>
 						unwrapResponse(
 							await api.DELETE(
-								'/api/accommodations/{accommodationId}/employees/{employeeId}',
+								"/api/accommodations/{accommodationId}/employees/{employeeId}",
 								{
-									params: { path: { accommodationId, employeeId } },
+									params: { path: { accommodationId, employeeId } }
 								}
 							)
 						),
 					onSuccess: async () => {
 						await Promise.all([
 							queryClient.invalidateQueries(queryFactory.accommodations.list()),
-							queryClient.invalidateQueries(queryFactory.employees.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list())
 						]);
-					},
+					}
 				}),
 			unlinkMultiple: (employeeId: string) =>
 				mutationOptions({
@@ -316,9 +318,9 @@ const queryFactory = {
 							accommodationIds.map(async (accommodationId) =>
 								unwrapResponse(
 									await api.DELETE(
-										'/api/accommodations/{accommodationId}/employees/{employeeId}',
+										"/api/accommodations/{accommodationId}/employees/{employeeId}",
 										{
-											params: { path: { accommodationId, employeeId } },
+											params: { path: { accommodationId, employeeId } }
 										}
 									)
 								)
@@ -328,71 +330,71 @@ const queryFactory = {
 					onSuccess: async () => {
 						await Promise.all([
 							queryClient.invalidateQueries(queryFactory.accommodations.list()),
-							queryClient.invalidateQueries(queryFactory.employees.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list())
 						]);
-					},
-				}),
-		},
+					}
+				})
+		}
 	},
 	accommodations: {
 		list: () =>
 			queryOptions({
-				queryKey: ['accommodations'],
+				queryKey: ["accommodations"],
 				queryFn: async () =>
 					unwrapResponse(
-						await api.GET('/api/accommodations', {
-							params: { query: { page: 0, size: 0 } },
+						await api.GET("/api/accommodations", {
+							params: { query: { page: 0, size: 0 } }
 						})
-					).content ?? [],
+					).content ?? []
 			}),
 		pagedList: ({
 			page,
 			size,
-			sorting,
+			sorting
 		}: {
 			page?: number;
 			size?: number;
 			sorting?: Sort[];
 		} = {}) =>
 			queryOptions({
-				queryKey: ['accommodations', { page, size, sorting }],
+				queryKey: ["accommodations", { page, size, sorting }],
 				queryFn: async () =>
 					unwrapResponse(
-						await api.GET('/api/accommodations', {
+						await api.GET("/api/accommodations", {
 							params: {
 								query: {
 									page,
 									size,
-									sort: mapSorting(sorting),
-								},
-							},
+									sort: mapSorting(sorting)
+								}
+							}
 						})
-					) as RequiredPagedModel<AccommodationDtoResponse>,
+					) as RequiredPagedModel<AccommodationDtoResponse>
 			}),
 		detail: (accommodationId: string) =>
 			queryOptions({
-				queryKey: ['accommodations', accommodationId],
+				queryKey: ["accommodations", accommodationId],
 				queryFn: async () =>
 					unwrapResponse(
-						await api.GET('/api/accommodations/{id}', {
-							params: { path: { id: accommodationId } },
+						await api.GET("/api/accommodations/{id}", {
+							params: { path: { id: accommodationId } }
 						})
-					),
+					)
 			}),
 		create: () =>
 			mutationOptions({
 				mutationFn: async (accommodation: AccommodationDtoRequest) => {
-					const response = await api.POST('/api/accommodations', {
-						body: accommodation,
+					const response = await api.POST("/api/accommodations", {
+						body: accommodation
 					});
 
 					// Handle conflicts error (409)
 					if (!response.response.ok && response.response.status === 409) {
 						const problem = response.error as ProblemDetail;
 
-						if (problem.detail?.includes('name'))
-							return [false, 'NAME_IN_USE'] as const;
-						else return [false, 'SES_CODE_IN_USE'] as const;
+						if (problem.detail?.includes("name"))
+							return [false, "NAME_IN_USE"] as const;
+						else return [false, "SES_CODE_IN_USE"] as const;
 					}
 
 					return [unwrapResponse(response), null] as const;
@@ -400,23 +402,23 @@ const queryFactory = {
 				onSuccess: async ([createdEmployee]) => {
 					if (createdEmployee)
 						await queryClient.invalidateQueries(queryFactory.employees.list());
-				},
+				}
 			}),
 		update: (accommodationId: string) =>
 			mutationOptions({
 				mutationFn: async (accommodation: AccommodationDtoRequest) => {
-					const response = await api.PUT('/api/accommodations/{id}', {
+					const response = await api.PUT("/api/accommodations/{id}", {
 						params: { path: { id: accommodationId } },
-						body: accommodation,
+						body: accommodation
 					});
 
 					// Handle conflicts error (409)
 					if (!response.response.ok && response.response.status === 409) {
 						const problem = response.error as ProblemDetail;
 
-						if (problem.detail?.includes('name'))
-							return [false, 'NAME_IN_USE'] as const;
-						else return [false, 'SES_CODE_IN_USE'] as const;
+						if (problem.detail?.includes("name"))
+							return [false, "NAME_IN_USE"] as const;
+						else return [false, "SES_CODE_IN_USE"] as const;
 					}
 
 					unwrapResponse(response);
@@ -426,14 +428,14 @@ const queryFactory = {
 				onSuccess: async ([updatedEmployee]) => {
 					if (updatedEmployee)
 						await queryClient.invalidateQueries(queryFactory.employees.list());
-				},
+				}
 			}),
 		delete: (accommodationId: string) =>
 			mutationOptions({
 				mutationFn: async () =>
 					unwrapResponse(
-						await api.DELETE('/api/accommodations/{id}', {
-							params: { path: { id: accommodationId } },
+						await api.DELETE("/api/accommodations/{id}", {
+							params: { path: { id: accommodationId } }
 						})
 					),
 				onSuccess: async () => {
@@ -443,7 +445,7 @@ const queryFactory = {
 					await queryClient.invalidateQueries(
 						queryFactory.accommodations.list()
 					);
-				},
+				}
 			}),
 		deleteMultiple: () =>
 			mutationOptions({
@@ -451,8 +453,8 @@ const queryFactory = {
 					await Promise.all(
 						accommodationIds.map(async (accommodationId) =>
 							unwrapResponse(
-								await api.DELETE('/api/accommodations/{id}', {
-									params: { path: { id: accommodationId } },
+								await api.DELETE("/api/accommodations/{id}", {
+									params: { path: { id: accommodationId } }
 								})
 							)
 						)
@@ -466,7 +468,7 @@ const queryFactory = {
 					await queryClient.invalidateQueries(
 						queryFactory.accommodations.list()
 					);
-				},
+				}
 			}),
 		employees: {
 			link: (accommodationId: string) =>
@@ -474,18 +476,18 @@ const queryFactory = {
 					mutationFn: async (employeeId: string) =>
 						unwrapResponse(
 							await api.POST(
-								'/api/accommodations/{accommodationId}/employees/{employeeId}',
+								"/api/accommodations/{accommodationId}/employees/{employeeId}",
 								{
-									params: { path: { accommodationId, employeeId } },
+									params: { path: { accommodationId, employeeId } }
 								}
 							)
 						),
 					onSuccess: async () => {
 						await Promise.all([
 							queryClient.invalidateQueries(queryFactory.accommodations.list()),
-							queryClient.invalidateQueries(queryFactory.employees.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list())
 						]);
-					},
+					}
 				}),
 			linkMultiple: (accommodationId: string) =>
 				mutationOptions({
@@ -494,9 +496,9 @@ const queryFactory = {
 							employeeIds.map(async (employeeId) =>
 								unwrapResponse(
 									await api.POST(
-										'/api/accommodations/{accommodationId}/employees/{employeeId}',
+										"/api/accommodations/{accommodationId}/employees/{employeeId}",
 										{
-											params: { path: { accommodationId, employeeId } },
+											params: { path: { accommodationId, employeeId } }
 										}
 									)
 								)
@@ -506,27 +508,27 @@ const queryFactory = {
 					onSuccess: async () => {
 						await Promise.all([
 							queryClient.invalidateQueries(queryFactory.accommodations.list()),
-							queryClient.invalidateQueries(queryFactory.employees.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list())
 						]);
-					},
+					}
 				}),
 			unlink: (accommodationId: string) =>
 				mutationOptions({
 					mutationFn: async (employeeId: string) =>
 						unwrapResponse(
 							await api.DELETE(
-								'/api/accommodations/{accommodationId}/employees/{employeeId}',
+								"/api/accommodations/{accommodationId}/employees/{employeeId}",
 								{
-									params: { path: { accommodationId, employeeId } },
+									params: { path: { accommodationId, employeeId } }
 								}
 							)
 						),
 					onSuccess: async () => {
 						await Promise.all([
 							queryClient.invalidateQueries(queryFactory.accommodations.list()),
-							queryClient.invalidateQueries(queryFactory.employees.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list())
 						]);
-					},
+					}
 				}),
 			unlinkMultiple: (accommodationId: string) =>
 				mutationOptions({
@@ -535,9 +537,9 @@ const queryFactory = {
 							employeeIds.map(async (employeeId) =>
 								unwrapResponse(
 									await api.DELETE(
-										'/api/accommodations/{accommodationId}/employees/{employeeId}',
+										"/api/accommodations/{accommodationId}/employees/{employeeId}",
 										{
-											params: { path: { accommodationId, employeeId } },
+											params: { path: { accommodationId, employeeId } }
 										}
 									)
 								)
@@ -547,82 +549,82 @@ const queryFactory = {
 					onSuccess: async () => {
 						await Promise.all([
 							queryClient.invalidateQueries(queryFactory.accommodations.list()),
-							queryClient.invalidateQueries(queryFactory.employees.list()),
+							queryClient.invalidateQueries(queryFactory.employees.list())
 						]);
-					},
-				}),
+					}
+				})
 		},
 		bookings: {
 			list: (accommodationId: string) =>
 				queryOptions({
 					queryKey: [
 						...queryFactory.accommodations.detail(accommodationId).queryKey,
-						'bookings',
+						"bookings"
 					],
 					queryFn: async () =>
 						unwrapResponse(
-							await api.GET('/api/accommodations/{accommodationId}/bookings', {
+							await api.GET("/api/accommodations/{accommodationId}/bookings", {
 								params: {
 									path: { accommodationId },
-									query: { page: 0, size: 0 },
-								},
+									query: { page: 0, size: 0 }
+								}
 							})
-						).content ?? [],
+						).content ?? []
 				}),
 			detail: (accommodationId: string, bookingId: string) =>
 				queryOptions({
 					queryKey: [
 						...queryFactory.accommodations.detail(accommodationId).queryKey,
-						'bookings',
-						bookingId,
+						"bookings",
+						bookingId
 					],
 					queryFn: async () =>
 						unwrapResponse(
 							await api.GET(
-								'/api/accommodations/{accommodationId}/bookings/{id}',
+								"/api/accommodations/{accommodationId}/bookings/{id}",
 								{
-									params: { path: { accommodationId, id: bookingId } },
+									params: { path: { accommodationId, id: bookingId } }
 								}
 							)
-						),
+						)
 				}),
 			create: () =>
 				mutationOptions({
 					mutationFn: async ({
 						accommodationId,
 						startTime,
-						endTime,
+						endTime
 					}: {
 						accommodationId: string;
 						startTime: Date;
 						endTime: Date;
 					}) =>
 						unwrapResponse(
-							await api.POST('/api/accommodations/{accommodationId}/bookings', {
+							await api.POST("/api/accommodations/{accommodationId}/bookings", {
 								params: { path: { accommodationId } },
 								body: {
 									startTime: startTime.toISOString(),
 									endTime: endTime.toISOString(),
-									numberOfPeople: 1,
-								},
+									numberOfPeople: 1
+								}
 							})
 						),
 					onSuccess: async (_, { accommodationId }) => {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
-					},
+					}
 				}),
 			update: (accommodationId: string, bookingId: string) =>
 				mutationOptions({
 					mutationFn: async (values: BookingDtoRequest) => {
 						const response = await api.PUT(
-							'/api/accommodations/{accommodationId}/bookings/{id}',
+							"/api/accommodations/{accommodationId}/bookings/{id}",
 							{
 								params: {
-									path: { accommodationId, id: bookingId },
+									path: { accommodationId, id: bookingId }
 								},
-								body: values,
+								body: values
 							}
 						);
 
@@ -638,7 +640,7 @@ const queryFactory = {
 							await queryClient.invalidateQueries(
 								queryFactory.accommodations.bookings.list(accommodationId)
 							);
-					},
+					}
 				}),
 			updateRange: () =>
 				mutationOptions({
@@ -646,7 +648,7 @@ const queryFactory = {
 						accommodationId,
 						booking,
 						newStart,
-						newEnd,
+						newEnd
 					}: {
 						accommodationId: string;
 						booking: BookingDtoResponse;
@@ -655,14 +657,14 @@ const queryFactory = {
 					}) =>
 						unwrapResponse(
 							await api.PUT(
-								'/api/accommodations/{accommodationId}/bookings/{id}',
+								"/api/accommodations/{accommodationId}/bookings/{id}",
 								{
 									params: { path: { accommodationId, id: booking.id } },
 									body: {
 										...booking,
 										startTime: newStart.toISOString(),
-										endTime: newEnd.toISOString(),
-									},
+										endTime: newEnd.toISOString()
+									}
 								}
 							)
 						),
@@ -670,16 +672,16 @@ const queryFactory = {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
-					},
+					}
 				}),
 			delete: (accommodationId: string, bookingId: string) =>
 				mutationOptions({
 					mutationFn: async () =>
 						unwrapResponse(
 							await api.DELETE(
-								'/api/accommodations/{accommodationId}/bookings/{id}',
+								"/api/accommodations/{accommodationId}/bookings/{id}",
 								{
-									params: { path: { accommodationId, id: bookingId } },
+									params: { path: { accommodationId, id: bookingId } }
 								}
 							)
 						),
@@ -693,16 +695,16 @@ const queryFactory = {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
-					},
+					}
 				}),
 			confirm: (accommodationId: string, bookingId: string) =>
 				mutationOptions({
 					mutationFn: async () =>
 						unwrapResponse(
 							await api.POST(
-								'/api/accommodations/{accommodationId}/bookings/{id}/confirm',
+								"/api/accommodations/{accommodationId}/bookings/{id}/confirm",
 								{
-									params: { path: { accommodationId, id: bookingId } },
+									params: { path: { accommodationId, id: bookingId } }
 								}
 							)
 						),
@@ -710,16 +712,16 @@ const queryFactory = {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
-					},
+					}
 				}),
 			checkIn: (accommodationId: string, bookingId: string) =>
 				mutationOptions({
 					mutationFn: async () =>
 						unwrapResponse(
 							await api.POST(
-								'/api/accommodations/{accommodationId}/bookings/{id}/check-in',
+								"/api/accommodations/{accommodationId}/bookings/{id}/check-in",
 								{
-									params: { path: { accommodationId, id: bookingId } },
+									params: { path: { accommodationId, id: bookingId } }
 								}
 							)
 						),
@@ -727,16 +729,16 @@ const queryFactory = {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
-					},
+					}
 				}),
 			cancel: (accommodationId: string, bookingId: string) =>
 				mutationOptions({
 					mutationFn: async () =>
 						unwrapResponse(
 							await api.POST(
-								'/api/accommodations/{accommodationId}/bookings/{id}/cancel',
+								"/api/accommodations/{accommodationId}/bookings/{id}/cancel",
 								{
-									params: { path: { accommodationId, id: bookingId } },
+									params: { path: { accommodationId, id: bookingId } }
 								}
 							)
 						),
@@ -744,16 +746,16 @@ const queryFactory = {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
-					},
+					}
 				}),
 			requestSelfCheckIn: (accommodationId: string, bookingId: string) =>
 				mutationOptions({
 					mutationFn: async () =>
 						unwrapResponse(
 							await api.POST(
-								'/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in',
+								"/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in",
 								{
-									params: { path: { accommodationId, id: bookingId } },
+									params: { path: { accommodationId, id: bookingId } }
 								}
 							)
 						),
@@ -761,7 +763,7 @@ const queryFactory = {
 						await queryClient.invalidateQueries(
 							queryFactory.accommodations.bookings.list(accommodationId)
 						);
-					},
+					}
 				}),
 			people: {
 				list: (accommodationId: string, bookingId: string) =>
@@ -771,17 +773,17 @@ const queryFactory = {
 								accommodationId,
 								bookingId
 							).queryKey,
-							'people',
+							"people"
 						],
 						queryFn: async () =>
 							unwrapResponse(
 								await api.GET(
-									'/api/accommodations/{accommodationId}/bookings/{bookingId}/people',
+									"/api/accommodations/{accommodationId}/bookings/{bookingId}/people",
 									{
-										params: { path: { accommodationId, bookingId } },
+										params: { path: { accommodationId, bookingId } }
 									}
 								)
-							),
+							)
 					}),
 				detail: (
 					accommodationId: string,
@@ -794,35 +796,35 @@ const queryFactory = {
 								accommodationId,
 								bookingId
 							).queryKey,
-							'people',
-							personId,
+							"people",
+							personId
 						],
 						queryFn: async () =>
 							unwrapResponse(
 								await api.GET(
-									'/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}',
+									"/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}",
 									{
 										params: {
-											path: { accommodationId, bookingId, id: personId },
-										},
+											path: { accommodationId, bookingId, id: personId }
+										}
 									}
 								)
-							),
+							)
 					}),
 				create: (accommodationId: string, bookingId: string) =>
 					mutationOptions({
 						mutationFn: async (values: PersonDtoRequest) =>
 							unwrapResponse(
 								await api.POST(
-									'/api/accommodations/{accommodationId}/bookings/{bookingId}/people',
+									"/api/accommodations/{accommodationId}/bookings/{bookingId}/people",
 									{
 										params: {
 											path: {
 												accommodationId,
-												bookingId,
-											},
+												bookingId
+											}
 										},
-										body: values,
+										body: values
 									}
 								)
 							),
@@ -833,7 +835,7 @@ const queryFactory = {
 									bookingId
 								)
 							);
-						},
+						}
 					}),
 				update: (
 					accommodationId: string,
@@ -844,16 +846,16 @@ const queryFactory = {
 						mutationFn: async (values: PersonDtoRequest) =>
 							unwrapResponse(
 								await api.PUT(
-									'/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}',
+									"/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}",
 									{
 										params: {
 											path: {
 												accommodationId,
 												bookingId,
-												id: personId,
-											},
+												id: personId
+											}
 										},
-										body: values,
+										body: values
 									}
 								)
 							),
@@ -864,7 +866,7 @@ const queryFactory = {
 									bookingId
 								)
 							);
-						},
+						}
 					}),
 				delete: (
 					accommodationId: string,
@@ -875,15 +877,15 @@ const queryFactory = {
 						mutationFn: async () =>
 							unwrapResponse(
 								await api.DELETE(
-									'/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}',
+									"/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}",
 									{
 										params: {
 											path: {
 												accommodationId,
 												bookingId,
-												id: personId,
-											},
-										},
+												id: personId
+											}
+										}
 									}
 								)
 							),
@@ -901,8 +903,8 @@ const queryFactory = {
 									bookingId
 								)
 							);
-						},
-					}),
+						}
+					})
 			},
 			addresses: {
 				list: (accommodationId: string, bookingId: string) =>
@@ -912,50 +914,50 @@ const queryFactory = {
 								accommodationId,
 								bookingId
 							).queryKey,
-							'addresses',
+							"addresses"
 						],
 						queryFn: async () =>
 							unwrapResponse(
 								await api.GET(
-									'/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses',
+									"/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses",
 									{
-										params: { path: { accommodationId, bookingId } },
+										params: { path: { accommodationId, bookingId } }
 									}
 								)
-							),
-					}),
-			},
-		},
+							)
+					})
+			}
+		}
 	},
 	addresses: {
 		detail: (addressId: string) =>
 			queryOptions({
-				queryKey: ['addresses', addressId],
+				queryKey: ["addresses", addressId],
 				queryFn: async () =>
 					unwrapResponse(
-						await api.GET('/api/addresses/{id}', {
-							params: { path: { id: addressId } },
+						await api.GET("/api/addresses/{id}", {
+							params: { path: { id: addressId } }
 						})
-					),
+					)
 			}),
 		create: () =>
 			mutationOptions({
 				mutationFn: async (address: AddressDtoRequest) =>
 					unwrapResponse(
-						await api.POST('/api/addresses', {
-							body: address,
+						await api.POST("/api/addresses", {
+							body: address
 						})
-					),
-			}),
+					)
+			})
 	},
 	catalogue: {
 		countries: {
 			list: () =>
 				queryOptions({
 					staleTime: Infinity,
-					queryKey: ['catalogue', 'countries'],
+					queryKey: ["catalogue", "countries"],
 					queryFn: async () =>
-						unwrapResponse(await api.GET('/api/catalogue/countries')),
+						unwrapResponse(await api.GET("/api/catalogue/countries"))
 				}),
 			spanishProvinces: {
 				list: () =>
@@ -963,13 +965,13 @@ const queryFactory = {
 						staleTime: Infinity,
 						queryKey: [
 							...queryFactory.catalogue.countries.list().queryKey,
-							'ESP',
-							'provinces',
+							"ESP",
+							"provinces"
 						],
 						queryFn: async () =>
 							unwrapResponse(
 								await api.GET(`/api/catalogue/countries/ESP/provinces`)
-							),
+							)
 					}),
 				municipalities: {
 					list: (provinceCode: string) =>
@@ -979,7 +981,7 @@ const queryFactory = {
 								...queryFactory.catalogue.countries.spanishProvinces.list()
 									.queryKey,
 								provinceCode,
-								'municipalities',
+								"municipalities"
 							],
 							queryFn: async () =>
 								unwrapResponse(
@@ -987,7 +989,7 @@ const queryFactory = {
 										`/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities`,
 										{ params: { path: { provinceCode } } }
 									)
-								),
+								)
 						}),
 					postalCodes: {
 						list: (provinceCode: string, municipalityCode: string) =>
@@ -998,7 +1000,7 @@ const queryFactory = {
 										provinceCode
 									).queryKey,
 									municipalityCode,
-									'postal-codes',
+									"postal-codes"
 								],
 								queryFn: async () =>
 									unwrapResponse(
@@ -1008,44 +1010,44 @@ const queryFactory = {
 												params: {
 													path: {
 														provinceCode,
-														municipalityCode,
-													},
-												},
+														municipalityCode
+													}
+												}
 											}
 										)
-									),
-							}),
-					},
-				},
-			},
+									)
+							})
+					}
+				}
+			}
 		},
 		genders: () =>
 			queryOptions({
 				staleTime: Infinity,
-				queryKey: ['catalogue', 'genders'],
+				queryKey: ["catalogue", "genders"],
 				queryFn: async () =>
-					unwrapResponse(await api.GET('/api/catalogue/person/genders')),
+					unwrapResponse(await api.GET("/api/catalogue/person/genders"))
 			}),
 		relationships: () =>
 			queryOptions({
 				staleTime: Infinity,
-				queryKey: ['catalogue', 'relationships'],
+				queryKey: ["catalogue", "relationships"],
 				queryFn: async () =>
-					unwrapResponse(await api.GET('/api/catalogue/person/relationships')),
+					unwrapResponse(await api.GET("/api/catalogue/person/relationships"))
 			}),
 		documentTypes: () =>
 			queryOptions({
 				staleTime: Infinity,
-				queryKey: ['catalogue', 'documentTypes'],
+				queryKey: ["catalogue", "documentTypes"],
 				queryFn: async () =>
-					unwrapResponse(await api.GET('/api/catalogue/document/types')),
-			}),
+					unwrapResponse(await api.GET("/api/catalogue/document/types"))
+			})
 	},
 	auth: {
 		me: () =>
 			queryOptions({
-				queryKey: ['auth', 'me'],
-				queryFn: async () => unwrapResponse(await api.GET('/api/auth/me')),
+				queryKey: ["auth", "me"],
+				queryFn: async () => unwrapResponse(await api.GET("/api/auth/me"))
 			}),
 		login: () =>
 			mutationOptions({
@@ -1054,11 +1056,11 @@ const queryFactory = {
 					password: string;
 					rememberMe?: boolean;
 				}) => {
-					const req = await api.POST('/api/auth/login', {
+					const req = await api.POST("/api/auth/login", {
 						body: credentials,
 						headers: {
-							'Content-Type': 'application/x-www-form-urlencoded',
-						},
+							"Content-Type": "application/x-www-form-urlencoded"
+						}
 					});
 
 					// Handle 401 Unauthorized response (invalid credentials)
@@ -1070,12 +1072,12 @@ const queryFactory = {
 				},
 				onSuccess: async () => {
 					await queryClient.invalidateQueries(queryFactory.auth.me());
-				},
+				}
 			}),
 		logout: () =>
 			mutationOptions({
 				mutationFn: async () => {
-					const req = await api.POST('/api/auth/logout');
+					const req = await api.POST("/api/auth/logout");
 					// Handle 401 Unauthorized response (user not logged in)
 					if (req.response.status === 401) return false;
 					// Handle other non-OK responses
@@ -1085,9 +1087,9 @@ const queryFactory = {
 				},
 				onSuccess: async () => {
 					await queryClient.invalidateQueries(queryFactory.auth.me());
-				},
-			}),
-	},
+				}
+			})
+	}
 };
 
 // * Utility functions
@@ -1103,8 +1105,8 @@ const queryFactory = {
 function unwrapResponse<T extends Record<string | number, unknown>>({
 	data: resData,
 	error,
-	response,
-}: FetchResponse<T, unknown, '*/*'>) {
+	response
+}: FetchResponse<T, unknown, "*/*">) {
 	// Handle API errors in a standardized way
 	if (!response.ok) throw new ApiErrorResponse(response, error);
 
@@ -1147,7 +1149,7 @@ class ApiErrorResponse extends Error implements ErrorResponse {
 
 	constructor(response: Response, error?: ProblemDetail) {
 		super(
-			`ApiErrorResponse: [${String(response.status)} ${response.statusText}] ${error?.title ?? ''}`
+			`ApiErrorResponse: [${String(response.status)} ${response.statusText}] ${error?.title ?? ""}`
 		);
 
 		this.status = response.status;
@@ -1164,5 +1166,5 @@ export {
 	DEFAULT_PAGE_SIZE,
 	executeMutation,
 	queryClient,
-	queryFactory,
+	queryFactory
 };

@@ -1,6 +1,8 @@
-import { lang, modulesLocales } from '~/i18n';
-import i18nCountries from 'i18n-iso-countries';
-import type { Alpha3Code } from 'i18n-iso-countries';
+import i18nCountries from "i18n-iso-countries";
+
+import { lang, modulesLocales } from "~/i18n";
+
+import type { Alpha3Code } from "i18n-iso-countries";
 
 class CountryService {
 	/**
@@ -15,7 +17,7 @@ class CountryService {
 
 		const codePoints = alpha2Code
 			.toUpperCase()
-			.split('')
+			.split("")
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- There is always at least one character in 'char'.
 			.map((char) => 127397 + char.codePointAt(0)!);
 		return String.fromCodePoint(...codePoints);

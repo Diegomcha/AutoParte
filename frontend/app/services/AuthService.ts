@@ -1,6 +1,8 @@
-import { redirect } from 'react-router';
-import { executeMutation, queryClient, queryFactory } from './Api';
-import type { AccountDto } from '~/@types/api';
+import { redirect } from "react-router";
+
+import { executeMutation, queryClient, queryFactory } from "./Api";
+
+import type { AccountDto } from "~/@types/api";
 
 class AuthService {
 	/**
@@ -9,7 +11,7 @@ class AuthService {
 	 */
 	async isAdmin(): Promise<boolean> {
 		const user = await this.getLoggedInUser();
-		return user?.roles.includes('ROLE_ADMIN') ?? false;
+		return user?.roles.includes("ROLE_ADMIN") ?? false;
 	}
 
 	/**
@@ -62,7 +64,7 @@ class AuthService {
 	 * @returns A redirect response to the specified URL or "/" if not specified.
 	 */
 	getSuccessRedirection(request: Request): ReturnType<typeof redirect> {
-		return redirect(new URL(request.url).searchParams.get('redirect') ?? '/');
+		return redirect(new URL(request.url).searchParams.get("redirect") ?? "/");
 	}
 
 	/**
@@ -72,7 +74,7 @@ class AuthService {
 	 */
 	getLoginRedirection(request: Request): ReturnType<typeof redirect> {
 		return redirect(
-			'/auth/login?redirectTo=' +
+			"/auth/login?redirectTo=" +
 				encodeURIComponent(new URL(request.url).pathname)
 		);
 	}

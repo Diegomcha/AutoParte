@@ -1,15 +1,19 @@
-import { Button, Group, Modal } from '@mantine/core';
-import { CheckCircleIcon } from '@phosphor-icons/react';
-import { useMutation } from '@tanstack/react-query';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryClient, queryFactory } from '~/services/Api';
-import Validators from '~/services/Validators';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import type { Route } from './+types/confirm';
+import { useNavigate } from "react-router";
+
+import { Button, Group, Modal } from "@mantine/core";
+
+import { CheckCircleIcon } from "@phosphor-icons/react";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import { queryClient, queryFactory } from "~/services/Api";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types/confirm";
 
 export async function clientLoader({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
@@ -17,19 +21,19 @@ export async function clientLoader({
 		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
 	);
 
-	if (booking.status !== 'CONFIRMATION_READY')
+	if (booking.status !== "CONFIRMATION_READY")
 		throw Validators.throwValidationErrorResponse(
-			'Booking is not in a state that allows confirmation.'
+			"Booking is not in a state that allows confirmation."
 		);
 }
 
 export default function ConfirmBooking({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const { opened, close } = useStaticModalTransition(() => void navigate('..'));
+	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
 
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.confirm(accommodationId, bookingId)
@@ -53,7 +57,7 @@ export default function ConfirmBooking({
 					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: close,
+							onSuccess: close
 						});
 					}}
 				>

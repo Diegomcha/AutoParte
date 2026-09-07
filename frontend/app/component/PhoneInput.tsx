@@ -1,11 +1,14 @@
-import { InputBase } from '@mantine/core';
-import { useUncontrolled } from '@mantine/hooks';
-import { t } from 'i18next';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import { forwardRef } from 'react';
-import BasePhoneInput from 'react-phone-number-input/input';
-import type { ReactNode } from 'react';
-import type { Value } from 'react-phone-number-input';
+import { forwardRef } from "react";
+
+import { InputBase } from "@mantine/core";
+import { useUncontrolled } from "@mantine/hooks";
+
+import { t } from "i18next";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
+import BasePhoneInput from "react-phone-number-input/input";
+
+import type { ReactNode } from "react";
+import type { Value } from "react-phone-number-input";
 
 export function isValidPhoneNumber(error?: ReactNode) {
 	return (value: Value | undefined) => {
@@ -32,7 +35,7 @@ export default forwardRef(function PhoneInput(
 		value,
 		defaultValue,
 		finalValue: undefined,
-		onChange,
+		onChange
 	});
 	return (
 		<BasePhoneInput

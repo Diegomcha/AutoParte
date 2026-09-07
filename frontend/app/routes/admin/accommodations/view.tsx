@@ -1,12 +1,16 @@
-import { Badge, DataList, Divider, Modal, Stack } from '@mantine/core';
-import WifiBadge from '~/component/WifiBadge';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryClient, queryFactory } from '~/services/Api';
-import TimeService from '~/services/TimeService';
-import Validators from '~/services/Validators';
-import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router';
-import type { Route } from './+types/view';
+import { Link, useNavigate } from "react-router";
+
+import { Badge, DataList, Divider, Modal, Stack } from "@mantine/core";
+
+import { useTranslation } from "react-i18next";
+
+import WifiBadge from "~/component/WifiBadge";
+import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import { queryClient, queryFactory } from "~/services/Api";
+import TimeService from "~/services/TimeService";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types/view";
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
@@ -14,18 +18,18 @@ export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	return {
 		accommodation: await queryClient.query(
 			queryFactory.accommodations.detail(id)
-		),
+		)
 	};
 }
 
 export default function ViewAccommodation({
-	loaderData: { accommodation },
+	loaderData: { accommodation }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(
-		() => void navigate('/admin/accommodations')
+		() => void navigate("/admin/accommodations")
 	);
 
 	return (

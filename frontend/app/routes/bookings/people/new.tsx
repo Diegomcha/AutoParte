@@ -1,11 +1,13 @@
-import PersonForm from '~/component/PersonForm';
-import { queryClient, queryFactory } from '~/services/Api';
-import Validators from '~/services/Validators';
-import { useNavigate } from 'react-router';
-import type { Route } from './+types/new';
+import { useNavigate } from "react-router";
+
+import PersonForm from "~/component/PersonForm";
+import { queryClient, queryFactory } from "~/services/Api";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types/new";
 
 export async function clientLoader({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
@@ -18,17 +20,17 @@ export async function clientLoader({
 				accommodationId,
 				bookingId
 			)
-		),
+		)
 	]);
 
 	if (!booking.canBeModified || booking.numberOfPeople === people.length)
 		throw Validators.throwValidationErrorResponse(
-			'Booking cannot be modified.'
+			"Booking cannot be modified."
 		);
 }
 
 export default function NewPerson({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 

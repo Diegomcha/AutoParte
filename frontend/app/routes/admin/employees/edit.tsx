@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router";
+
 import {
 	Button,
 	Chip,
@@ -5,17 +7,19 @@ import {
 	Modal,
 	MultiSelect,
 	Stack,
-	TextInput,
-} from '@mantine/core';
-import { isEmail, isNotEmpty, useForm } from '@mantine/form';
-import { CheckCircleIcon, FloppyDiskIcon } from '@phosphor-icons/react';
-import { useMutation } from '@tanstack/react-query';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryClient, queryFactory } from '~/services/Api';
-import Validators from '~/services/Validators';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import type { Route } from './+types/edit';
+	TextInput
+} from "@mantine/core";
+import { isEmail, isNotEmpty, useForm } from "@mantine/form";
+
+import { CheckCircleIcon, FloppyDiskIcon } from "@phosphor-icons/react";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import { queryClient, queryFactory } from "~/services/Api";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types/edit";
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
@@ -24,18 +28,18 @@ export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 		employee: await queryClient.query(queryFactory.employees.detail(id)),
 		availableAccommodations: await queryClient.query(
 			queryFactory.accommodations.list()
-		),
+		)
 	};
 }
 
 export default function EditEmployee({
-	loaderData: { employee, availableAccommodations },
+	loaderData: { employee, availableAccommodations }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(
-		() => void navigate('/admin/employees')
+		() => void navigate("/admin/employees")
 	);
 
 	const form = useForm({
@@ -46,7 +50,7 @@ export default function EditEmployee({
 			email: employee.email,
 			accommodations: employee.accommodations.map(
 				(accommodation) => accommodation.id
-			),
+			)
 		},
 		validate: {
 			name: isNotEmpty(
@@ -57,8 +61,8 @@ export default function EditEmployee({
 			),
 			email: isEmail(
 				t(($) => $.admin.employees.properties.email.errors.invalidEmail)
-			),
-		},
+			)
+		}
 	});
 
 	const { mutate: edit, isPending: isEditing } = useMutation(
@@ -87,7 +91,7 @@ export default function EditEmployee({
 						onSuccess: (success) => {
 							if (!success) {
 								form.setFieldError(
-									'email',
+									"email",
 									t(($) => $.admin.employees.properties.email.errors.emailInUse)
 								);
 								return;
@@ -103,21 +107,21 @@ export default function EditEmployee({
 							linkAccommodations(addedAccommodations, {
 								onSuccess: () => {
 									unlinkAccommodations(removedAccommodations, {
-										onSuccess: close,
+										onSuccess: close
 									});
-								},
+								}
 							});
-						},
+						}
 					});
 				})}
 			>
 				<Stack gap="xs">
 					<Chip
-						key={form.key('enabled')}
+						key={form.key("enabled")}
 						icon={<CheckCircleIcon />}
 						color="green"
 						variant="light"
-						{...form.getInputProps('enabled', { type: 'checkbox' })}
+						{...form.getInputProps("enabled", { type: "checkbox" })}
 					>
 						{form.getValues().enabled
 							? t(($) => $.admin.employees.properties.enabled.states.enabled)
@@ -126,36 +130,36 @@ export default function EditEmployee({
 					<div>
 						<Group grow>
 							<TextInput
-								key={form.key('name')}
+								key={form.key("name")}
 								name="name"
 								label={t(($) => $.admin.employees.properties.name.label)}
-								{...form.getInputProps('name')}
+								{...form.getInputProps("name")}
 							/>
 							<TextInput
-								key={form.key('surname')}
+								key={form.key("surname")}
 								name="surname"
 								label={t(($) => $.admin.employees.properties.surname.label)}
-								{...form.getInputProps('surname')}
+								{...form.getInputProps("surname")}
 							/>
 						</Group>
 						<TextInput
-							key={form.key('email')}
+							key={form.key("email")}
 							name="email"
 							label={t(($) => $.admin.employees.properties.email.label)}
-							{...form.getInputProps('email')}
+							{...form.getInputProps("email")}
 						/>
 					</div>
 					<MultiSelect
-						key={form.key('accommodations')}
+						key={form.key("accommodations")}
 						label={t(($) => $.admin.employees.properties.accommodations.label)}
 						data={availableAccommodations.map((accommodation) => ({
 							value: accommodation.id,
-							label: accommodation.name,
+							label: accommodation.name
 						}))}
 						nothingFoundMessage={t(
 							($) => $.admin.employees.properties.accommodations.none
 						)}
-						{...form.getInputProps('accommodations')}
+						{...form.getInputProps("accommodations")}
 					/>
 				</Stack>
 				<Group justify="right" mt="md">
@@ -188,6 +192,6 @@ function extractAccommodationsChange(
 		),
 		removedAccommodations: oldAccommodations.filter(
 			(oldAccommodation) => !newAccommodations.includes(oldAccommodation)
-		),
+		)
 	};
 }

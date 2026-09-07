@@ -1,28 +1,32 @@
 {
-	"printWidth": 80,
-	"singleQuote": true,
-	"semi": true,
 	"useTabs": true,
-	"trailingComma": "es5",
+	"trailingComma": "none",
 	"plugins": [
 		"@ianvs/prettier-plugin-sort-imports",
 		"prettier-plugin-packagejson"
 	],
 	"importOrder": [
 		"<BUILTIN_MODULES>",
+		"",
+		"^react$",
+		"^react-dom$",
+		"^react-router$",
+		"^react-router/(.*)$",
+		"",
+		"^@mantine/(.*)$",
+		"",
 		"<THIRD_PARTY_MODULES>",
-		"^[.]{2}$",
+		"",
+		"^~/(.*)$",
+		"",
 		"^[.]{2}/",
-		"^[.]/(?!index)",
-		"^[.]$",
-		"^[.]/index$",
-		"<TYPES>"
+		"^[.]/",
+		"",
+		"<TYPES>",
+		"<TYPES>^[.]",
+		"",
+		"^\\u0000",
+		"^.*\\.css$"
 	],
-	"importOrderTypeScriptVersion": "5.9.2",
-	"importOrderParserPlugins": [
-		"typescript",
-		"jsx",
-		"decorators",
-		"explicitResourceManagement"
-	]
+	"importOrderTypeScriptVersion": "6.0.3"
 }

@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Link, Outlet, useNavigate } from "react-router";
+
 import {
 	AppShell,
 	Button,
@@ -9,40 +12,41 @@ import {
 	Stack,
 	Text,
 	Title,
-	UnstyledButton,
-} from '@mantine/core';
-import { ResourcesSchedule } from '@mantine/schedule';
-import { CaretRightIcon, UserCircleIcon } from '@phosphor-icons/react';
-import { useMutation, useSuspenseQueries } from '@tanstack/react-query';
-import BookingHoverCard from '~/component/BookingHoverCard';
-import BookingStatusBadge from '~/component/BookingStatusBadge';
-import WifiBadge from '~/component/WifiBadge';
-import { lang } from '~/i18n';
+	UnstyledButton
+} from "@mantine/core";
+import { ResourcesSchedule } from "@mantine/schedule";
+
+import { CaretRightIcon, UserCircleIcon } from "@phosphor-icons/react";
+import { useMutation, useSuspenseQueries } from "@tanstack/react-query";
+import sortBy from "lodash/sortBy";
+import { DataTable, useDataTableColumns } from "mantine-datatable";
+import { useTranslation } from "react-i18next";
+
+import BookingHoverCard from "~/component/BookingHoverCard";
+import BookingStatusBadge from "~/component/BookingStatusBadge";
+import WifiBadge from "~/component/WifiBadge";
+import { lang } from "~/i18n";
 import {
 	_api,
 	_unwrapResponse,
 	queryClient,
-	queryFactory,
-} from '~/services/Api';
-import AuthService from '~/services/AuthService';
-import NotificationsService from '~/services/NotificationsService';
-import TimeService from '~/services/TimeService';
-import sortBy from 'lodash/sortBy';
-import { DataTable, useDataTableColumns } from 'mantine-datatable';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useNavigate } from 'react-router';
-import type { Route } from './+types/index';
+	queryFactory
+} from "~/services/Api";
+import AuthService from "~/services/AuthService";
+import NotificationsService from "~/services/NotificationsService";
+import TimeService from "~/services/TimeService";
+
 import type {
 	ResourcesScheduleViewLevel,
 	ScheduleEventData,
-	ScheduleResourceData,
-} from '@mantine/schedule';
+	ScheduleResourceData
+} from "@mantine/schedule";
 import type {
 	AccommodationDtoResponse,
-	BookingDtoResponse,
-} from '~/@types/api';
-import type { DataTableSortStatus } from 'mantine-datatable';
+	BookingDtoResponse
+} from "~/@types/api";
+import type { DataTableSortStatus } from "mantine-datatable";
+import type { Route } from "./+types/index";
 
 // Ensure the user is authenticated before allowing access to any protected routes.
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
@@ -53,26 +57,26 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	const [accommodations, account, isAdmin] = await Promise.all([
 		queryClient.query(queryFactory.accommodations.list()),
 		AuthService.getLoggedInUser(),
-		AuthService.isAdmin(),
+		AuthService.isAdmin()
 	]);
 
 	return {
 		accommodations,
 		account,
-		isAdmin,
+		isAdmin
 	};
 }
 
-const COLUMNS_STATE_KEY = 'bookings-table-columns';
+const COLUMNS_STATE_KEY = "bookings-table-columns";
 
 export default function ProtectedLayout({
-	loaderData: { accommodations, account, isAdmin },
+	loaderData: { accommodations, account, isAdmin }
 }: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 
 	const [accountMenuOpened, setAccountMenuOpened] = useState(false);
-	const [view, setView] = useState<ResourcesScheduleViewLevel>('month');
+	const [view, setView] = useState<ResourcesScheduleViewLevel>("month");
 	const [date, setDate] = useState<string>(new Date().toUTCString());
 
 	const data = useSuspenseQueries({
@@ -80,22 +84,22 @@ export default function ProtectedLayout({
 		queries: accommodations.map((accommodation) => ({
 			queryKey: [
 				...queryFactory.accommodations.bookings.list(accommodation.id).queryKey,
-				getDateRange(view, date),
+				getDateRange(view, date)
 			],
 			queryFn: async () =>
 				[
 					accommodation,
 					_unwrapResponse(
-						await _api.GET('/api/accommodations/{accommodationId}/bookings', {
+						await _api.GET("/api/accommodations/{accommodationId}/bookings", {
 							params: {
 								path: { accommodationId: accommodation.id },
-								query: { page: 0, size: 0, ...getDateRange(view, date) },
-							},
+								query: { page: 0, size: 0, ...getDateRange(view, date) }
+							}
 						})
-					).content ?? [],
-				] as const,
+					).content ?? []
+				] as const
 		})),
-		combine: (results) => new Map(results.map((result) => result.data)),
+		combine: (results) => new Map(results.map((result) => result.data))
 	});
 
 	// * Schedule state
@@ -104,7 +108,7 @@ export default function ProtectedLayout({
 		(accommodation) => ({
 			id: accommodation.id,
 			label: accommodation.name,
-			payload: accommodation,
+			payload: accommodation
 		})
 	);
 
@@ -121,7 +125,7 @@ export default function ProtectedLayout({
 					{
 						status: booking.status,
 						numberOfPeople: booking.numberOfPeople,
-						holderName: booking.holderName,
+						holderName: booking.holderName
 					}
 				),
 				start: TimeService(booking.startTime).toDate(),
@@ -130,8 +134,8 @@ export default function ProtectedLayout({
 					($) =>
 						$.bookings.properties.details.status.states[booking.status].color
 				),
-				display: booking.canBeModified ? 'default' : 'background',
-				payload: booking,
+				display: booking.canBeModified ? "default" : "background",
+				payload: booking
 			}))
 	);
 
@@ -142,20 +146,20 @@ export default function ProtectedLayout({
 			BookingDtoResponse & { accommodation: AccommodationDtoResponse }
 		>
 	>({
-		columnAccessor: 'id',
-		direction: 'asc',
+		columnAccessor: "id",
+		direction: "asc"
 	});
 
 	const bookings = Array.from(data.entries()).flatMap(
 		([accommodation, bookings]) =>
 			bookings.map((booking) => ({
 				...booking,
-				accommodation,
+				accommodation
 			}))
 	);
 
 	const tableRecords = sortBy(bookings, tableSortStatus.columnAccessor);
-	if (tableSortStatus.direction === 'desc') tableRecords.reverse();
+	if (tableSortStatus.direction === "desc") tableRecords.reverse();
 
 	const { effectiveColumns } = useDataTableColumns<
 		BookingDtoResponse & { accommodation: AccommodationDtoResponse }
@@ -166,70 +170,70 @@ export default function ProtectedLayout({
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'accommodation',
+				accessor: "accommodation",
 				title: t(($) => $.bookings.properties.details.accommodation),
-				render: (booking) => booking.accommodation.name,
+				render: (booking) => booking.accommodation.name
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'status',
+				accessor: "status",
 				title: t(($) => $.bookings.properties.details.status.label),
-				render: (booking) => <BookingStatusBadge status={booking.status} />,
+				render: (booking) => <BookingStatusBadge status={booking.status} />
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'holderName',
+				accessor: "holderName",
 				title: t(($) => $.bookings.properties.details.holderName.label),
 				render: (booking) =>
 					booking.holderName ??
-					t(($) => $.bookings.properties.details.holderName.undefined),
+					t(($) => $.bookings.properties.details.holderName.undefined)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'startTime',
+				accessor: "startTime",
 				title: t(($) => $.bookings.properties.details.startTime),
-				render: (booking) => TimeService(booking.startTime).format('LLLL'),
+				render: (booking) => TimeService(booking.startTime).format("LLLL")
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'endTime',
+				accessor: "endTime",
 				title: t(($) => $.bookings.properties.details.endTime),
-				render: (booking) => TimeService(booking.endTime).format('LLLL'),
+				render: (booking) => TimeService(booking.endTime).format("LLLL")
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'numberOfPeople',
-				title: t(($) => $.bookings.properties.details.numberOfPeople.label),
+				accessor: "numberOfPeople",
+				title: t(($) => $.bookings.properties.details.numberOfPeople.label)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'numberOfRooms',
+				accessor: "numberOfRooms",
 				title: t(($) => $.bookings.properties.details.numberOfRooms.label),
 				render: (booking) =>
 					booking.numberOfRooms ??
-					t(($) => $.bookings.properties.details.numberOfRooms.undefined),
+					t(($) => $.bookings.properties.details.numberOfRooms.undefined)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'internetConnection',
+				accessor: "internetConnection",
 				title: t(($) => $.bookings.properties.details.internetConnection.label),
-				render: (booking) => <WifiBadge value={booking.internetConnection} />,
-			},
-		],
+				render: (booking) => <WifiBadge value={booking.internetConnection} />
+			}
+		]
 	});
 
 	// * Actions
@@ -265,7 +269,7 @@ export default function ProtectedLayout({
 								leftSection={<UserCircleIcon size={16} />}
 								rightSection={
 									<CaretRightIcon
-										className={`${accountMenuOpened ? 'rotate-90' : ''} transition-transform`}
+										className={`${accountMenuOpened ? "rotate-90" : ""} transition-transform`}
 									/>
 								}
 							>
@@ -306,7 +310,7 @@ export default function ProtectedLayout({
 						h="calc(100vh - 92px)"
 						handleColor="gray.3"
 					>
-						<Splitter.Pane defaultSize={30} min={10} collapsible mb={'sm'}>
+						<Splitter.Pane defaultSize={30} min={10} collapsible mb={"sm"}>
 							<ResourcesSchedule
 								date={date}
 								onDateChange={setDate}
@@ -319,21 +323,21 @@ export default function ProtectedLayout({
 									createBooking({
 										accommodationId: resourceId as string,
 										startTime: TimeService(slotStart).toDate(),
-										endTime: TimeService(slotEnd).toDate(),
+										endTime: TimeService(slotEnd).toDate()
 									});
 								}}
 								onDayClick={({ resourceId, date }) => {
 									createBooking({
 										accommodationId: resourceId as string,
 										startTime: TimeService(date).toDate(),
-										endTime: TimeService(date).add(1, 'day').toDate(),
+										endTime: TimeService(date).add(1, "day").toDate()
 									});
 								}}
 								onSlotDragEnd={({ resourceId, rangeStart, rangeEnd }) => {
 									createBooking({
 										accommodationId: resourceId as string,
 										startTime: TimeService(rangeStart).toDate(),
-										endTime: TimeService(rangeEnd).toDate(),
+										endTime: TimeService(rangeEnd).toDate()
 									});
 								}}
 								onEventDrop={({ newEnd, newStart, resourceId, event }) => {
@@ -346,7 +350,7 @@ export default function ProtectedLayout({
 											accommodationId: event.resourceId as string,
 											booking: event.payload as BookingDtoResponse,
 											newStart: TimeService(newStart).toDate(),
-											newEnd: TimeService(newEnd).toDate(),
+											newEnd: TimeService(newEnd).toDate()
 										});
 								}}
 								onEventResize={({ newEnd, newStart, event }) => {
@@ -354,7 +358,7 @@ export default function ProtectedLayout({
 										accommodationId: event.resourceId as string,
 										booking: event.payload as BookingDtoResponse,
 										newStart: TimeService(newStart).toDate(),
-										newEnd: TimeService(newEnd).toDate(),
+										newEnd: TimeService(newEnd).toDate()
 									});
 								}}
 								onEventClick={(event) => {
@@ -364,7 +368,7 @@ export default function ProtectedLayout({
 									);
 								}}
 								monthViewProps={{
-									renderEvent: renderHoverCard,
+									renderEvent: renderHoverCard
 								}}
 								events={events}
 								resources={resources}
@@ -372,11 +376,11 @@ export default function ProtectedLayout({
 								labels={{
 									...t(($) => $.schedule, { returnObjects: true }),
 									moreLabel: (count) =>
-										t(($) => $.schedule.moreLabel, { count }),
+										t(($) => $.schedule.moreLabel, { count })
 								}}
 							/>
 						</Splitter.Pane>
-						<Splitter.Pane defaultSize={70} min={10} collapsible mt={'sm'}>
+						<Splitter.Pane defaultSize={70} min={10} collapsible mt={"sm"}>
 							<DataTable
 								height="100%"
 								noRecordsText={t(($) => $.bookings.errors.noBookingsInPeriod)}
@@ -408,16 +412,16 @@ function getDateRange(unit: ResourcesScheduleViewLevel, date: Date | string) {
 	const baseDate = TimeService(date);
 
 	// Makes sure that the week starts on Monday instead of Sunday
-	const rangeUnit = unit === 'week' ? 'isoWeek' : unit;
+	const rangeUnit = unit === "week" ? "isoWeek" : unit;
 	return {
 		startRange: baseDate.startOf(rangeUnit).toISOString(),
-		endRange: baseDate.endOf(rangeUnit).toISOString(),
+		endRange: baseDate.endOf(rangeUnit).toISOString()
 	};
 }
 
 function renderHoverCard(
 	event: ScheduleEventData,
-	props: React.ComponentPropsWithoutRef<'button'> & {
+	props: React.ComponentPropsWithoutRef<"button"> & {
 		children: React.ReactNode;
 	}
 ): React.ReactElement {

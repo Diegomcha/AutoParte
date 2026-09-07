@@ -1,10 +1,12 @@
-import { queryClient, queryFactory } from '~/services/Api';
-import Validators from '~/services/Validators';
-import { redirect } from 'react-router';
-import type { Route } from './+types';
+import { redirect } from "react-router";
+
+import { queryClient, queryFactory } from "~/services/Api";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types";
 
 export async function clientLoader({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 

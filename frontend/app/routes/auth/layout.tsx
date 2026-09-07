@@ -1,5 +1,6 @@
-import { AppShell } from '@mantine/core';
-import { Outlet } from 'react-router';
+import { Outlet } from "react-router";
+
+import { AppShell } from "@mantine/core";
 
 export default function AuthLayout() {
 	return (

@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-	'/api/config': {
+	"/api/config": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -12,9 +12,9 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get current application configuration */
-		get: operations['getConfig'];
+		get: operations["getConfig"];
 		/** Update application configuration */
-		put: operations['updateConfig'];
+		put: operations["updateConfig"];
 		post?: never;
 		delete?: never;
 		options?: never;
@@ -22,7 +22,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{id}': {
+	"/api/accommodations/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -30,18 +30,18 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get accommodation by id */
-		get: operations['getAccommodation'];
+		get: operations["getAccommodation"];
 		/** Update accommodation */
-		put: operations['updateAccommodation'];
+		put: operations["updateAccommodation"];
 		post?: never;
 		/** Delete accommodation */
-		delete: operations['deleteAccommodation'];
+		delete: operations["deleteAccommodation"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings/{id}': {
+	"/api/accommodations/{accommodationId}/bookings/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -49,18 +49,18 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get booking by id for an accommodation */
-		get: operations['getBookingById'];
+		get: operations["getBookingById"];
 		/** Update a booking for an accommodation */
-		put: operations['updateBooking'];
+		put: operations["updateBooking"];
 		post?: never;
 		/** Delete a booking for an accommodation */
-		delete: operations['deleteBooking'];
+		delete: operations["deleteBooking"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}': {
+	"/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -68,18 +68,18 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get person by id */
-		get: operations['getPerson'];
+		get: operations["getPerson"];
 		/** Update person in booking */
-		put: operations['updatePerson'];
+		put: operations["updatePerson"];
 		post?: never;
 		/** Remove person from booking */
-		delete: operations['removePerson'];
+		delete: operations["removePerson"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/ocr/mrz': {
+	"/api/ocr/mrz": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -89,14 +89,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Person information extraction from image through MRZ */
-		post: operations['extractPersonInfoFromMrz'];
+		post: operations["extractPersonInfoFromMrz"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/employees': {
+	"/api/employees": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -104,17 +104,17 @@ export interface paths {
 			cookie?: never;
 		};
 		/** List employees */
-		get: operations['getEmployees'];
+		get: operations["getEmployees"];
 		put?: never;
 		/** Create employee */
-		post: operations['createEmployee'];
+		post: operations["createEmployee"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/employees/{id}/reset-password': {
+	"/api/employees/{id}/reset-password": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -124,14 +124,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Reset employee password */
-		post: operations['resetEmployeePassword'];
+		post: operations["resetEmployeePassword"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/config/validate-ses': {
+	"/api/config/validate-ses": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -141,14 +141,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Validate SES credentials */
-		post: operations['validateSesCredentials'];
+		post: operations["validateSesCredentials"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/auth/update-password': {
+	"/api/auth/update-password": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -158,14 +158,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Update current authenticated user's password */
-		post: operations['updatePassword'];
+		post: operations["updatePassword"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/auth/logout': {
+	"/api/auth/logout": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -175,14 +175,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Logout */
-		post: operations['logout'];
+		post: operations["logout"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/auth/login': {
+	"/api/auth/login": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -192,14 +192,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Login */
-		post: operations['login'];
+		post: operations["login"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/addresses': {
+	"/api/addresses": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -209,14 +209,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Create address */
-		post: operations['createAddress'];
+		post: operations["createAddress"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations': {
+	"/api/accommodations": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -224,17 +224,17 @@ export interface paths {
 			cookie?: never;
 		};
 		/** List accommodations */
-		get: operations['getAccommodations'];
+		get: operations["getAccommodations"];
 		put?: never;
 		/** Create accommodation */
-		post: operations['createAccommodation'];
+		post: operations["createAccommodation"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/employees/{employeeId}': {
+	"/api/accommodations/{accommodationId}/employees/{employeeId}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -244,15 +244,15 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Assign employee to accommodation */
-		post: operations['assignEmployeeToAccommodation'];
+		post: operations["assignEmployeeToAccommodation"];
 		/** Unassign employee from accommodation */
-		delete: operations['unassignEmployeeFromAccommodation'];
+		delete: operations["unassignEmployeeFromAccommodation"];
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings': {
+	"/api/accommodations/{accommodationId}/bookings": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -260,17 +260,17 @@ export interface paths {
 			cookie?: never;
 		};
 		/** List bookings for an accommodation */
-		get: operations['getBookingsByAccommodation'];
+		get: operations["getBookingsByAccommodation"];
 		put?: never;
 		/** Create a new booking for an accommodation */
-		post: operations['createBooking'];
+		post: operations["createBooking"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in': {
+	"/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -280,14 +280,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Request self-check-in for a booking */
-		post: operations['requestSelfCheckInForBooking'];
+		post: operations["requestSelfCheckInForBooking"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings/{id}/confirm': {
+	"/api/accommodations/{accommodationId}/bookings/{id}/confirm": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -297,14 +297,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Confirm a booking for an accommodation */
-		post: operations['confirmBooking'];
+		post: operations["confirmBooking"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings/{id}/check-in': {
+	"/api/accommodations/{accommodationId}/bookings/{id}/check-in": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -314,14 +314,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Check-in a booking for an accommodation */
-		post: operations['checkInBooking'];
+		post: operations["checkInBooking"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings/{id}/cancel': {
+	"/api/accommodations/{accommodationId}/bookings/{id}/cancel": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -331,14 +331,14 @@ export interface paths {
 		get?: never;
 		put?: never;
 		/** Cancel a booking for an accommodation */
-		post: operations['cancelBooking'];
+		post: operations["cancelBooking"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings/{bookingId}/people': {
+	"/api/accommodations/{accommodationId}/bookings/{bookingId}/people": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -346,17 +346,17 @@ export interface paths {
 			cookie?: never;
 		};
 		/** List people */
-		get: operations['getPeople'];
+		get: operations["getPeople"];
 		put?: never;
 		/** Add person to booking */
-		post: operations['addPerson'];
+		post: operations["addPerson"];
 		delete?: never;
 		options?: never;
 		head?: never;
 		patch?: never;
 		trace?: never;
 	};
-	'/api/employees/{id}': {
+	"/api/employees/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -364,18 +364,18 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get employee by id */
-		get: operations['getEmployee'];
+		get: operations["getEmployee"];
 		put?: never;
 		post?: never;
 		/** Delete employee */
-		delete: operations['deleteEmployee'];
+		delete: operations["deleteEmployee"];
 		options?: never;
 		head?: never;
 		/** Update employee */
-		patch: operations['updateEmployee'];
+		patch: operations["updateEmployee"];
 		trace?: never;
 	};
-	'/api/catalogue/person/relationships': {
+	"/api/catalogue/person/relationships": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -383,7 +383,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get valid relationships */
-		get: operations['getPersonRelationships'];
+		get: operations["getPersonRelationships"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -392,7 +392,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/catalogue/person/genders': {
+	"/api/catalogue/person/genders": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -400,7 +400,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get valid genders */
-		get: operations['getPersonGenders'];
+		get: operations["getPersonGenders"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -409,7 +409,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/catalogue/payment/types': {
+	"/api/catalogue/payment/types": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -417,7 +417,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get valid payment types */
-		get: operations['getPaymentTypes'];
+		get: operations["getPaymentTypes"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -426,7 +426,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/catalogue/document/types': {
+	"/api/catalogue/document/types": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -434,7 +434,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get valid document types */
-		get: operations['getDocumentTypes'];
+		get: operations["getDocumentTypes"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -443,7 +443,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/catalogue/countries': {
+	"/api/catalogue/countries": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -451,7 +451,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get valid countries */
-		get: operations['getCountries'];
+		get: operations["getCountries"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -460,7 +460,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/catalogue/countries/ESP/provinces': {
+	"/api/catalogue/countries/ESP/provinces": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -468,7 +468,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get valid Spanish provinces */
-		get: operations['getSpanishProvinces'];
+		get: operations["getSpanishProvinces"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -477,7 +477,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities': {
+	"/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -485,7 +485,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get valid Spanish municipalities by province code */
-		get: operations['getSpanishMunicipalities'];
+		get: operations["getSpanishMunicipalities"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -494,7 +494,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities/{municipalityCode}/postal-codes': {
+	"/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities/{municipalityCode}/postal-codes": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -502,7 +502,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get valid Spanish postal codes by province and municipality codes */
-		get: operations['getSpanishPostalCodes'];
+		get: operations["getSpanishPostalCodes"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -511,7 +511,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/auth/me': {
+	"/api/auth/me": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -519,7 +519,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get current authenticated user */
-		get: operations['me'];
+		get: operations["me"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -528,7 +528,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/addresses/{id}': {
+	"/api/addresses/{id}": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -536,7 +536,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get address by id */
-		get: operations['getAddressById'];
+		get: operations["getAddressById"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -545,7 +545,7 @@ export interface paths {
 		patch?: never;
 		trace?: never;
 	};
-	'/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses': {
+	"/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses": {
 		parameters: {
 			query?: never;
 			header?: never;
@@ -553,7 +553,7 @@ export interface paths {
 			cookie?: never;
 		};
 		/** Get addresses by booking id */
-		get: operations['getBookingAddresses'];
+		get: operations["getBookingAddresses"];
 		put?: never;
 		post?: never;
 		delete?: never;
@@ -598,7 +598,7 @@ export interface components {
 			endTime: string;
 			/** Format: int32 */
 			numberOfPeople: number;
-			payment?: components['schemas']['PaymentDtoRequest'];
+			payment?: components["schemas"]["PaymentDtoRequest"];
 			/** Format: int32 */
 			numberOfRooms?: number;
 			internetConnection?: boolean;
@@ -606,14 +606,14 @@ export interface components {
 		PaymentDtoRequest: {
 			/** @enum {string} */
 			type:
-				| 'CASH'
-				| 'CREDIT_CARD'
-				| 'PLATFORM'
-				| 'TRANSFER'
-				| 'MOBILE'
-				| 'GIFT_CARD'
-				| 'ON_SITE'
-				| 'OTHER';
+				| "CASH"
+				| "CREDIT_CARD"
+				| "PLATFORM"
+				| "TRANSFER"
+				| "MOBILE"
+				| "GIFT_CARD"
+				| "ON_SITE"
+				| "OTHER";
 			mean?: string;
 			holder?: string;
 			/** Format: date-time */
@@ -629,33 +629,33 @@ export interface components {
 		};
 		DocumentDtoRequest: {
 			/** @enum {string} */
-			type: 'NIF' | 'NIE' | 'PASSPORT' | 'OTHER';
+			type: "NIF" | "NIE" | "PASSPORT" | "OTHER";
 			number: string;
 			supportNumber?: string;
 		};
 		PersonDtoRequest: {
-			personalInfo: components['schemas']['PersonalInfoDtoRequest'];
-			contactInfo: components['schemas']['ContactInfoDtoRequest'];
-			document?: components['schemas']['DocumentDtoRequest'];
+			personalInfo: components["schemas"]["PersonalInfoDtoRequest"];
+			contactInfo: components["schemas"]["ContactInfoDtoRequest"];
+			document?: components["schemas"]["DocumentDtoRequest"];
 			/** Format: uuid */
 			address?: string;
 			/** @enum {string} */
 			relationship?:
-				| 'GRANDPARENT'
-				| 'GREAT_GRANDPARENT'
-				| 'GREAT_GRANDCHILD'
-				| 'SIBLING_IN_LAW'
-				| 'SPOUSE'
-				| 'CHILD'
-				| 'SIBLING'
-				| 'GRANDCHILD'
-				| 'PARENT'
-				| 'NEPHEW_NIECE'
-				| 'PARENT_IN_LAW'
-				| 'UNCLE_AUNT'
-				| 'SON_DAUGHTER_IN_LAW'
-				| 'TUTOR'
-				| 'OTHER';
+				| "GRANDPARENT"
+				| "GREAT_GRANDPARENT"
+				| "GREAT_GRANDCHILD"
+				| "SIBLING_IN_LAW"
+				| "SPOUSE"
+				| "CHILD"
+				| "SIBLING"
+				| "GRANDCHILD"
+				| "PARENT"
+				| "NEPHEW_NIECE"
+				| "PARENT_IN_LAW"
+				| "UNCLE_AUNT"
+				| "SON_DAUGHTER_IN_LAW"
+				| "TUTOR"
+				| "OTHER";
 		};
 		PersonalInfoDtoRequest: {
 			name: string;
@@ -665,17 +665,17 @@ export interface components {
 			/** Format: date-time */
 			birthDate?: string;
 			/** @enum {string} */
-			gender?: 'MALE' | 'FEMALE' | 'OTHER';
+			gender?: "MALE" | "FEMALE" | "OTHER";
 		};
 		PartialDocumentDtoRequest: {
 			/** @enum {string} */
-			type: 'NIF' | 'NIE' | 'PASSPORT' | 'OTHER';
+			type: "NIF" | "NIE" | "PASSPORT" | "OTHER";
 			number: string;
 			supportNumber?: string;
 		};
 		PartialPersonDtoRequest: {
-			personalInfo: components['schemas']['PartialPersonalInfoDtoRequest'];
-			document: components['schemas']['PartialDocumentDtoRequest'];
+			personalInfo: components["schemas"]["PartialPersonalInfoDtoRequest"];
+			document: components["schemas"]["PartialDocumentDtoRequest"];
 		};
 		PartialPersonalInfoDtoRequest: {
 			name: string;
@@ -685,7 +685,7 @@ export interface components {
 			/** Format: date-time */
 			birthDate: string;
 			/** @enum {string} */
-			gender: 'MALE' | 'FEMALE' | 'OTHER';
+			gender: "MALE" | "FEMALE" | "OTHER";
 		};
 		EmployeeDtoCreate: {
 			name: string;
@@ -747,7 +747,7 @@ export interface components {
 			name: string;
 			surname: string;
 			email: string;
-			accommodations: components['schemas']['EmployeeDtoAccommodationResponse'][];
+			accommodations: components["schemas"]["EmployeeDtoAccommodationResponse"][];
 		};
 		PageMetadata: {
 			/** Format: int64 */
@@ -760,8 +760,8 @@ export interface components {
 			totalPages?: number;
 		};
 		PagedModelEmployeeDtoResponse: {
-			content?: components['schemas']['EmployeeDtoResponse'][];
-			page?: components['schemas']['PageMetadata'];
+			content?: components["schemas"]["EmployeeDtoResponse"][];
+			page?: components["schemas"]["PageMetadata"];
 		};
 		ConfigDtoResponse: {
 			sesUsername: string;
@@ -805,11 +805,11 @@ export interface components {
 			name: string;
 			sesCode: string;
 			internetConnection?: boolean;
-			employees: components['schemas']['AccommodationDtoEmployeeResponse'][];
+			employees: components["schemas"]["AccommodationDtoEmployeeResponse"][];
 		};
 		PagedModelAccommodationDtoResponse: {
-			content?: components['schemas']['AccommodationDtoResponse'][];
-			page?: components['schemas']['PageMetadata'];
+			content?: components["schemas"]["AccommodationDtoResponse"][];
+			page?: components["schemas"]["PageMetadata"];
 		};
 		BookingDtoResponse: {
 			/** Format: uuid */
@@ -824,15 +824,15 @@ export interface components {
 			lastModifiedBy: string;
 			/** @enum {string} */
 			status:
-				| 'DRAFT'
-				| 'CONFIRMATION_READY'
-				| 'PENDING_CONFIRMATION'
-				| 'CONFIRMED'
-				| 'CHECK_IN_READY'
-				| 'PENDING_CHECK_IN'
-				| 'CHECKED_IN'
-				| 'PENDING_CANCELLATION'
-				| 'CANCELLED';
+				| "DRAFT"
+				| "CONFIRMATION_READY"
+				| "PENDING_CONFIRMATION"
+				| "CONFIRMED"
+				| "CHECK_IN_READY"
+				| "PENDING_CHECK_IN"
+				| "CHECKED_IN"
+				| "PENDING_CANCELLATION"
+				| "CANCELLED";
 			selfCheckInRequested: boolean;
 			canBeModified: boolean;
 			canBeDeleted: boolean;
@@ -842,45 +842,45 @@ export interface components {
 			endTime: string;
 			/** Format: int32 */
 			numberOfPeople: number;
-			payment?: components['schemas']['PaymentDtoResponse'];
+			payment?: components["schemas"]["PaymentDtoResponse"];
 			/** Format: int32 */
 			numberOfRooms?: number;
 			internetConnection?: boolean;
 			holderName?: string;
-			communications: components['schemas']['CommunicationDtoResponse'][];
+			communications: components["schemas"]["CommunicationDtoResponse"][];
 		};
 		CommunicationDtoResponse: {
 			/** Format: uuid */
 			id: string;
 			/** @enum {string} */
-			type: 'BOOKING' | 'CHECKIN' | 'CANCELLATION';
+			type: "BOOKING" | "CHECKIN" | "CANCELLATION";
 			/** @enum {string} */
 			status:
-				| 'PENDING'
-				| 'SENT'
-				| 'SUCCEEDED'
-				| 'FAILED'
-				| 'PENDING_VOIDED'
-				| 'VOIDED';
+				| "PENDING"
+				| "SENT"
+				| "SUCCEEDED"
+				| "FAILED"
+				| "PENDING_VOIDED"
+				| "VOIDED";
 			/** Format: date-time */
 			sentTimestamp?: string;
 			error?: string;
 		};
 		PagedModelBookingDtoResponse: {
-			content?: components['schemas']['BookingDtoResponse'][];
-			page?: components['schemas']['PageMetadata'];
+			content?: components["schemas"]["BookingDtoResponse"][];
+			page?: components["schemas"]["PageMetadata"];
 		};
 		PaymentDtoResponse: {
 			/** @enum {string} */
 			type:
-				| 'CASH'
-				| 'CREDIT_CARD'
-				| 'PLATFORM'
-				| 'TRANSFER'
-				| 'MOBILE'
-				| 'GIFT_CARD'
-				| 'ON_SITE'
-				| 'OTHER';
+				| "CASH"
+				| "CREDIT_CARD"
+				| "PLATFORM"
+				| "TRANSFER"
+				| "MOBILE"
+				| "GIFT_CARD"
+				| "ON_SITE"
+				| "OTHER";
 			mean?: string;
 			holder?: string;
 			/** Format: date-time */
@@ -895,7 +895,7 @@ export interface components {
 		};
 		DocumentDtoResponse: {
 			/** @enum {string} */
-			type: 'NIF' | 'NIE' | 'PASSPORT' | 'OTHER';
+			type: "NIF" | "NIE" | "PASSPORT" | "OTHER";
 			number: string;
 			supportNumber?: string;
 		};
@@ -906,28 +906,28 @@ export interface components {
 			createdAt: string;
 			/** Format: date-time */
 			updatedAt: string;
-			personalInfo: components['schemas']['PersonalInfoDtoResponse'];
-			contactInfo: components['schemas']['ContactInfoDtoResponse'];
-			document?: components['schemas']['DocumentDtoResponse'];
+			personalInfo: components["schemas"]["PersonalInfoDtoResponse"];
+			contactInfo: components["schemas"]["ContactInfoDtoResponse"];
+			document?: components["schemas"]["DocumentDtoResponse"];
 			/** Format: uuid */
 			address?: string;
 			/** @enum {string} */
 			relationship?:
-				| 'GRANDPARENT'
-				| 'GREAT_GRANDPARENT'
-				| 'GREAT_GRANDCHILD'
-				| 'SIBLING_IN_LAW'
-				| 'SPOUSE'
-				| 'CHILD'
-				| 'SIBLING'
-				| 'GRANDCHILD'
-				| 'PARENT'
-				| 'NEPHEW_NIECE'
-				| 'PARENT_IN_LAW'
-				| 'UNCLE_AUNT'
-				| 'SON_DAUGHTER_IN_LAW'
-				| 'TUTOR'
-				| 'OTHER';
+				| "GRANDPARENT"
+				| "GREAT_GRANDPARENT"
+				| "GREAT_GRANDCHILD"
+				| "SIBLING_IN_LAW"
+				| "SPOUSE"
+				| "CHILD"
+				| "SIBLING"
+				| "GRANDCHILD"
+				| "PARENT"
+				| "NEPHEW_NIECE"
+				| "PARENT_IN_LAW"
+				| "UNCLE_AUNT"
+				| "SON_DAUGHTER_IN_LAW"
+				| "TUTOR"
+				| "OTHER";
 		};
 		PersonalInfoDtoResponse: {
 			name: string;
@@ -937,7 +937,7 @@ export interface components {
 			/** Format: date-time */
 			birthDate?: string;
 			/** @enum {string} */
-			gender?: 'MALE' | 'FEMALE' | 'OTHER';
+			gender?: "MALE" | "FEMALE" | "OTHER";
 		};
 	};
 	responses: never;
@@ -946,59 +946,59 @@ export interface components {
 	headers: never;
 	pathItems: never;
 }
-export type ProblemDetail = components['schemas']['ProblemDetail'];
-export type ConfigDtoRequest = components['schemas']['ConfigDtoRequest'];
+export type ProblemDetail = components["schemas"]["ProblemDetail"];
+export type ConfigDtoRequest = components["schemas"]["ConfigDtoRequest"];
 export type AccommodationDtoRequest =
-	components['schemas']['AccommodationDtoRequest'];
-export type BookingDtoRequest = components['schemas']['BookingDtoRequest'];
-export type PaymentDtoRequest = components['schemas']['PaymentDtoRequest'];
+	components["schemas"]["AccommodationDtoRequest"];
+export type BookingDtoRequest = components["schemas"]["BookingDtoRequest"];
+export type PaymentDtoRequest = components["schemas"]["PaymentDtoRequest"];
 export type ContactInfoDtoRequest =
-	components['schemas']['ContactInfoDtoRequest'];
-export type DocumentDtoRequest = components['schemas']['DocumentDtoRequest'];
-export type PersonDtoRequest = components['schemas']['PersonDtoRequest'];
+	components["schemas"]["ContactInfoDtoRequest"];
+export type DocumentDtoRequest = components["schemas"]["DocumentDtoRequest"];
+export type PersonDtoRequest = components["schemas"]["PersonDtoRequest"];
 export type PersonalInfoDtoRequest =
-	components['schemas']['PersonalInfoDtoRequest'];
+	components["schemas"]["PersonalInfoDtoRequest"];
 export type PartialDocumentDtoRequest =
-	components['schemas']['PartialDocumentDtoRequest'];
+	components["schemas"]["PartialDocumentDtoRequest"];
 export type PartialPersonDtoRequest =
-	components['schemas']['PartialPersonDtoRequest'];
+	components["schemas"]["PartialPersonDtoRequest"];
 export type PartialPersonalInfoDtoRequest =
-	components['schemas']['PartialPersonalInfoDtoRequest'];
-export type EmployeeDtoCreate = components['schemas']['EmployeeDtoCreate'];
+	components["schemas"]["PartialPersonalInfoDtoRequest"];
+export type EmployeeDtoCreate = components["schemas"]["EmployeeDtoCreate"];
 export type EmployeeDtoCredentialsResponse =
-	components['schemas']['EmployeeDtoCredentialsResponse'];
-export type UpdatePasswordDto = components['schemas']['UpdatePasswordDto'];
-export type LoginRequest = components['schemas']['LoginRequest'];
-export type AddressDtoRequest = components['schemas']['AddressDtoRequest'];
-export type EntityDtoCreated = components['schemas']['EntityDtoCreated'];
-export type EmployeeDtoPatch = components['schemas']['EmployeeDtoPatch'];
+	components["schemas"]["EmployeeDtoCredentialsResponse"];
+export type UpdatePasswordDto = components["schemas"]["UpdatePasswordDto"];
+export type LoginRequest = components["schemas"]["LoginRequest"];
+export type AddressDtoRequest = components["schemas"]["AddressDtoRequest"];
+export type EntityDtoCreated = components["schemas"]["EntityDtoCreated"];
+export type EmployeeDtoPatch = components["schemas"]["EmployeeDtoPatch"];
 export type EmployeeDtoAccommodationResponse =
-	components['schemas']['EmployeeDtoAccommodationResponse'];
-export type EmployeeDtoResponse = components['schemas']['EmployeeDtoResponse'];
-export type PageMetadata = components['schemas']['PageMetadata'];
+	components["schemas"]["EmployeeDtoAccommodationResponse"];
+export type EmployeeDtoResponse = components["schemas"]["EmployeeDtoResponse"];
+export type PageMetadata = components["schemas"]["PageMetadata"];
 export type PagedModelEmployeeDtoResponse =
-	components['schemas']['PagedModelEmployeeDtoResponse'];
-export type ConfigDtoResponse = components['schemas']['ConfigDtoResponse'];
-export type AccountDto = components['schemas']['AccountDto'];
-export type AddressDtoResponse = components['schemas']['AddressDtoResponse'];
+	components["schemas"]["PagedModelEmployeeDtoResponse"];
+export type ConfigDtoResponse = components["schemas"]["ConfigDtoResponse"];
+export type AccountDto = components["schemas"]["AccountDto"];
+export type AddressDtoResponse = components["schemas"]["AddressDtoResponse"];
 export type AccommodationDtoEmployeeResponse =
-	components['schemas']['AccommodationDtoEmployeeResponse'];
+	components["schemas"]["AccommodationDtoEmployeeResponse"];
 export type AccommodationDtoResponse =
-	components['schemas']['AccommodationDtoResponse'];
+	components["schemas"]["AccommodationDtoResponse"];
 export type PagedModelAccommodationDtoResponse =
-	components['schemas']['PagedModelAccommodationDtoResponse'];
-export type BookingDtoResponse = components['schemas']['BookingDtoResponse'];
+	components["schemas"]["PagedModelAccommodationDtoResponse"];
+export type BookingDtoResponse = components["schemas"]["BookingDtoResponse"];
 export type CommunicationDtoResponse =
-	components['schemas']['CommunicationDtoResponse'];
+	components["schemas"]["CommunicationDtoResponse"];
 export type PagedModelBookingDtoResponse =
-	components['schemas']['PagedModelBookingDtoResponse'];
-export type PaymentDtoResponse = components['schemas']['PaymentDtoResponse'];
+	components["schemas"]["PagedModelBookingDtoResponse"];
+export type PaymentDtoResponse = components["schemas"]["PaymentDtoResponse"];
 export type ContactInfoDtoResponse =
-	components['schemas']['ContactInfoDtoResponse'];
-export type DocumentDtoResponse = components['schemas']['DocumentDtoResponse'];
-export type PersonDtoResponse = components['schemas']['PersonDtoResponse'];
+	components["schemas"]["ContactInfoDtoResponse"];
+export type DocumentDtoResponse = components["schemas"]["DocumentDtoResponse"];
+export type PersonDtoResponse = components["schemas"]["PersonDtoResponse"];
 export type PersonalInfoDtoResponse =
-	components['schemas']['PersonalInfoDtoResponse'];
+	components["schemas"]["PersonalInfoDtoResponse"];
 export type $defs = Record<string, never>;
 export interface operations {
 	getConfig: {
@@ -1016,7 +1016,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['ConfigDtoResponse'];
+					"*/*": components["schemas"]["ConfigDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -1025,7 +1025,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1039,7 +1039,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['ConfigDtoRequest'];
+				"application/json": components["schemas"]["ConfigDtoRequest"];
 			};
 		};
 		responses: {
@@ -1056,7 +1056,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1078,7 +1078,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['AccommodationDtoResponse'];
+					"*/*": components["schemas"]["AccommodationDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -1087,7 +1087,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1096,7 +1096,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1112,7 +1112,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['AccommodationDtoRequest'];
+				"application/json": components["schemas"]["AccommodationDtoRequest"];
 			};
 		};
 		responses: {
@@ -1129,7 +1129,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1138,7 +1138,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -1147,7 +1147,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1176,7 +1176,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1185,7 +1185,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1208,7 +1208,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['BookingDtoResponse'];
+					"*/*": components["schemas"]["BookingDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -1217,7 +1217,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1226,7 +1226,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1243,7 +1243,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['BookingDtoRequest'];
+				"application/json": components["schemas"]["BookingDtoRequest"];
 			};
 		};
 		responses: {
@@ -1260,7 +1260,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1269,7 +1269,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -1278,7 +1278,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1308,7 +1308,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1317,7 +1317,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -1326,7 +1326,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1350,7 +1350,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['PersonDtoResponse'];
+					"*/*": components["schemas"]["PersonDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -1359,7 +1359,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1368,7 +1368,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1386,7 +1386,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['PersonDtoRequest'];
+				"application/json": components["schemas"]["PersonDtoRequest"];
 			};
 		};
 		responses: {
@@ -1403,7 +1403,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1412,7 +1412,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -1421,7 +1421,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1452,7 +1452,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1461,7 +1461,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -1470,7 +1470,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1484,7 +1484,7 @@ export interface operations {
 		};
 		requestBody?: {
 			content: {
-				'multipart/form-data': {
+				"multipart/form-data": {
 					/** Format: binary */
 					file: string;
 				};
@@ -1497,7 +1497,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['PartialPersonDtoRequest'];
+					"*/*": components["schemas"]["PartialPersonDtoRequest"];
 				};
 			};
 			/** @description Bad Request */
@@ -1506,7 +1506,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Unprocessable Content */
@@ -1515,7 +1515,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Service Unavailable */
@@ -1524,7 +1524,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1551,7 +1551,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['PagedModelEmployeeDtoResponse'];
+					"*/*": components["schemas"]["PagedModelEmployeeDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -1560,7 +1560,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1574,7 +1574,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['EmployeeDtoCreate'];
+				"application/json": components["schemas"]["EmployeeDtoCreate"];
 			};
 		};
 		responses: {
@@ -1584,7 +1584,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['EmployeeDtoCredentialsResponse'];
+					"*/*": components["schemas"]["EmployeeDtoCredentialsResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -1593,7 +1593,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -1602,7 +1602,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1624,7 +1624,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['EmployeeDtoCredentialsResponse'];
+					"*/*": components["schemas"]["EmployeeDtoCredentialsResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -1633,7 +1633,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1642,7 +1642,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1669,7 +1669,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Unauthorized */
@@ -1678,7 +1678,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Service Unavailable */
@@ -1687,7 +1687,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1701,7 +1701,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['UpdatePasswordDto'];
+				"application/json": components["schemas"]["UpdatePasswordDto"];
 			};
 		};
 		responses: {
@@ -1718,7 +1718,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Unauthorized */
@@ -1727,7 +1727,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1754,7 +1754,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1768,7 +1768,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/x-www-form-urlencoded': components['schemas']['LoginRequest'];
+				"application/x-www-form-urlencoded": components["schemas"]["LoginRequest"];
 			};
 		};
 		responses: {
@@ -1785,7 +1785,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Unauthorized */
@@ -1794,7 +1794,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1808,7 +1808,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['AddressDtoRequest'];
+				"application/json": components["schemas"]["AddressDtoRequest"];
 			};
 		};
 		responses: {
@@ -1818,7 +1818,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['EntityDtoCreated'];
+					"*/*": components["schemas"]["EntityDtoCreated"];
 				};
 			};
 			/** @description Bad Request */
@@ -1827,7 +1827,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1854,7 +1854,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['PagedModelAccommodationDtoResponse'];
+					"*/*": components["schemas"]["PagedModelAccommodationDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -1863,7 +1863,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1877,7 +1877,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['AccommodationDtoRequest'];
+				"application/json": components["schemas"]["AccommodationDtoRequest"];
 			};
 		};
 		responses: {
@@ -1887,7 +1887,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['EntityDtoCreated'];
+					"*/*": components["schemas"]["EntityDtoCreated"];
 				};
 			};
 			/** @description Bad Request */
@@ -1896,7 +1896,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -1905,7 +1905,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1935,7 +1935,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1944,7 +1944,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -1953,7 +1953,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -1983,7 +1983,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -1992,7 +1992,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -2001,7 +2001,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2032,7 +2032,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['PagedModelBookingDtoResponse'];
+					"*/*": components["schemas"]["PagedModelBookingDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -2041,7 +2041,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2050,7 +2050,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2066,7 +2066,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['BookingDtoRequest'];
+				"application/json": components["schemas"]["BookingDtoRequest"];
 			};
 		};
 		responses: {
@@ -2076,7 +2076,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['EntityDtoCreated'];
+					"*/*": components["schemas"]["EntityDtoCreated"];
 				};
 			};
 			/** @description Bad Request */
@@ -2085,7 +2085,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2094,7 +2094,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2124,7 +2124,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2133,7 +2133,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -2142,7 +2142,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2172,7 +2172,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2181,7 +2181,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -2190,7 +2190,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2227,7 +2227,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2236,7 +2236,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -2245,7 +2245,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2275,7 +2275,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2284,7 +2284,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -2293,7 +2293,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2316,7 +2316,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['PersonDtoResponse'][];
+					"*/*": components["schemas"]["PersonDtoResponse"][];
 				};
 			};
 			/** @description Bad Request */
@@ -2325,7 +2325,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2334,7 +2334,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2351,7 +2351,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['PersonDtoRequest'];
+				"application/json": components["schemas"]["PersonDtoRequest"];
 			};
 		};
 		responses: {
@@ -2361,7 +2361,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['EntityDtoCreated'];
+					"*/*": components["schemas"]["EntityDtoCreated"];
 				};
 			};
 			/** @description Bad Request */
@@ -2370,7 +2370,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2379,7 +2379,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -2388,7 +2388,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2410,7 +2410,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['EmployeeDtoResponse'];
+					"*/*": components["schemas"]["EmployeeDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -2419,7 +2419,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2428,7 +2428,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2457,7 +2457,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2466,7 +2466,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2482,7 +2482,7 @@ export interface operations {
 		};
 		requestBody: {
 			content: {
-				'application/json': components['schemas']['EmployeeDtoPatch'];
+				"application/json": components["schemas"]["EmployeeDtoPatch"];
 			};
 		};
 		responses: {
@@ -2499,7 +2499,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2508,7 +2508,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Conflict */
@@ -2517,7 +2517,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2537,7 +2537,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': string[];
+					"*/*": string[];
 				};
 			};
 			/** @description Bad Request */
@@ -2546,7 +2546,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2566,7 +2566,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': string[];
+					"*/*": string[];
 				};
 			};
 			/** @description Bad Request */
@@ -2575,7 +2575,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2595,7 +2595,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': string[];
+					"*/*": string[];
 				};
 			};
 			/** @description Bad Request */
@@ -2604,7 +2604,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2624,7 +2624,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': string[];
+					"*/*": string[];
 				};
 			};
 			/** @description Bad Request */
@@ -2633,7 +2633,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2653,7 +2653,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': string[];
+					"*/*": string[];
 				};
 			};
 			/** @description Bad Request */
@@ -2662,7 +2662,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2682,7 +2682,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': {
+					"*/*": {
 						[key: string]: string;
 					};
 				};
@@ -2693,7 +2693,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2715,7 +2715,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': {
+					"*/*": {
 						[key: string]: string;
 					};
 				};
@@ -2726,7 +2726,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2749,7 +2749,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': string[];
+					"*/*": string[];
 				};
 			};
 			/** @description Bad Request */
@@ -2758,7 +2758,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2778,7 +2778,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['AccountDto'];
+					"*/*": components["schemas"]["AccountDto"];
 				};
 			};
 			/** @description Bad Request */
@@ -2787,7 +2787,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2809,7 +2809,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['AddressDtoResponse'];
+					"*/*": components["schemas"]["AddressDtoResponse"];
 				};
 			};
 			/** @description Bad Request */
@@ -2818,7 +2818,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2827,7 +2827,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};
@@ -2850,7 +2850,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'*/*': components['schemas']['AddressDtoResponse'][];
+					"*/*": components["schemas"]["AddressDtoResponse"][];
 				};
 			};
 			/** @description Bad Request */
@@ -2859,7 +2859,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 			/** @description Not Found */
@@ -2868,7 +2868,7 @@ export interface operations {
 					[name: string]: unknown;
 				};
 				content: {
-					'application/problem+json': components['schemas']['ProblemDetail'];
+					"application/problem+json": components["schemas"]["ProblemDetail"];
 				};
 			};
 		};

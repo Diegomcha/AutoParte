@@ -1,6 +1,8 @@
-import { CheckIcon, Group, Select, Text } from '@mantine/core';
-import CountryService from '~/services/CountryService';
-import type { CountryCode } from '~/services/CountryService';
+import { CheckIcon, Group, Select, Text } from "@mantine/core";
+
+import CountryService from "~/services/CountryService";
+
+import type { CountryCode } from "~/services/CountryService";
 
 export default function CountrySelect({
 	countries,
@@ -13,8 +15,8 @@ export default function CountrySelect({
 					country,
 					{
 						value: country,
-						label: CountryService.getName(country),
-					},
+						label: CountryService.getName(country)
+					}
 				] as const
 		)
 	);
@@ -39,8 +41,8 @@ export default function CountrySelect({
 				</Group>
 			)}
 			comboboxProps={{
-				position: 'bottom-start',
-				width: 'auto',
+				position: "bottom-start",
+				width: "auto"
 			}}
 			checkIconPosition="right"
 			searchable

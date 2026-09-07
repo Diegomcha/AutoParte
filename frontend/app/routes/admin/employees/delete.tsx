@@ -1,12 +1,16 @@
-import { Button, Group, Modal } from '@mantine/core';
-import { TrashIcon } from '@phosphor-icons/react';
-import { useMutation } from '@tanstack/react-query';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryClient, queryFactory } from '~/services/Api';
-import Validators from '~/services/Validators';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import type { Route } from './+types/delete';
+import { useNavigate } from "react-router";
+
+import { Button, Group, Modal } from "@mantine/core";
+
+import { TrashIcon } from "@phosphor-icons/react";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import { queryClient, queryFactory } from "~/services/Api";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types/delete";
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
@@ -15,13 +19,13 @@ export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 }
 
 export default function DeleteEmployee({
-	params: { id },
+	params: { id }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(
-		() => void navigate('/admin/employees')
+		() => void navigate("/admin/employees")
 	);
 
 	const { mutate, isPending } = useMutation(queryFactory.employees.delete(id));
@@ -43,7 +47,7 @@ export default function DeleteEmployee({
 					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: close,
+							onSuccess: close
 						});
 					}}
 					leftSection={<TrashIcon weight="bold" />}

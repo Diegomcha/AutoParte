@@ -1,5 +1,6 @@
-import { validate as uuidValidate } from 'uuid';
-import type { ErrorResponse } from 'react-router';
+import { validate as uuidValidate } from "uuid";
+
+import type { ErrorResponse } from "react-router";
 
 class Validators {
 	/**
@@ -40,7 +41,7 @@ export class ValidationErrorResponse extends Error implements ErrorResponse {
 	}
 
 	readonly status = 400;
-	readonly statusText = 'Bad Request';
+	readonly statusText = "Bad Request";
 	readonly data: string;
 
 	constructor(detail: string) {

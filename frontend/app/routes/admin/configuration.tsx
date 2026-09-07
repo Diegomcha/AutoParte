@@ -9,17 +9,19 @@ import {
 	Stack,
 	Switch,
 	TextInput,
-	Title,
-} from '@mantine/core';
-import { useForm } from '@mantine/form';
+	Title
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
+
 import {
 	ArrowUUpLeftIcon,
 	FloppyDiskIcon,
-	SpinnerIcon,
-} from '@phosphor-icons/react';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { queryClient, queryFactory } from '~/services/Api';
-import { useTranslation } from 'react-i18next';
+	SpinnerIcon
+} from "@phosphor-icons/react";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import { queryClient, queryFactory } from "~/services/Api";
 
 export async function clientLoader() {
 	await queryClient.query(queryFactory.configuration.get());
@@ -34,7 +36,7 @@ export default function ConfigPage() {
 		initialValues: config,
 		validate: {
 			//TODO:
-		},
+		}
 	});
 
 	const { mutate, isPending } = useMutation(
@@ -45,7 +47,7 @@ export default function ConfigPage() {
 		mutate: validateSesCreds,
 		isPending: isValidatingSesCreds,
 		isError: isValidationError,
-		data: isSesCredsValidUpdated,
+		data: isSesCredsValidUpdated
 	} = useMutation(queryFactory.configuration.validateSesCreds());
 
 	const isSesCredsValid =
@@ -70,7 +72,7 @@ export default function ConfigPage() {
 						form.resetDirty();
 
 						validateSesCreds();
-					},
+					}
 				});
 			})}
 			onReset={form.onReset}
@@ -106,30 +108,30 @@ export default function ConfigPage() {
 					>
 						<Group grow>
 							<TextInput
-								key={form.key('sesUsername')}
+								key={form.key("sesUsername")}
 								name="sesUsername"
 								label={t(
 									($) => $.admin.config.properties.sesCredentials.username
 								)}
-								{...form.getInputProps('sesUsername')}
+								{...form.getInputProps("sesUsername")}
 							/>
 							<TextInput
-								key={form.key('sesLandlordCode')}
+								key={form.key("sesLandlordCode")}
 								name="sesLandlordCode"
 								label={t(
 									($) =>
 										$.admin.config.properties.sesCredentials.sesLandlordCode
 								)}
-								{...form.getInputProps('sesLandlordCode')}
+								{...form.getInputProps("sesLandlordCode")}
 							/>
 						</Group>
 						<PasswordInput
-							key={form.key('sesPassword')}
+							key={form.key("sesPassword")}
 							name="sesPassword"
 							label={t(
 								($) => $.admin.config.properties.sesCredentials.password
 							)}
-							{...form.getInputProps('sesPassword')}
+							{...form.getInputProps("sesPassword")}
 						/>
 						<Divider my="sm" />
 						<Center>
@@ -151,24 +153,24 @@ export default function ConfigPage() {
 					<Fieldset legend={t(($) => $.admin.config.properties.toggles.legend)}>
 						<Stack>
 							<Switch
-								key={form.key('digitalSignatureEnabled')}
+								key={form.key("digitalSignatureEnabled")}
 								name="digitalSignatureEnabled"
 								label={t(
 									($) =>
 										$.admin.config.properties.toggles.digitalSignatureEnabled
 								)}
-								{...form.getInputProps('digitalSignatureEnabled', {
-									type: 'checkbox',
+								{...form.getInputProps("digitalSignatureEnabled", {
+									type: "checkbox"
 								})}
 							/>
 							<Switch
-								key={form.key('manualReviewEnabled')}
+								key={form.key("manualReviewEnabled")}
 								name="manualReviewEnabled"
 								label={t(
 									($) => $.admin.config.properties.toggles.manualReviewEnabled
 								)}
-								{...form.getInputProps('manualReviewEnabled', {
-									type: 'checkbox',
+								{...form.getInputProps("manualReviewEnabled", {
+									type: "checkbox"
 								})}
 							/>
 						</Stack>

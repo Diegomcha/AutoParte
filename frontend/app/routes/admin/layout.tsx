@@ -1,15 +1,19 @@
-import { AppShell, Box, NavLink } from '@mantine/core';
+import { Outlet, NavLink as RouterNavLink } from "react-router";
+
+import { AppShell, Box, NavLink } from "@mantine/core";
+
 import {
 	BedIcon,
 	FileTextIcon,
 	GearIcon,
 	SignOutIcon,
-	UserCircleIcon,
-} from '@phosphor-icons/react';
-import AuthService from '~/services/AuthService';
-import { useTranslation } from 'react-i18next';
-import { Outlet, NavLink as RouterNavLink } from 'react-router';
-import type { Route } from './+types/layout';
+	UserCircleIcon
+} from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
+
+import AuthService from "~/services/AuthService";
+
+import type { Route } from "./+types/layout";
 
 // Ensure the user is authenticated & admin before allowing access to any protected routes.
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
@@ -24,7 +28,7 @@ export default function ProtectedAdminLayout() {
 	const { t } = useTranslation();
 
 	return (
-		<AppShell navbar={{ width: 150, breakpoint: 'sm' }} padding="md">
+		<AppShell navbar={{ width: 150, breakpoint: "sm" }} padding="md">
 			<AppShell.Navbar>
 				<NavLink
 					component={RouterNavLink}

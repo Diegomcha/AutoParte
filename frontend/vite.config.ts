@@ -1,8 +1,8 @@
-import { reactRouter } from '@react-router/dev/vite';
-import { sentryReactRouter } from '@sentry/react-router';
-import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'vite';
-import devTools from 'vite-plugin-devtools-json';
+import { reactRouter } from "@react-router/dev/vite";
+import { sentryReactRouter } from "@sentry/react-router";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
+import devTools from "vite-plugin-devtools-json";
 
 export default defineConfig((config) => ({
 	plugins: [
@@ -11,23 +11,23 @@ export default defineConfig((config) => ({
 		reactRouter(),
 		sentryReactRouter(
 			{
-				org: 'diegomcha',
-				project: 'autoparte-front',
-				telemetry: false,
+				org: "diegomcha",
+				project: "autoparte-front",
+				telemetry: false
 			},
 			config
-		),
+		)
 	],
 	resolve: {
-		tsconfigPaths: true,
+		tsconfigPaths: true
 	},
 	server: {
 		proxy: {
-			'/api': {
-				target: 'http://localhost:8080',
+			"/api": {
+				target: "http://localhost:8080",
 				changeOrigin: true,
-				proxyTimeout: 5000,
-			},
-		},
-	},
+				proxyTimeout: 5000
+			}
+		}
+	}
 }));

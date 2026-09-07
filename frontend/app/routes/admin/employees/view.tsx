@@ -1,29 +1,33 @@
-import { Badge, Chip, DataList, Divider, Modal, Stack } from '@mantine/core';
-import { CheckCircleIcon } from '@phosphor-icons/react';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryClient, queryFactory } from '~/services/Api';
-import TimeService from '~/services/TimeService';
-import Validators from '~/services/Validators';
-import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router';
-import type { Route } from './+types/view';
+import { Link, useNavigate } from "react-router";
+
+import { Badge, Chip, DataList, Divider, Modal, Stack } from "@mantine/core";
+
+import { CheckCircleIcon } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
+
+import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import { queryClient, queryFactory } from "~/services/Api";
+import TimeService from "~/services/TimeService";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types/view";
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(id);
 
 	return {
-		employee: await queryClient.query(queryFactory.employees.detail(id)),
+		employee: await queryClient.query(queryFactory.employees.detail(id))
 	};
 }
 
 export default function ViewEmployee({
-	loaderData: { employee },
+	loaderData: { employee }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(
-		() => void navigate('/admin/employees')
+		() => void navigate("/admin/employees")
 	);
 
 	return (

@@ -1,10 +1,12 @@
-import { Badge } from '@mantine/core';
-import { useTranslation } from 'react-i18next';
-import type { BookingDtoResponse } from '~/@types/api';
+import { Badge } from "@mantine/core";
+
+import { useTranslation } from "react-i18next";
+
+import type { BookingDtoResponse } from "~/@types/api";
 
 export default function BookingStatusBadge({
-	status,
-}: Readonly<{ status: BookingDtoResponse['status'] }>) {
+	status
+}: Readonly<{ status: BookingDtoResponse["status"] }>) {
 	const { t } = useTranslation();
 
 	return (

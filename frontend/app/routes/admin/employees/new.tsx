@@ -1,29 +1,32 @@
-import { Button, Group, Modal, TextInput, useModalsStack } from '@mantine/core';
-import { isEmail, isNotEmpty, useForm } from '@mantine/form';
-import { UserCirclePlusIcon } from '@phosphor-icons/react';
-import { useMutation } from '@tanstack/react-query';
-import EmployeeCredsModal from '~/component/EmployeeCredsModal';
-import useStaticModalStackTransition from '~/hooks/useStaticModalStackTransition';
-import { queryFactory } from '~/services/Api';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { useNavigate } from "react-router";
+
+import { Button, Group, Modal, TextInput, useModalsStack } from "@mantine/core";
+import { isEmail, isNotEmpty, useForm } from "@mantine/form";
+
+import { UserCirclePlusIcon } from "@phosphor-icons/react";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import EmployeeCredsModal from "~/component/EmployeeCredsModal";
+import useStaticModalStackTransition from "~/hooks/useStaticModalStackTransition";
+import { queryFactory } from "~/services/Api";
 
 export default function NewEmployee() {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const stack = useModalsStack(['new', 'created']);
+	const stack = useModalsStack(["new", "created"]);
 	const { close } = useStaticModalStackTransition(
 		stack,
-		'new',
-		() => void navigate('/admin/employees')
+		"new",
+		() => void navigate("/admin/employees")
 	);
 
 	const form = useForm({
 		initialValues: {
-			name: '',
-			surname: '',
-			email: '',
+			name: "",
+			surname: "",
+			email: ""
 		},
 		validate: {
 			name: isNotEmpty(
@@ -34,20 +37,20 @@ export default function NewEmployee() {
 			),
 			email: isEmail(
 				t(($) => $.admin.employees.properties.email.errors.invalidEmail)
-			),
-		},
+			)
+		}
 	});
 
 	const {
 		mutate: create,
 		data: created,
-		isPending: isCreating,
+		isPending: isCreating
 	} = useMutation(queryFactory.employees.create());
 
 	return (
 		<Modal.Stack>
 			<Modal
-				{...stack.register('new')}
+				{...stack.register("new")}
 				onClose={close}
 				title={t(($) => $.admin.employees.new.title)}
 			>
@@ -55,38 +58,38 @@ export default function NewEmployee() {
 					onSubmit={form.onSubmit((data) => {
 						create(data, {
 							onSuccess: (created) => {
-								if (created) stack.open('created');
+								if (created) stack.open("created");
 								else
 									form.setFieldError(
-										'email',
+										"email",
 										t(
 											($) =>
 												$.admin.employees.properties.email.errors.emailInUse
 										)
 									);
-							},
+							}
 						});
 					})}
 				>
 					<Group grow>
 						<TextInput
-							key={form.key('name')}
+							key={form.key("name")}
 							name="name"
 							label={t(($) => $.admin.employees.properties.name.label)}
-							{...form.getInputProps('name')}
+							{...form.getInputProps("name")}
 						/>
 						<TextInput
-							key={form.key('surname')}
+							key={form.key("surname")}
 							name="surname"
 							label={t(($) => $.admin.employees.properties.surname.label)}
-							{...form.getInputProps('surname')}
+							{...form.getInputProps("surname")}
 						/>
 					</Group>
 					<TextInput
-						key={form.key('email')}
+						key={form.key("email")}
 						name="email"
 						label={t(($) => $.admin.employees.properties.email.label)}
-						{...form.getInputProps('email')}
+						{...form.getInputProps("email")}
 					/>
 					<Group justify="right" mt="md">
 						<Button
@@ -101,7 +104,7 @@ export default function NewEmployee() {
 			</Modal>
 			{created && (
 				<EmployeeCredsModal
-					{...stack.register('created')}
+					{...stack.register("created")}
 					creds={created}
 					onClose={close}
 					title={t(($) => $.admin.employees.new.created.title)}

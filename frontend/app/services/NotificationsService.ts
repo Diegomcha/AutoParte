@@ -1,5 +1,6 @@
-import { notifications } from '@mantine/notifications';
-import { t } from 'i18next';
+import { notifications } from "@mantine/notifications";
+
+import { t } from "i18next";
 
 class NotificationsService {
 	/**
@@ -7,7 +8,7 @@ class NotificationsService {
 	 * @param message The message to display in the notification.
 	 */
 	success(message: string) {
-		this.showNotification('success', message);
+		this.showNotification("success", message);
 	}
 
 	/**
@@ -15,7 +16,7 @@ class NotificationsService {
 	 * @param message The message to display in the notification.
 	 */
 	warning(message: string) {
-		this.showNotification('warning', message);
+		this.showNotification("warning", message);
 	}
 
 	/**
@@ -23,18 +24,18 @@ class NotificationsService {
 	 * @param message The message to display in the notification.
 	 */
 	error(message: string) {
-		this.showNotification('error', message);
+		this.showNotification("error", message);
 	}
 
 	private showNotification(
-		type: 'success' | 'warning' | 'error',
+		type: "success" | "warning" | "error",
 		message: string
 	) {
 		notifications.show({
 			color: t(($) => $.notifications[type].color),
 			title: t(($) => $.notifications[type].title),
 			withBorder: true,
-			message,
+			message
 		});
 	}
 }

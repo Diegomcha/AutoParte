@@ -1,14 +1,19 @@
-import { CheckIcon, Group, Select, Text } from '@mantine/core';
-import { useUncontrolled } from '@mantine/hooks';
-import { PlusIcon } from '@phosphor-icons/react';
-import { useSuspenseQueries } from '@tanstack/react-query';
-import { lang } from '~/i18n';
-import { _api, _unwrapResponse, queryFactory } from '~/services/Api';
-import CountryService from '~/services/CountryService';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import NewAddressForm from './NewAddressForm';
-import type { CountryCode } from '~/services/CountryService';
+import { useState } from "react";
+
+import { CheckIcon, Group, Select, Text } from "@mantine/core";
+import { useUncontrolled } from "@mantine/hooks";
+
+import { PlusIcon } from "@phosphor-icons/react";
+import { useSuspenseQueries } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import { lang } from "~/i18n";
+import { _api, _unwrapResponse, queryFactory } from "~/services/Api";
+import CountryService from "~/services/CountryService";
+
+import NewAddressForm from "./NewAddressForm";
+
+import type { CountryCode } from "~/services/CountryService";
 
 export default function AddressSelect({
 	accommodationId,
@@ -32,12 +37,12 @@ export default function AddressSelect({
 			queryFactory.accommodations.bookings.addresses.list(
 				accommodationId,
 				bookingId
-			),
+			)
 		],
 		combine: (result) => ({
 			provincesMap: result[0].data,
-			bookingAddresses: result[1].data,
-		}),
+			bookingAddresses: result[1].data
+		})
 	});
 
 	const [newAddressesCache, setNewAddressesCache] = useState<string[]>([]);
@@ -45,7 +50,7 @@ export default function AddressSelect({
 		queries: newAddressesCache.map((addressId) =>
 			queryFactory.addresses.detail(addressId)
 		),
-		combine: (result) => result.map((res) => res.data),
+		combine: (result) => result.map((res) => res.data)
 	})
 		// Remove duplicates that are already in bookingAddresses
 		.filter((address) =>
@@ -59,7 +64,7 @@ export default function AddressSelect({
 		queries: Array.from(
 			new Set(
 				addresses
-					.filter((address) => address.country === 'ESP')
+					.filter((address) => address.country === "ESP")
 					.map((address) => address.municipality.slice(0, 2))
 			)
 			// eslint-disable-next-line @tanstack/query/prefer-query-options -- Special case for fetching municipalities based on province codes
@@ -68,23 +73,23 @@ export default function AddressSelect({
 				...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
 					provinceCode
 				).queryKey,
-				{ component: 'AddressSelect' },
+				{ component: "AddressSelect" }
 			],
 			queryFn: async () =>
 				[
 					provinceCode,
 					_unwrapResponse(
 						await _api.GET(
-							'/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities',
+							"/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities",
 							{
 								params: {
-									path: { provinceCode },
-								},
+									path: { provinceCode }
+								}
 							}
 						)
-					),
-				] as const,
-		})),
+					)
+				] as const
+		}))
 	});
 
 	// Create a map of province codes to their municipalities for quick lookup
@@ -99,15 +104,15 @@ export default function AddressSelect({
 			{
 				...address,
 				municipalityLabel:
-					address.country === 'ESP'
+					address.country === "ESP"
 						? `${
 								municipalitiesMap[address.municipality.slice(0, 2)]?.[
 									address.municipality.slice(2)
-								] ?? ''
-							} · ${provincesMap[address.municipality.slice(0, 2)] ?? ''}`
+								] ?? ""
+							} · ${provincesMap[address.municipality.slice(0, 2)] ?? ""}`
 						: address.municipality,
-				countryLabel: CountryService.getName(address.country as CountryCode),
-			},
+				countryLabel: CountryService.getName(address.country as CountryCode)
+			}
 		])
 	);
 
@@ -116,7 +121,7 @@ export default function AddressSelect({
 			value: address.id,
 			label:
 				address.addressLine1 +
-				(address.addressLine2 ? ` / ${address.addressLine2}` : ''),
+				(address.addressLine2 ? ` / ${address.addressLine2}` : "")
 		}))
 		.sort((a, b) => a.label.localeCompare(b.label, lang));
 
@@ -124,7 +129,7 @@ export default function AddressSelect({
 		value,
 		defaultValue,
 		finalValue: undefined,
-		onChange,
+		onChange
 	});
 
 	const [openNewAddressForm, setOpenNewAddressForm] = useState(false);
@@ -135,14 +140,14 @@ export default function AddressSelect({
 				{...props}
 				value={_value}
 				onChange={(value) => {
-					if (value === '$new') setOpenNewAddressForm(true);
+					if (value === "$new") setOpenNewAddressForm(true);
 					else handleChange(value);
 				}}
 				data={[
-					'$new',
+					"$new",
 					{
 						group: t(($) => $.addressSelect.current),
-						items: selectData.filter((addr) => addr.value === _value),
+						items: selectData.filter((addr) => addr.value === _value)
 					},
 					{
 						group: t(($) => $.addressSelect.new),
@@ -150,7 +155,7 @@ export default function AddressSelect({
 							(addr) =>
 								addr.value !== _value &&
 								bookingAddresses.every((bookAddr) => bookAddr.id !== addr.value)
-						),
+						)
 					},
 					{
 						group: t(($) => $.addressSelect.other),
@@ -158,14 +163,14 @@ export default function AddressSelect({
 							(addr) =>
 								addr.value !== _value &&
 								bookingAddresses.some((bookAddr) => bookAddr.id === addr.value)
-						),
-					},
+						)
+					}
 				]}
 				renderOption={({ checked, option }) => {
 					// Display a special option for creating a new address
-					if (option.value === '$new') {
+					if (option.value === "$new") {
 						return (
-							<Group gap="xs" h={'100%'} w={'100%'} wrap="nowrap">
+							<Group gap="xs" h={"100%"} w={"100%"} wrap="nowrap">
 								<PlusIcon width="1em" />
 								<Text size="sm">{t(($) => $.addressSelect.new)}</Text>
 							</Group>
@@ -179,13 +184,13 @@ export default function AddressSelect({
 					return (
 						<Group gap="xs" wrap="nowrap">
 							<div>
-								<Text fw={'bold'} size="sm">
+								<Text fw={"bold"} size="sm">
 									{address.addressLine1}
 									{address.addressLine2 && ` / ${address.addressLine2}`}
 								</Text>
 								<Text size="sm">
-									{address.postalCode} · {address.municipalityLabel} ·{' '}
-									{CountryService.getFlag(address.country as CountryCode)}{' '}
+									{address.postalCode} · {address.municipalityLabel} ·{" "}
+									{CountryService.getFlag(address.country as CountryCode)}{" "}
 									{address.countryLabel}
 								</Text>
 							</div>
@@ -194,8 +199,8 @@ export default function AddressSelect({
 					);
 				}}
 				comboboxProps={{
-					position: 'bottom-start',
-					width: 'auto',
+					position: "bottom-start",
+					width: "auto"
 				}}
 			/>
 			<NewAddressForm

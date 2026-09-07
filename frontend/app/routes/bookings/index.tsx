@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Link, Outlet, useNavigate, useOutletContext } from "react-router";
+
 import {
 	ActionIcon,
 	Button,
@@ -17,10 +20,11 @@ import {
 	TextInput,
 	Timeline,
 	Title,
-	Tooltip,
-} from '@mantine/core';
-import { DateInput, DateTimePicker } from '@mantine/dates';
-import { isNotEmpty, useForm } from '@mantine/form';
+	Tooltip
+} from "@mantine/core";
+import { DateInput, DateTimePicker } from "@mantine/dates";
+import { isNotEmpty, useForm } from "@mantine/form";
+
 import {
 	ArrowUUpLeftIcon,
 	CaretLeftIcon,
@@ -37,29 +41,29 @@ import {
 	SuitcaseIcon,
 	TrashIcon,
 	UserListIcon,
-	XIcon,
-} from '@phosphor-icons/react';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import BookingStatusBadge from '~/component/BookingStatusBadge';
-import BooleanInputWithUndefined from '~/component/BooleanInputWithUndefined';
-import CommunicationTimelineItem from '~/component/CommunicationTimelineItem';
-import ComplexRequiredAsterisk from '~/component/ComplexRequiredLabel';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryClient, queryFactory } from '~/services/Api';
-import TimeService from '~/services/TimeService';
-import Validators from '~/services/Validators';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useNavigate, useOutletContext } from 'react-router';
-import type { Route } from './+types/index';
-import type { BookingDtoResponse } from '~/@types/api';
+	XIcon
+} from "@phosphor-icons/react";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import BookingStatusBadge from "~/component/BookingStatusBadge";
+import BooleanInputWithUndefined from "~/component/BooleanInputWithUndefined";
+import CommunicationTimelineItem from "~/component/CommunicationTimelineItem";
+import ComplexRequiredAsterisk from "~/component/ComplexRequiredLabel";
+import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import { queryClient, queryFactory } from "~/services/Api";
+import TimeService from "~/services/TimeService";
+import Validators from "~/services/Validators";
+
+import type { BookingDtoResponse } from "~/@types/api";
+import type { Route } from "./+types/index";
 
 interface ContextType {
 	booking: BookingDtoResponse;
 }
 
 export async function clientLoader({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
@@ -69,7 +73,7 @@ export async function clientLoader({
 }
 
 export default function BookingsPage({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
@@ -95,15 +99,15 @@ export default function BookingsPage({
 			numberOfPeople: booking.numberOfPeople,
 			payment: {
 				type: booking.payment?.type ?? null,
-				mean: booking.payment?.mean ?? '',
-				holder: booking.payment?.holder ?? '',
+				mean: booking.payment?.mean ?? "",
+				holder: booking.payment?.holder ?? "",
 				date: booking.payment?.date ?? null,
 				expiryDate: booking.payment?.expiryDate
-					? TimeService(booking.payment.expiryDate).format('MM / YY')
-					: '',
+					? TimeService(booking.payment.expiryDate).format("MM / YY")
+					: ""
 			},
-			numberOfRooms: booking.numberOfRooms ?? '',
-			internetConnection: String(booking.internetConnection ?? undefined),
+			numberOfRooms: booking.numberOfRooms ?? "",
+			internetConnection: String(booking.internetConnection ?? undefined)
 		},
 		validate: {
 			date: (value) =>
@@ -114,16 +118,16 @@ export default function BookingsPage({
 			),
 			payment: {
 				expiryDate: (value, values) => {
-					if (values.payment.type !== 'CREDIT_CARD') return null;
+					if (values.payment.type !== "CREDIT_CARD") return null;
 
-					if (value && !TimeService(value, 'MMYY').isValid())
+					if (value && !TimeService(value, "MMYY").isValid())
 						return t(
 							($) => $.bookings.properties.payment.expiryDate.errors.invalid
 						);
 					if (
 						value &&
 						values.payment.date &&
-						TimeService(value, 'MMYY').isBefore(
+						TimeService(value, "MMYY").isBefore(
 							TimeService(values.payment.date)
 						)
 					)
@@ -132,8 +136,8 @@ export default function BookingsPage({
 								$.bookings.properties.payment.expiryDate.errors
 									.beforePaymentDate
 						);
-				},
-			},
+				}
+			}
 		},
 		transformValues: (values) => ({
 			startTime: TimeService(values.date[0]).toISOString(),
@@ -150,24 +154,24 @@ export default function BookingsPage({
 								? TimeService(values.payment.date).toISOString()
 								: undefined,
 							expiryDate:
-								values.payment.type === 'CREDIT_CARD' &&
+								values.payment.type === "CREDIT_CARD" &&
 								values.payment.expiryDate
-									? TimeService(values.payment.expiryDate, 'MMYY').toISOString()
-									: undefined,
+									? TimeService(values.payment.expiryDate, "MMYY").toISOString()
+									: undefined
 						},
 			numberOfRooms: values.numberOfRooms
 				? Number(values.numberOfRooms)
 				: undefined,
 			internetConnection:
-				values.internetConnection === 'undefined'
+				values.internetConnection === "undefined"
 					? undefined
-					: values.internetConnection === 'true',
+					: values.internetConnection === "true"
 		}),
 		onValuesChange: (values, previous) => {
 			if (values.payment.type !== previous.payment.type) {
-				form.clearFieldError('payment.expiryDate');
+				form.clearFieldError("payment.expiryDate");
 			}
-		},
+		}
 	});
 
 	const { mutate, isPending } = useMutation(
@@ -190,7 +194,7 @@ export default function BookingsPage({
 								// Handle more people info than slots (409)
 								if (!success)
 									form.setFieldError(
-										'numberOfPeople',
+										"numberOfPeople",
 										t(
 											($) =>
 												$.bookings.properties.details.numberOfPeople.errors
@@ -199,7 +203,7 @@ export default function BookingsPage({
 									);
 								// Handle success
 								else form.resetDirty();
-							},
+							}
 						});
 					})}
 					onReset={() => {
@@ -288,10 +292,10 @@ export default function BookingsPage({
 								<DataList
 									orientation="vertical"
 									style={{
-										display: 'flex',
-										flexDirection: 'row',
-										gap: '2rem',
-										justifyContent: 'space-between',
+										display: "flex",
+										flexDirection: "row",
+										gap: "2rem",
+										justifyContent: "space-between"
 									}}
 								>
 									<DataList.Item>
@@ -313,7 +317,7 @@ export default function BookingsPage({
 											</Group>
 										</DataList.ItemLabel>
 										<DataList.ItemValue>
-											{TimeService(booking.createdAt).format('LLL')}
+											{TimeService(booking.createdAt).format("LLL")}
 										</DataList.ItemValue>
 									</DataList.Item>
 									<DataList.Item>
@@ -324,7 +328,7 @@ export default function BookingsPage({
 											</Group>
 										</DataList.ItemLabel>
 										<DataList.ItemValue>
-											{TimeService(booking.updatedAt).format('LLL')}
+											{TimeService(booking.updatedAt).format("LLL")}
 										</DataList.ItemValue>
 									</DataList.Item>
 								</DataList>
@@ -332,7 +336,7 @@ export default function BookingsPage({
 								<SimpleGrid cols={2} verticalSpacing="sm">
 									<DateTimePicker
 										miw="16.5rem"
-										key={form.key('date')}
+										key={form.key("date")}
 										name="date"
 										label={t(($) => $.bookings.properties.details.date.label)}
 										type="range"
@@ -340,11 +344,11 @@ export default function BookingsPage({
 										highlightToday
 										withAsterisk
 										readOnly={!booking.canBeModified}
-										{...form.getInputProps('date')}
+										{...form.getInputProps("date")}
 									/>
 									<Group align="end" gap="xs">
 										<NumberInput
-											key={form.key('numberOfPeople')}
+											key={form.key("numberOfPeople")}
 											name="numberOfPeople"
 											label={t(
 												($) =>
@@ -357,7 +361,7 @@ export default function BookingsPage({
 											rightSection={
 												<Tooltip
 													label={t(($) =>
-														form.isDirty('numberOfPeople')
+														form.isDirty("numberOfPeople")
 															? $.bookings.people.buttonDisabled
 															: $.bookings.people.button
 													)}
@@ -365,46 +369,46 @@ export default function BookingsPage({
 													<ActionIcon
 														size="input-xs"
 														variant="default"
-														mr={'xs'}
+														mr={"xs"}
 														component={
-															form.isDirty('numberOfPeople') ? undefined : Link
+															form.isDirty("numberOfPeople") ? undefined : Link
 														}
-														disabled={form.isDirty('numberOfPeople')}
+														disabled={form.isDirty("numberOfPeople")}
 														to={`/accommodations/${accommodationId}/bookings/${bookingId}/people`}
 													>
 														<UserListIcon />
 													</ActionIcon>
 												</Tooltip>
 											}
-											{...form.getInputProps('numberOfPeople')}
+											{...form.getInputProps("numberOfPeople")}
 										/>
 									</Group>
 									<BooleanInputWithUndefined
-										key={form.key('internetConnection')}
+										key={form.key("internetConnection")}
 										name="internetConnection"
 										label={t(
 											($) =>
 												$.bookings.properties.details.internetConnection.label
 										)}
 										readOnly={!booking.canBeModified}
-										{...form.getInputProps('internetConnection')}
+										{...form.getInputProps("internetConnection")}
 									/>
 									<NumberInput
-										key={form.key('numberOfRooms')}
+										key={form.key("numberOfRooms")}
 										name="numberOfRooms"
 										label={t(
 											($) => $.bookings.properties.details.numberOfRooms.label
 										)}
 										min={1}
 										readOnly={!booking.canBeModified}
-										{...form.getInputProps('numberOfRooms')}
+										{...form.getInputProps("numberOfRooms")}
 									/>
 								</SimpleGrid>
 							</Fieldset>
 							<Fieldset legend={t(($) => $.bookings.properties.payment.title)}>
 								<SimpleGrid cols={2} verticalSpacing="xs">
 									<Select
-										key={form.key('payment.type')}
+										key={form.key("payment.type")}
 										name="payment.type"
 										label={
 											<>
@@ -414,7 +418,7 @@ export default function BookingsPage({
 										}
 										data={Object.entries(
 											t(($) => $.bookings.properties.payment.type.options, {
-												returnObjects: true,
+												returnObjects: true
 											})
 										)
 											.map(([value, label]) => ({ value, label }))
@@ -422,10 +426,10 @@ export default function BookingsPage({
 										clearable
 										searchable
 										readOnly={!booking.canBeModified}
-										{...form.getInputProps('payment.type')}
+										{...form.getInputProps("payment.type")}
 									/>
 									<DateInput
-										key={form.key('payment.date')}
+										key={form.key("payment.date")}
 										name="payment.date"
 										label={t(($) => $.bookings.properties.payment.date.label)}
 										valueFormat={t(
@@ -434,45 +438,45 @@ export default function BookingsPage({
 										clearable
 										presets={[
 											{
-												value: TimeService().format('YYYY-MM-DD'),
-												label: t(($) => $.common.dates.today),
+												value: TimeService().format("YYYY-MM-DD"),
+												label: t(($) => $.common.dates.today)
 											},
 											{
 												value: TimeService(booking.startTime).format(
-													'YYYY-MM-DD'
+													"YYYY-MM-DD"
 												),
-												label: t(($) => $.common.dates.checkInDate),
+												label: t(($) => $.common.dates.checkInDate)
 											},
 											{
 												value: TimeService(booking.endTime).format(
-													'YYYY-MM-DD'
+													"YYYY-MM-DD"
 												),
-												label: t(($) => $.common.dates.checkOutDate),
-											},
+												label: t(($) => $.common.dates.checkOutDate)
+											}
 										]}
 										highlightToday
 										disabled={form.values.payment.type == null}
 										readOnly={!booking.canBeModified}
-										{...form.getInputProps('payment.date')}
+										{...form.getInputProps("payment.date")}
 									/>
 									<TextInput
-										key={form.key('payment.mean')}
+										key={form.key("payment.mean")}
 										name="payment.mean"
 										label={t(($) => $.bookings.properties.payment.mean)}
 										disabled={form.values.payment.type == null}
 										readOnly={!booking.canBeModified}
-										{...form.getInputProps('payment.mean')}
+										{...form.getInputProps("payment.mean")}
 									/>
 									<TextInput
-										key={form.key('payment.holder')}
+										key={form.key("payment.holder")}
 										name="payment.holder"
 										label={t(($) => $.bookings.properties.payment.holder)}
 										disabled={form.values.payment.type == null}
 										readOnly={!booking.canBeModified}
-										{...form.getInputProps('payment.holder')}
+										{...form.getInputProps("payment.holder")}
 									/>
 									<MaskInput
-										key={form.key('payment.expiryDate') + maskKey.toString()}
+										key={form.key("payment.expiryDate") + maskKey.toString()}
 										name="payment.expiryDate"
 										label={t(
 											($) => $.bookings.properties.payment.expiryDate.label
@@ -482,14 +486,14 @@ export default function BookingsPage({
 											($) =>
 												$.bookings.properties.payment.expiryDate.placeholder
 										)}
-										disabled={form.values.payment.type !== 'CREDIT_CARD'}
+										disabled={form.values.payment.type !== "CREDIT_CARD"}
 										defaultValue={form.values.payment.expiryDate}
 										onChangeRaw={(raw) => {
-											form.setFieldValue('payment.expiryDate', raw, {
-												forceUpdate: false,
+											form.setFieldValue("payment.expiryDate", raw, {
+												forceUpdate: false
 											});
 										}}
-										error={form.errors['payment.expiryDate']}
+										error={form.errors["payment.expiryDate"]}
 										readOnly={!booking.canBeModified}
 									/>
 								</SimpleGrid>
@@ -508,8 +512,8 @@ export default function BookingsPage({
 										bulletSize={24}
 										lineWidth={2}
 										active={
-											['PENDING', 'SENT', 'PENDING_VOIDED'].includes(
-												booking.communications.at(-1)?.status ?? ''
+											["PENDING", "SENT", "PENDING_VOIDED"].includes(
+												booking.communications.at(-1)?.status ?? ""
 											)
 												? booking.communications.length - 1
 												: booking.communications.length
@@ -540,10 +544,10 @@ export default function BookingsPage({
 							<Stack
 								gap="xs"
 								hidden={
-									booking.status !== 'CONFIRMATION_READY' &&
-									booking.status !== 'CHECK_IN_READY' &&
+									booking.status !== "CONFIRMATION_READY" &&
+									booking.status !== "CHECK_IN_READY" &&
 									(booking.selfCheckInRequested || !booking.canBeModified) &&
-									['PENDING_CANCELLATION', 'CANCELLED'].includes(booking.status)
+									["PENDING_CANCELLATION", "CANCELLED"].includes(booking.status)
 								}
 							>
 								<Button
@@ -551,7 +555,7 @@ export default function BookingsPage({
 									to={`/accommodations/${accommodationId}/bookings/${bookingId}/confirm`}
 									leftSection={<CheckCircleIcon weight="bold" />}
 									color={t(($) => $.bookings.confirm.color)}
-									hidden={booking.status !== 'CONFIRMATION_READY'}
+									hidden={booking.status !== "CONFIRMATION_READY"}
 									disabled={form.isDirty()}
 									loading={isPending}
 								>
@@ -562,7 +566,7 @@ export default function BookingsPage({
 									to={`/accommodations/${accommodationId}/bookings/${bookingId}/check-in`}
 									leftSection={<SuitcaseIcon weight="bold" />}
 									color={t(($) => $.bookings.checkIn.color)}
-									hidden={booking.status !== 'CHECK_IN_READY'}
+									hidden={booking.status !== "CHECK_IN_READY"}
 									disabled={form.isDirty()}
 									loading={isPending}
 								>
@@ -583,18 +587,18 @@ export default function BookingsPage({
 								</Button>
 								<Divider
 									hidden={
-										(booking.status !== 'CONFIRMATION_READY' &&
-											booking.status !== 'CHECK_IN_READY' &&
+										(booking.status !== "CONFIRMATION_READY" &&
+											booking.status !== "CHECK_IN_READY" &&
 											(booking.selfCheckInRequested ||
 												!booking.canBeModified)) ||
-										['PENDING_CANCELLATION', 'CANCELLED'].includes(
+										["PENDING_CANCELLATION", "CANCELLED"].includes(
 											booking.status
 										)
 									}
 								/>
 								<Button
 									component={!form.isDirty() ? Link : undefined}
-									to={`/accommodations/${accommodationId}/bookings/${bookingId}/${booking.canBeDeleted ? 'delete' : 'cancel'}`}
+									to={`/accommodations/${accommodationId}/bookings/${bookingId}/${booking.canBeDeleted ? "delete" : "cancel"}`}
 									leftSection={
 										booking.canBeDeleted ? (
 											<TrashIcon weight="bold" />
@@ -608,7 +612,7 @@ export default function BookingsPage({
 											: $.bookings.cancel.color
 									)}
 									disabled={form.isDirty()}
-									hidden={['PENDING_CANCELLATION', 'CANCELLED'].includes(
+									hidden={["PENDING_CANCELLATION", "CANCELLED"].includes(
 										booking.status
 									)}
 									loading={isPending}

@@ -1,12 +1,13 @@
 import {
 	QuestionMarkIcon,
 	WifiHighIcon,
-	WifiSlashIcon,
-} from '@phosphor-icons/react';
-import BooleanBadge from './BooleanBadge';
+	WifiSlashIcon
+} from "@phosphor-icons/react";
+
+import BooleanBadge from "./BooleanBadge";
 
 export default function WifiBadge({
-	value,
+	value
 }: Readonly<{
 	value?: boolean;
 }>) {
@@ -16,7 +17,7 @@ export default function WifiBadge({
 			icons={{
 				true: <WifiHighIcon />,
 				false: <WifiSlashIcon />,
-				undefined: <QuestionMarkIcon />,
+				undefined: <QuestionMarkIcon />
 			}}
 		/>
 	);

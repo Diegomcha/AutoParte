@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { Link, Outlet } from "react-router";
+
 import {
 	ActionIcon,
 	Badge,
@@ -6,28 +9,29 @@ import {
 	Divider,
 	Group,
 	Title,
-	Tooltip,
-} from '@mantine/core';
+	Tooltip
+} from "@mantine/core";
+
 import {
 	CursorClickIcon,
 	EyeIcon,
 	PasswordIcon,
 	PencilIcon,
 	PlusIcon,
-	TrashIcon,
-} from '@phosphor-icons/react';
-import { useQuery } from '@tanstack/react-query';
-import AdminDeleteModal from '~/component/AdminDeleteModal';
-import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from '~/services/Api';
-import TimeService from '~/services/TimeService';
-import { DataTable, useDataTableColumns } from 'mantine-datatable';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, Outlet } from 'react-router';
-import type { EmployeeDtoResponse } from '~/@types/api';
-import type { DataTableSortStatus } from 'mantine-datatable';
+	TrashIcon
+} from "@phosphor-icons/react";
+import { useQuery } from "@tanstack/react-query";
+import { DataTable, useDataTableColumns } from "mantine-datatable";
+import { useTranslation } from "react-i18next";
 
-const COLUMNS_STATE_KEY = 'employee-table-columns';
+import AdminDeleteModal from "~/component/AdminDeleteModal";
+import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from "~/services/Api";
+import TimeService from "~/services/TimeService";
+
+import type { EmployeeDtoResponse } from "~/@types/api";
+import type { DataTableSortStatus } from "mantine-datatable";
+
+const COLUMNS_STATE_KEY = "employee-table-columns";
 
 export async function clientLoader() {
 	await queryClient.query(queryFactory.employees.pagedList());
@@ -40,8 +44,8 @@ export default function EmployeesPage() {
 	const [sortStatus, setSortStatus] = useState<
 		DataTableSortStatus<EmployeeDtoResponse>
 	>({
-		columnAccessor: 'id',
-		direction: 'asc',
+		columnAccessor: "id",
+		direction: "asc"
 	});
 	const [selected, setSelected] = useState<EmployeeDtoResponse[]>([]);
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -49,7 +53,7 @@ export default function EmployeesPage() {
 	const { data, isLoading } = useQuery(
 		queryFactory.employees.pagedList({
 			page,
-			sorting: [sortStatus],
+			sorting: [sortStatus]
 		})
 	);
 
@@ -60,7 +64,7 @@ export default function EmployeesPage() {
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'enabled',
+				accessor: "enabled",
 				title: t(($) => $.admin.employees.properties.enabled.label),
 				render: (employee) => (
 					<Tooltip
@@ -68,14 +72,14 @@ export default function EmployeesPage() {
 							($) => $.admin.employees.properties.enabled.disabledTooltip,
 							{
 								date: employee.disabledAt
-									? TimeService(employee.disabledAt).format('LLL')
-									: null,
+									? TimeService(employee.disabledAt).format("LLL")
+									: null
 							}
 						)}
 						withArrow
 						disabled={!employee.disabledAt}
 					>
-						<Badge color={employee.enabled ? 'green' : 'gray'} variant="light">
+						<Badge color={employee.enabled ? "green" : "gray"} variant="light">
 							{employee.enabled
 								? t(($) => $.admin.employees.properties.enabled.states.enabled)
 								: t(
@@ -83,41 +87,41 @@ export default function EmployeesPage() {
 									)}
 						</Badge>
 					</Tooltip>
-				),
+				)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'name',
+				accessor: "name",
 				title: t(($) => $.admin.employees.properties.name.label),
-				render: (employee) => `${employee.name} ${employee.surname}`,
+				render: (employee) => `${employee.name} ${employee.surname}`
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'email',
-				title: t(($) => $.admin.employees.properties.email.label),
+				accessor: "email",
+				title: t(($) => $.admin.employees.properties.email.label)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'createdAt',
+				accessor: "createdAt",
 				title: t(($) => $.common.properties.createdAt),
-				render: (entity) => TimeService(entity.createdAt).format('LLLL'),
+				render: (entity) => TimeService(entity.createdAt).format("LLLL")
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: 'updatedAt',
+				accessor: "updatedAt",
 				title: t(($) => $.common.properties.updatedAt),
-				render: (entity) => TimeService(entity.updatedAt).format('LLLL'),
+				render: (entity) => TimeService(entity.updatedAt).format("LLLL")
 			},
 			{
-				accessor: 'accommodations',
+				accessor: "accommodations",
 				title: t(($) => $.admin.employees.properties.accommodations.label),
 				render: (employee) =>
 					employee.accommodations.length === 0 ? (
@@ -125,20 +129,20 @@ export default function EmployeesPage() {
 					) : (
 						<Badge variant="light">
 							{t(($) => $.admin.employees.properties.accommodations.some, {
-								count: employee.accommodations.length,
+								count: employee.accommodations.length
 							})}
 						</Badge>
-					),
+					)
 			},
 			{
-				accessor: 'actions',
+				accessor: "actions",
 				title: (
 					<Center>
 						<CursorClickIcon weight="bold" />
 					</Center>
 				),
-				textAlign: 'center',
-				width: '0%',
+				textAlign: "center",
+				width: "0%",
 				render: (employee) => (
 					<Group gap={4} wrap="nowrap" justify="center">
 						<ActionIcon
@@ -178,9 +182,9 @@ export default function EmployeesPage() {
 							<TrashIcon />
 						</ActionIcon>
 					</Group>
-				),
-			},
-		],
+				)
+			}
+		]
 	});
 
 	return (
@@ -197,7 +201,7 @@ export default function EmployeesPage() {
 						}}
 					>
 						{t(($) => $.common.buttons.deleteSelected, {
-							count: selected.length,
+							count: selected.length
 						})}
 					</Button>
 					<Button
@@ -212,7 +216,7 @@ export default function EmployeesPage() {
 			</Group>
 			<Divider my="sm" />
 			<DataTable
-				height={'calc(100vh - 93px)'}
+				height={"calc(100vh - 93px)"}
 				noRecordsText={t(($) => $.admin.employees.noRecords)}
 				storeColumnsKey={COLUMNS_STATE_KEY}
 				columns={effectiveColumns}
@@ -238,7 +242,7 @@ export default function EmployeesPage() {
 				messages={{
 					title: t(($) => $.admin.employees.deleteMultiple.title),
 					description: (count: number) =>
-						t(($) => $.admin.employees.deleteMultiple.description, { count }),
+						t(($) => $.admin.employees.deleteMultiple.description, { count })
 				}}
 			/>
 		</>

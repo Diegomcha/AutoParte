@@ -1,8 +1,10 @@
-import { Button, Group, Modal } from '@mantine/core';
-import { TrashIcon } from '@phosphor-icons/react';
-import { useMutation } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
-import type { AnyUseMutationOptions } from '@tanstack/react-query';
+import { Button, Group, Modal } from "@mantine/core";
+
+import { TrashIcon } from "@phosphor-icons/react";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import type { AnyUseMutationOptions } from "@tanstack/react-query";
 
 export interface AdminDeleteModalProps {
 	mutation: AnyUseMutationOptions;
@@ -22,7 +24,7 @@ export default function AdminDeleteModal({
 	setSelected,
 	deleteModalOpen,
 	setDeleteModalOpen,
-	messages: { title, description },
+	messages: { title, description }
 }: Readonly<AdminDeleteModalProps>) {
 	const { t } = useTranslation();
 
@@ -57,7 +59,7 @@ export default function AdminDeleteModal({
 								onSuccess: () => {
 									setSelected([]);
 									setDeleteModalOpen(false);
-								},
+								}
 							}
 						);
 					}}

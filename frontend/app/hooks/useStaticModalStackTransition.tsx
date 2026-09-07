@@ -1,6 +1,8 @@
-import { useModalsStack } from '@mantine/core';
-import { useCallback, useEffect } from 'react';
-import { EXIT_DURATION_DEFAULT } from './useStaticModalTransition';
+import { useCallback, useEffect } from "react";
+
+import { useModalsStack } from "@mantine/core";
+
+import { EXIT_DURATION_DEFAULT } from "./useStaticModalTransition";
 
 /**
  * Manages stack modal open/close states with mount-frame opening

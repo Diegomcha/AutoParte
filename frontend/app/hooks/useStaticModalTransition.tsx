@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 
 export const EXIT_DURATION_DEFAULT = 250; // Default mantine exit duration
 

@@ -1,11 +1,15 @@
-import { Group, Stack, Text } from '@mantine/core';
-import TimeService from '~/services/TimeService';
-import { useTranslation } from 'react-i18next';
-import BoookingStatusBadge from './BookingStatusBadge';
-import type { BookingDtoResponse } from '~/@types/api';
+import { Group, Stack, Text } from "@mantine/core";
+
+import { useTranslation } from "react-i18next";
+
+import TimeService from "~/services/TimeService";
+
+import BoookingStatusBadge from "./BookingStatusBadge";
+
+import type { BookingDtoResponse } from "~/@types/api";
 
 export default function BookingHoverCard({
-	booking,
+	booking
 }: Readonly<{ booking: BookingDtoResponse }>) {
 	const { t } = useTranslation();
 
@@ -13,7 +17,7 @@ export default function BookingHoverCard({
 		<Stack gap="xs">
 			<Group gap="sm">
 				<BoookingStatusBadge status={booking.status} />
-				<Text fw={'bold'} size="sm">
+				<Text fw={"bold"} size="sm">
 					{t(
 						($) =>
 							booking.holderName
@@ -22,14 +26,14 @@ export default function BookingHoverCard({
 						{
 							status: booking.status,
 							numberOfPeople: booking.numberOfPeople,
-							holderName: booking.holderName,
+							holderName: booking.holderName
 						}
 					)}
 				</Text>
 			</Group>
 			<Text size="xs" c="dimmed">
-				{TimeService(booking.startTime).format('LLL')} →{' '}
-				{TimeService(booking.endTime).format('LLL')}
+				{TimeService(booking.startTime).format("LLL")} →{" "}
+				{TimeService(booking.endTime).format("LLL")}
 			</Text>
 		</Stack>
 	);

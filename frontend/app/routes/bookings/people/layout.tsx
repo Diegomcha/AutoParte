@@ -1,21 +1,25 @@
-import { ActionIcon, Modal, Scroller, Tabs, Text } from '@mantine/core';
-import { PlusIcon, XIcon } from '@phosphor-icons/react';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryFactory } from '~/services/Api';
-import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router';
-import { useBooking } from '..';
-import type { Route } from './+types/layout';
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
+
+import { ActionIcon, Modal, Scroller, Tabs, Text } from "@mantine/core";
+
+import { useBooking } from "..";
+import { PlusIcon, XIcon } from "@phosphor-icons/react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import { queryFactory } from "~/services/Api";
+
+import type { Route } from "./+types/layout";
 
 export default function BookingPeople({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const { opened, close } = useStaticModalTransition(() => void navigate('..'));
+	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
 	const booking = useBooking();
 
 	const { data: people } = useSuspenseQuery(
@@ -29,11 +33,11 @@ export default function BookingPeople({
 			title={t(($) => $.people.title)}
 			size="auto"
 		>
-			<Text size="xs" c="gray" mb={'sm'}>
+			<Text size="xs" c="gray" mb={"sm"}>
 				{t(($) => $.people.requirement)}
 			</Text>
 			{/* People switcher */}
-			<Tabs mb="md" value={location.pathname} w={0} miw={'100%'}>
+			<Tabs mb="md" value={location.pathname} w={0} miw={"100%"}>
 				<Tabs.List>
 					<Scroller>
 						{people.map((person) => (
@@ -48,8 +52,8 @@ export default function BookingPeople({
 								)}
 								styles={{
 									tabLabel: {
-										textWrap: 'nowrap',
-									},
+										textWrap: "nowrap"
+									}
 								}}
 								rightSection={
 									booking.canBeModified && (
@@ -64,7 +68,7 @@ export default function BookingPeople({
 									)
 								}
 							>
-								{person.personalInfo.name}{' '}
+								{person.personalInfo.name}{" "}
 								{person.personalInfo.firstSurname.at(0)?.toUpperCase()}.
 							</Tabs.Tab>
 						))}

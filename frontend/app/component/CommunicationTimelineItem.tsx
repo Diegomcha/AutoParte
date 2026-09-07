@@ -1,34 +1,37 @@
-import { Text, ThemeIcon, Timeline, Tooltip } from '@mantine/core';
+import { Text, ThemeIcon, Timeline, Tooltip } from "@mantine/core";
+
 import {
 	CalendarCheckIcon,
 	CalendarSlashIcon,
 	CalendarXIcon,
 	SignInIcon,
 	SpinnerGapIcon,
-	XIcon,
-} from '@phosphor-icons/react';
-import TimeService from '~/services/TimeService';
-import { useTranslation } from 'react-i18next';
-import type { CommunicationDtoResponse } from '~/@types/api';
+	XIcon
+} from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
+
+import TimeService from "~/services/TimeService";
+
+import type { CommunicationDtoResponse } from "~/@types/api";
 
 const COMMUNICATION_STATUS_ICONS: Record<
-	Exclude<CommunicationDtoResponse['status'], 'SUCCEEDED'>,
+	Exclude<CommunicationDtoResponse["status"], "SUCCEEDED">,
 	React.ReactNode
 > = {
 	PENDING: <SpinnerGapIcon weight="bold" className="animate-spin" />,
 	PENDING_VOIDED: <SpinnerGapIcon weight="bold" className="animate-spin" />,
 	SENT: <SpinnerGapIcon weight="bold" className="animate-spin" />,
 	FAILED: <XIcon weight="bold" />,
-	VOIDED: <CalendarSlashIcon weight="bold" />,
+	VOIDED: <CalendarSlashIcon weight="bold" />
 };
 
 const COMMUNICATION_TYPE_ICONS: Record<
-	CommunicationDtoResponse['type'],
+	CommunicationDtoResponse["type"],
 	React.ReactNode
 > = {
 	BOOKING: <CalendarCheckIcon weight="bold" />,
 	CHECKIN: <SignInIcon weight="bold" />,
-	CANCELLATION: <CalendarXIcon weight="bold" />,
+	CANCELLATION: <CalendarXIcon weight="bold" />
 };
 
 export default function CommunicationTimelineItem({
@@ -58,7 +61,7 @@ export default function CommunicationTimelineItem({
 								].color
 						)}
 					>
-						{communication.status === 'SUCCEEDED'
+						{communication.status === "SUCCEEDED"
 							? COMMUNICATION_TYPE_ICONS[communication.type]
 							: COMMUNICATION_STATUS_ICONS[communication.status]}
 					</ThemeIcon>
@@ -67,9 +70,9 @@ export default function CommunicationTimelineItem({
 			title={
 				<p
 					className={
-						['FAILED', 'VOIDED'].includes(communication.status)
-							? 'line-through'
-							: ''
+						["FAILED", "VOIDED"].includes(communication.status)
+							? "line-through"
+							: ""
 					}
 				>
 					{t(
@@ -82,7 +85,7 @@ export default function CommunicationTimelineItem({
 			{communication.sentTimestamp && (
 				<Text size="sm" c="dark">
 					{t(($) => $.bookings.properties.communications.sentDate, {
-						date: TimeService(communication.sentTimestamp).fromNow(),
+						date: TimeService(communication.sentTimestamp).fromNow()
 					})}
 				</Text>
 			)}

@@ -5,11 +5,13 @@ import {
 	PasswordInput,
 	Stack,
 	Text,
-	TextInput,
-} from '@mantine/core';
-import { AsteriskIcon, AtIcon, WarningIcon } from '@phosphor-icons/react';
-import { useTranslation } from 'react-i18next';
-import type { EmployeeDtoCredentialsResponse } from '~/@types/api';
+	TextInput
+} from "@mantine/core";
+
+import { AsteriskIcon, AtIcon, WarningIcon } from "@phosphor-icons/react";
+import { useTranslation } from "react-i18next";
+
+import type { EmployeeDtoCredentialsResponse } from "~/@types/api";
 
 export default function EmployeeCredsModal({
 	creds,

@@ -1,15 +1,19 @@
-import { Button, Group, Modal } from '@mantine/core';
-import { TrashIcon } from '@phosphor-icons/react';
-import { useMutation } from '@tanstack/react-query';
-import useStaticModalTransition from '~/hooks/useStaticModalTransition';
-import { queryClient, queryFactory } from '~/services/Api';
-import Validators from '~/services/Validators';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
-import type { Route } from './+types/confirm';
+import { useNavigate } from "react-router";
+
+import { Button, Group, Modal } from "@mantine/core";
+
+import { TrashIcon } from "@phosphor-icons/react";
+import { useMutation } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+
+import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import { queryClient, queryFactory } from "~/services/Api";
+import Validators from "~/services/Validators";
+
+import type { Route } from "./+types/confirm";
 
 export async function clientLoader({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
@@ -19,17 +23,17 @@ export async function clientLoader({
 
 	if (!booking.canBeDeleted)
 		throw Validators.throwValidationErrorResponse(
-			'Booking is not in a state that allows deletion.'
+			"Booking is not in a state that allows deletion."
 		);
 }
 
 export default function DeleteBooking({
-	params: { accommodationId, bookingId },
+	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const { opened, close } = useStaticModalTransition(() => void navigate('..'));
+	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
 
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.delete(accommodationId, bookingId)
@@ -53,7 +57,7 @@ export default function DeleteBooking({
 					leftSection={<TrashIcon weight="bold" />}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: close,
+							onSuccess: close
 						});
 					}}
 				>
