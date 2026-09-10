@@ -20,6 +20,7 @@ abstract class BookingMapper {
     @Mapping(target = "canBeModified", expression = "java(booking.canBeModified())")
     @Mapping(target = "canBeDeleted", expression = "java(booking.canBeDeleted())")
     @Mapping(target = "holderName", source = ".", qualifiedByName = "mapHolderName")
+    @Mapping(target = "accommodationName", expression = "java(booking.getAccommodation().getName())")
     public abstract BookingDtoResponse toResponse(Booking booking);
 
     public Page<BookingDtoResponse> toResponse(Page<Booking> bookings) {

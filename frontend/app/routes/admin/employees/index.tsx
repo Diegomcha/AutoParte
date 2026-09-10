@@ -24,7 +24,7 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable, useDataTableColumns } from "mantine-datatable";
 import { useTranslation } from "react-i18next";
 
-import AdminDeleteModal from "~/component/AdminDeleteModal";
+import AdminDeleteModal from "~/component/admin/AdminDeleteModal";
 import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from "~/services/Api";
 import TimeService from "~/services/TimeService";
 

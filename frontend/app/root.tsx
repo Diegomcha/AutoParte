@@ -3,6 +3,7 @@ import {
 	isRouteErrorResponse,
 	Links,
 	Meta,
+	Navigate,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
@@ -37,8 +38,8 @@ import { theme } from "./theme";
 
 import type { Route } from "./+types/root";
 
-import "./i18n";
 import "./app.css";
+import "./i18n";
 
 polyfillCountryFlagEmojis();
 
@@ -107,12 +108,14 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 		if ([404, 403].includes(error.status)) {
 			status = error.status.toString();
 			showRetry = false;
-		} else if (error.status === 401) {
-			void AuthService.refreshLoggedInUser().then(() => {
-				location.reload();
-			});
-			return <></>;
-		} else if (error.status.toString().startsWith("5")) status = "503";
+		} else if (error.status === 401)
+			return (
+				<Navigate
+					to={AuthService.getLoginRedirectionPath(location.pathname)}
+					replace
+				/>
+			);
+		else if (error.status.toString().startsWith("5")) status = "503";
 	}
 	// Handle validation error responses
 	else if (ValidationErrorResponse.isValidationErrorResponse(error)) {

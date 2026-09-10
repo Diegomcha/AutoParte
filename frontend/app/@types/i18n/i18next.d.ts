@@ -1,12 +1,11 @@
 import "i18next";
 
-import resources from "../../i18n/locales/es/translation.json";
+import type { i18nConfig } from "~/i18n";
+
+type I18nConfig = typeof i18nConfig;
 
 declare module "i18next" {
-	interface CustomTypeOptions {
-		resources: {
-			translation: typeof resources;
-		};
-		enableSelector: true;
+	interface CustomTypeOptions extends I18nConfig {
+		resources: (typeof i18nConfig.resources)["es"];
 	}
 }

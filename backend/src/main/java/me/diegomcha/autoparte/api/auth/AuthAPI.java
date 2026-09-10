@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public interface AuthAPI {
 
     @Operation(summary = "Get current authenticated user")
-    AccountDto me();
+    AccountDto me() throws UnauthorizedException;
 
     @Operation(summary = "Update current authenticated user's password")
     void updatePassword(UpdatePasswordDto dto, HttpServletRequest context) throws UnauthorizedException;

@@ -33,10 +33,12 @@ export default function DeleteBooking({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
-
-	const { mutate, isPending } = useMutation(
+	const { mutate, isPending, isSuccess } = useMutation(
 		queryFactory.accommodations.bookings.delete(accommodationId, bookingId)
+	);
+
+	const { opened, close } = useStaticModalTransition(
+		() => void navigate(isSuccess ? "/" : "..")
 	);
 
 	return (

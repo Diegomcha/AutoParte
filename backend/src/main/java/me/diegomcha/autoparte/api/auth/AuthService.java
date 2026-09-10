@@ -12,10 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 class AuthService {
+
+    private static final Supplier<UnauthorizedException> UNAUTHORIZED_EXCEPTION = () ->
+            new UnauthorizedException("Unauthenticated");
 
     private final AccountMapper accountMapper;
     private final SecurityService securityService;
@@ -24,14 +28,15 @@ class AuthService {
      * Gets the current logged-in account's information.
      *
      * @return The account information of the currently authenticated user, or null if no user is authenticated
+     * @throws UnauthorizedException If no authenticated user is found in the security context
      */
     @Transactional(readOnly = true)
-    public AccountDto getLoggedInAccount() {
+    public AccountDto getLoggedInAccount() throws UnauthorizedException {
         return Optional
                 .ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .map(securityService::getAccountFromAuthentication)
                 .map(accountMapper::toDto)
-                .orElse(null);
+                .orElseThrow(UNAUTHORIZED_EXCEPTION);
     }
 
     /**

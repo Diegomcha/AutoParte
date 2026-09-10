@@ -46,12 +46,12 @@ class AuthServiceTest {
 
     @Test
     void testGetLoggedInAccountAnonymous() {
-        Assertions.assertNull(authService.getLoggedInAccount());
+        Assertions.assertThrows(UnauthorizedException.class, () -> authService.getLoggedInAccount());
     }
 
     @Test
     @WithMockUser("test")
-    void testGetLoggedInAccountLoggedIn() {
+    void testGetLoggedInAccountLoggedIn() throws UnauthorizedException {
         var loggedInAccount = authService.getLoggedInAccount();
 
         Assertions.assertNotNull(loggedInAccount);

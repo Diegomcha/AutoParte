@@ -26,8 +26,12 @@ export default [
 			]
 		)
 	]),
-	// TODO:
-	// route('check-in/:accommodationId/:bookingId', './routes/check-in.tsx'),
+	route("check-in/:accommodationId/:bookingId", "./routes/checkIn/layout.tsx", [
+		index("./routes/checkIn/index.tsx"),
+		route("verify-booking", "./routes/checkIn/verifyBooking.tsx"),
+		route("input-guest-details", "./routes/checkIn/inputGuestDetails.tsx"),
+		route("send", "./routes/checkIn/send.tsx")
+	]),
 	route("auth", "./routes/auth/layout.tsx", [
 		index("./routes/auth/index.tsx"),
 		route("login", "./routes/auth/login.tsx"),

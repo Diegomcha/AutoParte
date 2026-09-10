@@ -38,7 +38,7 @@ export default function NewPerson({
 		<PersonForm
 			accommodationId={accommodationId}
 			bookingId={bookingId}
-			handleCreatedPerson={(personId) => void navigate(`../${personId}`)}
+			onCreatedPerson={(personId) => void navigate(`../${personId}`)}
 		/>
 	);
 }

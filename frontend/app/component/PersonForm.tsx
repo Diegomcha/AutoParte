@@ -1,5 +1,3 @@
-import { Link } from "react-router";
-
 import {
 	Button,
 	Fieldset,
@@ -14,11 +12,7 @@ import {
 import { DateInput } from "@mantine/dates";
 import { formRootRule, isEmail, isNotEmpty, useForm } from "@mantine/form";
 
-import {
-	ArrowUUpLeftIcon,
-	FloppyDiskIcon,
-	ScanIcon
-} from "@phosphor-icons/react";
+import { ArrowUUpLeftIcon, FloppyDiskIcon } from "@phosphor-icons/react";
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -37,18 +31,30 @@ interface PersonFormProps {
 	accommodationId: string;
 	bookingId: string;
 	person?: PersonDtoResponse;
-	handleCreatedPerson?: (id: string) => void;
 	readOnly?: boolean;
+	onCreatedPerson?: (id: string) => void;
+	onUpdatedPerson?: (id: string) => void;
+	onSubmit?: () => void;
+	checkInMode?: true;
 }
 
 export default function PersonForm({
 	accommodationId,
 	bookingId,
 	person,
-	handleCreatedPerson,
-	readOnly
+	readOnly,
+	onCreatedPerson,
+	onUpdatedPerson,
+	onSubmit,
+	checkInMode
 }: Readonly<PersonFormProps>) {
-	const { t } = useTranslation();
+	const { t: tCommon } = useTranslation();
+	const { t: tPerson } = useTranslation("entities", {
+		keyPrefix: "person"
+	});
+	// const { t } = useTranslation("components", {
+	// 	keyPrefix: "personForm"
+	// });
 
 	const { countries, genders, relationships, documentTypes } =
 		useSuspenseQueries({
@@ -69,6 +75,7 @@ export default function PersonForm({
 		});
 
 	const form = useForm({
+		mode: "uncontrolled",
 		initialValues: {
 			personalInfo: {
 				name: person?.personalInfo.name ?? "",
@@ -76,7 +83,9 @@ export default function PersonForm({
 				secondSurname: person?.personalInfo.secondSurname ?? "",
 				nationality: person?.personalInfo.nationality ?? null,
 				birthDate: person?.personalInfo.birthDate ?? "",
-				gender: person?.personalInfo.gender ?? null
+				gender: person?.personalInfo.gender ?? null,
+				address: person?.address ?? null,
+				relationship: person?.relationship ?? null
 			},
 			contactInfo: {
 				phoneNumber1: person?.contactInfo.phoneNumber1 ?? "",
@@ -87,26 +96,38 @@ export default function PersonForm({
 				type: person?.document?.type ?? null,
 				number: person?.document?.number ?? "",
 				supportNumber: person?.document?.supportNumber ?? ""
-			},
-			address: person?.address ?? null,
-			relationship: person?.relationship ?? null
+			}
 		},
 		validate: {
 			personalInfo: {
-				name: isNotEmpty(
-					t(($) => $.people.properties.personalInfo.name.errors.undefined)
-				),
+				name: isNotEmpty(tPerson(($) => $.personalInfo.name.errors.undefined)),
 				firstSurname: isNotEmpty(
-					t(
-						($) =>
-							$.people.properties.personalInfo.firstSurname.errors.undefined
-					)
+					tPerson(($) => $.personalInfo.firstSurname.errors.undefined)
 				),
-				birthDate: (value) => {
-					if (value && TimeService(value).isAfter(TimeService()))
-						return t(
-							($) => $.people.properties.personalInfo.birthDate.errors.inFuture
+				secondSurname: (value, values) => {
+					if (checkInMode && values.document.type === "NIF" && !value.trim())
+						return tPerson(
+							($) => $.personalInfo.secondSurname.errors.undefined
 						);
+				},
+				birthDate: (value) => {
+					if (checkInMode && !value)
+						return tPerson(($) => $.personalInfo.birthDate.errors.undefined);
+
+					if (value && TimeService(value).isAfter(TimeService()))
+						return tPerson(($) => $.personalInfo.birthDate.errors.inFuture);
+				},
+				address: (value) => {
+					if (checkInMode && !value)
+						return tPerson(($) => $.personalInfo.address.errors.undefined);
+				},
+				relationship: (value, values) => {
+					if (
+						checkInMode &&
+						isAdult(values.personalInfo.birthDate) === false &&
+						!value
+					)
+						return tPerson(($) => $.personalInfo.relationship.errors.undefined);
 				}
 			},
 			contactInfo: {
@@ -116,37 +137,32 @@ export default function PersonForm({
 				},
 				email: (value) => {
 					if (value && isEmail()(value))
-						return t(
-							($) => $.people.properties.contactInfo.email.errors.invalid
-						);
+						return tPerson(($) => $.contactInfo.email.errors.invalid);
 				},
 				phoneNumber1: isValidPhoneNumber(),
 				phoneNumber2: isValidPhoneNumber()
 			},
 			document: {
-				number: (value) => {
-					if (form.values.document.type) {
-						if (isNotEmpty()(value))
-							return t(
-								($) => $.people.properties.document.number.errors.undefined
-							);
+				type: (value, values) => {
+					if (checkInMode && isAdult(values.personalInfo.birthDate) && !value)
+						return tPerson(($) => $.document.type.errors.undefined);
+				},
+				number: (value, values) => {
+					if (values.document.type) {
+						if (!value)
+							return tPerson(($) => $.document.number.errors.undefined);
 
 						if (
-							["NIF", "NIE"].includes(form.values.document.type) &&
+							["NIF", "NIE"].includes(values.document.type) &&
 							!isValidNif(value)
 						)
-							return t(
-								($) => $.people.properties.document.number.errors.invalidDni
-							);
+							return tPerson(($) => $.document.number.errors.invalidDni);
 					}
 				},
-				supportNumber: (value) => {
-					if (requiresSupportNumber(form.values.document.type)) {
+				supportNumber: (value, values) => {
+					if (requiresSupportNumber(values.document.type)) {
 						if (isNotEmpty()(value))
-							return t(
-								($) =>
-									$.people.properties.document.supportNumber.errors.undefined
-							);
+							return tPerson(($) => $.document.supportNumber.errors.undefined);
 					}
 				}
 			}
@@ -154,9 +170,9 @@ export default function PersonForm({
 		transformValues: (values) =>
 			({
 				personalInfo: {
-					name: values.personalInfo.name,
-					firstSurname: values.personalInfo.firstSurname,
-					secondSurname: values.personalInfo.secondSurname || undefined,
+					name: values.personalInfo.name.trim(),
+					firstSurname: values.personalInfo.firstSurname.trim(),
+					secondSurname: values.personalInfo.secondSurname.trim() || undefined,
 					nationality: values.personalInfo.nationality ?? undefined,
 					birthDate: values.personalInfo.birthDate
 						? TimeService(values.personalInfo.birthDate).toISOString()
@@ -164,19 +180,19 @@ export default function PersonForm({
 					gender: values.personalInfo.gender ?? undefined
 				},
 				contactInfo: {
-					email: values.contactInfo.email || undefined,
-					phoneNumber1: values.contactInfo.phoneNumber1 || undefined,
-					phoneNumber2: values.contactInfo.phoneNumber2 || undefined
+					email: values.contactInfo.email.trim() || undefined,
+					phoneNumber1: values.contactInfo.phoneNumber1.trim() || undefined,
+					phoneNumber2: values.contactInfo.phoneNumber2.trim() || undefined
 				},
 				document: values.document.type
 					? {
 							type: values.document.type,
-							number: values.document.number,
-							supportNumber: values.document.supportNumber || undefined
+							number: values.document.number.trim(),
+							supportNumber: values.document.supportNumber.trim() || undefined
 						}
 					: undefined,
-				address: values.address ?? undefined,
-				relationship: values.relationship ?? undefined
+				address: values.personalInfo.address ?? undefined,
+				relationship: values.personalInfo.relationship ?? undefined
 			}) satisfies PersonDtoRequest,
 		onValuesChange: (values, prevValues) => {
 			if (values.document.type !== prevValues.document.type) {
@@ -186,12 +202,14 @@ export default function PersonForm({
 		}
 	});
 
-	const isAdult = form.values.personalInfo.birthDate
-		? TimeService().diff(
-				TimeService(form.values.personalInfo.birthDate),
-				"year"
-			) >= 18
-		: undefined;
+	const watchedFormValues = {
+		personalInfo: {
+			birthDate: form.useWatchValue("personalInfo.birthDate")
+		},
+		document: {
+			type: form.useWatchValue("document.type")
+		}
+	};
 
 	const { mutate: create, isPending: isCreating } = useMutation(
 		queryFactory.accommodations.bookings.people.create(
@@ -216,35 +234,36 @@ export default function PersonForm({
 				if (person != null)
 					update(values, {
 						onSuccess: () => {
+							onUpdatedPerson?.(person.id);
 							form.resetDirty();
 						}
 					});
 				// Handle creating
-				else
+				else if (form.isDirty())
 					create(values, {
 						onSuccess: (created) => {
-							handleCreatedPerson?.(created.id);
+							onCreatedPerson?.(created.id);
 							form.resetDirty();
 						}
 					});
+
+				onSubmit?.();
 			})}
 			onReset={form.onReset}
 		>
 			<Stack>
-				<Fieldset legend={t(($) => $.people.properties.personalInfo.title)}>
+				<Fieldset legend={tPerson(($) => $.personalInfo.title)}>
 					<SimpleGrid cols={3}>
 						<TextInput
 							key={form.key("personalInfo.name")}
-							label={t(($) => $.people.properties.personalInfo.name.label)}
+							label={tPerson(($) => $.personalInfo.name.label)}
 							withAsterisk
 							readOnly={readOnly}
 							{...form.getInputProps("personalInfo.name")}
 						/>
 						<TextInput
 							key={form.key("personalInfo.firstSurname")}
-							label={t(
-								($) => $.people.properties.personalInfo.firstSurname.label
-							)}
+							label={tPerson(($) => $.personalInfo.firstSurname.label)}
 							withAsterisk
 							readOnly={readOnly}
 							{...form.getInputProps("personalInfo.firstSurname")}
@@ -253,22 +272,22 @@ export default function PersonForm({
 							key={form.key("personalInfo.secondSurname")}
 							label={
 								<>
-									{t(
-										($) => $.people.properties.personalInfo.secondSurname.label
-									)}
-									{form.values.document.type === "NIF" && (
-										<ComplexRequiredAsterisk action="checkIn" />
-									)}
+									{tPerson(($) => $.personalInfo.secondSurname.label)}
+									{!checkInMode &&
+										watchedFormValues.document.type === "NIF" && (
+											<ComplexRequiredAsterisk action="checkIn" />
+										)}
 								</>
+							}
+							withAsterisk={
+								checkInMode && watchedFormValues.document.type === "NIF"
 							}
 							readOnly={readOnly}
 							{...form.getInputProps("personalInfo.secondSurname")}
 						/>
 						<CountrySelect
 							key={form.key("personalInfo.nationality")}
-							label={t(
-								($) => $.people.properties.personalInfo.nationality.label
-							)}
+							label={tPerson(($) => $.personalInfo.nationality.label)}
 							countries={countries as CountryCode[]}
 							clearable
 							readOnly={readOnly}
@@ -278,25 +297,23 @@ export default function PersonForm({
 							key={form.key("personalInfo.birthDate")}
 							label={
 								<>
-									{t(($) => $.people.properties.personalInfo.birthDate.label)}
-									{<ComplexRequiredAsterisk action="checkIn" />}
+									{tPerson(($) => $.personalInfo.birthDate.label)}
+									{!checkInMode && <ComplexRequiredAsterisk action="checkIn" />}
 								</>
 							}
-							valueFormat={t(
-								($) => $.people.properties.personalInfo.birthDate.format
-							)}
+							withAsterisk={checkInMode}
+							valueFormat={tPerson(($) => $.personalInfo.birthDate.format)}
 							clearable
 							readOnly={readOnly}
 							{...form.getInputProps("personalInfo.birthDate")}
 						/>
 						<Select
 							key={form.key("personalInfo.gender")}
-							label={t(($) => $.people.properties.personalInfo.gender.label)}
+							label={tPerson(($) => $.personalInfo.gender.label)}
 							data={genders.map((g) => ({
 								value: g,
-								label: t(
-									($) =>
-										$.people.properties.personalInfo.gender.options[g as "MALE"]
+								label: tPerson(
+									($) => $.personalInfo.gender.options[g as "MALE"]
 								)
 							}))}
 							checkIconPosition="right"
@@ -305,93 +322,93 @@ export default function PersonForm({
 							{...form.getInputProps("personalInfo.gender")}
 						/>
 						<AddressSelect
-							key={form.key("address")}
+							key={form.key("personalInfo.address")}
 							label={
 								<>
-									{t(($) => $.people.properties.personalInfo.address.label)}
-									{<ComplexRequiredAsterisk action="checkIn" />}
+									{tPerson(($) => $.personalInfo.address.label)}
+									{!checkInMode && <ComplexRequiredAsterisk action="checkIn" />}
 								</>
 							}
+							withAsterisk={checkInMode}
 							accommodationId={accommodationId}
 							bookingId={bookingId}
 							clearable
 							readOnly={readOnly}
-							{...form.getInputProps("address")}
+							{...form.getInputProps("personalInfo.address")}
 						/>
 						<Select
-							key={form.key("relationship")}
+							key={form.key("personalInfo.relationship")}
 							label={
 								<>
-									{t(
-										($) => $.people.properties.personalInfo.relationship.label
-									)}
-									{isAdult === false && (
-										<ComplexRequiredAsterisk action="checkIn" />
-									)}
+									{tPerson(($) => $.personalInfo.relationship.label)}
+									{!checkInMode &&
+										isAdult(watchedFormValues.personalInfo.birthDate) ===
+											false && <ComplexRequiredAsterisk action="checkIn" />}
 								</>
+							}
+							withAsterisk={
+								checkInMode &&
+								isAdult(watchedFormValues.personalInfo.birthDate) === false
 							}
 							data={relationships.map((r) => ({
 								value: r,
-								label: t(
-									($) =>
-										$.people.properties.personalInfo.relationship.options[
-											r as "GRANDPARENT"
-										]
+								label: tPerson(
+									($) => $.personalInfo.relationship.options[r as "GRANDPARENT"]
 								)
 							}))}
 							checkIconPosition="right"
 							searchable
 							clearable
 							readOnly={readOnly}
-							{...form.getInputProps("relationship")}
+							{...form.getInputProps("personalInfo.relationship")}
 						/>
 					</SimpleGrid>
 				</Fieldset>
-				<Fieldset legend={t(($) => $.people.properties.contactInfo.title)}>
+				<Fieldset legend={tPerson(($) => $.contactInfo.title)}>
 					<SimpleGrid cols={3}>
 						<TextInput
 							key={form.key("contactInfo.email")}
-							label={t(($) => $.people.properties.contactInfo.email.label)}
+							label={tPerson(($) => $.contactInfo.email.label)}
 							readOnly={readOnly}
 							{...form.getInputProps("contactInfo.email")}
 						/>
 						<PhoneInput
 							key={form.key("contactInfo.phoneNumber1")}
-							label={t(
-								($) => $.people.properties.contactInfo.phoneNumber1.label
-							)}
+							label={tPerson(($) => $.contactInfo.phoneNumber1.label)}
 							readOnly={readOnly}
 							{...form.getInputProps("contactInfo.phoneNumber1")}
 						/>
 						<PhoneInput
 							key={form.key("contactInfo.phoneNumber2")}
-							label={t(
-								($) => $.people.properties.contactInfo.phoneNumber2.label
-							)}
+							label={tPerson(($) => $.contactInfo.phoneNumber2.label)}
 							readOnly={readOnly}
 							{...form.getInputProps("contactInfo.phoneNumber2")}
 						/>
 					</SimpleGrid>
 					<Space h="xs" />
 					<Text size="xs" c={form.errors.contactInfo ? "red" : "gray"}>
-						{t(($) => $.people.properties.contactInfo.constraint)}
+						{tPerson(($) => $.contactInfo.constraint)}
 					</Text>
 				</Fieldset>
-				<Fieldset legend={t(($) => $.people.properties.document.title)}>
+				<Fieldset legend={tPerson(($) => $.document.title)}>
 					<SimpleGrid cols={3}>
 						<Select
 							key={form.key("document.type")}
+							withAsterisk={
+								checkInMode && isAdult(watchedFormValues.personalInfo.birthDate)
+							}
 							label={
 								<>
-									{t(($) => $.people.properties.document.type.label)}
-									{isAdult && <ComplexRequiredAsterisk action="checkIn" />}
+									{tPerson(($) => $.document.type.label)}
+									{!checkInMode &&
+										isAdult(watchedFormValues.personalInfo.birthDate) && (
+											<ComplexRequiredAsterisk action="checkIn" />
+										)}
 								</>
 							}
 							data={documentTypes.map((dt) => ({
 								value: dt,
-								label: t(
-									($) => $.people.properties.document.type.options[dt as "NIF"]
-								)
+								label: tPerson(($) => $.document.type.options[dt as "NIF"])
 							}))}
 							checkIconPosition="right"
 							clearable
@@ -400,31 +417,32 @@ export default function PersonForm({
 						/>
 						<TextInput
 							key={form.key("document.number")}
-							label={t(($) => $.people.properties.document.number.label)}
-							disabled={!form.values.document.type}
+							label={tPerson(($) => $.document.number.label)}
+							disabled={!watchedFormValues.document.type}
 							readOnly={readOnly}
-							withAsterisk={!!form.values.document.type}
+							withAsterisk={!!watchedFormValues.document.type}
 							{...form.getInputProps("document.number")}
 						/>
 						<TextInput
 							key={form.key("document.supportNumber")}
-							label={t(($) => $.people.properties.document.supportNumber.label)}
-							disabled={!requiresSupportNumber(form.values.document.type)}
+							label={tPerson(($) => $.document.supportNumber.label)}
+							disabled={!requiresSupportNumber(watchedFormValues.document.type)}
 							readOnly={readOnly}
-							withAsterisk={requiresSupportNumber(form.values.document.type)}
+							withAsterisk={requiresSupportNumber(
+								watchedFormValues.document.type
+							)}
 							{...form.getInputProps("document.supportNumber")}
 						/>
 					</SimpleGrid>
 				</Fieldset>
 				<Group>
-					<Button
-						component={Link}
-						to="./scan" // TODO: Implementar
+					{/* <Button
+						// TODO: IMplement
 						leftSection={<ScanIcon weight="bold" size={16} />}
 						hidden={readOnly}
 					>
-						{t(($) => $.people.scan.button)}
-					</Button>
+						{tPerson(($) => $.buttons.scan)}
+					</Button> */}
 					<div style={{ flex: 1 }} />
 					<Group gap="xs">
 						<Button
@@ -434,17 +452,17 @@ export default function PersonForm({
 							loading={isSaving}
 							hidden={!form.isDirty() || readOnly}
 						>
-							{t(($) => $.common.buttons.reset)}
+							{tCommon(($) => $.common.buttons.reset)}
 						</Button>
 						<Button
 							type="submit"
 							color="green"
 							leftSection={<FloppyDiskIcon weight="bold" size={16} />}
 							loading={isSaving}
-							disabled={!form.isDirty()}
+							disabled={!(checkInMode ?? form.isDirty())}
 							hidden={readOnly}
 						>
-							{t(($) =>
+							{tCommon(($) =>
 								person == null ? $.common.buttons.add : $.common.buttons.save
 							)}
 						</Button>
@@ -455,10 +473,32 @@ export default function PersonForm({
 	);
 }
 
+/**
+ * Returns whether the person is an adult (18 years or older) based on their birth date.
+ * May return undefined if the birth date is not provided.
+ * @param birthDate String representing the person's birth date.
+ * @returns True if the person is an adult, false if they are a minor, or undefined if the birth date is not provided.
+ */
+function isAdult(birthDate?: string) {
+	return birthDate
+		? TimeService().diff(TimeService(birthDate), "year") >= 18
+		: undefined;
+}
+
+/**
+ * Returns whether a support number is required for the given document type.
+ * @param documentType The type of the document.
+ * @returns True if a support number is required, false otherwise.
+ */
 function requiresSupportNumber(documentType?: string | null) {
 	return ["NIF", "NIE"].includes(documentType ?? "");
 }
 
+/**
+ * Checks if the given NIF (Número de Identificación Fiscal) is valid.
+ * @param nif The NIF to validate.
+ * @returns True if the NIF is valid, false otherwise.
+ */
 function isValidNif(nif: string) {
 	// Check the format of the NIF / NIE
 	if (!/^(\d{8})([A-Z])$/.test(nif) && !/^[XYZ]\d{7}[A-Z]$/.test(nif)) {

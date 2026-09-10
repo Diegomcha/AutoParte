@@ -1046,8 +1046,16 @@ const queryFactory = {
 	auth: {
 		me: () =>
 			queryOptions({
+				staleTime: Infinity,
 				queryKey: ["auth", "me"],
-				queryFn: async () => unwrapResponse(await api.GET("/api/auth/me"))
+				queryFn: async () => {
+					const res = await api.GET("/api/auth/me");
+
+					// Handle 401 Unauthorized response (user not logged in)
+					if (res.response.status === 401) return null;
+
+					return unwrapResponse(res);
+				}
 			}),
 		login: () =>
 			mutationOptions({

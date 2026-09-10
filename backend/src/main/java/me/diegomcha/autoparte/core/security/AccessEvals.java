@@ -21,8 +21,6 @@ public class AccessEvals implements AuthorizationManagerFactory<RequestAuthoriza
     private final BookingRepo bookingRepo;
     private final AccommodationRepo accommodationRepo;
 
-    private final DynamicConfigService dynamicConfigService;
-
     public AuthorizationManager<RequestAuthorizationContext> accommodationAuthorizationManager() {
         return (authn, context) -> {
             try {

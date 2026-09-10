@@ -1,0 +1,41 @@
+{
+	"checkIn": {
+		"verify-booking": {
+			"title": "1. Verificación de la reserva",
+			"description": "Verifica que los detalles de la reserva sean correctos antes de continuar con el auto-registro",
+			"confirmation": {
+				"label": "Confirmo que los detalles de la reserva son correctos",
+				"error": "Debes confirmar que los detalles de la reserva son correctos para continuar"
+			},
+			"buttons": {
+				"verify": "Verificar"
+			}
+		},
+		"input-guest-details": {
+			"title": "2. Completar los datos de viajeros",
+			"description": "Escanea o añade la información faltante de los viajeros para continuar el proceso de registro"
+		},
+		"send": {
+			"title": "TODO",
+			"description": "TODO"
+		},
+		"progressSidebar": {
+			"title": "Tu progreso",
+			"description": "Sigue tu progreso a medida que completas cada paso del proceso de registro",
+			"steps": {
+				"verifyBooking": {
+					"title": "Verificar reserva",
+					"description": "Confirma los detalles de tu reserva"
+				},
+				"inputGuestDetails": {
+					"title": "Completar datos de viajeros",
+					"description": "Escanea o añade la información"
+				},
+				"send": {
+					"title": "Enviar registro",
+					"description": "Revisa y firma para completar el proceso"
+				}
+			}
+		}
+	}
+}

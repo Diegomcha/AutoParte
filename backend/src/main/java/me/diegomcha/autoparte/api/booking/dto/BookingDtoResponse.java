@@ -18,6 +18,7 @@ public record BookingDtoResponse(
         @Nonnull UUID createdBy,
         @Nonnull UUID lastModifiedBy,
 
+        @Nonnull String humanReadableId,
         @Nonnull Booking.BookingStatus status,
         @NotNull boolean selfCheckInRequested,
         @NotNull boolean canBeModified,
@@ -31,6 +32,7 @@ public record BookingDtoResponse(
         Boolean internetConnection,
 
         String holderName,
+        @Nonnull String accommodationName,
 
         @Nonnull Set<CommunicationDtoResponse> communications
 ) {

@@ -6,7 +6,7 @@ import { ClockClockwiseIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import EmployeeCredsModal from "~/component/EmployeeCredsModal";
+import EmployeeCredsModal from "~/component/admin/employees/EmployeeCredsModal";
 import useStaticModalStackTransition from "~/hooks/useStaticModalStackTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";

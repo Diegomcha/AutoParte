@@ -20,7 +20,7 @@ class AuthController implements AuthAPI {
 
     @GetMapping("/me")
     @Override
-    public AccountDto me() {
+    public AccountDto me() throws UnauthorizedException {
         return service.getLoggedInAccount();
     }
 

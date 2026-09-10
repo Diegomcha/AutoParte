@@ -29,7 +29,9 @@ export default function AddressSelect({
 	defaultValue?: string | null;
 	onChange?: (value: string | null) => void;
 }) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("components", {
+		keyPrefix: "addressSelect"
+	});
 
 	const { provincesMap, bookingAddresses } = useSuspenseQueries({
 		queries: [
@@ -146,23 +148,25 @@ export default function AddressSelect({
 				data={[
 					"$new",
 					{
-						group: t(($) => $.addressSelect.current),
+						group: t(($) => $.groups.current),
 						items: selectData.filter((addr) => addr.value === _value)
 					},
 					{
-						group: t(($) => $.addressSelect.new),
-						items: selectData.filter(
-							(addr) =>
-								addr.value !== _value &&
-								bookingAddresses.every((bookAddr) => bookAddr.id !== addr.value)
-						)
-					},
-					{
-						group: t(($) => $.addressSelect.other),
+						group: t(($) => $.groups.booking, {
+							count: bookingAddresses.length
+						}),
 						items: selectData.filter(
 							(addr) =>
 								addr.value !== _value &&
 								bookingAddresses.some((bookAddr) => bookAddr.id === addr.value)
+						)
+					},
+					{
+						group: t(($) => $.groups.other, { count: newAddresses.length }),
+						items: selectData.filter(
+							(addr) =>
+								addr.value !== _value &&
+								newAddresses.some((newAddr) => newAddr.id === addr.value)
 						)
 					}
 				]}
@@ -172,7 +176,7 @@ export default function AddressSelect({
 						return (
 							<Group gap="xs" h={"100%"} w={"100%"} wrap="nowrap">
 								<PlusIcon width="1em" />
-								<Text size="sm">{t(($) => $.addressSelect.new)}</Text>
+								<Text size="sm">{t(($) => $.newButton)}</Text>
 							</Group>
 						);
 					}

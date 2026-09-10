@@ -20,7 +20,8 @@ import type { LoginRequest } from "~/@types/api";
 import type { Route } from "./+types/login";
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
-	if (await AuthService.isAuthenticated())
+	// Redirect to the appropriate page if the user is already authenticated
+	if (await AuthService.isAuthenticated(true))
 		return AuthService.getSuccessRedirection(request);
 }
 
