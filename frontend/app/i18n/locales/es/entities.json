@@ -1,280 +1,280 @@
 {
-    "common": {
-        "id": {
-            "label": "Identificador"
-        }
-    },
-    "booking": {
-        "details": {
-            "title": "Detalles",
-            "name": {
-                "noHolder": "{{numberOfPeople}} pax.",
-                "withHolder": "{{numberOfPeople}} pax. - {{holderName}}"
-            },
-            "holderName": {
-                "label": "Titular de la reserva",
-                "undefined": "No definido"
-            },
-            "accommodation": {
-                "label": "Alojamiento"
-            },
-            "status": {
-                "label": "Estado",
-                "states": {
-                    "DRAFT": {
-                        "label": "Borrador",
-                        "color": "dark"
-                    },
-                    "CONFIRMATION_READY": {
-                        "label": "Lista para confirmar",
-                        "color": "blue"
-                    },
-                    "PENDING_CONFIRMATION": {
-                        "label": "Pendiente de confirmar",
-                        "color": "yellow"
-                    },
-                    "CONFIRMED": {
-                        "label": "Confirmada",
-                        "color": "pink"
-                    },
-                    "CHECK_IN_READY": {
-                        "label": "Lista para registrar",
-                        "color": "violet"
-                    },
-                    "PENDING_CHECK_IN": {
-                        "label": "Pendiente de registrar",
-                        "color": "yellow"
-                    },
-                    "CHECKED_IN": {
-                        "label": "Registrada",
-                        "color": "green"
-                    },
-                    "PENDING_CANCELLATION": {
-                        "label": "Pendiente de cancelar",
-                        "color": "yellow"
-                    },
-                    "CANCELLED": {
-                        "label": "Cancelada",
-                        "color": "gray"
-                    }
-                }
-            },
-            "date": {
-                "label": "Fechas de la estancia",
-                "errors": {
-                    "undefined": "Las fechas de la estancia son obligatorias"
-                }
-            },
-            "startTime": {
-                "label": "Fecha de inicio"
-            },
-            "endTime": {
-                "label": "Fecha de fin"
-            },
-            "duration": {
-                "label": "Duración",
-                "value_one": "{{count}} noche",
-                "value_other": "{{count}} noches"
-            },
-            "numberOfPeople": {
-                "label": "Nº de personas",
-                "value_one": "{{count}} persona",
-                "value_other": "{{count}} personas",
-                "errors": {
-                    "undefined": "El número de personas es obligatorio",
-                    "tooFew": "Existe información de viajeros para más personas de las indicadas\nPor favor, elimina la información de los viajeros sobrantes"
-                }
-            },
-            "numberOfRooms": {
-                "label": "Nº de habitaciones",
-                "value_one": "{{count}} habitación",
-                "value_other": "{{count}} habitaciones",
-                "value_zero": "—"
-            },
-            "internetConnection": {
-                "label": "Conexión a Internet"
-            }
-        },
-        "payment": {
-            "title": "Pago",
-            "type": {
-                "label": "Tipo",
-                "options": {
-                    "CASH": "Efectivo",
-                    "CREDIT_CARD": "Tarjeta de crédito",
-                    "PLATFORM": "Plataforma de pago",
-                    "TRANSFER": "Transferencia bancaria",
-                    "MOBILE": "Pago móvil",
-                    "GIFT_CARD": "Tarjeta regalo",
-                    "ON_SITE": "Pago en el alojamiento",
-                    "OTHER": "Otro"
-                }
-            },
-            "mean": "Medio",
-            "holder": "Titular",
-            "date": {
-                "label": "Fecha",
-                "format": "DD/MM/YYYY"
-            },
-            "expiryDate": {
-                "label": "Fecha de caducidad",
-                "placeholder": "MM / AA",
-                "errors": {
-                    "invalid": "La fecha de caducidad no es válida",
-                    "beforePaymentDate": "La fecha de caducidad no puede ser anterior a la fecha de pago"
-                }
-            }
-        },
-        "communications": {
-            "title": "Registro",
-            "sentDate": "Enviado {{date}}",
-            "status": {
-                "PENDING": {
-                    "label": "Pendiente",
-                    "color": "orange"
-                },
-                "SENT": {
-                    "label": "Procesando",
-                    "color": "teal"
-                },
-                "SUCCEEDED": {
-                    "label": "Registrado sin errores",
-                    "color": "green"
-                },
-                "FAILED": {
-                    "label": "Error al registrar",
-                    "color": "red"
-                },
-                "PENDING_VOIDED": {
-                    "label": "Pendiente de anular",
-                    "color": "gray"
-                },
-                "VOIDED": {
-                    "label": "Anulado",
-                    "color": "dark"
-                }
-            },
-            "types": {
-                "CREATED": "Creación de la reserva",
-                "BOOKING": "Confirmación de la reserva",
-                "CHECKIN": "Registro de la entrada",
-                "CANCELLATION": "Cancelación de la reserva"
-            }
-        }
-    },
-    "person": {
-        "personalInfo": {
-            "title": "Información personal",
-            "name": {
-                "label": "Nombre",
-                "errors": {
-                    "undefined": "El nombre es obligatorio"
-                }
-            },
-            "firstSurname": {
-                "label": "Primer apellido",
-                "errors": {
-                    "undefined": "El primer apellido es obligatorio"
-                }
-            },
-            "secondSurname": {
-                "label": "Segundo apellido",
-                "errors": {
-                    "undefined": "El segundo apellido es obligatorio"
-                }
-            },
-            "nationality": {
-                "label": "Nacionalidad"
-            },
-            "birthDate": {
-                "label": "Fecha de nacimiento",
-                "format": "DD/MM/YYYY",
-                "errors": {
-                    "undefined": "La fecha de nacimiento es obligatoria",
-                    "inFuture": "La fecha de nacimiento no puede ser futura"
-                }
-            },
-            "gender": {
-                "label": "Género",
-                "options": {
-                    "MALE": "Hombre",
-                    "FEMALE": "Mujer",
-                    "OTHER": "Otro"
-                }
-            },
-            "address": {
-                "label": "Dirección",
-                "errors": {
-                    "undefined": "La dirección es obligatoria"
-                }
-            },
-            "relationship": {
-                "label": "Parentesco",
-                "options": {
-                    "GRANDPARENT": "Abuelo/a",
-                    "GREAT_GRANDPARENT": "Bisabuelo/a",
-                    "GREAT_GRANDCHILD": "Bisnieto/a",
-                    "SIBLING_IN_LAW": "Cuñado/a",
-                    "SPOUSE": "Esposo/a",
-                    "CHILD": "Hijo/a",
-                    "SIBLING": "Hermano/a",
-                    "GRANDCHILD": "Nieto/a",
-                    "PARENT": "Padre/Madre",
-                    "NEPHEW_NIECE": "Sobrino/a",
-                    "PARENT_IN_LAW": "Suegro/a",
-                    "UNCLE_AUNT": "Tío/a",
-                    "SON_DAUGHTER_IN_LAW": "Yerno/Nuera",
-                    "TUTOR": "Tutor",
-                    "OTHER": "Otro"
-                },
-                "errors": {
-                    "undefined": "El parentesco es obligatorio"
-                }
-            }
-        },
-        "contactInfo": {
-            "title": "Métodos de contacto",
-            "constraint": "Al menos un método de contacto es obligatorio",
-            "email": {
-                "label": "Correo electrónico",
-                "errors": {
-                    "invalid": "El correo electrónico no es válido"
-                }
-            },
-            "phoneNumber1": {
-                "label": "Número de teléfono"
-            },
-            "phoneNumber2": {
-                "label": "Número de teléfono alternativo"
-            }
-        },
-        "document": {
-            "title": "Documento de identidad",
-            "type": {
-                "label": "Tipo de documento",
-                "options": {
-                    "NIF": "NIF (Nacionales)",
-                    "NIE": "NIE (Extranjeros)",
-                    "PASSPORT": "Pasaporte",
-                    "OTHER": "Otro documento"
-                },
-                "errors": {
-                    "undefined": "El tipo de documento es obligatorio"
-                }
-            },
-            "number": {
-                "label": "Número de documento",
-                "errors": {
-                    "undefined": "El número de documento es obligatorio",
-                    "invalidDni": "El NIF/NIE no es válido"
-                }
-            },
-            "supportNumber": {
-                "label": "Número de soporte",
-                "errors": {
-                    "undefined": "El número de soporte es obligatorio para NIF/NIE"
-                }
-            }
-        }
-    }
+	"common": {
+		"id": {
+			"label": "Identificador"
+		}
+	},
+	"booking": {
+		"details": {
+			"title": "Detalles",
+			"name": {
+				"noHolder": "{{numberOfPeople}} pax.",
+				"withHolder": "{{numberOfPeople}} pax. - {{holderName}}"
+			},
+			"holderName": {
+				"label": "Titular de la reserva",
+				"undefined": "No definido"
+			},
+			"accommodation": {
+				"label": "Alojamiento"
+			},
+			"status": {
+				"label": "Estado",
+				"states": {
+					"DRAFT": {
+						"label": "Borrador",
+						"color": "dark"
+					},
+					"CONFIRMATION_READY": {
+						"label": "Lista para confirmar",
+						"color": "blue"
+					},
+					"PENDING_CONFIRMATION": {
+						"label": "Pendiente de confirmar",
+						"color": "yellow"
+					},
+					"CONFIRMED": {
+						"label": "Confirmada",
+						"color": "pink"
+					},
+					"CHECK_IN_READY": {
+						"label": "Lista para registrar",
+						"color": "violet"
+					},
+					"PENDING_CHECK_IN": {
+						"label": "Pendiente de registrar",
+						"color": "yellow"
+					},
+					"CHECKED_IN": {
+						"label": "Registrada",
+						"color": "green"
+					},
+					"PENDING_CANCELLATION": {
+						"label": "Pendiente de cancelar",
+						"color": "yellow"
+					},
+					"CANCELLED": {
+						"label": "Cancelada",
+						"color": "gray"
+					}
+				}
+			},
+			"date": {
+				"label": "Fechas de la estancia",
+				"errors": {
+					"undefined": "Las fechas de la estancia son obligatorias"
+				}
+			},
+			"startTime": {
+				"label": "Fecha de inicio"
+			},
+			"endTime": {
+				"label": "Fecha de fin"
+			},
+			"duration": {
+				"label": "Duración",
+				"value_one": "{{count}} noche",
+				"value_other": "{{count}} noches"
+			},
+			"numberOfPeople": {
+				"label": "Nº de personas",
+				"value_one": "{{count}} persona",
+				"value_other": "{{count}} personas",
+				"errors": {
+					"undefined": "El número de personas es obligatorio",
+					"tooFew": "Existe información de viajeros para más personas de las indicadas\nPor favor, elimina la información de los viajeros sobrantes"
+				}
+			},
+			"numberOfRooms": {
+				"label": "Nº de habitaciones",
+				"value_one": "{{count}} habitación",
+				"value_other": "{{count}} habitaciones",
+				"value_zero": "—"
+			},
+			"internetConnection": {
+				"label": "Conexión a Internet"
+			}
+		},
+		"payment": {
+			"title": "Pago",
+			"type": {
+				"label": "Tipo",
+				"options": {
+					"CASH": "Efectivo",
+					"CREDIT_CARD": "Tarjeta de crédito",
+					"PLATFORM": "Plataforma de pago",
+					"TRANSFER": "Transferencia bancaria",
+					"MOBILE": "Pago móvil",
+					"GIFT_CARD": "Tarjeta regalo",
+					"ON_SITE": "Pago en el alojamiento",
+					"OTHER": "Otro"
+				}
+			},
+			"mean": "Medio",
+			"holder": "Titular",
+			"date": {
+				"label": "Fecha",
+				"format": "DD/MM/YYYY"
+			},
+			"expiryDate": {
+				"label": "Fecha de caducidad",
+				"placeholder": "MM / AA",
+				"errors": {
+					"invalid": "La fecha de caducidad no es válida",
+					"beforePaymentDate": "La fecha de caducidad no puede ser anterior a la fecha de pago"
+				}
+			}
+		},
+		"communications": {
+			"title": "Registro",
+			"sentDate": "Enviado {{date}}",
+			"status": {
+				"PENDING": {
+					"label": "Pendiente",
+					"color": "orange"
+				},
+				"SENT": {
+					"label": "Procesando",
+					"color": "teal"
+				},
+				"SUCCEEDED": {
+					"label": "Registrado sin errores",
+					"color": "green"
+				},
+				"FAILED": {
+					"label": "Error al registrar",
+					"color": "red"
+				},
+				"PENDING_VOIDED": {
+					"label": "Pendiente de anular",
+					"color": "gray"
+				},
+				"VOIDED": {
+					"label": "Anulado",
+					"color": "dark"
+				}
+			},
+			"types": {
+				"CREATED": "Creación de la reserva",
+				"BOOKING": "Confirmación de la reserva",
+				"CHECKIN": "Registro de la entrada",
+				"CANCELLATION": "Cancelación de la reserva"
+			}
+		}
+	},
+	"person": {
+		"personalInfo": {
+			"title": "Información personal",
+			"name": {
+				"label": "Nombre",
+				"errors": {
+					"undefined": "El nombre es obligatorio"
+				}
+			},
+			"firstSurname": {
+				"label": "Primer apellido",
+				"errors": {
+					"undefined": "El primer apellido es obligatorio"
+				}
+			},
+			"secondSurname": {
+				"label": "Segundo apellido",
+				"errors": {
+					"undefined": "El segundo apellido es obligatorio"
+				}
+			},
+			"nationality": {
+				"label": "Nacionalidad"
+			},
+			"birthDate": {
+				"label": "Fecha de nacimiento",
+				"format": "DD/MM/YYYY",
+				"errors": {
+					"undefined": "La fecha de nacimiento es obligatoria",
+					"inFuture": "La fecha de nacimiento no puede ser futura"
+				}
+			},
+			"gender": {
+				"label": "Género",
+				"options": {
+					"MALE": "Hombre",
+					"FEMALE": "Mujer",
+					"OTHER": "Otro"
+				}
+			},
+			"address": {
+				"label": "Dirección",
+				"errors": {
+					"undefined": "La dirección es obligatoria"
+				}
+			},
+			"relationship": {
+				"label": "Parentesco",
+				"options": {
+					"GRANDPARENT": "Abuelo/a",
+					"GREAT_GRANDPARENT": "Bisabuelo/a",
+					"GREAT_GRANDCHILD": "Bisnieto/a",
+					"SIBLING_IN_LAW": "Cuñado/a",
+					"SPOUSE": "Esposo/a",
+					"CHILD": "Hijo/a",
+					"SIBLING": "Hermano/a",
+					"GRANDCHILD": "Nieto/a",
+					"PARENT": "Padre/Madre",
+					"NEPHEW_NIECE": "Sobrino/a",
+					"PARENT_IN_LAW": "Suegro/a",
+					"UNCLE_AUNT": "Tío/a",
+					"SON_DAUGHTER_IN_LAW": "Yerno/Nuera",
+					"TUTOR": "Tutor",
+					"OTHER": "Otro"
+				},
+				"errors": {
+					"undefined": "El parentesco es obligatorio"
+				}
+			}
+		},
+		"contactInfo": {
+			"title": "Métodos de contacto",
+			"constraint": "Al menos un método de contacto es obligatorio",
+			"email": {
+				"label": "Correo electrónico",
+				"errors": {
+					"invalid": "El correo electrónico no es válido"
+				}
+			},
+			"phoneNumber1": {
+				"label": "Número de teléfono"
+			},
+			"phoneNumber2": {
+				"label": "Número de teléfono alternativo"
+			}
+		},
+		"document": {
+			"title": "Documento de identidad",
+			"type": {
+				"label": "Tipo de documento",
+				"options": {
+					"NIF": "NIF (Nacionales)",
+					"NIE": "NIE (Extranjeros)",
+					"PASSPORT": "Pasaporte",
+					"OTHER": "Otro documento"
+				},
+				"errors": {
+					"undefined": "El tipo de documento es obligatorio"
+				}
+			},
+			"number": {
+				"label": "Número de documento",
+				"errors": {
+					"undefined": "El número de documento es obligatorio",
+					"invalidDni": "El NIF/NIE no es válido"
+				}
+			},
+			"supportNumber": {
+				"label": "Número de soporte",
+				"errors": {
+					"undefined": "El número de soporte es obligatorio para NIF/NIE"
+				}
+			}
+		}
+	}
 }

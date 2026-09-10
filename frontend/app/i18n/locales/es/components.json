@@ -1,15 +1,15 @@
 {
-    "addressSelect": {
-        "newButton": "Nueva dirección",
-        "groups": {
-            "current": "Dirección actual",
-            "booking": "Direcciones de la reserva",
-            "other": "Otras direcciones"
-        }
-    },
-    "checkIn": {
-        "bookingDetails": {
-            "title": "Detalles de la reserva"
-        }
-    }
+	"addressSelect": {
+		"newButton": "Nueva dirección",
+		"groups": {
+			"current": "Dirección actual",
+			"booking": "Direcciones de la reserva",
+			"other": "Otras direcciones"
+		}
+	},
+	"checkIn": {
+		"bookingDetails": {
+			"title": "Detalles de la reserva"
+		}
+	}
 }
