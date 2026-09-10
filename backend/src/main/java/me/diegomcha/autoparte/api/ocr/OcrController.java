@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.api.ocr;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.ocr.dto.PartialPersonDtoRequest;
 import me.diegomcha.autoparte.core.exception.ResourceUnprocessableException;
@@ -20,7 +21,7 @@ class OcrController implements OcrAPI {
 
     @PostMapping(value = "/mrz", consumes = "multipart/form-data")
     @Override
-    public PartialPersonDtoRequest extractPersonInfoFromMrz(@RequestPart @Image MultipartFile file) throws ResourceUnprocessableException, ServiceUnavailableException {
+    public PartialPersonDtoRequest extractPersonInfoFromMrz(@Valid @RequestPart @Image MultipartFile file) throws ResourceUnprocessableException, ServiceUnavailableException {
         return ocrService.extractPersonInfoFromMrz(file);
     }
 }
