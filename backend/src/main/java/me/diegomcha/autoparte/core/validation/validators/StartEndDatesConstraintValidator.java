@@ -12,6 +12,6 @@ public class StartEndDatesConstraintValidator implements ConstraintValidator<Sta
 
     @Override
     public boolean isValid(BookingDtoRequest o, ConstraintValidatorContext constraintValidatorContext) {
-        return o.startTime() != null && o.endTime() != null && o.startTime().isBefore(o.endTime());
+        return o.startTime().isBefore(o.endTime());
     }
 }

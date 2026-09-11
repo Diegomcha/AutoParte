@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.FieldSource;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +48,7 @@ class RequestMapperTest {
 
     @ParameterizedTest
     @FieldSource("COMMUNICATION_TYPES")
-    void testToSubmitCommunicationRequest(RequestMapper.SesCommunicationType type, String expectedTipoComunicacion) throws IOException {
+    void testToSubmitCommunicationRequest(RequestMapper.SesCommunicationType type, String expectedTipoComunicacion) {
         ComunicacionRequest request = mapper.toSubmitCommunicationRequest("test-application", "00000", type, "base64-encoded-zip-content");
 
         Assertions.assertEquals("test-application", request.getPeticion().getCabecera().getAplicacion());
@@ -60,7 +59,7 @@ class RequestMapperTest {
     }
 
     @Test
-    void testToCancelCommunicationRequest() throws IOException {
+    void testToCancelCommunicationRequest() {
         ComunicacionRequest request = mapper.toCancelCommunicationRequest("test-application", "00000", "base64-encoded-zip-content");
 
         Assertions.assertEquals("test-application", request.getPeticion().getCabecera().getAplicacion());

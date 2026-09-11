@@ -94,7 +94,7 @@ class EmployeeService {
      * @return The created employee, including the generated password
      * @throws ResourceConflictException If an employee with the same email already exists
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceConflictException.class})
     public EmployeeDtoCredentialsResponse createEmployee(@NonNull EmployeeDtoCreate dto) throws ResourceConflictException {
         // Generate random secure password
         String password = this.getRandomSecurePassword();
@@ -118,7 +118,7 @@ class EmployeeService {
      * @throws ResourceNotFoundException If no employee with the given ID exists
      * @throws ResourceConflictException If the new email is already used by another employee
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceConflictException.class, ResourceNotFoundException.class})
     public void updateEmployee(@NonNull UUID id, @NonNull EmployeeDtoPatch patch) throws ResourceConflictException, ResourceNotFoundException {
         // Get employee to patch
         Employee employee = employeeRepo
@@ -140,7 +140,7 @@ class EmployeeService {
      * @return The employee with the new password
      * @throws ResourceNotFoundException If no employee with the given ID exists
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public EmployeeDtoCredentialsResponse resetEmployeePassword(@NonNull UUID id) throws ResourceNotFoundException {
         // Get employee whose credentials will be reset
         Employee employee = employeeRepo
@@ -162,7 +162,7 @@ class EmployeeService {
      * @param id The ID of the employee to delete
      * @throws ResourceNotFoundException If no employee with the given ID exists
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public void deleteEmployee(@NonNull UUID id) throws ResourceNotFoundException {
         // Get employee
         Employee employee = employeeRepo

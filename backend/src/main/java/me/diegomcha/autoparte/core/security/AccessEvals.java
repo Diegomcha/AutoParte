@@ -2,7 +2,6 @@ package me.diegomcha.autoparte.core.security;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
 import me.diegomcha.autoparte.core.repos.BookingRepo;
 import org.springframework.security.authorization.AuthorizationDecision;

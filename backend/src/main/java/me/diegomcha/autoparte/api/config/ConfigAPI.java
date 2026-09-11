@@ -14,9 +14,8 @@ public interface ConfigAPI {
     @Operation(summary = "Get current application configuration")
     ConfigDtoResponse getConfig();
 
-    // TODO:!
-//    @Operation(summary = "Get public application configuration")
-//    PublicConfigDtoResponse getPublicConfig();
+    // TODO:    @Operation(summary = "Get public application configuration")
+    // TODO:    PublicConfigDtoResponse getPublicConfig();
 
     @Operation(summary = "Update application configuration")
     void updateConfig(ConfigDtoRequest patch);

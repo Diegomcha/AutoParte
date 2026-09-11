@@ -86,7 +86,7 @@ class PersonService {
      * @throws ResourceConflictException if the booking cannot be modified in its current state or
      *                                   if the booking is already full and cannot accommodate additional people
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public EntityDtoCreated addPerson(UUID accommodationId, UUID bookingId, PersonDtoRequest dto) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureBookingCanBeModified(accommodationId, bookingId);
 
@@ -115,7 +115,7 @@ class PersonService {
      *                                   if no address with the given ID exists
      * @throws ResourceConflictException if the booking cannot be modified in its current state
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public void updatePerson(UUID accommodationId, UUID bookingId, UUID personId, PersonDtoRequest dto) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureBookingCanBeModified(accommodationId, bookingId);
 
@@ -135,7 +135,7 @@ class PersonService {
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no person with the given ID exists for the specified booking
      * @throws ResourceConflictException if the booking cannot be modified in its current state
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public void removePerson(UUID accommodationId, UUID bookingId, UUID personId) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureBookingCanBeModified(accommodationId, bookingId);
 

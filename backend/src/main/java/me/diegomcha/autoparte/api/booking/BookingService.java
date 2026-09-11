@@ -100,7 +100,7 @@ class BookingService {
      * @return The created booking's ID and creation timestamp
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public EntityDtoCreated createBooking(UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException {
         var accommodation = accommodationRepo
                 .findById(accommodationId)
@@ -120,7 +120,7 @@ class BookingService {
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the number of people in the update is less than the current number of people in the booking
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public void updateBooking(UUID accommodationId, UUID id, BookingDtoRequest update) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
@@ -147,7 +147,7 @@ class BookingService {
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking cannot be confirmed in its current state
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public void confirmBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
@@ -170,7 +170,7 @@ class BookingService {
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking cannot be modified or if self-check-in has already been requested for the booking
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public void requestSelfCheckInForBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
@@ -196,7 +196,7 @@ class BookingService {
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking cannot be checked in in its current state
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public boolean checkInBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
@@ -230,7 +230,7 @@ class BookingService {
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking is already canceled
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public void cancelBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
@@ -257,7 +257,7 @@ class BookingService {
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      * @throws ResourceConflictException if the booking cannot be deleted
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public void deleteBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 

@@ -62,9 +62,7 @@ class PersonTest {
     @FieldSource("IS_COMPLETE_MCDC")
     void testIsComplete(boolean completePInfo, boolean isAdult, boolean hasDInfo, boolean hasRelationship, boolean hasAddress, boolean expected) {
         var birthDate = isAdult ? TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS) : TestingUtils.PAST_INSTANT;
-        var pInfo = completePInfo
-                ? new PersonalInfo("Name", "Surname", "2Surname", null, birthDate, null)
-                : new PersonalInfo("Name", "Surname", null, null, birthDate, null);
+        var pInfo = new PersonalInfo("Name", "Surname", completePInfo ? "2Surname" : null, null, birthDate, null);
         var dInfo = hasDInfo
                 ? Document.of(Document.DocumentType.NIF, "54095720L", "SUPPORT")
                 : null;

@@ -17,12 +17,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
+@Transactional(readOnly = true)
 public class SecurityService {
 
     private final AccountRepo accountRepo;
@@ -40,6 +42,7 @@ public class SecurityService {
      * @param details     The details of the current authentication, used for logging the password change event
      * @throws UnauthorizedException if the username is not found or the current password does not match
      */
+    @Transactional(rollbackFor = {UnauthorizedException.class})
     public void updatePassword(String username, String oldPassword, String newPassword, Object details) throws UnauthorizedException {
         Authentication authentication = this.checkCredentials(username, oldPassword, details);
         Account account = this.getAccountFromAuthentication(authentication);

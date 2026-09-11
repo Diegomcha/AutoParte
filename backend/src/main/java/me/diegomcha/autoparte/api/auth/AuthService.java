@@ -46,7 +46,7 @@ class AuthService {
      * @param authenticationDetails The details of the current authentication, used for logging the password change event
      * @throws UnauthorizedException If the username is not found or the current password does not match
      */
-    @Transactional
+    @Transactional(rollbackFor = {UnauthorizedException.class})
     public void updatePassword(@NonNull UpdatePasswordDto dto, Object authenticationDetails) throws UnauthorizedException {
         securityService.updatePassword(dto.username(), dto.currentPassword(), dto.newPassword(), authenticationDetails);
     }

@@ -84,7 +84,7 @@ class AccommodationService {
      * @return The created accommodation's ID and creation timestamp
      * @throws ResourceConflictException if an accommodation with the same name or sesCode already exists
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceConflictException.class})
     public EntityDtoCreated createAccommodation(@NonNull AccommodationDtoRequest dto) throws ResourceConflictException {
         Accommodation newAccommodation = accommodationMapper.fromCreate(dto);
 
@@ -108,7 +108,7 @@ class AccommodationService {
      * @throws ResourceConflictException if the update contains a name or sesCode that is already used by another accommodation
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceConflictException.class, ResourceNotFoundException.class})
     public void updateAccommodation(@NonNull UUID id, @NonNull AccommodationDtoRequest update) throws ResourceConflictException, ResourceNotFoundException {
         // Get accommodation to update
         Accommodation accommodation = accommodationRepo
@@ -132,7 +132,7 @@ class AccommodationService {
      * @param id The ID of the accommodation to delete
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public void deleteAccommodation(@NonNull UUID id) throws ResourceNotFoundException {
         // Ensure accommodation exists
         if (!accommodationRepo.existsById(id))
@@ -149,7 +149,7 @@ class AccommodationService {
      * @throws ResourceNotFoundException if no accommodation with the given ID exists, or if no employee with the given ID exists
      * @throws ResourceConflictException if the employee is already assigned to the accommodation
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceConflictException.class, ResourceNotFoundException.class})
     public void assignEmployeeToAccommodation(@NonNull UUID accommodationId, @NonNull UUID employeeId) throws ResourceNotFoundException, ResourceConflictException {
         Accommodation accommodation = accommodationRepo
                 .findById(accommodationId)
@@ -172,7 +172,7 @@ class AccommodationService {
      * @throws ResourceNotFoundException if no accommodation with the given ID exists, or if no employee with the given ID exists
      * @throws ResourceConflictException if the employee is not assigned to the accommodation
      */
-    @Transactional
+    @Transactional(rollbackFor = {ResourceConflictException.class, ResourceNotFoundException.class})
     public void unassignEmployeeFromAccommodation(@NonNull UUID accommodationId, @NonNull UUID employeeId) throws ResourceNotFoundException, ResourceConflictException {
         Accommodation accommodation = accommodationRepo
                 .findById(accommodationId)

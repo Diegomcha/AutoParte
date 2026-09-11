@@ -1,9 +1,11 @@
 package me.diegomcha.autoparte.config;
 
 import me.diegomcha.autoparte.core.repos.AccountRepo;
-import me.diegomcha.autoparte.core.security.*;
+import me.diegomcha.autoparte.core.security.AccessEvals;
+import me.diegomcha.autoparte.core.security.SecurityHandlers;
+import me.diegomcha.autoparte.core.security.SecurityService;
+import me.diegomcha.autoparte.core.security.UserAccount;
 import me.diegomcha.autoparte.domain.Account;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -16,9 +18,6 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
-import org.springframework.security.authorization.AuthorizationManager;
-import org.springframework.security.authorization.AuthorizationManagerFactories;
-import org.springframework.security.authorization.AuthorizationManagerFactory;
 import org.springframework.security.authorization.AuthorizationManagers;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,7 +30,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.HttpStatusAccessDeniedHandler;
-import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 import java.util.Objects;
@@ -42,11 +40,14 @@ import java.util.Set;
 @EnableWebSecurity
 class SecurityConfig {
 
+    private static final String ADMIN_ROLE = "ADMIN";
+    private static final String EMPLOYEE_ROLE = "EMPLOYEE";
+
     // TODO: TEST SECURITY!!!
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityHandlers securityHandlers, DynamicConfigService dynamicConfigService, AccessEvals accessEvals) {
         var selfCheckInAuthorizationManager = AuthorizationManagers.anyOf(
-                accessEvals.hasRole("ADMIN"),
+                accessEvals.hasRole(ADMIN_ROLE),
                 AuthorizationManagers.allOf(
                         accessEvals.authenticated(),
                         accessEvals.accommodationAuthorizationManager()
@@ -74,7 +75,7 @@ class SecurityConfig {
                         // Protected routes for employees
                         .requestMatchers("/api/accommodations/{accommodationId}/bookings/**")
                         .access(AuthorizationManagers.anyOf(
-                                accessEvals.hasRole("ADMIN"),
+                                accessEvals.hasRole(ADMIN_ROLE),
                                 AuthorizationManagers.allOf(
                                         accessEvals.authenticated(),
                                         accessEvals.accommodationAuthorizationManager()
@@ -82,7 +83,7 @@ class SecurityConfig {
                         ))
                         .requestMatchers(HttpMethod.GET, "/api/accommodations").authenticated()
                         // Admin-only routes
-                        .anyRequest().hasRole("ADMIN")
+                        .anyRequest().hasRole(ADMIN_ROLE)
                 )
                 .csrf(CsrfConfigurer::spa)
                 .formLogin(form -> form
@@ -113,7 +114,7 @@ class SecurityConfig {
                 Account admin = new Account(
                         "admin",
                         Objects.requireNonNull(passwordEncoder.encode(properties.getSecurity().getInitialAdminPassword())),
-                        Set.of("ROLE_ADMIN")
+                        Set.of("ROLE_" + ADMIN_ROLE)
                 );
                 admin.setRequiresReset(false);
                 accountRepo.save(admin);
@@ -151,7 +152,7 @@ class SecurityConfig {
     @Bean
     static RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.withDefaultRolePrefix()
-                .role("ADMIN").implies("EMPLOYEE")
+                .role(ADMIN_ROLE).implies(EMPLOYEE_ROLE)
                 .build();
     }
 }
