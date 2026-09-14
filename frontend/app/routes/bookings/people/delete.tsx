@@ -57,7 +57,7 @@ export default function DeletePerson({
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.common.buttons.cancel)}
+					{t(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color="red"
@@ -69,7 +69,7 @@ export default function DeletePerson({
 						});
 					}}
 				>
-					{t(($) => $.common.buttons.delete)}
+					{t(($) => $.buttons.delete)}
 				</Button>
 			</Group>
 		</Modal>

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useNavigate } from "react-router";
 
 import { Button, Group, Modal } from "@mantine/core";
@@ -33,12 +34,14 @@ export default function DeleteBooking({
 	const navigate = useNavigate();
 	const { t } = useTranslation();
 
-	const { mutate, isPending, isSuccess } = useMutation(
+	const wasDeleted = useRef(false);
+
+	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.delete(accommodationId, bookingId)
 	);
 
 	const { opened, close } = useStaticModalTransition(
-		() => void navigate(isSuccess ? "/" : "..")
+		() => void navigate(wasDeleted.current ? "/" : "..")
 	);
 
 	return (
@@ -51,7 +54,7 @@ export default function DeleteBooking({
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.common.buttons.cancel)}
+					{t(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color={t(($) => $.bookings.delete.color)}
@@ -59,7 +62,10 @@ export default function DeleteBooking({
 					leftSection={<TrashIcon weight="bold" />}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: close
+							onSuccess: () => {
+								wasDeleted.current = true;
+								close();
+							}
 						});
 					}}
 				>

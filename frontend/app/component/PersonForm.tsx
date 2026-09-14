@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 import {
+	ActionIcon,
 	Button,
 	Fieldset,
 	Group,
@@ -12,16 +15,22 @@ import {
 import { DateInput } from "@mantine/dates";
 import { formRootRule, isEmail, isNotEmpty, useForm } from "@mantine/form";
 
-import { ArrowUUpLeftIcon, FloppyDiskIcon } from "@phosphor-icons/react";
+import {
+	ArrowUUpLeftIcon,
+	FloppyDiskIcon,
+	ScanIcon
+} from "@phosphor-icons/react";
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import { queryFactory } from "~/services/Api";
+import CountryService from "~/services/CountryService";
 import TimeService from "~/services/TimeService";
 
 import AddressSelect from "./AddressSelect";
 import ComplexRequiredAsterisk from "./ComplexRequiredLabel";
 import CountrySelect from "./CountrySelect";
+import DocumentScanner from "./DocumentScanner";
 import PhoneInput, { isValidPhoneNumber } from "./PhoneInput";
 
 import type { PersonDtoRequest, PersonDtoResponse } from "~/@types/api";
@@ -36,6 +45,7 @@ interface PersonFormProps {
 	onUpdatedPerson?: (id: string) => void;
 	onSubmit?: () => void;
 	checkInMode?: true;
+	defaultMode?: "scanning" | "manual";
 }
 
 export default function PersonForm({
@@ -46,7 +56,8 @@ export default function PersonForm({
 	onCreatedPerson,
 	onUpdatedPerson,
 	onSubmit,
-	checkInMode
+	checkInMode,
+	defaultMode = "manual"
 }: Readonly<PersonFormProps>) {
 	const { t: tCommon } = useTranslation();
 	const { t: tPerson } = useTranslation("entities", {
@@ -83,9 +94,7 @@ export default function PersonForm({
 				secondSurname: person?.personalInfo.secondSurname ?? "",
 				nationality: person?.personalInfo.nationality ?? null,
 				birthDate: person?.personalInfo.birthDate ?? "",
-				gender: person?.personalInfo.gender ?? null,
-				address: person?.address ?? null,
-				relationship: person?.relationship ?? null
+				gender: person?.personalInfo.gender ?? null
 			},
 			contactInfo: {
 				phoneNumber1: person?.contactInfo.phoneNumber1 ?? "",
@@ -96,7 +105,9 @@ export default function PersonForm({
 				type: person?.document?.type ?? null,
 				number: person?.document?.number ?? "",
 				supportNumber: person?.document?.supportNumber ?? ""
-			}
+			},
+			address: person?.address ?? null,
+			relationship: person?.relationship ?? null
 		},
 		validate: {
 			personalInfo: {
@@ -116,18 +127,6 @@ export default function PersonForm({
 
 					if (value && TimeService(value).isAfter(TimeService()))
 						return tPerson(($) => $.personalInfo.birthDate.errors.inFuture);
-				},
-				address: (value) => {
-					if (checkInMode && !value)
-						return tPerson(($) => $.personalInfo.address.errors.undefined);
-				},
-				relationship: (value, values) => {
-					if (
-						checkInMode &&
-						isAdult(values.personalInfo.birthDate) === false &&
-						!value
-					)
-						return tPerson(($) => $.personalInfo.relationship.errors.undefined);
 				}
 			},
 			contactInfo: {
@@ -165,6 +164,18 @@ export default function PersonForm({
 							return tPerson(($) => $.document.supportNumber.errors.undefined);
 					}
 				}
+			},
+			address: (value) => {
+				if (checkInMode && !value)
+					return tPerson(($) => $.personalInfo.address.errors.undefined);
+			},
+			relationship: (value, values) => {
+				if (
+					checkInMode &&
+					isAdult(values.personalInfo.birthDate) === false &&
+					!value
+				)
+					return tPerson(($) => $.personalInfo.relationship.errors.undefined);
 			}
 		},
 		transformValues: (values) =>
@@ -191,8 +202,8 @@ export default function PersonForm({
 							supportNumber: values.document.supportNumber.trim() || undefined
 						}
 					: undefined,
-				address: values.personalInfo.address ?? undefined,
-				relationship: values.personalInfo.relationship ?? undefined
+				address: values.address ?? undefined,
+				relationship: values.relationship ?? undefined
 			}) satisfies PersonDtoRequest,
 		onValuesChange: (values, prevValues) => {
 			if (values.document.type !== prevValues.document.type) {
@@ -204,7 +215,8 @@ export default function PersonForm({
 
 	const watchedFormValues = {
 		personalInfo: {
-			birthDate: form.useWatchValue("personalInfo.birthDate")
+			birthDate: form.useWatchValue("personalInfo.birthDate"),
+			nationality: form.useWatchValue("personalInfo.nationality")
 		},
 		document: {
 			type: form.useWatchValue("document.type")
@@ -226,6 +238,33 @@ export default function PersonForm({
 	);
 
 	const isSaving = isUpdating || isCreating;
+
+	// Scanning mode
+	const [mode, setMode] = useState<"scanning" | "manual">(defaultMode);
+	if (mode === "scanning")
+		return (
+			<DocumentScanner
+				w="100%"
+				onBack={() => {
+					setMode("manual");
+				}}
+				onScanSuccess={(scan) => {
+					form.setValues({
+						...scan,
+						personalInfo: {
+							...scan.personalInfo,
+							secondSurname: scan.personalInfo.secondSurname ?? ""
+						},
+						document: {
+							...scan.document,
+							supportNumber: scan.document.supportNumber ?? ""
+						}
+					});
+					void form.validate();
+					setMode("manual");
+				}}
+			/>
+		);
 
 	return (
 		<form
@@ -253,8 +292,10 @@ export default function PersonForm({
 		>
 			<Stack>
 				<Fieldset legend={tPerson(($) => $.personalInfo.title)}>
-					<SimpleGrid cols={3}>
+					<SimpleGrid cols={{ base: 1, sm: 2, md: 3 }}>
 						<TextInput
+							type="text"
+							autoComplete="given-name"
 							key={form.key("personalInfo.name")}
 							label={tPerson(($) => $.personalInfo.name.label)}
 							withAsterisk
@@ -262,6 +303,8 @@ export default function PersonForm({
 							{...form.getInputProps("personalInfo.name")}
 						/>
 						<TextInput
+							type="text"
+							autoComplete="family-name"
 							key={form.key("personalInfo.firstSurname")}
 							label={tPerson(($) => $.personalInfo.firstSurname.label)}
 							withAsterisk
@@ -269,6 +312,7 @@ export default function PersonForm({
 							{...form.getInputProps("personalInfo.firstSurname")}
 						/>
 						<TextInput
+							type="text"
 							key={form.key("personalInfo.secondSurname")}
 							label={
 								<>
@@ -294,6 +338,7 @@ export default function PersonForm({
 							{...form.getInputProps("personalInfo.nationality")}
 						/>
 						<DateInput
+							autoComplete="bday"
 							key={form.key("personalInfo.birthDate")}
 							label={
 								<>
@@ -308,6 +353,7 @@ export default function PersonForm({
 							{...form.getInputProps("personalInfo.birthDate")}
 						/>
 						<Select
+							autoComplete="sex"
 							key={form.key("personalInfo.gender")}
 							label={tPerson(($) => $.personalInfo.gender.label)}
 							data={genders.map((g) => ({
@@ -322,7 +368,7 @@ export default function PersonForm({
 							{...form.getInputProps("personalInfo.gender")}
 						/>
 						<AddressSelect
-							key={form.key("personalInfo.address")}
+							key={form.key("address")}
 							label={
 								<>
 									{tPerson(($) => $.personalInfo.address.label)}
@@ -334,10 +380,10 @@ export default function PersonForm({
 							bookingId={bookingId}
 							clearable
 							readOnly={readOnly}
-							{...form.getInputProps("personalInfo.address")}
+							{...form.getInputProps("address")}
 						/>
 						<Select
-							key={form.key("personalInfo.relationship")}
+							key={form.key("relationship")}
 							label={
 								<>
 									{tPerson(($) => $.personalInfo.relationship.label)}
@@ -360,13 +406,15 @@ export default function PersonForm({
 							searchable
 							clearable
 							readOnly={readOnly}
-							{...form.getInputProps("personalInfo.relationship")}
+							{...form.getInputProps("relationship")}
 						/>
 					</SimpleGrid>
 				</Fieldset>
 				<Fieldset legend={tPerson(($) => $.contactInfo.title)}>
-					<SimpleGrid cols={3}>
+					<SimpleGrid cols={{ base: 1, sm: 2, md: 3 }}>
 						<TextInput
+							type="email"
+							autoComplete="email"
 							key={form.key("contactInfo.email")}
 							label={tPerson(($) => $.contactInfo.email.label)}
 							readOnly={readOnly}
@@ -376,12 +424,18 @@ export default function PersonForm({
 							key={form.key("contactInfo.phoneNumber1")}
 							label={tPerson(($) => $.contactInfo.phoneNumber1.label)}
 							readOnly={readOnly}
+							defaultCountry={CountryService.getPhoneCountryCode(
+								watchedFormValues.personalInfo.nationality as CountryCode
+							)}
 							{...form.getInputProps("contactInfo.phoneNumber1")}
 						/>
 						<PhoneInput
 							key={form.key("contactInfo.phoneNumber2")}
 							label={tPerson(($) => $.contactInfo.phoneNumber2.label)}
 							readOnly={readOnly}
+							defaultCountry={CountryService.getPhoneCountryCode(
+								watchedFormValues.personalInfo.nationality as CountryCode
+							)}
 							{...form.getInputProps("contactInfo.phoneNumber2")}
 						/>
 					</SimpleGrid>
@@ -391,7 +445,7 @@ export default function PersonForm({
 					</Text>
 				</Fieldset>
 				<Fieldset legend={tPerson(($) => $.document.title)}>
-					<SimpleGrid cols={3}>
+					<SimpleGrid cols={{ base: 1, sm: 2, md: 3 }}>
 						<Select
 							key={form.key("document.type")}
 							withAsterisk={
@@ -416,6 +470,7 @@ export default function PersonForm({
 							{...form.getInputProps("document.type")}
 						/>
 						<TextInput
+							type="text"
 							key={form.key("document.number")}
 							label={tPerson(($) => $.document.number.label)}
 							disabled={!watchedFormValues.document.type}
@@ -424,6 +479,7 @@ export default function PersonForm({
 							{...form.getInputProps("document.number")}
 						/>
 						<TextInput
+							type="text"
 							key={form.key("document.supportNumber")}
 							label={tPerson(($) => $.document.supportNumber.label)}
 							disabled={!requiresSupportNumber(watchedFormValues.document.type)}
@@ -436,13 +492,27 @@ export default function PersonForm({
 					</SimpleGrid>
 				</Fieldset>
 				<Group>
-					{/* <Button
-						// TODO: IMplement
+					<Button
+						onClick={() => {
+							setMode("scanning");
+						}}
 						leftSection={<ScanIcon weight="bold" size={16} />}
 						hidden={readOnly}
+						visibleFrom="xs"
 					>
-						{tPerson(($) => $.buttons.scan)}
-					</Button> */}
+						{tCommon(($) => $.buttons.scan)}
+					</Button>
+					<ActionIcon
+						variant="light"
+						size="input-sm"
+						onClick={() => {
+							setMode("scanning");
+						}}
+						hidden={readOnly}
+						hiddenFrom="xs"
+					>
+						<ScanIcon weight="bold" size={16} />
+					</ActionIcon>
 					<div style={{ flex: 1 }} />
 					<Group gap="xs">
 						<Button
@@ -452,7 +522,7 @@ export default function PersonForm({
 							loading={isSaving}
 							hidden={!form.isDirty() || readOnly}
 						>
-							{tCommon(($) => $.common.buttons.reset)}
+							{tCommon(($) => $.buttons.reset)}
 						</Button>
 						<Button
 							type="submit"
@@ -463,7 +533,7 @@ export default function PersonForm({
 							hidden={readOnly}
 						>
 							{tCommon(($) =>
-								person == null ? $.common.buttons.add : $.common.buttons.save
+								person == null ? $.buttons.add : $.buttons.save
 							)}
 						</Button>
 					</Group>

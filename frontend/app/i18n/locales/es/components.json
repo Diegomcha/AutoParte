@@ -11,5 +11,45 @@
 		"bookingDetails": {
 			"title": "Detalles de la reserva"
 		}
+	},
+	"documentScanner": {
+		"explanation": {
+			"title": "Escanea el documento de identidad (DNI o pasaporte)",
+			"message": "Coloca la zona de lectura automatizada del documento dentro del recuadro y presiona el botón de escanear. Dicha zona se encuentra en el reverso del DNI y al pie de la página de datos del pasaporte"
+		},
+		"progress": {
+			"status": {
+				"labels": {
+					"scanning": "Escaneando",
+					"success": "Escaneo exitoso",
+					"noSuccess": "No se detectó ningún documento\nIntenta nuevamente"
+				},
+				"colors": {
+					"idle": "gray",
+					"scanning": "blue",
+					"noSuccess": "red",
+					"success": "green"
+				}
+			}
+		},
+		"mrzZone": {
+			"title": "Zona de lectura automatizada",
+			"imgLabel": "Zona de lectura automatizada (MRZ)"
+		},
+		"noCameraError": {
+			"title": "Error al acceder a la cámara",
+			"message": "Verifica que tu cámara esté conectada y que tanto el navegador como la página tengan acceso a ella",
+			"retryButton": "Reintentar"
+		}
+	},
+	"guestDataInputSelector": {
+		"message": "Selecciona como deseas ingresar los datos de los viajeros",
+		"options": {
+			"scanning": {
+				"label": "Escaneo de documentos (recomendado)",
+				"color": "blue"
+			},
+			"manual": { "label": "Manualmente", "color": "gray" }
+		}
 	}
 }

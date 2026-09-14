@@ -19,10 +19,9 @@ import {
 } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
+import CheckInBookingDetailsSidebar from "~/component/checkIn/CheckInBookingDetails";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
-
-import CheckInBookingDetailsSidebar from "../../component/checkIn/CheckInBookingDetails";
 
 import type { BookingDtoResponse } from "~/@types/api";
 import type { Route } from "./+types/layout";
@@ -36,10 +35,15 @@ export async function clientLoader({
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
+	const booking = await queryClient.query(
+		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
+	);
+
+	if (!booking.canBeModified)
+		throw Validators.throwValidationErrorResponse("Booking cannot be modified");
+
 	return {
-		booking: await queryClient.query(
-			queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
-		)
+		booking
 	};
 }
 
@@ -64,15 +68,12 @@ export default function CheckInRoute({
 			<Paper withBorder shadow="sm">
 				<Stack gap={0}>
 					{/* Header */}
-					<Box component="header" p="xl">
+					<Box component="header" p={{ md: "xl", base: "lg" }}>
 						<Title order={1} size="h2">
 							{t(($) => $[activeRoute].title)}
-							{/* 1. Verificación de la reserva */}
 						</Title>
-						<Text c="dark" size="lg">
+						<Text c="dark" size="md">
 							{t(($) => $[activeRoute].description)}
-							{/* Verifica que los detalles de la reserva sean correctos antes de
-							continuar con el auto-registro. */}
 						</Text>
 					</Box>
 
@@ -80,9 +81,9 @@ export default function CheckInRoute({
 
 					<Group gap={0} align="stretch">
 						{/* Sidebar */}
-						<Stack gap={0} maw={300}>
+						<Stack gap={0} visibleFrom="md">
 							{/* Progress (nav) */}
-							<Stack component="nav" p="xl" gap="lg">
+							<Stack component="nav" p={{ md: "xl", base: "lg" }} gap="lg">
 								<Title order={2} size="h5">
 									{t(($) => $.progressSidebar.title)}
 								</Title>
@@ -128,9 +129,9 @@ export default function CheckInRoute({
 							/>
 						</Stack>
 
-						<Divider orientation="vertical" />
+						<Divider visibleFrom="md" orientation="vertical" />
 
-						<Box component="main" maw="900" p="lg">
+						<Box component="main" maw={800} p="lg" flex={1}>
 							<Outlet context={{ booking } satisfies ContextType} />
 						</Box>
 					</Group>

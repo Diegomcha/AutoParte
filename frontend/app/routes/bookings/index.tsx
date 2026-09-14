@@ -216,7 +216,7 @@ export default function BookingsPage({
 							onClick={close}
 							leftSection={<CaretLeftIcon weight="bold" size={16} />}
 						>
-							{t(($) => $.common.buttons.back)}
+							{t(($) => $.buttons.back)}
 						</Button>
 						<Title order={2} size="h3" fw="normal">
 							{t(($) => $.bookings.edit.title)}
@@ -232,7 +232,7 @@ export default function BookingsPage({
 													color="grape"
 													loading={isPending}
 												>
-													{t(($) => $.common.buttons.export)}
+													{t(($) => $.buttons.export)}
 												</Button>
 											</Menu.Target>
 											<Menu.Dropdown>
@@ -259,7 +259,7 @@ export default function BookingsPage({
 											leftSection={<ArrowUUpLeftIcon weight="bold" size={16} />}
 											loading={isPending}
 										>
-											{t(($) => $.common.buttons.reset)}
+											{t(($) => $.buttons.reset)}
 										</Button>
 									)}
 									<Button
@@ -269,7 +269,7 @@ export default function BookingsPage({
 										disabled={!form.isDirty()}
 										loading={isPending}
 									>
-										{t(($) => $.common.buttons.save)}
+										{t(($) => $.buttons.save)}
 									</Button>
 								</>
 							) : (

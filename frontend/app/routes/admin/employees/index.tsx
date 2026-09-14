@@ -200,7 +200,7 @@ export default function EmployeesPage() {
 							setDeleteModalOpen(true);
 						}}
 					>
-						{t(($) => $.common.buttons.deleteSelected, {
+						{t(($) => $.buttons.deleteSelected, {
 							count: selected.length
 						})}
 					</Button>

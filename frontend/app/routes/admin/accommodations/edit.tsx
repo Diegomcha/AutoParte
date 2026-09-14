@@ -175,7 +175,7 @@ export default function EditAccommodation({
 						loading={isPending}
 						leftSection={<FloppyDiskIcon />}
 					>
-						{t(($) => $.common.buttons.save)}
+						{t(($) => $.buttons.save)}
 					</Button>
 				</Group>
 			</form>

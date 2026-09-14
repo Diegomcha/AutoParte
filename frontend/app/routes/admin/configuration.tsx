@@ -87,7 +87,7 @@ export default function ConfigPage() {
 						loading={isPending}
 						hidden={!form.isDirty()}
 					>
-						{t(($) => $.common.buttons.reset)}
+						{t(($) => $.buttons.reset)}
 					</Button>
 					<Button
 						type="submit"
@@ -96,7 +96,7 @@ export default function ConfigPage() {
 						loading={isPending}
 						disabled={!form.isDirty()}
 					>
-						{t(($) => $.common.buttons.save)}
+						{t(($) => $.buttons.save)}
 					</Button>
 				</Group>
 			</Group>

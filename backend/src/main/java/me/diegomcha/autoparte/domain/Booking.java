@@ -257,8 +257,7 @@ public class Booking extends BaseEntity {
             return BookingStatus.CHECKED_IN;
         if (this.hasCommunicationOfType(Communication.CommunicationType.CHECKIN))
             return BookingStatus.PENDING_CHECK_IN;
-        if (this.people.size() == this.numberOfPeople &&
-                this.people.stream().allMatch(Person::isComplete))
+        if (this.payment != null && this.people.size() == this.numberOfPeople && this.people.stream().allMatch(Person::isComplete))
             return BookingStatus.CHECK_IN_READY;
 
         // Confirmed

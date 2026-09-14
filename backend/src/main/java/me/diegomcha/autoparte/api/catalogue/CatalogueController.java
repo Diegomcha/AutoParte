@@ -32,13 +32,13 @@ class CatalogueController implements CatalogueAPI {
 
     @GetMapping("/countries/ESP/provinces/{provinceCode}/municipalities")
     @Override
-    public Map<String, String> getSpanishMunicipalities(@Valid @SpanishProvinceCode @PathVariable String provinceCode) {
+    public Map<String, String> getSpanishMunicipalities(@PathVariable String provinceCode) {
         return locationCatalogueService.getSpanishMunicipalities(provinceCode);
     }
 
     @GetMapping("/countries/ESP/provinces/{provinceCode}/municipalities/{municipalityCode}/postal-codes")
     @Override
-    public Set<String> getSpanishPostalCodes(@Valid @ModelAttribute ProvinceMunicipalityCodesDto codes) {
+    public Set<String> getSpanishPostalCodes(@ModelAttribute ProvinceMunicipalityCodesDto codes) {
         return locationCatalogueService.getSpanishPostalCodes(codes.provinceCode(), codes.municipalityCode());
     }
 

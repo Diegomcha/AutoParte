@@ -7,6 +7,14 @@
 
 @import "mantine-datatable/styles.css";
 
+@font-face {
+	font-family: "OCR B";
+	src: url("/fonts/OCRB.woff2") format("woff2");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
 * {
 	white-space: pre-line;
 }

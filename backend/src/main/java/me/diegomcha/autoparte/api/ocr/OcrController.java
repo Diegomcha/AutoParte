@@ -21,7 +21,7 @@ class OcrController implements OcrAPI {
 
     @PostMapping(value = "/mrz", consumes = "multipart/form-data")
     @Override
-    public PartialPersonDtoRequest extractPersonInfoFromMrz(@Valid @RequestPart @Image MultipartFile file) throws ResourceUnprocessableException, ServiceUnavailableException {
+    public PartialPersonDtoRequest extractPersonInfoFromMrz(@RequestPart MultipartFile file) throws ResourceUnprocessableException, ServiceUnavailableException {
         return ocrService.extractPersonInfoFromMrz(file);
     }
 }

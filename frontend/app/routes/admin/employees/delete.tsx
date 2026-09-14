@@ -40,7 +40,7 @@ export default function DeleteEmployee({
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.common.buttons.cancel)}
+					{t(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color="red"
@@ -52,7 +52,7 @@ export default function DeleteEmployee({
 					}}
 					leftSection={<TrashIcon weight="bold" />}
 				>
-					{t(($) => $.common.buttons.delete)}
+					{t(($) => $.buttons.delete)}
 				</Button>
 			</Group>
 		</Modal>

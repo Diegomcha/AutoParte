@@ -3,6 +3,8 @@ import { index, route } from "@react-router/dev/routes";
 import type { RouteConfig } from "@react-router/dev/routes";
 
 export default [
+	// TODO: REMOVE!
+	route("test", "./routes/test.tsx"),
 	route("/", "./routes/index.tsx", [
 		route(
 			"/accommodations/:accommodationId/bookings/:bookingId",

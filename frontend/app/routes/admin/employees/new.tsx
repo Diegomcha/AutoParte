@@ -97,7 +97,7 @@ export default function NewEmployee() {
 							loading={isCreating}
 							leftSection={<UserCirclePlusIcon />}
 						>
-							{t(($) => $.common.buttons.create)}
+							{t(($) => $.buttons.create)}
 						</Button>
 					</Group>
 				</form>

@@ -49,7 +49,7 @@ export default function ConfirmBooking({
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.common.buttons.cancel)}
+					{t(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color={t(($) => $.bookings.confirm.color)}

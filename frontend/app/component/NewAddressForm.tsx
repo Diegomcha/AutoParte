@@ -154,6 +154,8 @@ export default function NewAddressForm({
 					<Fieldset legend={t(($) => $.people.newAddress.legend)}>
 						<SimpleGrid cols={2}>
 							<TextInput
+								type="text"
+								autoComplete="address-line1"
 								label={t(
 									($) => $.people.newAddress.properties.addressLine1.label
 								)}
@@ -162,6 +164,8 @@ export default function NewAddressForm({
 								{...form.getInputProps("addressLine1")}
 							/>
 							<TextInput
+								type="text"
+								autoComplete="address-line2"
 								label={t(
 									($) => $.people.newAddress.properties.addressLine2.label
 								)}
@@ -176,6 +180,7 @@ export default function NewAddressForm({
 								{...form.getInputProps("country")}
 							/>
 							<Select
+								autoComplete="address-level1"
 								data={Object.entries(spanishProvinces)
 									.map(([provinceCode, provinceName]) => ({
 										value: provinceCode,
@@ -193,6 +198,7 @@ export default function NewAddressForm({
 							{form.values.country === "ESP" ? (
 								<>
 									<Select
+										autoComplete="address-level2"
 										data={
 											spanishMunicipalities &&
 											Object.entries(spanishMunicipalities)
@@ -214,6 +220,7 @@ export default function NewAddressForm({
 										{...form.getInputProps("municipality")}
 									/>
 									<Select
+										autoComplete="postal-code"
 										data={spanishPostalCodes?.sort((a, b) =>
 											a.localeCompare(b)
 										)}
@@ -232,6 +239,8 @@ export default function NewAddressForm({
 							) : (
 								<>
 									<TextInput
+										type="text"
+										autoComplete="address-level2"
 										label={t(
 											($) => $.people.newAddress.properties.municipality.label
 										)}
@@ -241,6 +250,8 @@ export default function NewAddressForm({
 										{...form.getInputProps("municipality")}
 									/>
 									<TextInput
+										type="text"
+										autoComplete="postal-code"
 										label={t(
 											($) => $.people.newAddress.properties.postalCode.label
 										)}
@@ -260,7 +271,7 @@ export default function NewAddressForm({
 						loading={isPending}
 						disabled={!form.isDirty()}
 					>
-						{t(($) => $.common.buttons.add)}
+						{t(($) => $.buttons.add)}
 					</Button>
 				</Stack>
 			</form>

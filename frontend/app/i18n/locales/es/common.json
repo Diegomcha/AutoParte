@@ -6,21 +6,22 @@
 		"admin": "Modo administrador",
 		"logout": "Cerrar sesión"
 	},
+	"buttons": {
+		"create": "Crear",
+		"add": "Añadir",
+		"save": "Guardar",
+		"delete": "Eliminar",
+		"deleteSelected": "Eliminar seleccionados",
+		"cancel": "Cancelar",
+		"reset": "Restablecer",
+		"back": "Volver",
+		"export": "Exportar",
+		"scan": "Escanear"
+	},
 	"common": {
 		"properties": {
 			"createdAt": "Fecha de creación",
 			"updatedAt": "Fecha de actualización"
-		},
-		"buttons": {
-			"create": "Crear",
-			"add": "Añadir",
-			"save": "Guardar",
-			"delete": "Eliminar",
-			"deleteSelected": "Eliminar seleccionados",
-			"cancel": "Cancelar",
-			"reset": "Restablecer",
-			"back": "Volver",
-			"export": "Exportar"
 		},
 		"actionButtons": {
 			"view": "Ver",

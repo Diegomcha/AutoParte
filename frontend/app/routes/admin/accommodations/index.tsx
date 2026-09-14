@@ -174,7 +174,7 @@ export default function AccommodationsPage() {
 							setDeleteModalOpen(true);
 						}}
 					>
-						{t(($) => $.common.buttons.deleteSelected, {
+						{t(($) => $.buttons.deleteSelected, {
 							count: selected.length
 						})}
 					</Button>

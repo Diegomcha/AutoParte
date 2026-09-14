@@ -5,6 +5,7 @@ import {
 	QueryClient,
 	queryOptions
 } from "@tanstack/react-query";
+import Cookies from "js-cookie";
 import createFetchClient from "openapi-fetch";
 
 import NotificationsService from "./NotificationsService";
@@ -44,9 +45,9 @@ const api = createFetchClient<paths, "*/*">({
 
 // Middleware to include CSRF token from cookies in the request headers
 api.use({
-	async onRequest({ request }) {
-		const csrfToken = await cookieStore.get("XSRF-TOKEN");
-		if (csrfToken?.value) request.headers.set("X-XSRF-TOKEN", csrfToken.value);
+	onRequest({ request }) {
+		const csrfToken = Cookies.get("XSRF-TOKEN");
+		if (csrfToken) request.headers.set("X-XSRF-TOKEN", csrfToken);
 	}
 });
 
@@ -401,7 +402,9 @@ const queryFactory = {
 				},
 				onSuccess: async ([createdEmployee]) => {
 					if (createdEmployee)
-						await queryClient.invalidateQueries(queryFactory.employees.list());
+						await queryClient.invalidateQueries(
+							queryFactory.accommodations.list()
+						);
 				}
 			}),
 		update: (accommodationId: string) =>
@@ -427,7 +430,9 @@ const queryFactory = {
 				},
 				onSuccess: async ([updatedEmployee]) => {
 					if (updatedEmployee)
-						await queryClient.invalidateQueries(queryFactory.employees.list());
+						await queryClient.invalidateQueries(
+							queryFactory.accommodations.list()
+						);
 				}
 			}),
 		delete: (accommodationId: string) =>
@@ -1095,6 +1100,27 @@ const queryFactory = {
 				},
 				onSuccess: async () => {
 					await queryClient.invalidateQueries(queryFactory.auth.me());
+				}
+			})
+	},
+	ocr: {
+		mrz: () =>
+			mutationOptions({
+				mutationFn: async (file: Blob) => {
+					const res = await api.POST("/api/ocr/mrz", {
+						body: {
+							file: file as unknown as string // TODO: Improve api transformers to handle the files
+						},
+						bodySerializer: () => {
+							const fd = new FormData();
+							fd.append("file", file);
+							return fd;
+						}
+					});
+
+					if (res.response.status === 422) return false; // Handle invalid scan
+
+					return unwrapResponse(res);
 				}
 			})
 	}

@@ -5,10 +5,11 @@ import { Stack } from "@mantine/core";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 
+import CheckInPersonSelector from "~/component/checkIn/CheckInPersonSelector";
+import GuestDataInputSelector from "~/component/GuestDataInputSelector";
 import PersonForm from "~/component/PersonForm";
 import { queryClient, queryFactory } from "~/services/Api";
 
-import CheckInPersonSelector from "../../component/checkIn/CheckInPersonSelector";
 import { useCheckInRouteContext } from "./layout";
 
 import type { Route } from "./+types/inputGuestDetails";
@@ -39,8 +40,11 @@ export default function CheckInVerifyBookingRoute({
 	);
 
 	const [activePersonIndex, setActivePersonIndex] = useState(0);
+	const [defaultMode, setDefaultMode] = useState<"scanning" | "manual">();
 
-	return (
+	return !defaultMode ? (
+		<GuestDataInputSelector onSelection={setDefaultMode} />
+	) : (
 		<Stack gap="lg">
 			<CheckInPersonSelector
 				activePersonIndex={activePersonIndex}
@@ -55,6 +59,7 @@ export default function CheckInVerifyBookingRoute({
 				bookingId={booking.id}
 				person={people.at(activePersonIndex)}
 				checkInMode
+				defaultMode={defaultMode}
 				onSubmit={() => {
 					if (activePersonIndex < booking.numberOfPeople - 1)
 						setActivePersonIndex((prevIndex) => prevIndex + 1);
@@ -64,30 +69,3 @@ export default function CheckInVerifyBookingRoute({
 		</Stack>
 	);
 }
-
-/*
-TODO: Promote scanning when available
-<Group h="fit-content">
-				<Button
-					variant="light"
-					h="auto"
-					p="md" 
-				>
-					<Stack align="center">
-						<IdentificationCardIcon size={230} />
-						<Text fw={600}>Introduce los datos manualmente</Text>
-					</Stack>
-				</Button>
-				<Divider orientation="vertical" />
-				<Button
-					variant="light"
-					h="auto"
-					p="md" 
-				>
-					<Stack align="center">
-						<TextboxIcon size={230} />
-						<Text fw={600}>Introduce los datos manualmente</Text>
-					</Stack>
-				</Button>
-			</Group>
-*/

@@ -168,7 +168,7 @@ export default function EditEmployee({
 						loading={isPending}
 						leftSection={<FloppyDiskIcon />}
 					>
-						{t(($) => $.common.buttons.save)}
+						{t(($) => $.buttons.save)}
 					</Button>
 				</Group>
 			</form>

@@ -9,6 +9,7 @@ import BasePhoneInput from "react-phone-number-input/input";
 
 import type { ReactNode } from "react";
 import type { Value } from "react-phone-number-input";
+import type { Props } from "react-phone-number-input/input";
 
 export function isValidPhoneNumber(error?: ReactNode) {
 	return (value: Value | undefined) => {
@@ -17,33 +18,33 @@ export function isValidPhoneNumber(error?: ReactNode) {
 	};
 }
 
-export default forwardRef(function PhoneInput(
-	{
-		onChange,
-		value,
-		defaultValue,
-		...props
-	}: InputBase.Props & {
-		value?: Value;
+type PhoneInputProps = Omit<
+	Props<React.ComponentProps<"input">>,
+	"onChange" | "inputComponent"
+> &
+	InputBase.Props & {
 		onChange?: (value?: Value) => void;
-		defaultValue?: Value;
-		readOnly?: boolean;
-	},
-	ref
-) {
-	const [_value, handleChange] = useUncontrolled({
-		value,
-		defaultValue,
-		finalValue: undefined,
-		onChange
-	});
-	return (
-		<BasePhoneInput
-			ref={ref}
-			value={_value}
-			onChange={handleChange}
-			inputComponent={InputBase}
-			{...props}
-		/>
-	);
-});
+	};
+
+export default forwardRef<HTMLInputElement, PhoneInputProps>(
+	function PhoneInput(
+		{ onChange, value, defaultValue, ...props }: PhoneInputProps,
+		ref
+	) {
+		const [_value, handleChange] = useUncontrolled({
+			value,
+			defaultValue,
+			finalValue: undefined,
+			onChange
+		});
+		return (
+			<BasePhoneInput
+				ref={ref}
+				value={_value}
+				onChange={handleChange}
+				inputComponent={InputBase}
+				{...props}
+			/>
+		);
+	}
+);

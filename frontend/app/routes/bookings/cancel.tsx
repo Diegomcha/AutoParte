@@ -52,7 +52,7 @@ export default function CancelBooking({
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.common.buttons.back)}
+					{t(($) => $.buttons.back)}
 				</Button>
 				<Button
 					color={t(($) => $.bookings.cancel.color)}

@@ -48,7 +48,7 @@ export default function AdminDeleteModal({
 					}}
 					color="gray"
 				>
-					{t(($) => $.common.buttons.cancel)}
+					{t(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color="red"
@@ -66,7 +66,7 @@ export default function AdminDeleteModal({
 					leftSection={<TrashIcon weight="bold" />}
 					loading={isDeleting}
 				>
-					{t(($) => $.common.buttons.delete)}
+					{t(($) => $.buttons.delete)}
 				</Button>
 			</Group>
 		</Modal>

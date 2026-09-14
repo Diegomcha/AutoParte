@@ -108,7 +108,7 @@ export default function NewAccommodation() {
 				</Stack>
 				<Group justify="right" mt="md">
 					<Button type="submit" loading={isCreating} leftSection={<PlusIcon />}>
-						{t(($) => $.common.buttons.create)}
+						{t(($) => $.buttons.create)}
 					</Button>
 				</Group>
 			</form>

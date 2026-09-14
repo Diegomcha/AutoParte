@@ -47,6 +47,7 @@ export default function CountrySelect({
 			checkIconPosition="right"
 			searchable
 			limit={50}
+			autoComplete="country-name"
 		/>
 	);
 }
