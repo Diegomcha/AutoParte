@@ -349,6 +349,16 @@ const queryFactory = {
 						})
 					).content ?? []
 			}),
+		orderedList: () =>
+			queryOptions({
+				queryKey: ["accommodations", { ordered: true }],
+				queryFn: async () =>
+					unwrapResponse(
+						await api.GET("/api/accommodations", {
+							params: { query: { page: 0, size: 0, sort: ["id,asc"] } }
+						})
+					).content ?? []
+			}),
 		pagedList: ({
 			page,
 			size,

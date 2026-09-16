@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router";
 
-import { ActionIcon, Modal, Scroller, Tabs, Text } from "@mantine/core";
+import { ActionIcon, Box, Modal, Scroller, Tabs, Text } from "@mantine/core";
 
 import { useBooking } from "..";
 import { PlusIcon, XIcon } from "@phosphor-icons/react";
@@ -89,7 +89,9 @@ export default function BookingPeople({
 					</Scroller>
 				</Tabs.List>
 			</Tabs>
-			<Outlet context={{ booking }} />
+			<Box maw={900}>
+				<Outlet context={{ booking }} />
+			</Box>
 		</Modal>
 	);
 }

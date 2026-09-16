@@ -137,9 +137,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	});
 
 	return (
-		<Center component="main" className="h-screen">
+		<Center component="main" h="100vh">
 			<Stack>
-				<p className="text-9xl font-black text-center">{status}</p>
+				<Text size="8rem" fw={900} ta="center">
+					{status}
+				</Text>
 				<Title ta="center">{message}</Title>
 				{showRetry && (
 					<>

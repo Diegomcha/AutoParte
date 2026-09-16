@@ -355,40 +355,37 @@ export default function BookingsPage({
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("date")}
 									/>
-									<Group align="end" gap="xs">
-										<NumberInput
-											key={form.key("numberOfPeople")}
-											name="numberOfPeople"
-											label={tBooking(($) => $.details.numberOfPeople.label)}
-											withAsterisk
-											min={1}
-											readOnly={!booking.canBeModified}
-											className="grow"
-											rightSection={
-												<Tooltip
-													label={t(($) =>
-														form.isDirty("numberOfPeople")
-															? $.index.people.buttonDisabled
-															: $.index.people.button
-													)}
+									<NumberInput
+										key={form.key("numberOfPeople")}
+										name="numberOfPeople"
+										label={tBooking(($) => $.details.numberOfPeople.label)}
+										withAsterisk
+										min={1}
+										readOnly={!booking.canBeModified}
+										rightSection={
+											<Tooltip
+												label={t(($) =>
+													form.isDirty("numberOfPeople")
+														? $.index.people.buttonDisabled
+														: $.index.people.button
+												)}
+											>
+												<ActionIcon
+													size="input-xs"
+													variant="default"
+													mr={"xs"}
+													component={
+														form.isDirty("numberOfPeople") ? undefined : Link
+													}
+													disabled={form.isDirty("numberOfPeople")}
+													to={`/accommodations/${accommodationId}/bookings/${bookingId}/people`}
 												>
-													<ActionIcon
-														size="input-xs"
-														variant="default"
-														mr={"xs"}
-														component={
-															form.isDirty("numberOfPeople") ? undefined : Link
-														}
-														disabled={form.isDirty("numberOfPeople")}
-														to={`/accommodations/${accommodationId}/bookings/${bookingId}/people`}
-													>
-														<UserListIcon />
-													</ActionIcon>
-												</Tooltip>
-											}
-											{...form.getInputProps("numberOfPeople")}
-										/>
-									</Group>
+													<UserListIcon />
+												</ActionIcon>
+											</Tooltip>
+										}
+										{...form.getInputProps("numberOfPeople")}
+									/>
 									<BooleanInputWithUndefined
 										key={form.key("internetConnection")}
 										name="internetConnection"
@@ -500,7 +497,7 @@ export default function BookingsPage({
 							{/* Communications log */}
 							<Fieldset
 								legend={tBooking(($) => $.communications.title)}
-								className="grow"
+								flex={1}
 								pr={8}
 							>
 								<ScrollArea.Autosize h="0" mih="100%" offsetScrollbars>

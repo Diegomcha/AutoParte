@@ -60,17 +60,14 @@ export default function CommunicationTimelineItem({
 					</ThemeIcon>
 				</Tooltip>
 			}
-			title={
-				<p
-					className={
-						["FAILED", "VOIDED"].includes(communication.status)
-							? "line-through"
-							: ""
-					}
-				>
-					{tCommunication(($) => $.types[communication.type])}
-				</p>
-			}
+			styles={{
+				itemTitle: {
+					textDecoration: ["FAILED", "VOIDED"].includes(communication.status)
+						? "line-through"
+						: undefined
+				}
+			}}
+			title={tCommunication(($) => $.types[communication.type])}
 		>
 			{communication.sentTimestamp && (
 				<Text size="sm" c="dark">

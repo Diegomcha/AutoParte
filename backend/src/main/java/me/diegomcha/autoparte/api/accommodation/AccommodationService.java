@@ -60,7 +60,7 @@ class AccommodationService {
                 // Employee
                 .map(emp -> accommodationMapper.toResponse(accommodationRepo.findByEmployeesId(emp.getId(), pageable)))
                 // Admin
-                .orElseGet(() -> accommodationMapper.toResponse(accommodationRepo.findAll(Pageable.unpaged())));
+                .orElseGet(() -> accommodationMapper.toResponse(accommodationRepo.findAll(pageable)));
     }
 
     /**

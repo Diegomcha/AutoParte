@@ -57,8 +57,8 @@ export default function LoginPage({
 	}
 
 	return (
-		<Center bg="dark" className="h-screen">
-			<Paper withBorder p="xl" className="w-full sm:max-w-md">
+		<Center bg="dark" h="100vh">
+			<Paper withBorder p="xl" w="100%" maw="28rem">
 				<Title ta="center" mb="lg">
 					{t(($) => $.auth.login.title)}
 				</Title>

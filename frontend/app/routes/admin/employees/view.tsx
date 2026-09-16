@@ -109,7 +109,7 @@ export default function ViewEmployee({
 										to={`/admin/accommodations/${accommodation.id}`}
 										key={accommodation.id}
 										variant="dot"
-										className="cursor-pointer!"
+										style={{ cursor: "pointer" }}
 									>
 										{accommodation.name}
 									</Badge>

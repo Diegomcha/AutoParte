@@ -1,4 +1,4 @@
-import { Code, DataList, Space, Stack, Title } from "@mantine/core";
+import { DataList, Space, Stack, Title } from "@mantine/core";
 
 import { useTranslation } from "react-i18next";
 

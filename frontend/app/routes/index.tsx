@@ -61,7 +61,7 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	}
 
 	const [accommodations, account, isAdmin] = await Promise.all([
-		queryClient.query(queryFactory.accommodations.list()),
+		queryClient.query(queryFactory.accommodations.orderedList()),
 		AuthService.getLoggedInUser(),
 		AuthService.isAdmin()
 	]);
@@ -80,9 +80,7 @@ export default function ProtectedLayout({
 }: Route.ComponentProps) {
 	const { t } = useTranslation("routes");
 	const { t: tBooking } = useTranslation("entities", { keyPrefix: "booking" });
-	const { t: tSchedule } = useTranslation("components", {
-		keyPrefix: "schedule"
-	});
+	const { t: tComponents } = useTranslation("components");
 	const { t: tCommon } = useTranslation();
 
 	const navigate = useNavigate();
@@ -280,7 +278,7 @@ export default function ProtectedLayout({
 	return (
 		<AppShell header={{ height: 60 }} padding="md">
 			<AppShell.Header px="md">
-				<Group justify="space-between" className="h-full">
+				<Group justify="space-between" h="100%">
 					<Title size="h2">{tCommon(($) => $.meta.name)}</Title>
 
 					<Menu
@@ -294,7 +292,10 @@ export default function ProtectedLayout({
 								leftSection={<UserCircleIcon size={16} />}
 								rightSection={
 									<CaretRightIcon
-										className={`${accountMenuOpened ? "rotate-90" : ""} transition-transform`}
+										className="transition-rotate"
+										style={{
+											rotate: accountMenuOpened ? "90deg" : "0deg"
+										}}
 									/>
 								}
 							>
@@ -399,8 +400,9 @@ export default function ProtectedLayout({
 								resources={resources}
 								locale={lang}
 								labels={{
-									...tSchedule(($) => $, { returnObjects: true }),
-									moreLabel: (count) => tSchedule(($) => $.moreLabel, { count })
+									...tComponents(($) => $.schedule, { returnObjects: true }),
+									moreLabel: (count) =>
+										tComponents(($) => $.schedule.moreLabel, { count })
 								}}
 							/>
 						</Splitter.Pane>

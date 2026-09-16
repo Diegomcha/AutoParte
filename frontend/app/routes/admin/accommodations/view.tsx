@@ -94,7 +94,7 @@ export default function ViewAccommodation({
 										to={`/admin/employees/${employee.id}`}
 										key={employee.id}
 										variant="dot"
-										className="cursor-pointer!"
+										style={{ cursor: "pointer" }}
 									>
 										{employee.name} &lt;{employee.email}&gt;
 									</Badge>
