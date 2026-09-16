@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.domain.person;
 
+import jakarta.annotation.Nullable;
 import lombok.*;
 import me.diegomcha.autoparte.core.validation.Validations;
 
@@ -13,6 +14,7 @@ import java.time.Instant;
 public class PersonalInfo {
 
     private static final int SPAIN_ADULT_AGE = 18;
+    private static final int SPAIN_MUST_SIGN_AGE = 16;
 
     public enum PersonalInfoGender {
         MALE, // H
@@ -62,21 +64,32 @@ public class PersonalInfo {
     }
 
     /**
-     * Checks if the personal information is complete based on the requirement of a second surname.
+     * Checks if the personal information is complete for check-in purposes.
      *
      * @param requiresSecondSurname Indicates whether a second surname is required for completeness.
-     * @return true if the personal information is complete; false otherwise.
+     * @return true if the personal information is complete for check-in; false otherwise.
      */
-    public boolean isComplete(boolean requiresSecondSurname) {
-        return !(requiresSecondSurname && (this.secondSurname == null || this.secondSurname.isBlank()));
+    public boolean isCompleteForCheckIn(boolean requiresSecondSurname) {
+        return birthDate != null && !(requiresSecondSurname && (this.secondSurname == null || this.secondSurname.isBlank()));
     }
 
     /**
      * Checks if the person is considered an adult based on their birthdate and the defined adult age in Spain.
      *
-     * @return true if the person is an adult; false otherwise.
+     * @return true if the person is an adult; false otherwise. May return null if birthDate is not set.
      */
-    public boolean isAdult() {
-        return this.birthDate != null && Duration.between(this.birthDate, Instant.now()).toDays() >= SPAIN_ADULT_AGE * 365;
+    public @Nullable Boolean isAdult() {
+        if (this.birthDate == null) return null;
+        return Duration.between(this.birthDate, Instant.now()).toDays() >= SPAIN_ADULT_AGE * 365;
+    }
+
+    /**
+     * Checks if the person is considered to need to setSignature documents based on their birthdate and the defined age in Spain.
+     *
+     * @return true if the person must setSignature; false otherwise. May return null if birthDate is not set.
+     */
+    public @Nullable Boolean mustSign() {
+        if (this.birthDate == null) return null;
+        return Duration.between(this.birthDate, Instant.now()).toDays() >= SPAIN_MUST_SIGN_AGE * 365;
     }
 }

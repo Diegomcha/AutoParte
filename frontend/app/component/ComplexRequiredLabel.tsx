@@ -9,14 +9,19 @@ interface ComplexRequiredAsteriskProps {
 export default function ComplexRequiredAsterisk({
 	action
 }: Readonly<ComplexRequiredAsteriskProps>) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("components", {
+		keyPrefix: "complexRequiredAsterisk"
+	});
+	const { t: tBookingRoute } = useTranslation("routes", {
+		keyPrefix: "bookings"
+	});
 
 	return (
-		<Tooltip label={t(($) => $.complexRequiredLabel.tooltips[action])}>
+		<Tooltip label={t(($) => $.tooltips[action])}>
 			<Text
 				component="span"
 				style={{ cursor: "help" }}
-				c={t(($) => $.bookings[action].color)}
+				c={tBookingRoute(($) => $[action].color)}
 				aria-hidden
 			>
 				{" "}

@@ -42,6 +42,9 @@ public interface BookingAPI {
     @Operation(summary = "Request self-check-in for a booking")
     void requestSelfCheckInForBooking(UUID accommodationId, UUID id) throws ResourceConflictException, ResourceNotFoundException;
 
+    @Operation(summary = "Terminate self-check-in request for a booking")
+    void terminateSelfCheckInRequestForBooking(UUID accommodationId, UUID id) throws ResourceConflictException, ResourceNotFoundException;
+
     @Operation(summary = "Check-in a booking for an accommodation")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Check-in processed successfully immediately"),

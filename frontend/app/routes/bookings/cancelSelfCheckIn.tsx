@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 
 import { Button, Group, Modal } from "@mantine/core";
 
-import { XIcon } from "@phosphor-icons/react";
+import { ChatSlashIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -10,7 +10,7 @@ import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
 
-import type { Route } from "./+types/cancel";
+import type { Route } from "./+types/cancelSelfCheckIn";
 
 export async function clientLoader({
 	params: { accommodationId, bookingId }
@@ -21,25 +21,28 @@ export async function clientLoader({
 		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
 	);
 
-	if (!booking.canBeCancelled)
+	if (!booking.selfCheckInRequested)
 		throw Validators.throwValidationErrorResponse(
-			"Booking is not in a state that allows cancellation."
+			"Booking is not in a state that allows canceling self-check-in."
 		);
 }
 
-export default function CancelBooking({
+export default function CancelSelfCheckInForBooking({
 	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
 	const { t } = useTranslation("routes", {
-		keyPrefix: "bookings.cancel"
+		keyPrefix: "bookings.cancelSelfCheckIn"
 	});
 	const { t: tCommon } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
 
 	const { mutate, isPending } = useMutation(
-		queryFactory.accommodations.bookings.cancel(accommodationId, bookingId)
+		queryFactory.accommodations.bookings.cancelSelfCheckIn(
+			accommodationId,
+			bookingId
+		)
 	);
 
 	return (
@@ -48,10 +51,10 @@ export default function CancelBooking({
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{tCommon(($) => $.buttons.back)}
+					{tCommon(($) => $.buttons.cancel)}
 				</Button>
 				<Button
-					leftSection={<XIcon weight="bold" />}
+					leftSection={<ChatSlashIcon weight="bold" />}
 					color={t(($) => $.color)}
 					loading={isPending}
 					onClick={() => {

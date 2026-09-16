@@ -38,28 +38,21 @@ export default function CommunicationTimelineItem({
 	communication,
 	...props
 }: Timeline.Item.Props & { communication: CommunicationDtoResponse }) {
-	const { t } = useTranslation();
+	const { t: tCommunication } = useTranslation("entities", {
+		keyPrefix: "booking.communications"
+	});
 
 	return (
 		<Timeline.Item
 			{...props}
 			bullet={
 				<Tooltip
-					label={t(
-						($) =>
-							$.bookings.properties.communications.status[communication.status]
-								.label
-					)}
+					label={tCommunication(($) => $.status[communication.status].label)}
 				>
 					<ThemeIcon
 						radius="xl"
 						size={22}
-						color={t(
-							($) =>
-								$.bookings.properties.communications.status[
-									communication.status
-								].color
-						)}
+						color={tCommunication(($) => $.status[communication.status].color)}
 					>
 						{communication.status === "SUCCEEDED"
 							? COMMUNICATION_TYPE_ICONS[communication.type]
@@ -75,16 +68,13 @@ export default function CommunicationTimelineItem({
 							: ""
 					}
 				>
-					{t(
-						($) =>
-							$.bookings.properties.communications.types[communication.type]
-					)}
+					{tCommunication(($) => $.types[communication.type])}
 				</p>
 			}
 		>
 			{communication.sentTimestamp && (
 				<Text size="sm" c="dark">
-					{t(($) => $.bookings.properties.communications.sentDate, {
+					{tCommunication(($) => $.sentDate, {
 						date: TimeService(communication.sentTimestamp).fromNow()
 					})}
 				</Text>

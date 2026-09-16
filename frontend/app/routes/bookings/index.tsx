@@ -3,6 +3,7 @@ import { Link, Outlet, useNavigate, useOutletContext } from "react-router";
 
 import {
 	ActionIcon,
+	Box,
 	Button,
 	DataList,
 	Divider,
@@ -28,6 +29,7 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import {
 	ArrowUUpLeftIcon,
 	CaretLeftIcon,
+	ChatSlashIcon,
 	CheckCircleIcon,
 	ClockIcon,
 	ExportIcon,
@@ -35,6 +37,7 @@ import {
 	FileCsvIcon,
 	FilePdfIcon,
 	FloppyDiskIcon,
+	LinkIcon,
 	PaperPlaneTiltIcon,
 	PulseIcon,
 	StarIcon,
@@ -52,6 +55,7 @@ import CommunicationTimelineItem from "~/component/CommunicationTimelineItem";
 import ComplexRequiredAsterisk from "~/component/ComplexRequiredLabel";
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
+import NotificationsService from "~/services/NotificationsService";
 import TimeService from "~/services/TimeService";
 import Validators from "~/services/Validators";
 
@@ -75,7 +79,16 @@ export async function clientLoader({
 export default function BookingsPage({
 	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "bookings"
+	});
+	const { t: tCommon } = useTranslation();
+	const { t: tBooking } = useTranslation("entities", {
+		keyPrefix: "booking"
+	});
+	const { t: tEntity } = useTranslation("entities", {
+		keyPrefix: "common"
+	});
 	const navigate = useNavigate();
 
 	const { opened, close } = useStaticModalTransition(() => void navigate(`/`));
@@ -112,18 +125,22 @@ export default function BookingsPage({
 		validate: {
 			date: (value) =>
 				(value[0] == null || value[1] == null) &&
-				t(($) => $.bookings.properties.details.date.errors.undefined),
+				tBooking(($) => $.details.date.errors.undefined),
 			numberOfPeople: isNotEmpty(
-				t(($) => $.bookings.properties.details.numberOfPeople.errors.undefined)
+				tBooking(($) => $.details.numberOfPeople.errors.undefined)
 			),
 			payment: {
+				type: (value) => {
+					if (booking.selfCheckInRequested && value == null)
+						return tBooking(
+							($) => $.payment.type.errors.undefinedWhenSelfCheckInRequested
+						);
+				},
 				expiryDate: (value, values) => {
 					if (values.payment.type !== "CREDIT_CARD") return null;
 
 					if (value && !TimeService(value, "MMYY").isValid())
-						return t(
-							($) => $.bookings.properties.payment.expiryDate.errors.invalid
-						);
+						return tBooking(($) => $.payment.expiryDate.errors.invalid);
 					if (
 						value &&
 						values.payment.date &&
@@ -131,10 +148,8 @@ export default function BookingsPage({
 							TimeService(values.payment.date)
 						)
 					)
-						return t(
-							($) =>
-								$.bookings.properties.payment.expiryDate.errors
-									.beforePaymentDate
+						return tBooking(
+							($) => $.payment.expiryDate.errors.beforePaymentDate
 						);
 				}
 			}
@@ -195,11 +210,7 @@ export default function BookingsPage({
 								if (!success)
 									form.setFieldError(
 										"numberOfPeople",
-										t(
-											($) =>
-												$.bookings.properties.details.numberOfPeople.errors
-													.tooFew
-										)
+										tBooking(($) => $.details.numberOfPeople.errors.tooFew)
 									);
 								// Handle success
 								else form.resetDirty();
@@ -216,10 +227,10 @@ export default function BookingsPage({
 							onClick={close}
 							leftSection={<CaretLeftIcon weight="bold" size={16} />}
 						>
-							{t(($) => $.buttons.back)}
+							{tCommon(($) => $.buttons.back)}
 						</Button>
 						<Title order={2} size="h3" fw="normal">
-							{t(($) => $.bookings.edit.title)}
+							{t(($) => $.index.title)}
 						</Title>
 						<Group>
 							{booking.canBeModified ? (
@@ -232,7 +243,7 @@ export default function BookingsPage({
 													color="grape"
 													loading={isPending}
 												>
-													{t(($) => $.buttons.export)}
+													{tCommon(($) => $.buttons.export)}
 												</Button>
 											</Menu.Target>
 											<Menu.Dropdown>
@@ -259,7 +270,7 @@ export default function BookingsPage({
 											leftSection={<ArrowUUpLeftIcon weight="bold" size={16} />}
 											loading={isPending}
 										>
-											{t(($) => $.buttons.reset)}
+											{tCommon(($) => $.buttons.reset)}
 										</Button>
 									)}
 									<Button
@@ -269,16 +280,14 @@ export default function BookingsPage({
 										disabled={!form.isDirty()}
 										loading={isPending}
 									>
-										{t(($) => $.buttons.save)}
+										{tCommon(($) => $.buttons.save)}
 									</Button>
 								</>
 							) : (
-								<Tooltip label={t(($) => $.bookings.edit.readOnly.description)}>
+								<Tooltip label={t(($) => $.index.readOnly.description)}>
 									<Group c="dark" p="xs" gap="xs">
 										<EyeIcon weight="bold" size={18} />
-										<Text size="sm">
-											{t(($) => $.bookings.edit.readOnly.title)}
-										</Text>
+										<Text size="sm">{t(($) => $.index.readOnly.title)}</Text>
 									</Group>
 								</Tooltip>
 							)}
@@ -288,7 +297,7 @@ export default function BookingsPage({
 					{/* Form */}
 					<Group align="stretch">
 						<Stack>
-							<Fieldset legend={t(($) => $.bookings.properties.details.title)}>
+							<Fieldset legend={tBooking(($) => $.details.title)}>
 								<DataList
 									orientation="vertical"
 									style={{
@@ -302,7 +311,7 @@ export default function BookingsPage({
 										<DataList.ItemLabel>
 											<Group gap={4}>
 												<PulseIcon />
-												{t(($) => $.bookings.properties.details.status.label)}
+												{tBooking(($) => $.details.status.label)}
 											</Group>
 										</DataList.ItemLabel>
 										<DataList.ItemValue>
@@ -313,7 +322,7 @@ export default function BookingsPage({
 										<DataList.ItemLabel>
 											<Group gap={4}>
 												<ClockIcon />
-												{t(($) => $.common.properties.createdAt)}
+												{tEntity(($) => $.createdAt.label)}
 											</Group>
 										</DataList.ItemLabel>
 										<DataList.ItemValue>
@@ -324,7 +333,7 @@ export default function BookingsPage({
 										<DataList.ItemLabel>
 											<Group gap={4}>
 												<ClockIcon />
-												{t(($) => $.common.properties.updatedAt)}
+												{tEntity(($) => $.updatedAt.label)}
 											</Group>
 										</DataList.ItemLabel>
 										<DataList.ItemValue>
@@ -338,7 +347,7 @@ export default function BookingsPage({
 										miw="16.5rem"
 										key={form.key("date")}
 										name="date"
-										label={t(($) => $.bookings.properties.details.date.label)}
+										label={tBooking(($) => $.details.date.label)}
 										type="range"
 										allowSingleDateInRange={false}
 										highlightToday
@@ -350,10 +359,7 @@ export default function BookingsPage({
 										<NumberInput
 											key={form.key("numberOfPeople")}
 											name="numberOfPeople"
-											label={t(
-												($) =>
-													$.bookings.properties.details.numberOfPeople.label
-											)}
+											label={tBooking(($) => $.details.numberOfPeople.label)}
 											withAsterisk
 											min={1}
 											readOnly={!booking.canBeModified}
@@ -362,8 +368,8 @@ export default function BookingsPage({
 												<Tooltip
 													label={t(($) =>
 														form.isDirty("numberOfPeople")
-															? $.bookings.people.buttonDisabled
-															: $.bookings.people.button
+															? $.index.people.buttonDisabled
+															: $.index.people.button
 													)}
 												>
 													<ActionIcon
@@ -386,38 +392,33 @@ export default function BookingsPage({
 									<BooleanInputWithUndefined
 										key={form.key("internetConnection")}
 										name="internetConnection"
-										label={t(
-											($) =>
-												$.bookings.properties.details.internetConnection.label
-										)}
+										label={tBooking(($) => $.details.internetConnection.label)}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("internetConnection")}
 									/>
 									<NumberInput
 										key={form.key("numberOfRooms")}
 										name="numberOfRooms"
-										label={t(
-											($) => $.bookings.properties.details.numberOfRooms.label
-										)}
+										label={tBooking(($) => $.details.numberOfRooms.label)}
 										min={1}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("numberOfRooms")}
 									/>
 								</SimpleGrid>
 							</Fieldset>
-							<Fieldset legend={t(($) => $.bookings.properties.payment.title)}>
+							<Fieldset legend={tBooking(($) => $.payment.title)}>
 								<SimpleGrid cols={2} verticalSpacing="xs">
 									<Select
 										key={form.key("payment.type")}
 										name="payment.type"
 										label={
 											<>
-												{t(($) => $.bookings.properties.payment.type.label)}
+												{tBooking(($) => $.payment.type.label)}
 												<ComplexRequiredAsterisk action="confirm" />
 											</>
 										}
 										data={Object.entries(
-											t(($) => $.bookings.properties.payment.type.options, {
+											tBooking(($) => $.payment.type.options, {
 												returnObjects: true
 											})
 										)
@@ -431,27 +432,25 @@ export default function BookingsPage({
 									<DateInput
 										key={form.key("payment.date")}
 										name="payment.date"
-										label={t(($) => $.bookings.properties.payment.date.label)}
-										valueFormat={t(
-											($) => $.bookings.properties.payment.date.format
-										)}
+										label={tBooking(($) => $.payment.date.label)}
+										valueFormat={tBooking(($) => $.payment.date.format)}
 										clearable
 										presets={[
 											{
 												value: TimeService().format("YYYY-MM-DD"),
-												label: t(($) => $.common.dates.today)
+												label: tCommon(($) => $.dates.today)
 											},
 											{
 												value: TimeService(booking.startTime).format(
 													"YYYY-MM-DD"
 												),
-												label: t(($) => $.common.dates.checkInDate)
+												label: tCommon(($) => $.dates.checkInDate)
 											},
 											{
 												value: TimeService(booking.endTime).format(
 													"YYYY-MM-DD"
 												),
-												label: t(($) => $.common.dates.checkOutDate)
+												label: tCommon(($) => $.dates.checkOutDate)
 											}
 										]}
 										highlightToday
@@ -462,7 +461,7 @@ export default function BookingsPage({
 									<TextInput
 										key={form.key("payment.mean")}
 										name="payment.mean"
-										label={t(($) => $.bookings.properties.payment.mean)}
+										label={tBooking(($) => $.payment.mean)}
 										disabled={form.values.payment.type == null}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("payment.mean")}
@@ -470,7 +469,7 @@ export default function BookingsPage({
 									<TextInput
 										key={form.key("payment.holder")}
 										name="payment.holder"
-										label={t(($) => $.bookings.properties.payment.holder)}
+										label={tBooking(($) => $.payment.holder)}
 										disabled={form.values.payment.type == null}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("payment.holder")}
@@ -478,13 +477,10 @@ export default function BookingsPage({
 									<MaskInput
 										key={form.key("payment.expiryDate") + maskKey.toString()}
 										name="payment.expiryDate"
-										label={t(
-											($) => $.bookings.properties.payment.expiryDate.label
-										)}
+										label={tBooking(($) => $.payment.expiryDate.label)}
 										mask="99 / 99"
-										placeholder={t(
-											($) =>
-												$.bookings.properties.payment.expiryDate.placeholder
+										placeholder={tBooking(
+											($) => $.payment.expiryDate.placeholder
 										)}
 										disabled={form.values.payment.type !== "CREDIT_CARD"}
 										defaultValue={form.values.payment.expiryDate}
@@ -503,7 +499,7 @@ export default function BookingsPage({
 						<Stack>
 							{/* Communications log */}
 							<Fieldset
-								legend={t(($) => $.bookings.properties.communications.title)}
+								legend={tBooking(($) => $.communications.title)}
 								className="grow"
 								pr={8}
 							>
@@ -522,10 +518,7 @@ export default function BookingsPage({
 										{/* Creation date */}
 										<Timeline.Item
 											bullet={<StarIcon weight="fill" />}
-											title={t(
-												($) =>
-													$.bookings.properties.communications.types.CREATED
-											)}
+											title={tBooking(($) => $.communications.types.CREATED)}
 										>
 											<Text size="sm" c="dark">
 												{TimeService(booking.createdAt).fromNow()}
@@ -544,82 +537,107 @@ export default function BookingsPage({
 							<Stack
 								gap="xs"
 								hidden={
-									booking.status !== "CONFIRMATION_READY" &&
-									booking.status !== "CHECK_IN_READY" &&
-									(booking.selfCheckInRequested || !booking.canBeModified) &&
-									["PENDING_CANCELLATION", "CANCELLED"].includes(booking.status)
+									!booking.canBeConfirmed &&
+									!booking.canBeCheckedIn &&
+									!booking.canSelfCheckInBeRequested &&
+									!booking.selfCheckInRequested &&
+									!booking.canBeDeleted &&
+									!booking.canBeCancelled
 								}
 							>
 								<Button
 									component={!form.isDirty() ? Link : undefined}
 									to={`/accommodations/${accommodationId}/bookings/${bookingId}/confirm`}
 									leftSection={<CheckCircleIcon weight="bold" />}
-									color={t(($) => $.bookings.confirm.color)}
-									hidden={booking.status !== "CONFIRMATION_READY"}
+									color={t(($) => $.confirm.color)}
+									hidden={!booking.canBeConfirmed}
 									disabled={form.isDirty()}
 									loading={isPending}
 								>
-									{t(($) => $.bookings.confirm.button)}
+									{t(($) => $.confirm.button)}
 								</Button>
 								<Button
 									component={!form.isDirty() ? Link : undefined}
 									to={`/accommodations/${accommodationId}/bookings/${bookingId}/check-in`}
 									leftSection={<SuitcaseIcon weight="bold" />}
-									color={t(($) => $.bookings.checkIn.color)}
-									hidden={booking.status !== "CHECK_IN_READY"}
+									color={t(($) => $.checkIn.color)}
+									hidden={!booking.canBeCheckedIn}
 									disabled={form.isDirty()}
 									loading={isPending}
 								>
-									{t(($) => $.bookings.checkIn.button)}
+									{t(($) => $.checkIn.button)}
 								</Button>
 								<Button
 									component={!form.isDirty() ? Link : undefined}
 									to={`/accommodations/${accommodationId}/bookings/${bookingId}/request-self-check-in`}
 									leftSection={<PaperPlaneTiltIcon weight="bold" />}
-									color={t(($) => $.bookings.requestSelfCheckIn.color)}
-									hidden={
-										booking.selfCheckInRequested || !booking.canBeModified
-									}
+									color={t(($) => $.requestSelfCheckIn.color)}
+									hidden={!booking.canSelfCheckInBeRequested}
 									disabled={form.isDirty()}
 									loading={isPending}
 								>
-									{t(($) => $.bookings.requestSelfCheckIn.button)}
+									{t(($) => $.requestSelfCheckIn.button)}
 								</Button>
+								<Box hidden={!booking.selfCheckInRequested}>
+									<Button.Group>
+										<Button
+											color={t(($) => $.requestSelfCheckIn.color)}
+											disabled={form.isDirty()}
+											loading={isPending}
+											onClick={() => {
+												NotificationsService.success(
+													t(($) => $.requestSelfCheckIn.linkCopied)
+												);
+												void navigator.clipboard.writeText(
+													`${window.location.origin}/check-in/${accommodationId}/${bookingId}`
+												);
+											}}
+										>
+											<LinkIcon weight="bold" />
+										</Button>
+										<Button
+											component={!form.isDirty() ? Link : undefined}
+											to={`/accommodations/${accommodationId}/bookings/${bookingId}/cancel-self-check-in`}
+											leftSection={<ChatSlashIcon weight="bold" />}
+											color={t(($) => $.cancelSelfCheckIn.color)}
+											disabled={form.isDirty()}
+											loading={isPending}
+										>
+											{t(($) => $.cancelSelfCheckIn.button)}
+										</Button>
+									</Button.Group>
+								</Box>
+
 								<Divider
 									hidden={
-										(booking.status !== "CONFIRMATION_READY" &&
-											booking.status !== "CHECK_IN_READY" &&
-											(booking.selfCheckInRequested ||
-												!booking.canBeModified)) ||
-										["PENDING_CANCELLATION", "CANCELLED"].includes(
-											booking.status
-										)
+										(!booking.canBeConfirmed &&
+											!booking.canBeCheckedIn &&
+											!booking.canSelfCheckInBeRequested &&
+											!booking.selfCheckInRequested) ||
+										(!booking.canBeDeleted && !booking.canBeCancelled)
 									}
 								/>
 								<Button
 									component={!form.isDirty() ? Link : undefined}
-									to={`/accommodations/${accommodationId}/bookings/${bookingId}/${booking.canBeDeleted ? "delete" : "cancel"}`}
-									leftSection={
-										booking.canBeDeleted ? (
-											<TrashIcon weight="bold" />
-										) : (
-											<XIcon weight="bold" />
-										)
-									}
-									color={t(($) =>
-										booking.canBeDeleted
-											? $.bookings.delete.color
-											: $.bookings.cancel.color
-									)}
+									to={`/accommodations/${accommodationId}/bookings/${bookingId}/delete`}
+									leftSection={<TrashIcon weight="bold" />}
+									color={t(($) => $.delete.color)}
 									disabled={form.isDirty()}
-									hidden={["PENDING_CANCELLATION", "CANCELLED"].includes(
-										booking.status
-									)}
+									hidden={!booking.canBeDeleted}
 									loading={isPending}
 								>
-									{booking.canBeDeleted
-										? t(($) => $.bookings.delete.button)
-										: t(($) => $.bookings.cancel.button)}
+									{t(($) => $.delete.button)}
+								</Button>
+								<Button
+									component={!form.isDirty() ? Link : undefined}
+									to={`/accommodations/${accommodationId}/bookings/${bookingId}/cancel`}
+									leftSection={<XIcon weight="bold" />}
+									color={t(($) => $.cancel.color)}
+									disabled={form.isDirty()}
+									hidden={!booking.canBeCancelled}
+									loading={isPending}
+								>
+									{t(($) => $.cancel.button)}
 								</Button>
 							</Stack>
 						</Stack>

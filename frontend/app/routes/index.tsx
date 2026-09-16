@@ -16,7 +16,12 @@ import {
 } from "@mantine/core";
 import { ResourcesSchedule } from "@mantine/schedule";
 
-import { CaretRightIcon, UserCircleIcon } from "@phosphor-icons/react";
+import {
+	CaretRightIcon,
+	ChatSlashIcon,
+	PaperPlaneTiltIcon,
+	UserCircleIcon
+} from "@phosphor-icons/react";
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import sortBy from "lodash/sortBy";
 import { DataTable, useDataTableColumns } from "mantine-datatable";
@@ -24,6 +29,7 @@ import { useTranslation } from "react-i18next";
 
 import BookingHoverCard from "~/component/BookingHoverCard";
 import BookingStatusBadge from "~/component/BookingStatusBadge";
+import BooleanBadge from "~/component/BooleanBadge";
 import WifiBadge from "~/component/WifiBadge";
 import { lang } from "~/i18n";
 import {
@@ -72,7 +78,13 @@ const COLUMNS_STATE_KEY = "bookings-table-columns";
 export default function ProtectedLayout({
 	loaderData: { accommodations, account, isAdmin }
 }: Route.ComponentProps) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes");
+	const { t: tBooking } = useTranslation("entities", { keyPrefix: "booking" });
+	const { t: tSchedule } = useTranslation("components", {
+		keyPrefix: "schedule"
+	});
+	const { t: tCommon } = useTranslation();
+
 	const navigate = useNavigate();
 
 	const [accountMenuOpened, setAccountMenuOpened] = useState(false);
@@ -117,11 +129,11 @@ export default function ProtectedLayout({
 			bookings.map<ScheduleEventData>((booking) => ({
 				resourceId: accommodation.id,
 				id: booking.id,
-				title: t(
+				title: tBooking(
 					($) =>
 						booking.holderName
-							? $.bookings.properties.details.name.withHolder
-							: $.bookings.properties.details.name.noHolder,
+							? $.details.name.withHolder
+							: $.details.name.noHolder,
 					{
 						status: booking.status,
 						numberOfPeople: booking.numberOfPeople,
@@ -130,10 +142,7 @@ export default function ProtectedLayout({
 				),
 				start: TimeService(booking.startTime).toDate(),
 				end: TimeService(booking.endTime).toDate(),
-				color: t(
-					($) =>
-						$.bookings.properties.details.status.states[booking.status].color
-				),
+				color: tBooking(($) => $.details.status.states[booking.status].color),
 				display: booking.canBeModified ? "default" : "background",
 				payload: booking
 			}))
@@ -171,15 +180,31 @@ export default function ProtectedLayout({
 				sortable: true,
 				resizable: true,
 				accessor: "accommodation",
-				title: t(($) => $.bookings.properties.details.accommodation),
+				title: tBooking(($) => $.details.accommodation.label),
 				render: (booking) => booking.accommodation.name
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
+				accessor: "selfCheckInRequested",
+				title: tBooking(($) => $.selfCheckInRequested.label),
+				render: (booking) => (
+					<BooleanBadge
+						value={booking.selfCheckInRequested}
+						icons={{
+							true: <PaperPlaneTiltIcon weight="bold" />,
+							false: <ChatSlashIcon weight="bold" />
+						}}
+					/>
+				)
+			},
+			{
+				draggable: true,
+				sortable: true,
+				resizable: true,
 				accessor: "status",
-				title: t(($) => $.bookings.properties.details.status.label),
+				title: tBooking(($) => $.details.status.label),
 				render: (booking) => <BookingStatusBadge status={booking.status} />
 			},
 			{
@@ -187,17 +212,16 @@ export default function ProtectedLayout({
 				sortable: true,
 				resizable: true,
 				accessor: "holderName",
-				title: t(($) => $.bookings.properties.details.holderName.label),
+				title: tBooking(($) => $.details.holderName.label),
 				render: (booking) =>
-					booking.holderName ??
-					t(($) => $.bookings.properties.details.holderName.undefined)
+					booking.holderName ?? tBooking(($) => $.details.holderName.undefined)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
 				accessor: "startTime",
-				title: t(($) => $.bookings.properties.details.startTime),
+				title: tBooking(($) => $.details.startTime.label),
 				render: (booking) => TimeService(booking.startTime).format("LLLL")
 			},
 			{
@@ -205,7 +229,7 @@ export default function ProtectedLayout({
 				sortable: true,
 				resizable: true,
 				accessor: "endTime",
-				title: t(($) => $.bookings.properties.details.endTime),
+				title: tBooking(($) => $.details.endTime.label),
 				render: (booking) => TimeService(booking.endTime).format("LLLL")
 			},
 			{
@@ -213,24 +237,25 @@ export default function ProtectedLayout({
 				sortable: true,
 				resizable: true,
 				accessor: "numberOfPeople",
-				title: t(($) => $.bookings.properties.details.numberOfPeople.label)
+				title: tBooking(($) => $.details.numberOfPeople.label)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
 				accessor: "numberOfRooms",
-				title: t(($) => $.bookings.properties.details.numberOfRooms.label),
+				title: tBooking(($) => $.details.numberOfRooms.label),
 				render: (booking) =>
-					booking.numberOfRooms ??
-					t(($) => $.bookings.properties.details.numberOfRooms.undefined)
+					tBooking(($) => $.details.numberOfRooms.value, {
+						count: booking.numberOfRooms ?? 0
+					})
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
 				accessor: "internetConnection",
-				title: t(($) => $.bookings.properties.details.internetConnection.label),
+				title: tBooking(($) => $.details.internetConnection.label),
 				render: (booking) => <WifiBadge value={booking.internetConnection} />
 			}
 		]
@@ -256,7 +281,7 @@ export default function ProtectedLayout({
 		<AppShell header={{ height: 60 }} padding="md">
 			<AppShell.Header px="md">
 				<Group justify="space-between" className="h-full">
-					<Title size="h2">{t(($) => $.meta.name)}</Title>
+					<Title size="h2">{tCommon(($) => $.meta.name)}</Title>
 
 					<Menu
 						shadow="xs"
@@ -281,13 +306,13 @@ export default function ProtectedLayout({
 							{isAdmin && (
 								<>
 									<Menu.Item component={Link} to="/admin">
-										{t(($) => $.header.admin)}
+										{tCommon(($) => $.header.admin)}
 									</Menu.Item>
 									<Menu.Divider />
 								</>
 							)}
 							<Menu.Item color="red" component={Link} to="/auth/logout">
-								{t(($) => $.header.logout)}
+								{tCommon(($) => $.header.logout)}
 							</Menu.Item>
 						</Menu.Dropdown>
 					</Menu>
@@ -299,8 +324,8 @@ export default function ProtectedLayout({
 						<Stack align="center">
 							<Text ta="center" size="lg">
 								{isAdmin
-									? t(($) => $.bookings.errors.noAccommodationsAdmin)
-									: t(($) => $.bookings.errors.noAccommodations)}
+									? t(($) => $.index.errors.noAccommodationsAdmin)
+									: t(($) => $.index.errors.noAccommodations)}
 							</Text>
 						</Stack>
 					</Center>
@@ -343,7 +368,7 @@ export default function ProtectedLayout({
 								onEventDrop={({ newEnd, newStart, resourceId, event }) => {
 									if (event.resourceId !== resourceId)
 										NotificationsService.error(
-											t(($) => $.bookings.errors.cannotChangeAccommodation)
+											t(($) => $.index.errors.cannotChangeAccommodation)
 										);
 									else
 										updateBookingRange({
@@ -374,22 +399,22 @@ export default function ProtectedLayout({
 								resources={resources}
 								locale={lang}
 								labels={{
-									...t(($) => $.schedule, { returnObjects: true }),
-									moreLabel: (count) =>
-										t(($) => $.schedule.moreLabel, { count })
+									...tSchedule(($) => $, { returnObjects: true }),
+									moreLabel: (count) => tSchedule(($) => $.moreLabel, { count })
 								}}
 							/>
 						</Splitter.Pane>
 						<Splitter.Pane defaultSize={70} min={10} collapsible mt={"sm"}>
 							<DataTable
 								height="100%"
-								noRecordsText={t(($) => $.bookings.errors.noBookingsInPeriod)}
+								noRecordsText={t(($) => $.index.errors.noBookingsInPeriod)}
 								storeColumnsKey={COLUMNS_STATE_KEY}
 								columns={effectiveColumns}
 								records={tableRecords}
 								onRowClick={({ record: booking }) => {
 									showBookingDetails(booking.accommodation.id, booking.id);
 								}}
+								highlightOnHover
 								sortStatus={tableSortStatus}
 								onSortStatusChange={setTableSortStatus}
 							/>

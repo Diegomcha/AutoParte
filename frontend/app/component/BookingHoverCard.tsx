@@ -11,18 +11,18 @@ import type { BookingDtoResponse } from "~/@types/api";
 export default function BookingHoverCard({
 	booking
 }: Readonly<{ booking: BookingDtoResponse }>) {
-	const { t } = useTranslation();
+	const { t: tBooking } = useTranslation("entities", { keyPrefix: "booking" });
 
 	return (
 		<Stack gap="xs">
 			<Group gap="sm">
 				<BoookingStatusBadge status={booking.status} />
 				<Text fw={"bold"} size="sm">
-					{t(
+					{tBooking(
 						($) =>
 							booking.holderName
-								? $.bookings.properties.details.name.withHolder
-								: $.bookings.properties.details.name.noHolder,
+								? $.details.name.withHolder
+								: $.details.name.noHolder,
 						{
 							status: booking.status,
 							numberOfPeople: booking.numberOfPeople,

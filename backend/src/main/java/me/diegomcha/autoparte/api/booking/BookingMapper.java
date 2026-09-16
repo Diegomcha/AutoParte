@@ -19,6 +19,10 @@ abstract class BookingMapper {
 
     @Mapping(target = "canBeModified", expression = "java(booking.canBeModified())")
     @Mapping(target = "canBeDeleted", expression = "java(booking.canBeDeleted())")
+    @Mapping(target = "canBeConfirmed", expression = "java(booking.canBeConfirmed())")
+    @Mapping(target = "canBeCheckedIn", expression = "java(booking.canBeCheckedIn())")
+    @Mapping(target = "canBeCancelled", expression = "java(booking.canBeCancelled())")
+    @Mapping(target = "canSelfCheckInBeRequested", expression = "java(booking.canSelfCheckInBeRequested())")
     @Mapping(target = "holderName", source = ".", qualifiedByName = "mapHolderName")
     @Mapping(target = "accommodationName", expression = "java(booking.getAccommodation().getName())")
     public abstract BookingDtoResponse toResponse(Booking booking);

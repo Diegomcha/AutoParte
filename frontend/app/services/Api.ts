@@ -23,6 +23,7 @@ import type {
 	EmployeeDtoCreate,
 	EmployeeDtoPatch,
 	EmployeeDtoResponse,
+	operations,
 	PageMetadata,
 	paths,
 	PersonDtoRequest,
@@ -758,7 +759,24 @@ const queryFactory = {
 					mutationFn: async () =>
 						unwrapResponse(
 							await api.POST(
-								"/api/accommodations/{accommodationId}/bookings/{id}/request-self-check-in",
+								"/api/accommodations/{accommodationId}/bookings/{id}/self-check-in",
+								{
+									params: { path: { accommodationId, id: bookingId } }
+								}
+							)
+						),
+					onSuccess: async () => {
+						await queryClient.invalidateQueries(
+							queryFactory.accommodations.bookings.list(accommodationId)
+						);
+					}
+				}),
+			cancelSelfCheckIn: (accommodationId: string, bookingId: string) =>
+				mutationOptions({
+					mutationFn: async () =>
+						unwrapResponse(
+							await api.DELETE(
+								"/api/accommodations/{accommodationId}/bookings/{id}/self-check-in",
 								{
 									params: { path: { accommodationId, id: bookingId } }
 								}
@@ -909,6 +927,83 @@ const queryFactory = {
 								)
 							);
 						}
+					}),
+				getSignature: (
+					accommodationId: string,
+					bookingId: string,
+					personId: string
+				) =>
+					queryOptions({
+						queryKey: [
+							...queryFactory.accommodations.bookings.people.detail(
+								accommodationId,
+								bookingId,
+								personId
+							).queryKey,
+							"signature"
+						],
+						queryFn: async () => {
+							const res = await api.GET(
+								"/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}/signature",
+								{
+									params: {
+										path: {
+											accommodationId,
+											bookingId,
+											id: personId
+										}
+									}
+								}
+							);
+
+							// Handle 404 Not Found response (signature not found)
+							if (
+								res.response.status === 404 &&
+								(res.error as ProblemDetail).detail?.includes("Signature")
+							)
+								return null;
+
+							return unwrapResponse(res);
+						}
+					}),
+
+				sign: (accommodationId: string, bookingId: string, personId: string) =>
+					mutationOptions({
+						mutationFn: async (
+							signaturePaths: operations["addSignature"]["requestBody"]["content"]["application/json"]
+						) =>
+							await Promise.all([
+								api.POST(
+									"/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}/signature",
+									{
+										params: {
+											path: {
+												accommodationId,
+												bookingId,
+												id: personId
+											}
+										},
+										body: signaturePaths
+									}
+								)
+							]),
+						onSuccess: async () => {
+							await Promise.all([
+								queryClient.invalidateQueries(
+									queryFactory.accommodations.bookings.people.list(
+										accommodationId,
+										bookingId
+									)
+								),
+								queryClient.invalidateQueries(
+									queryFactory.accommodations.bookings.people.getSignature(
+										accommodationId,
+										bookingId,
+										personId
+									)
+								)
+							]);
+						}
 					})
 			},
 			addresses: {
@@ -1010,9 +1105,10 @@ const queryFactory = {
 								queryFn: async () =>
 									unwrapResponse(
 										await api.GET(
-											`/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities/{municipalityCode}/postal-codes`,
+											"/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities/{municipalityCode}/postal-codes",
 											{
 												params: {
+													// @ts-expect-error: The generated types for the API are incorrect, as they don't include the municipalityCode in the path parameters.
 													path: {
 														provinceCode,
 														municipalityCode

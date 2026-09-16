@@ -2,7 +2,9 @@
 	"common": {
 		"id": {
 			"label": "Identificador"
-		}
+		},
+		"createdAt": { "label": "Fecha de creación" },
+		"updatedAt": { "label": "Fecha de actualización" }
 	},
 	"booking": {
 		"details": {
@@ -108,6 +110,9 @@
 					"GIFT_CARD": "Tarjeta regalo",
 					"ON_SITE": "Pago en el alojamiento",
 					"OTHER": "Otro"
+				},
+				"errors": {
+					"undefinedWhenSelfCheckInRequested": "El tipo de pago es obligatorio cuando se ha solicitado el auto-registro\nSi lo deseas puedes cancelar la solicitud de auto-registro para eliminarlo"
 				}
 			},
 			"mean": "Medio",
@@ -160,6 +165,9 @@
 				"CHECKIN": "Registro de la entrada",
 				"CANCELLATION": "Cancelación de la reserva"
 			}
+		},
+		"selfCheckInRequested": {
+			"label": "Auto-registro solicitado"
 		}
 	},
 	"person": {

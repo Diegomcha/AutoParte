@@ -78,14 +78,6 @@ export default function CheckInVerifyBookingRoute() {
 				<DataList flex={1} size="md" gap="md" labelWidth={150}>
 					<DataList.Item>
 						<DataList.ItemLabel>
-							{tEntities(($) => $.common.id.label)}
-						</DataList.ItemLabel>
-						<DataList.ItemValue>
-							<Code>{booking.humanReadableId}</Code>
-						</DataList.ItemValue>
-					</DataList.Item>
-					<DataList.Item>
-						<DataList.ItemLabel>
 							{tEntities(($) => $.booking.details.accommodation.label)}
 						</DataList.ItemLabel>
 						<DataList.ItemValue>{booking.accommodationName}</DataList.ItemValue>

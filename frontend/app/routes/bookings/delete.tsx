@@ -1,4 +1,3 @@
-import { useRef } from "react";
 import { useNavigate } from "react-router";
 
 import { Button, Group, Modal } from "@mantine/core";
@@ -11,7 +10,7 @@ import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
 
-import type { Route } from "./+types/confirm";
+import type { Route } from "./+types/delete";
 
 export async function clientLoader({
 	params: { accommodationId, bookingId }
@@ -32,44 +31,36 @@ export default function DeleteBooking({
 	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "bookings.delete"
+	});
+	const { t: tCommon } = useTranslation();
 
-	const wasDeleted = useRef(false);
+	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
 
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.delete(accommodationId, bookingId)
 	);
 
-	const { opened, close } = useStaticModalTransition(
-		() => void navigate(wasDeleted.current ? "/" : "..")
-	);
-
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.bookings.delete.title)}
-		>
-			{t(($) => $.bookings.delete.description)}
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
+			{t(($) => $.description)}
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.buttons.cancel)}
+					{tCommon(($) => $.buttons.cancel)}
 				</Button>
 				<Button
-					color={t(($) => $.bookings.delete.color)}
-					loading={isPending}
 					leftSection={<TrashIcon weight="bold" />}
+					color={t(($) => $.color)}
+					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: () => {
-								wasDeleted.current = true;
-								close();
-							}
+							onSuccess: close
 						});
 					}}
 				>
-					{t(($) => $.bookings.delete.button)}
+					{t(($) => $.button)}
 				</Button>
 			</Group>
 		</Modal>

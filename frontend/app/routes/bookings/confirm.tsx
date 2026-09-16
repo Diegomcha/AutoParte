@@ -21,7 +21,7 @@ export async function clientLoader({
 		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
 	);
 
-	if (booking.status !== "CONFIRMATION_READY")
+	if (!booking.canBeConfirmed)
 		throw Validators.throwValidationErrorResponse(
 			"Booking is not in a state that allows confirmation."
 		);
@@ -31,7 +31,10 @@ export default function ConfirmBooking({
 	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "bookings.confirm"
+	});
+	const { t: tCommon } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
 
@@ -40,20 +43,16 @@ export default function ConfirmBooking({
 	);
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.bookings.confirm.title)}
-		>
-			{t(($) => $.bookings.confirm.description)}
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
+			{t(($) => $.description)}
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.buttons.cancel)}
+					{tCommon(($) => $.buttons.cancel)}
 				</Button>
 				<Button
-					color={t(($) => $.bookings.confirm.color)}
 					leftSection={<CheckCircleIcon weight="bold" />}
+					color={t(($) => $.color)}
 					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
@@ -61,7 +60,7 @@ export default function ConfirmBooking({
 						});
 					}}
 				>
-					{t(($) => $.bookings.confirm.button)}
+					{t(($) => $.button)}
 				</Button>
 			</Group>
 		</Modal>

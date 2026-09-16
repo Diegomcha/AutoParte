@@ -7,15 +7,11 @@ import type { BookingDtoResponse } from "~/@types/api";
 export default function BookingStatusBadge({
 	status
 }: Readonly<{ status: BookingDtoResponse["status"] }>) {
-	const { t } = useTranslation();
+	const { t: tBooking } = useTranslation("entities", { keyPrefix: "booking" });
 
 	return (
-		<Badge
-			color={t(
-				($) => $.bookings.properties.details.status.states[status].color
-			)}
-		>
-			{t(($) => $.bookings.properties.details.status.states[status].label)}
+		<Badge color={tBooking(($) => $.details.status.states[status].color)}>
+			{tBooking(($) => $.details.status.states[status].label)}
 		</Badge>
 	);
 }

@@ -34,12 +34,10 @@ class BookingService {
             new ResourceNotFoundException("Booking not found");
     private static final Supplier<ResourceNotFoundException> ACCOMMODATION_NOT_FOUND_EXCEPTION = () ->
             new ResourceNotFoundException("Accommodation not found");
-    private static final Supplier<ResourceConflictException> ALREADY_CANCELLED_EXCEPTION = () ->
-            new ResourceConflictException("Booking is already cancelled");
     private static final Supplier<ResourceConflictException> CANNOT_BE_DELETED_EXCEPTION = () ->
             new ResourceConflictException("Booking cannot be deleted in its current state, cancel it instead");
     private static final Supplier<ResourceConflictException> CANNOT_BE_CANCELLED_EXCEPTION = () ->
-            new ResourceConflictException("Booking cannot be cancelled in its current state, delete it instead");
+            new ResourceConflictException("Booking cannot be cancelled in its current state");
     private static final Supplier<ResourceConflictException> CANNOT_BE_CONFIRMED_EXCEPTION = () ->
             new ResourceConflictException("Booking cannot be confirmed in its current state");
     private static final Supplier<ResourceConflictException> CANNOT_BE_CHECKED_IN_EXCEPTION = () ->
@@ -48,8 +46,10 @@ class BookingService {
             new ResourceConflictException("Number of people cannot be less than the current number of people in the booking");
     private static final Supplier<ResourceConflictException> CANNOT_BE_MODIFIED_EXCEPTION = () ->
             new ResourceConflictException("Booking cannot be modified in its current state");
-    private static final Supplier<ResourceConflictException> SELF_CHECK_IN_ALREADY_REQUESTED_EXCEPTION = () ->
-            new ResourceConflictException("Self-check-in has already been requested for this booking");
+    private static final Supplier<ResourceConflictException> SELF_CHECK_IN_CANNOT_BE_REQUESTED_EXCEPTION = () ->
+            new ResourceConflictException("Self-check-in cannot be requested");
+    private static final Supplier<ResourceConflictException> SELF_CHECK_IN_NOT_REQUESTED_EXCEPTION = () ->
+            new ResourceConflictException("Self-check-in was not requested for this booking");
 
     private final BookingRepo bookingRepo;
     private final BookingMapper bookingMapper;
@@ -140,6 +140,29 @@ class BookingService {
     }
 
     /**
+     * Deletes the booking with the given ID for a specific accommodation.
+     *
+     * @param accommodationId The ID of the accommodation to which the booking belongs
+     * @param id              The ID of the booking to delete
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
+     * @throws ResourceConflictException if the booking cannot be deleted
+     */
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
+    public void deleteBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+        this.ensureAccommodationExists(accommodationId);
+
+        var booking = bookingRepo
+                .findByAccommodationIdAndId(accommodationId, id)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        // Check if the booking can be deleted
+        if (!booking.canBeDeleted())
+            throw CANNOT_BE_DELETED_EXCEPTION.get();
+
+        bookingRepo.delete(booking);
+    }
+
+    /**
      * Marks the booking with the given ID for a specific accommodation as confirmed.
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
@@ -156,7 +179,7 @@ class BookingService {
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
         // Check if the booking can be confirmed
-        if (booking.getStatus() != Booking.BookingStatus.CONFIRMATION_READY)
+        if (!booking.canBeConfirmed())
             throw CANNOT_BE_CONFIRMED_EXCEPTION.get();
 
         booking.confirm();
@@ -178,13 +201,36 @@ class BookingService {
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
-        if (!booking.canBeModified())
-            throw CANNOT_BE_MODIFIED_EXCEPTION.get();
+        if (!booking.canSelfCheckInBeRequested())
+            throw SELF_CHECK_IN_CANNOT_BE_REQUESTED_EXCEPTION.get();
 
-        if (booking.isSelfCheckInRequested())
-            throw SELF_CHECK_IN_ALREADY_REQUESTED_EXCEPTION.get();
+        booking.requestSelfCheckIn();
 
-        booking.setSelfCheckInRequested(true);
+        // TODO: Inject sending the email
+    }
+
+    /**
+     * Terminates the self-check-in request for the booking with the given ID for a specific accommodation.
+     *
+     * @param accommodationId The ID of the accommodation to which the booking belongs
+     * @param id              The ID of the booking for which to terminate the self-check-in request
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
+     * @throws ResourceConflictException if the self-check-in was not requested for the booking
+     */
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
+    public void terminateSelfCheckInRequestForBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+        this.ensureAccommodationExists(accommodationId);
+
+        var booking = bookingRepo
+                .findByAccommodationIdAndId(accommodationId, id)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        if (!booking.isSelfCheckInRequested())
+            throw SELF_CHECK_IN_NOT_REQUESTED_EXCEPTION.get();
+
+        booking.terminateSelfCheckInRequest();
+
+        // TODO: Maybe send email here to notify the user that the self-check-in request has been cancelled
     }
 
     /**
@@ -204,7 +250,7 @@ class BookingService {
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
-        if (booking.getStatus() != Booking.BookingStatus.CHECK_IN_READY)
+        if (!booking.canBeCheckedIn())
             throw CANNOT_BE_CHECKED_IN_EXCEPTION.get();
 
         // If the user is not logged-in and manual review is enabled do not check-in directly
@@ -213,10 +259,14 @@ class BookingService {
                 .map(securityService::getAccountFromAuthentication)
                 .isPresent();
 
-        if (!isLoggedIn && dynamicConfigService.getConfig().isManualReviewEnabled()) {
-            booking.setSelfCheckInRequested(false);
-            return false;
+        if (booking.isSelfCheckInRequested()) {
+            booking.terminateSelfCheckInRequest();
+            // TODO: Maybe send email here to notify the user that the self-check-in request has been completed
         }
+
+        // If the user is not logged-in and manual review is enabled, do not check-in
+        if (!isLoggedIn && dynamicConfigService.getConfig().isManualReviewEnabled())
+            return false;
 
         booking.checkIn();
         return true;
@@ -228,7 +278,7 @@ class BookingService {
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param id              The ID of the booking to cancel
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
-     * @throws ResourceConflictException if the booking is already canceled
+     * @throws ResourceConflictException if the booking cannot be cancelled
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
     public void cancelBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
@@ -238,38 +288,10 @@ class BookingService {
                 .findByAccommodationIdAndId(accommodationId, id)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
 
-        // Check if the booking is already canceled
-        if (booking.getStatus() == Booking.BookingStatus.CANCELLED || booking.getStatus() == Booking.BookingStatus.PENDING_CANCELLATION)
-            throw ALREADY_CANCELLED_EXCEPTION.get();
-
-        // If the booking can be deleted, throw an exception to indicate that it should be deleted instead of canceled
-        if (booking.canBeDeleted())
+        if (!booking.canBeCancelled())
             throw CANNOT_BE_CANCELLED_EXCEPTION.get();
 
         booking.cancel();
-    }
-
-    /**
-     * Deletes the booking with the given ID for a specific accommodation.
-     *
-     * @param accommodationId The ID of the accommodation to which the booking belongs
-     * @param id              The ID of the booking to delete
-     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
-     * @throws ResourceConflictException if the booking cannot be deleted
-     */
-    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void deleteBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
-        this.ensureAccommodationExists(accommodationId);
-
-        var booking = bookingRepo
-                .findByAccommodationIdAndId(accommodationId, id)
-                .orElseThrow(NOT_FOUND_EXCEPTION);
-
-        // Check if the booking can be deleted
-        if (!booking.canBeDeleted())
-            throw CANNOT_BE_DELETED_EXCEPTION.get();
-
-        bookingRepo.delete(booking);
     }
 
     private void ensureAccommodationExists(UUID accommodationId) throws ResourceNotFoundException {

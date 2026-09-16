@@ -51,5 +51,45 @@
 			},
 			"manual": { "label": "Manualmente", "color": "gray" }
 		}
+	},
+	"signatureBox": {
+		"details": "Firmado electrónicamente el {{signedAt}} desde la dirección IP {{ip}}",
+		"disclaimer": "Al firmar electrónicamente, usted confirma que tanto los datos que ha introducido como los de la reserva son correctos y veraces, y suscribe el parte de entrada de viajeros conforme al RD 933/2021.",
+		"buttons": {
+			"clear": "Borrar",
+			"sign": "Firmar"
+		}
+	},
+	"complexRequiredAsterisk": {
+		"tooltips": {
+			"confirm": "Requerido para poder confirmar / solicitar auto-registro de la reserva",
+			"checkIn": "Requerido para poder registrar la entrada de la reserva"
+		}
+	},
+	"schedule": {
+		"day": "Día",
+		"week": "Semana",
+		"month": "Mes",
+		"year": "Año",
+		"allDay": "Todo el día",
+		"weekday": "Día de la semana",
+		"timeSlot": "Franja horaria",
+		"today": "Hoy",
+		"next": "Siguiente",
+		"previous": "Anterior",
+		"more": "Más",
+		"selectMonth": "Seleccionar mes",
+		"selectYear": "Seleccionar año",
+		"switchToDayView": "Cambiar a vista de día",
+		"switchToWeekView": "Cambiar a vista de semana",
+		"switchToMonthView": "Cambiar a vista de mes",
+		"switchToYearView": "Cambiar a vista de año",
+		"viewSelectLabel": "Seleccionar vista",
+		"noEvents": "No hay eventos",
+		"moreLabel": "+{{count}} más",
+		"resource": "Alojamiento",
+		"resources": "Alojamientos",
+		"resourceSlot": "Franja de alojamiento",
+		"agenda": "Agenda"
 	}
 }

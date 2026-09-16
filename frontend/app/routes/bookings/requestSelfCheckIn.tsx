@@ -1,13 +1,29 @@
 import { useNavigate } from "react-router";
 
-import { Button, Group, Modal } from "@mantine/core";
+import {
+	Alert,
+	Button,
+	Group,
+	Modal,
+	Space,
+	Stack,
+	Text,
+	TextInput,
+	useModalsStack
+} from "@mantine/core";
 
-import { PaperPlaneTiltIcon } from "@phosphor-icons/react";
+import {
+	LinkIcon,
+	PaperPlaneTiltIcon,
+	WarningIcon
+} from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import useStaticModalTransition from "~/hooks/useStaticModalTransition";
+import useStaticModalStackTransition from "~/hooks/useStaticModalStackTransition";
 import { queryClient, queryFactory } from "~/services/Api";
+import NotificationsService from "~/services/NotificationsService";
+import TimeService from "~/services/TimeService";
 import Validators from "~/services/Validators";
 
 import type { Route } from "./+types/requestSelfCheckIn";
@@ -21,19 +37,32 @@ export async function clientLoader({
 		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
 	);
 
-	if (["PENDING_CANCELLATION", "CANCELLED"].includes(booking.status))
+	if (!booking.canSelfCheckInBeRequested)
 		throw Validators.throwValidationErrorResponse(
 			"Booking is not in a state that allows requesting self-check-in."
 		);
+
+	return {
+		isCheckInDay: TimeService(booking.startTime).isSame(TimeService(), "day")
+	};
 }
 
 export default function RequestSelfCheckInForBooking({
-	params: { accommodationId, bookingId }
+	params: { accommodationId, bookingId },
+	loaderData: { isCheckInDay }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "bookings.requestSelfCheckIn"
+	});
+	const { t: tCommon } = useTranslation();
 
-	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
+	const stack = useModalsStack(["request", "link"]);
+	const { close } = useStaticModalStackTransition(
+		stack,
+		"request",
+		() => void navigate("..")
+	);
 
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.requestSelfCheckIn(
@@ -43,30 +72,69 @@ export default function RequestSelfCheckInForBooking({
 	);
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.bookings.requestSelfCheckIn.title)}
-		>
-			{t(($) => $.bookings.requestSelfCheckIn.description)}
+		<>
+			<Modal
+				{...stack.register("request")}
+				onClose={close}
+				title={t(($) => $.title)}
+			>
+				{!isCheckInDay && (
+					<>
+						<Alert color="yellow" icon={<WarningIcon weight="bold" />}>
+							{t(($) => $.notCheckInDayWarning)}
+						</Alert>
+						<Space h="md" />
+					</>
+				)}
+				{t(($) => $.description)}
 
-			<Group justify="right" mt="md" gap="xs">
-				<Button onClick={close} color="gray">
-					{t(($) => $.buttons.cancel)}
-				</Button>
-				<Button
-					leftSection={<PaperPlaneTiltIcon weight="bold" />}
-					color="violet"
-					loading={isPending}
-					onClick={() => {
-						mutate(undefined, {
-							onSuccess: close
-						});
-					}}
-				>
-					{t(($) => $.bookings.requestSelfCheckIn.button)}
-				</Button>
-			</Group>
-		</Modal>
+				<Group justify="right" mt="md" gap="xs">
+					<Button onClick={close} color="gray">
+						{tCommon(($) => $.buttons.cancel)}
+					</Button>
+					<Button
+						leftSection={<PaperPlaneTiltIcon weight="bold" />}
+						color={t(($) => $.color)}
+						loading={isPending}
+						onClick={() => {
+							mutate(undefined, {
+								onSuccess: () => {
+									stack.open("link");
+								}
+							});
+						}}
+					>
+						{t(($) => $.button)}
+					</Button>
+				</Group>
+			</Modal>
+			<Modal
+				{...stack.register("link")}
+				onClose={close}
+				title={t(($) => $.linkModal.title)}
+			>
+				<Stack>
+					<Alert color="yellow" icon={<WarningIcon weight="bold" />}>
+						{t(($) => $.linkModal.alert)}
+					</Alert>
+					{/* TODO: Cuando este el sistema de email habrá que cambiar esto */}
+					<Text>{t(($) => $.linkModal.description)}</Text>
+					<TextInput
+						readOnly
+						leftSectionPointerEvents="none"
+						leftSection={<LinkIcon />}
+						label={t(($) => $.linkModal.label)}
+						value={`${window.location.origin}/check-in/${accommodationId}/${bookingId}`}
+						onClick={(event) => {
+							event.currentTarget.select();
+							NotificationsService.success(t(($) => $.linkCopied));
+							void navigator.clipboard.writeText(
+								`${window.location.origin}/check-in/${accommodationId}/${bookingId}`
+							);
+						}}
+					/>
+				</Stack>
+			</Modal>
+		</>
 	);
 }

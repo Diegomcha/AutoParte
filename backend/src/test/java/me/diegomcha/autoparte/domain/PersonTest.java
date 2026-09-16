@@ -75,7 +75,7 @@ class PersonTest {
 
         var craftedPerson = new Person(this.booking, pInfo, new ContactInfo(null, null, "email@email.com"), dInfo, address, relationship);
         try (var ignored = TestingUtils.getMockedInstantNow()) {
-            Assertions.assertEquals(expected, craftedPerson.isComplete());
+            Assertions.assertEquals(expected, craftedPerson.isCompleteForCheckIn());
         }
     }
 }

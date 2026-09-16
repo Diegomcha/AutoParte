@@ -240,5 +240,12 @@
 
     <embeddable class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
     <embeddable class="me.diegomcha.autoparte.domain.person.PersonalInfo"/>
+    <embeddable class="me.diegomcha.autoparte.domain.person.Signature">
+    <attributes>
+        <basic name="paths">
+            <column column-definition="jsonb" />
+        </basic>
+    </attributes>
+    </embeddable>
 
 </entity-mappings>

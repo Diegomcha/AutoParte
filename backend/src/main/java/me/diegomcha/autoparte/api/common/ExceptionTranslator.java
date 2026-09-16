@@ -1,8 +1,11 @@
 package me.diegomcha.autoparte.api.common;
 
+import io.sentry.Sentry;
 import me.diegomcha.autoparte.core.exception.*;
 import org.apache.coyote.BadRequestException;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.*;
 import org.springframework.validation.FieldError;
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice
 class ExceptionTranslator extends ResponseEntityExceptionHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(ExceptionTranslator.class);
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -150,6 +155,8 @@ class ExceptionTranslator extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ProblemDetail handleGenericException(Exception ex) {
+        logger.error("Unhandled exception occurred: ", ex);
+        Sentry.captureException(ex);
         return ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 }

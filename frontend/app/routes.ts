@@ -23,6 +23,10 @@ export default [
 					"request-self-check-in",
 					"./routes/bookings/requestSelfCheckIn.tsx"
 				),
+				route(
+					"cancel-self-check-in",
+					"./routes/bookings/cancelSelfCheckIn.tsx"
+				),
 				route("cancel", "./routes/bookings/cancel.tsx"),
 				route("delete", "./routes/bookings/delete.tsx")
 			]

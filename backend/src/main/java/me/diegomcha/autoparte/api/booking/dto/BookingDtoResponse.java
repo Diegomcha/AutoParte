@@ -18,11 +18,15 @@ public record BookingDtoResponse(
         @Nonnull UUID createdBy,
         @Nonnull UUID lastModifiedBy,
 
-        @Nonnull String humanReadableId,
         @Nonnull Booking.BookingStatus status,
         @NotNull boolean selfCheckInRequested,
+
         @NotNull boolean canBeModified,
         @NotNull boolean canBeDeleted,
+        @NotNull boolean canBeConfirmed,
+        @NotNull boolean canBeCheckedIn,
+        @NotNull boolean canBeCancelled,
+        @NotNull boolean canSelfCheckInBeRequested,
 
         @Nonnull Instant startTime,
         @Nonnull Instant endTime,

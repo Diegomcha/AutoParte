@@ -2,12 +2,14 @@ package me.diegomcha.autoparte.api.person;
 
 import me.diegomcha.autoparte.api.person.dto.PersonDtoRequest;
 import me.diegomcha.autoparte.api.person.dto.PersonDtoResponse;
+import me.diegomcha.autoparte.api.person.dto.SignatureDtoResponse;
 import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.Person;
 import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
+import me.diegomcha.autoparte.domain.person.Signature;
 import me.diegomcha.autoparte.domain.person.document.DniDocument;
 import me.diegomcha.autoparte.domain.person.document.Document;
 import org.mapstruct.Mapper;
@@ -21,6 +23,9 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 abstract class PersonMapper {
 
+    @Mapping(target = "hasSigned", expression = "java(person.getSignature() != null)")
+    @Mapping(target = "isAdult", expression = "java(person.getPersonalInfo().isAdult())")
+    @Mapping(target = "mustSign", expression = "java(person.getPersonalInfo().mustSign())")
     public abstract PersonDtoResponse toResponse(Person person);
 
     public abstract List<PersonDtoResponse> toResponse(List<Person> people);
@@ -30,6 +35,8 @@ abstract class PersonMapper {
 
     @Mapping(target = "address", source = "address")
     public abstract void fromUpdate(PersonDtoRequest dto, Address address, @MappingTarget Person person);
+
+    public abstract SignatureDtoResponse toSignatureResponse(Signature signature);
 
     @Mapping(target = "supportNumber", source = ".", qualifiedByName = "mapSupportNumber")
     protected abstract PersonDtoResponse.DocumentDtoResponse map(Document document);

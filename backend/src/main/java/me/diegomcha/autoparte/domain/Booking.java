@@ -32,7 +32,6 @@ public class Booking extends BaseEntity {
         CANCELLED
     }
 
-    @Setter
     private boolean selfCheckInRequested = false;
 
     private @NonNull Instant startTime;
@@ -102,8 +101,11 @@ public class Booking extends BaseEntity {
      * @param startTime Start time of the booking
      * @param endTime   End time of the booking
      * @throws IllegalArgumentException if the start time is not before the end time
+     * @throws IllegalStateException    if the booking cannot be modified
      */
     public void setDates(@NonNull Instant startTime, @NonNull Instant endTime) {
+        this.ensureBookingCanBeModified();
+
         if (!startTime.isBefore(endTime))
             throw new IllegalArgumentException("Start time must be before end time");
 
@@ -116,9 +118,11 @@ public class Booking extends BaseEntity {
      *
      * @param numberOfPeople The number of people included in the booking
      * @throws IllegalArgumentException if the number of people is less than or equal to zero
-     * @throws IllegalStateException    if the number of people is less than the number of people already added to the booking
+     * @throws IllegalStateException    if the number of people is less than the number of people already added to the booking or the booking cannot be modified
      */
     public void setNumberOfPeople(int numberOfPeople) {
+        this.ensureBookingCanBeModified();
+
         if (numberOfPeople <= 0)
             throw new IllegalArgumentException("Number of people must be greater than 0");
         if (people.size() > numberOfPeople)
@@ -132,10 +136,14 @@ public class Booking extends BaseEntity {
      *
      * @param numberOfRooms The number of rooms included in the booking
      * @throws IllegalArgumentException if the number of rooms is less than or equal to zero
+     * @throws IllegalStateException    if the booking cannot be modified
      */
     public void setNumberOfRooms(Integer numberOfRooms) {
+        this.ensureBookingCanBeModified();
+
         if (numberOfRooms != null && numberOfRooms <= 0)
             throw new IllegalArgumentException("Number of rooms must be greater than 0");
+
         this.numberOfRooms = numberOfRooms;
     }
 
@@ -149,8 +157,11 @@ public class Booking extends BaseEntity {
     }
 
     void _addPerson(@NonNull Person person) {
+        this.ensureBookingCanBeModified();
+
         if (this.people.size() >= this.numberOfPeople)
             throw new IllegalStateException("Cannot add more people than the number specified in the booking");
+
         this.people.add(person);
     }
 
@@ -161,6 +172,8 @@ public class Booking extends BaseEntity {
      * @throws IllegalArgumentException if the person is not found in the booking
      */
     public void removePerson(@NonNull Person person) {
+        this.ensureBookingCanBeModified();
+
         if (!this.people.remove(person))
             throw new IllegalArgumentException("Person not found in booking");
     }
@@ -188,26 +201,73 @@ public class Booking extends BaseEntity {
     }
 
     /**
+     * Checks if the booking can be confirmed.
+     *
+     * @return true if the booking can be confirmed, false otherwise
+     */
+    public boolean canBeConfirmed() {
+        return this.getStatus() == BookingStatus.CONFIRMATION_READY ||
+                (this.getStatus() == BookingStatus.CHECK_IN_READY && !this.hasCommunicationOfType(Communication.CommunicationType.BOOKING));
+    }
+
+    /**
+     * Checks if the booking can be checked-in.
+     *
+     * @return true if the booking can be checked-in, false otherwise
+     */
+    public boolean canBeCheckedIn() {
+        return this.getStatus() == BookingStatus.CHECK_IN_READY;
+    }
+
+    /**
+     * Checks if the booking can be cancelled.
+     *
+     * @return true if the booking can be cancelled, false otherwise
+     */
+    public boolean canBeCancelled() {
+        return !this.canBeDeleted() &&
+                this.getStatus() != BookingStatus.CANCELLED &&
+                this.getStatus() != BookingStatus.PENDING_CANCELLATION;
+    }
+
+    /**
+     * Checks if the booking can be sent for self check-in.
+     *
+     * @return true if the booking can be sent for self check-in, false otherwise
+     */
+    public boolean canSelfCheckInBeRequested() {
+        return this.payment != null && !this.selfCheckInRequested && this.canBeModified();
+    }
+
+    //
+
+    /**
      * Confirms the booking by adding a booking communication if it can be confirmed.
      *
-     * @throws IllegalStateException if the booking cannot be confirmed
+     * @throws IllegalStateException if the booking cannot be confirmed or if the booking cannot be modified
      */
     public void confirm() {
-        if (this.getStatus() != BookingStatus.CONFIRMATION_READY)
+        this.ensureBookingCanBeModified();
+
+        if (!this.canBeConfirmed())
             throw new IllegalStateException("Booking cannot be confirmed");
+
         this.addCommunication(Communication.CommunicationType.BOOKING);
     }
 
     /**
      * Checks in the booking by adding a check-in communication if it can be checked-in.
      *
-     * @throws IllegalStateException if the booking cannot be checked-in
+     * @throws IllegalStateException if the booking cannot be checked-in or if the booking cannot be modified
      */
     public void checkIn() {
-        if (this.getStatus() != BookingStatus.CHECK_IN_READY)
+        this.ensureBookingCanBeModified();
+
+        if (!this.canBeCheckedIn())
             throw new IllegalStateException("Booking cannot be checked-in");
 
-        this.selfCheckInRequested = false;
+        // Terminate self check-in request if it is active
+        if (this.selfCheckInRequested) this.terminateSelfCheckInRequest();
 
         this.addCommunication(Communication.CommunicationType.CHECKIN);
     }
@@ -217,13 +277,11 @@ public class Booking extends BaseEntity {
      * If all other communications are voided or failed, the cancellation communication is marked as finished successfully.
      * Otherwise, the cancellation communication will be marked as pending and will be processed asynchronously.
      *
-     * @throws IllegalStateException if the booking is already cancelled or
-     *                               if the booking can be deleted
+     * @throws IllegalStateException if the booking cannot be cancelled
      */
     public void cancel() {
-        // Disallow cancellation if the booking can be deleted
-        if (this.canBeDeleted())
-            throw new IllegalStateException("Cannot cancel this booking, please delete it instead");
+        if (!this.canBeCancelled())
+            throw new IllegalStateException("Booking cannot be cancelled");
 
         var communication = (CancellationCommunication) this.addCommunication(Communication.CommunicationType.CANCELLATION);
 
@@ -238,6 +296,33 @@ public class Booking extends BaseEntity {
                 .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION)
                 .allMatch(c -> c.getStatus() == Communication.CommunicationStatus.VOIDED || c.getStatus() == Communication.CommunicationStatus.FAILED))
             communication.markFinishedSuccessfully();
+
+        // Terminate self check-in request if it is active
+        if (this.selfCheckInRequested) this.terminateSelfCheckInRequest();
+    }
+
+    /**
+     * Requests self check-in for the booking if it can be sent for self check-in.
+     *
+     * @throws IllegalStateException if the booking cannot be sent for self check-in
+     */
+    public void requestSelfCheckIn() {
+        if (!this.canSelfCheckInBeRequested())
+            throw new IllegalStateException("Booking cannot be sent for self check-in");
+
+        this.selfCheckInRequested = true;
+    }
+
+    /**
+     * Terminates the self check-in request for the booking if it is currently active.
+     *
+     * @throws IllegalStateException if the self check-in request is not active
+     */
+    public void terminateSelfCheckInRequest() {
+        if (!this.selfCheckInRequested)
+            throw new IllegalStateException("Self check-in request is not active");
+
+        this.selfCheckInRequested = false;
     }
 
     /**
@@ -257,7 +342,7 @@ public class Booking extends BaseEntity {
             return BookingStatus.CHECKED_IN;
         if (this.hasCommunicationOfType(Communication.CommunicationType.CHECKIN))
             return BookingStatus.PENDING_CHECK_IN;
-        if (this.payment != null && this.people.size() == this.numberOfPeople && this.people.stream().allMatch(Person::isComplete))
+        if (this.payment != null && this.people.size() == this.numberOfPeople && this.people.stream().allMatch(Person::isCompleteForCheckIn))
             return BookingStatus.CHECK_IN_READY;
 
         // Confirmed
@@ -315,5 +400,10 @@ public class Booking extends BaseEntity {
 
     private boolean hasSuccessfulCommunicationOfType(@NonNull Communication.CommunicationType type) {
         return this.communications.stream().anyMatch(c -> c.getType() == type && c.getStatus() == Communication.CommunicationStatus.SUCCEEDED);
+    }
+
+    private void ensureBookingCanBeModified() {
+        if (!this.canBeModified())
+            throw new IllegalStateException("Booking cannot be modified");
     }
 }

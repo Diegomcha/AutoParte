@@ -6,17 +6,23 @@ import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.api.common.EntityMapper;
 import me.diegomcha.autoparte.api.person.dto.PersonDtoRequest;
 import me.diegomcha.autoparte.api.person.dto.PersonDtoResponse;
+import me.diegomcha.autoparte.api.person.dto.SignatureDtoResponse;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AddressRepo;
 import me.diegomcha.autoparte.core.repos.BookingRepo;
 import me.diegomcha.autoparte.core.repos.PersonRepo;
 import me.diegomcha.autoparte.domain.address.Address;
+import me.diegomcha.autoparte.domain.person.Signature;
 import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
+import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -35,6 +41,8 @@ class PersonService {
             new ResourceConflictException("Booking cannot be modified in its current state");
     private static final Supplier<ResourceConflictException> BOOKING_FULL_EXCEPTION = () ->
             new ResourceConflictException("Booking is full");
+    private static final Supplier<ResourceNotFoundException> SIGNATURE_NOT_PRESENT_EXCEPTION = () ->
+            new ResourceNotFoundException("Signature not present for this person");
 
     private final BookingRepo bookingRepo;
     private final PersonRepo personRepo;
@@ -145,6 +153,52 @@ class PersonService {
 
         person.getBooking().removePerson(person);
         personRepo.delete(person);
+    }
+
+    /**
+     * Signs a booking for a specific person associated with a given accommodation.
+     *
+     * @param accommodationId The ID of the accommodation to which the booking belongs
+     * @param bookingId       The ID of the booking for which the person is associated
+     * @param personId        The ID of the person who is signing the booking
+     * @param signaturePaths  A map containing the signature paths, where the key is the timestamp (Instant) and the value is a list of points (Point) representing the signature
+     * @param ipAddr          The IP address of the person signing the booking
+     * @param userAgent       The user agent string of the device used by the person signing the booking
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no person with the given ID exists for the specified booking
+     * @throws ResourceConflictException if the booking cannot be modified in its current state
+     */
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
+    public void addSignature(UUID accommodationId, UUID bookingId, UUID personId, Map<Instant, List<Point>> signaturePaths, String ipAddr, String userAgent) throws ResourceNotFoundException, ResourceConflictException {
+        this.ensureBookingCanBeModified(accommodationId, bookingId);
+
+        var person = personRepo
+                .findByBookingAccommodationIdAndBookingIdAndId(accommodationId, bookingId, personId)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        person.setSignature(new Signature(
+                signaturePaths,
+                ipAddr,
+                userAgent
+        ));
+    }
+
+    /**
+     * Retrieves the signature for a specific person associated with a booking for a given accommodation.
+     *
+     * @param accommodationId The ID of the accommodation to which the booking belongs
+     * @param bookingId       The ID of the booking for which the person is associated
+     * @param personId        The ID of the person for whom to retrieve the signature
+     * @return The signature for the specified person
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation, if no person with the given ID exists for the specified booking, or if the person does not have a signature
+     */
+    public SignatureDtoResponse getSignature(UUID accommodationId, UUID bookingId, UUID personId) throws ResourceNotFoundException {
+        this.ensureBookingExists(accommodationId, bookingId);
+
+        var person = personRepo
+                .findByBookingAccommodationIdAndBookingIdAndId(accommodationId, bookingId, personId)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        return personMapper.toSignatureResponse(Optional.ofNullable(person.getSignature()).orElseThrow(SIGNATURE_NOT_PRESENT_EXCEPTION));
     }
 
     private void ensureBookingExists(UUID accommodationId, UUID bookingId) throws ResourceNotFoundException {

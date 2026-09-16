@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router";
 
-import { Button, Group, Modal } from "@mantine/core";
+import { Alert, Button, Group, Modal, Space } from "@mantine/core";
 
-import { SuitcaseIcon } from "@phosphor-icons/react";
+import { SuitcaseIcon, WarningIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
+import TimeService from "~/services/TimeService";
 import Validators from "~/services/Validators";
 
-import type { Route } from "./+types/confirm";
+import type { Route } from "./+types/checkIn";
 
 export async function clientLoader({
 	params: { accommodationId, bookingId }
@@ -21,17 +22,25 @@ export async function clientLoader({
 		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
 	);
 
-	if (booking.status !== "CHECK_IN_READY")
+	if (!booking.canBeCheckedIn)
 		throw Validators.throwValidationErrorResponse(
 			"Booking is not in a state that allows check-in."
 		);
+
+	return {
+		isCheckInDay: TimeService(booking.startTime).isSame(TimeService(), "day")
+	};
 }
 
 export default function CheckInBooking({
-	params: { accommodationId, bookingId }
+	params: { accommodationId, bookingId },
+	loaderData: { isCheckInDay }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "bookings.checkIn"
+	});
+	const { t: tCommon } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
 
@@ -40,20 +49,24 @@ export default function CheckInBooking({
 	);
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.bookings.checkIn.title)}
-		>
-			{t(($) => $.bookings.checkIn.description)}
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
+			{!isCheckInDay && (
+				<>
+					<Alert color="yellow" icon={<WarningIcon weight="bold" />}>
+						{t(($) => $.notCheckInDayWarning)}
+					</Alert>
+					<Space h="md" />
+				</>
+			)}
+			{t(($) => $.description)}
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.buttons.cancel)}
+					{tCommon(($) => $.buttons.cancel)}
 				</Button>
 				<Button
-					color={t(($) => $.bookings.checkIn.color)}
 					leftSection={<SuitcaseIcon weight="bold" />}
+					color={t(($) => $.color)}
 					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
@@ -61,7 +74,7 @@ export default function CheckInBooking({
 						});
 					}}
 				>
-					{t(($) => $.bookings.checkIn.button)}
+					{t(($) => $.button)}
 				</Button>
 			</Group>
 		</Modal>

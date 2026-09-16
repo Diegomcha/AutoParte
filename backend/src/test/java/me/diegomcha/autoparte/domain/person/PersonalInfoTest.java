@@ -48,7 +48,7 @@ class PersonalInfoTest {
 
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             var pInfo = new PersonalInfo("name", "surname", secondSurname, null, TestingUtils.PAST_INSTANT, null);
-            Assertions.assertEquals(expected, pInfo.isComplete(reqSSur));
+            Assertions.assertEquals(expected, pInfo.isCompleteForCheckIn(reqSSur));
         }
     }
 

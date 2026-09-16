@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.api.person.dto;
 
 import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 import me.diegomcha.autoparte.domain.Person;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
 import me.diegomcha.autoparte.domain.person.document.Document;
@@ -12,6 +13,11 @@ public record PersonDtoResponse(
         @Nonnull UUID id,
         @Nonnull Instant createdAt,
         @Nonnull Instant updatedAt,
+
+        @NotNull boolean hasSigned,
+
+        Boolean isAdult,
+        Boolean mustSign,
 
         @Nonnull PersonDtoResponse.PersonalInfoDtoResponse personalInfo,
         @Nonnull PersonDtoResponse.ContactInfoDtoResponse contactInfo,

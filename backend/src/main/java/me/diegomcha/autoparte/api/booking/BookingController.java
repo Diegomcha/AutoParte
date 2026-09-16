@@ -69,11 +69,18 @@ class BookingController implements BookingAPI {
         bookingService.confirmBooking(accommodationId, id);
     }
 
-    @PostMapping("/{id}/request-self-check-in")
+    @PostMapping("/{id}/self-check-in")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
     public void requestSelfCheckInForBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceNotFoundException, ResourceConflictException {
         bookingService.requestSelfCheckInForBooking(accommodationId, id);
+    }
+
+    @DeleteMapping("/{id}/self-check-in")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Override
+    public void terminateSelfCheckInRequestForBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceConflictException, ResourceNotFoundException {
+        bookingService.terminateSelfCheckInRequestForBooking(accommodationId, id);
     }
 
     @PostMapping("/{id}/check-in")

@@ -1,4 +1,12 @@
 {
+	"index": {
+		"errors": {
+			"noAccommodations": "No hay alojamientos disponibles. Por favor, contacta con el administrador.",
+			"noAccommodationsAdmin": "No hay alojamientos disponibles.",
+			"noBookingsInPeriod": "No existen reservas en el periodo seleccionado.",
+			"cannotChangeAccommodation": "No se puede cambiar el alojamiento de la reserva."
+		}
+	},
 	"checkIn": {
 		"verify-booking": {
 			"title": "1. Verificación de la reserva",
@@ -16,8 +24,19 @@
 			"description": "Escanea o añade la información faltante de los viajeros para continuar el proceso de registro"
 		},
 		"send": {
-			"title": "TODO",
-			"description": "TODO"
+			"title": "3. Firmar y enviar el registro",
+			"description": "Revisa y firma el registro para completar el proceso",
+			"explanation": "Para completar el proceso de registro, los viajeros de 14 o más años deben firmar electrónicamente el parte de entrada de viajeros.",
+			"table": {
+				"header": {
+					"person": "Viajero",
+					"signature": "Firma"
+				},
+				"signatureButton": {
+					"sign": "Firmar",
+					"signed": "Firmado"
+				}
+			}
 		},
 		"progressSidebar": {
 			"title": "Tu progreso",
@@ -36,6 +55,64 @@
 					"description": "Revisa y firma para completar el proceso"
 				}
 			}
+		}
+	},
+	"bookings": {
+		"index": {
+			"title": "Detalles de la reserva",
+			"readOnly": {
+				"title": "Solo lectura",
+				"description": "La reserva no puede ser modificada en este estado"
+			},
+			"people": {
+				"button": "Gestionar viajeros",
+				"buttonDisabled": "Gestionar viajeros (deshabilitado mientras se edita el número de personas)"
+			}
+		},
+		"requestSelfCheckIn": {
+			"button": "Solicitar auto-registro",
+			"color": "violet",
+			"title": "Solicitar auto-registro",
+			"description": "Esta acción solicitará el auto-registro de los viajeros.\nSi la revisión manual no está habilitada, el auto-registro se envíara automáticamente al ministerio una vez que se complete el proceso.",
+			"notCheckInDayWarning": "Conforme al RD 933/2021, la comunicación de la entrada de viajeros se debe enviar el mismo día que ocurra la entrada de los viajeros.",
+			"linkModal": {
+				"title": "Enlace para realizar el auto-registro",
+				"description": "Comparte este enlace con los viajeros para que puedan completar el auto-registro.",
+				"alert": "El enlace para realizar el auto-registro permite el acceso a la funcionalidad de auto-registro sin necesidad de autenticación.\nComparte este enlace ÚNICAMENTE con los viajeros que deban realizar el auto-registro.",
+				"label": "Enlace para realizar el auto-registro"
+			},
+			"linkCopied": "Enlace del auto-registro copiado al portapapeles"
+		},
+		"cancelSelfCheckIn": {
+			"button": "Cancelar auto-registro",
+			"color": "lime",
+			"title": "Cancelar auto-registro",
+			"description": "Esta acción cancelará la solicitud de auto-registro de los viajeros."
+		},
+		"confirm": {
+			"button": "Confirmar",
+			"color": "teal",
+			"title": "Confirmar reserva",
+			"description": "Esta acción confirmará la reserva y enviará la información al ministerio."
+		},
+		"checkIn": {
+			"button": "Registrar entrada",
+			"color": "cyan",
+			"title": "Registrar entrada",
+			"description": "Esta acción registrará la entrada de los viajeros en el alojamiento informando al ministerio.",
+			"notCheckInDayWarning": "Conforme al RD 933/2021, la comunicación de la entrada de viajeros se debe enviar el mismo día que ocurra la entrada de los viajeros."
+		},
+		"cancel": {
+			"button": "Cancelar",
+			"color": "orange",
+			"title": "Cancelar reserva",
+			"description": "Esta acción cancelará la reserva y propagará dicha cancelación al ministerio en caso de haber confirmado la reserva previamente.\n¿Estás seguro? Esta acción es IRREVERSIBLE."
+		},
+		"delete": {
+			"button": "Eliminar",
+			"color": "red",
+			"title": "Eliminar reserva",
+			"description": "Esta acción eliminará la reserva de forma permanente y no podrá ser recuperada.\n¿Estás seguro? Esta acción es IRREVERSIBLE."
 		}
 	}
 }
