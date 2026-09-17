@@ -23,16 +23,6 @@ public abstract class BaseEntity implements Persistable<UUID> {
     private Instant updatedAt;
 
     /**
-     * Returns a human-readable version of the entity's ID.
-     *
-     * @return a string representing the last 8 characters of the ID.
-     */
-    public String getHumanReadableId() {
-        var strId = getId().toString().toUpperCase();
-        return strId.substring(strId.length() - 8, strId.length() - 4) +  "-" + strId.substring(strId.length() - 4);
-    } 
-
-    /**
      * Indicates whether the entity is new (not yet persisted) or not.
      * This is necessary because the ID is generated in the constructor,
      * so we can't rely on the ID being null to determine if the entity is new.
