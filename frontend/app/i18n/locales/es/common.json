@@ -4,7 +4,11 @@
 	},
 	"header": {
 		"admin": "Modo administrador",
-		"logout": "Cerrar sesión"
+		"account": {
+			"title": "Cuenta",
+			"updatePassword": "Actualizar contraseña",
+			"logout": "Cerrar sesión"
+		}
 	},
 	"buttons": {
 		"create": "Crear",
@@ -363,22 +367,6 @@
 				"error": "Error al validar credenciales",
 				"invalid": "Credenciales inválidas",
 				"valid": "Credenciales válidas"
-			}
-		}
-	},
-	"auth": {
-		"login": {
-			"title": "Iniciar sesión",
-			"form": {
-				"username": "Nombre de usuario",
-				"password": "Contraseña",
-				"rememberMe": "Mantener sesión iniciada",
-				"submit": "Iniciar sesión",
-				"errors": {
-					"noUsername": "El nombre de usuario es obligatorio",
-					"noPassword": "La contraseña es obligatoria",
-					"invalidCredentials": "Nombre de usuario o contraseña incorrectos"
-				}
 			}
 		}
 	},

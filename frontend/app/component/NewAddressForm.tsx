@@ -48,7 +48,15 @@ export default function NewAddressForm({
 		}
 	});
 
-	const form = useForm<AddressDtoRequest & { province?: string | null }>({
+	const form = useForm<
+		Omit<AddressDtoRequest, "municipality" | "postalCode"> & {
+			province?: string | null;
+			municipality: string | null;
+			postalCode: string | null;
+		},
+		AddressDtoRequest
+	>({
+		mode: "uncontrolled",
 		initialValues: {
 			addressLine1: "",
 			addressLine2: "",
@@ -64,8 +72,8 @@ export default function NewAddressForm({
 			country: isNotEmpty(
 				t(($) => $.people.newAddress.properties.country.errors.undefined)
 			),
-			province: (value) => {
-				if (form.values.country === "ESP" && !value)
+			province: (value, values) => {
+				if (values.country === "ESP" && !value)
 					return t(
 						($) => $.people.newAddress.properties.province.errors.undefined
 					);
@@ -77,19 +85,20 @@ export default function NewAddressForm({
 				t(($) => $.people.newAddress.properties.postalCode.errors.undefined)
 			)
 		},
-		transformValues: (values) =>
-			({
-				addressLine1: values.addressLine1,
-				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- I want to send undefined if the field is empty.
-				addressLine2: values.addressLine2 || undefined,
-				country: values.country,
-				postalCode: values.postalCode,
-				municipality:
-					values.country === "ESP"
-						? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-							values.province! + values.municipality
-						: values.municipality
-			}) satisfies AddressDtoRequest,
+		transformValues: (values) => ({
+			addressLine1: values.addressLine1,
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- I want to send undefined if the field is empty.
+			addressLine2: values.addressLine2 || undefined,
+			country: values.country,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- The validation ensures that the postal code will be defined
+			postalCode: values.postalCode!,
+			municipality:
+				values.country === "ESP"
+					? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- I know that if the country is ESP, province and municipality are defined.
+						values.province! + values.municipality!
+					: // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Otherwise, the validation ensures that the municipality will be defined.
+						values.municipality!
+		}),
 		onValuesChange: (values, prevValues) => {
 			if (values.country !== prevValues.country) {
 				form.resetField("province");
@@ -97,17 +106,35 @@ export default function NewAddressForm({
 				form.resetField("postalCode");
 			}
 
-			// TODO: This does not work as expected
 			if (values.province !== prevValues.province) {
-				form.resetField("municipality");
-				form.resetField("postalCode");
+				if (values.country === "ESP") {
+					// Reset selects
+					form.setFieldValue("municipality", null);
+					form.setFieldValue("postalCode", null);
+				} else {
+					// Reset text inputs
+					form.resetField("municipality");
+					form.resetField("postalCode");
+				}
 			}
 
-			// TODO: This does not work as expected
-			if (values.municipality !== prevValues.municipality)
-				form.resetField("postalCode");
+			if (values.municipality !== prevValues.municipality) {
+				if (values.country === "ESP") {
+					// Reset selects
+					form.setFieldValue("postalCode", null);
+				} else {
+					// Reset text inputs
+					form.resetField("postalCode");
+				}
+			}
 		}
 	});
+
+	const watchedFormValues = {
+		country: form.useWatchValue("country"),
+		province: form.useWatchValue("province"),
+		municipality: form.useWatchValue("municipality")
+	};
 
 	const [
 		{ data: spanishMunicipalities, isLoading: isSpanishMunicipalitiesLoading },
@@ -116,16 +143,17 @@ export default function NewAddressForm({
 		queries: [
 			{
 				...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
-					form.values.province ?? "unexistant-province-code"
+					watchedFormValues.province ?? "unexistant-province-code"
 				),
-				enabled: !!form.values.province
+				enabled: !!watchedFormValues.province
 			},
 			{
 				...queryFactory.catalogue.countries.spanishProvinces.municipalities.postalCodes.list(
-					form.values.province ?? "unexistant-province-code",
-					form.values.municipality || "unexistant-municipality-code"
+					watchedFormValues.province ?? "unexistant-province-code",
+					watchedFormValues.municipality ?? "unexistant-municipality-code"
 				),
-				enabled: !!form.values.province && !!form.values.municipality
+				enabled:
+					!!watchedFormValues.province && !!watchedFormValues.municipality
 			}
 		]
 	});
@@ -188,14 +216,14 @@ export default function NewAddressForm({
 									}))
 									.sort((a, b) => a.label.localeCompare(b.label))}
 								label={t(($) => $.people.newAddress.properties.province.label)}
-								withAsterisk={form.values.country === "ESP"}
-								disabled={form.values.country !== "ESP"}
+								withAsterisk={watchedFormValues.country === "ESP"}
+								disabled={watchedFormValues.country !== "ESP"}
 								searchable
 								checkIconPosition="right"
 								key={form.key("province")}
 								{...form.getInputProps("province")}
 							/>
-							{form.values.country === "ESP" ? (
+							{watchedFormValues.country === "ESP" ? (
 								<>
 									<Select
 										autoComplete="address-level2"
@@ -212,7 +240,7 @@ export default function NewAddressForm({
 											($) => $.people.newAddress.properties.municipality.label
 										)}
 										withAsterisk
-										disabled={!form.values.province}
+										disabled={!watchedFormValues.province}
 										loading={isSpanishMunicipalitiesLoading}
 										searchable
 										checkIconPosition="right"
@@ -228,7 +256,7 @@ export default function NewAddressForm({
 											($) => $.people.newAddress.properties.postalCode.label
 										)}
 										withAsterisk
-										disabled={!form.values.municipality}
+										disabled={!watchedFormValues.municipality}
 										loading={isSpanishPostalCodesLoading}
 										searchable
 										checkIconPosition="right"
@@ -245,7 +273,7 @@ export default function NewAddressForm({
 											($) => $.people.newAddress.properties.municipality.label
 										)}
 										withAsterisk
-										disabled={!form.values.country}
+										disabled={!watchedFormValues.country}
 										key={form.key("municipality")}
 										{...form.getInputProps("municipality")}
 									/>
@@ -256,7 +284,7 @@ export default function NewAddressForm({
 											($) => $.people.newAddress.properties.postalCode.label
 										)}
 										withAsterisk
-										disabled={!form.values.country}
+										disabled={!watchedFormValues.country}
 										key={form.key("postalCode")}
 										{...form.getInputProps("postalCode")}
 									/>

@@ -7,6 +7,56 @@
 			"cannotChangeAccommodation": "No se puede cambiar el alojamiento de la reserva."
 		}
 	},
+	"auth": {
+		"login": {
+			"title": "Iniciar sesión",
+			"form": {
+				"username": {
+					"label": "Nombre de usuario",
+					"errors": {
+						"noUsername": "El nombre de usuario es obligatorio"
+					}
+				},
+				"password": {
+					"label": "Contraseña",
+					"errors": {
+						"noPassword": "La contraseña es obligatoria"
+					}
+				},
+				"rememberMe": { "label": "Mantener sesión iniciada" },
+				"submit": "Iniciar sesión"
+			},
+			"backendErrors": {
+				"BAD_CREDENTIALS": "Nombre de usuario o contraseña incorrectos",
+				"USER_DISABLED": "Usuario deshabilitado"
+			}
+		},
+		"createPassword": {
+			"title": "Crear contraseña",
+			"form": {
+				"newPassword": {
+					"label": "Nueva contraseña"
+				},
+				"submit": "Crear contraseña"
+			}
+		},
+		"updatePassword": {
+			"title": "Actualizar contraseña",
+			"form": {
+				"currentPassword": {
+					"label": "Contraseña actual",
+					"errors": {
+						"noCurrentPassword": "La contraseña actual es obligatoria",
+						"invalidCredentials": "La contraseña actual es incorrecta"
+					}
+				},
+				"newPassword": {
+					"label": "Nueva contraseña"
+				},
+				"submit": "Actualizar contraseña"
+			}
+		}
+	},
 	"checkIn": {
 		"verify-booking": {
 			"title": "1. Verificación de la reserva",

@@ -67,6 +67,10 @@ const modulesLocaleMap = {
 	i18nCountries: {
 		es: () => import("i18n-iso-countries/langs/es.json")
 		// en: () => import("i18n-iso-countries/langs/en.json")
+	},
+	zxcvbn: {
+		es: () => import("@zxcvbn-ts/language-es-es")
+		// en: () => import("@zxcvbn-ts/language-en")
 	}
 } satisfies Record<string, Record<SupportedLanguage, () => Promise<unknown>>>;
 

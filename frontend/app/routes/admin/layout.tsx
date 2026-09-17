@@ -1,4 +1,4 @@
-import { Outlet, NavLink as RouterNavLink } from "react-router";
+import { Outlet, redirect, NavLink as RouterNavLink } from "react-router";
 
 import { AppShell, Box, NavLink } from "@mantine/core";
 
@@ -20,8 +20,7 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	if (!(await AuthService.isAuthenticated()))
 		return AuthService.getLoginRedirection(request);
 
-	if (!(await AuthService.isAdmin()))
-		return AuthService.getLoginRedirection(request);
+	if (!(await AuthService.isAdmin())) return redirect("/");
 }
 
 export default function ProtectedAdminLayout() {

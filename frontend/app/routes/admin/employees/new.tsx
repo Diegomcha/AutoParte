@@ -23,6 +23,7 @@ export default function NewEmployee() {
 	);
 
 	const form = useForm({
+		mode: "uncontrolled",
 		initialValues: {
 			name: "",
 			surname: "",

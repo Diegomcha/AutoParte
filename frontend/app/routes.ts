@@ -42,7 +42,9 @@ export default [
 	route("auth", "./routes/auth/layout.tsx", [
 		index("./routes/auth/index.tsx"),
 		route("login", "./routes/auth/login.tsx"),
-		route("logout", "./routes/auth/logout.tsx")
+		route("logout", "./routes/auth/logout.tsx"),
+		route("create-password", "./routes/auth/createPassword.tsx"),
+		route("update-password", "./routes/auth/updatePassword.tsx")
 	]),
 	route("admin", "./routes/admin/layout.tsx", [
 		index("./routes/admin/index.tsx"),

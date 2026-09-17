@@ -11,6 +11,7 @@ import me.diegomcha.autoparte.domain.Employee;
 import org.jspecify.annotations.Nullable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -61,6 +62,8 @@ public class SecurityService {
         // Attempt authentication
         try {
             return authenticationManager.authenticate(authentication);
+        } catch (CredentialsExpiredException e) {
+            return authentication; // Return the authentication object even if credentials are expired, to allow password update
         } catch (AuthenticationException e) {
             throw new UnauthorizedException("Unauthorized");
         }

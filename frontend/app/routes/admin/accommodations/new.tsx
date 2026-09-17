@@ -20,6 +20,7 @@ export default function NewAccommodation() {
 	);
 
 	const form = useForm({
+		mode: "uncontrolled",
 		initialValues: {
 			name: "",
 			sesCode: "",

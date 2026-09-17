@@ -44,6 +44,7 @@ export default function EditAccommodation({
 	);
 
 	const form = useForm({
+		mode: "uncontrolled",
 		initialValues: {
 			name: accommodation.name,
 			sesCode: accommodation.sesCode,

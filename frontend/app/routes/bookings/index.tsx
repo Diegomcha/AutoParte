@@ -59,7 +59,7 @@ import NotificationsService from "~/services/NotificationsService";
 import TimeService from "~/services/TimeService";
 import Validators from "~/services/Validators";
 
-import type { BookingDtoResponse } from "~/@types/api";
+import type { BookingDtoRequest, BookingDtoResponse } from "~/@types/api";
 import type { Route } from "./+types/index";
 
 interface ContextType {
@@ -107,6 +107,7 @@ export default function BookingsPage({
 
 	// Some are '' others null depending on how the mantine inputs behave... It's not ideal
 	const form = useForm({
+		mode: "uncontrolled",
 		initialValues: {
 			date: [booking.startTime, booking.endTime],
 			numberOfPeople: booking.numberOfPeople,
@@ -154,40 +155,51 @@ export default function BookingsPage({
 				}
 			}
 		},
-		transformValues: (values) => ({
-			startTime: TimeService(values.date[0]).toISOString(),
-			endTime: TimeService(values.date[1]).toISOString(),
-			numberOfPeople: values.numberOfPeople,
-			payment:
-				values.payment.type == null
-					? undefined
-					: {
-							type: values.payment.type,
-							mean: values.payment.mean || undefined,
-							holder: values.payment.holder || undefined,
-							date: values.payment.date
-								? TimeService(values.payment.date).toISOString()
-								: undefined,
-							expiryDate:
-								values.payment.type === "CREDIT_CARD" &&
-								values.payment.expiryDate
-									? TimeService(values.payment.expiryDate, "MMYY").toISOString()
-									: undefined
-						},
-			numberOfRooms: values.numberOfRooms
-				? Number(values.numberOfRooms)
-				: undefined,
-			internetConnection:
-				values.internetConnection === "undefined"
-					? undefined
-					: values.internetConnection === "true"
-		}),
+		transformValues: (values) =>
+			({
+				startTime: TimeService(values.date[0]).toISOString(),
+				endTime: TimeService(values.date[1]).toISOString(),
+				numberOfPeople: values.numberOfPeople,
+				payment:
+					values.payment.type == null
+						? undefined
+						: {
+								type: values.payment.type,
+								mean: values.payment.mean || undefined,
+								holder: values.payment.holder || undefined,
+								date: values.payment.date
+									? TimeService(values.payment.date).toISOString()
+									: undefined,
+								expiryDate:
+									values.payment.type === "CREDIT_CARD" &&
+									values.payment.expiryDate
+										? TimeService(
+												values.payment.expiryDate,
+												"MMYY"
+											).toISOString()
+										: undefined
+							},
+				numberOfRooms: values.numberOfRooms
+					? Number(values.numberOfRooms)
+					: undefined,
+				internetConnection:
+					values.internetConnection === "undefined"
+						? undefined
+						: values.internetConnection === "true"
+			}) satisfies BookingDtoRequest,
 		onValuesChange: (values, previous) => {
 			if (values.payment.type !== previous.payment.type) {
 				form.clearFieldError("payment.expiryDate");
 			}
 		}
 	});
+
+	const watchedFormValues = {
+		payment: {
+			type: form.useWatchValue("payment.type"),
+			expiryDate: form.useWatchValue("payment.expiryDate")
+		}
+	};
 
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.update(accommodationId, bookingId)
@@ -451,7 +463,7 @@ export default function BookingsPage({
 											}
 										]}
 										highlightToday
-										disabled={form.values.payment.type == null}
+										disabled={watchedFormValues.payment.type == null}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("payment.date")}
 									/>
@@ -459,7 +471,7 @@ export default function BookingsPage({
 										key={form.key("payment.mean")}
 										name="payment.mean"
 										label={tBooking(($) => $.payment.mean)}
-										disabled={form.values.payment.type == null}
+										disabled={watchedFormValues.payment.type == null}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("payment.mean")}
 									/>
@@ -467,7 +479,7 @@ export default function BookingsPage({
 										key={form.key("payment.holder")}
 										name="payment.holder"
 										label={tBooking(($) => $.payment.holder)}
-										disabled={form.values.payment.type == null}
+										disabled={watchedFormValues.payment.type == null}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("payment.holder")}
 									/>
@@ -479,8 +491,8 @@ export default function BookingsPage({
 										placeholder={tBooking(
 											($) => $.payment.expiryDate.placeholder
 										)}
-										disabled={form.values.payment.type !== "CREDIT_CARD"}
-										defaultValue={form.values.payment.expiryDate}
+										disabled={watchedFormValues.payment.type !== "CREDIT_CARD"}
+										defaultValue={watchedFormValues.payment.expiryDate}
 										onChangeRaw={(raw) => {
 											form.setFieldValue("payment.expiryDate", raw, {
 												forceUpdate: false

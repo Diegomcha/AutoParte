@@ -33,6 +33,7 @@ export default function ConfigPage() {
 	const { data: config } = useSuspenseQuery(queryFactory.configuration.get());
 
 	const form = useForm({
+		mode: "uncontrolled",
 		initialValues: config,
 		validate: {
 			//TODO:

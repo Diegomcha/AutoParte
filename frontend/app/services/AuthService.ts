@@ -1,8 +1,8 @@
 import { redirect } from "react-router";
 
-import { executeMutation, queryClient, queryFactory } from "./Api";
+import { queryClient, queryFactory } from "./Api";
 
-import type { AccountDto } from "~/@types/api";
+import type { AccountDto, LoginRequest } from "~/@types/api";
 
 class AuthService {
 	/**
@@ -35,33 +35,21 @@ class AuthService {
 	}
 
 	/**
-	 * Performs login with the given credentials.
-	 * @param credentials The login credentials, including username, password, and an optional rememberMe flag.
-	 * @returns True if login was successful, false otherwise.
-	 */
-	async performLogin(credentials: {
-		username: string;
-		password: string;
-		rememberMe?: boolean;
-	}): Promise<boolean> {
-		return await executeMutation(queryFactory.auth.login(), credentials);
-	}
-
-	/**
-	 * Performs logout for the current user.
-	 * @returns True if logout was successful, false otherwise.
-	 */
-	async performLogout() {
-		return await executeMutation(queryFactory.auth.logout(), undefined);
-	}
-
-	/**
 	 * Gets the redirection to use based on the "redirect" query parameter in the request URL, or defaults to "/".
 	 * @param request The request containing the URL with potential "redirect" query parameter.
 	 * @returns A redirect response to the specified URL or "/" if not specified.
 	 */
 	getSuccessRedirection(request: Request): ReturnType<typeof redirect> {
-		return redirect(new URL(request.url).searchParams.get("redirect") ?? "/");
+		return redirect(this.getSuccessRedirectionPath(request.url));
+	}
+
+	/**
+	 * Gets the URL path to redirect to after successful login, based on the "redirect" query parameter in the request URL, or defaults to "/".
+	 * @param requestUrl The URL of the request containing the potential "redirect" query parameter.
+	 * @returns The URL path to redirect to after successful login, or "/" if not specified.
+	 */
+	getSuccessRedirectionPath(requestUrl: string): string {
+		return new URL(requestUrl).searchParams.get("redirect") ?? "/";
 	}
 
 	/**
@@ -84,6 +72,18 @@ class AuthService {
 		return path
 			? "/auth/login?redirect=" + encodeURIComponent(path)
 			: "/auth/login";
+	}
+
+	/**
+	 * Gets the URL path to redirect to the create password page with the provided username and current password as query parameters.
+	 * @param credentials The login credentials, including username and password.
+	 * @returns The URL path to redirect to the create password page with the provided username and current password as query parameters.
+	 */
+	getCreatePasswordRedirectionPath(
+		credentials: Required<LoginRequest>,
+		successRedirection: string
+	): string {
+		return `/auth/create-password?username=${encodeURIComponent(credentials.username)}&currentPassword=${encodeURIComponent(credentials.password)}&redirect=${encodeURIComponent(successRedirection)}`;
 	}
 }
 

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useNavigate } from "react-router";
 
 import { Button, Group, Modal } from "@mantine/core";
@@ -36,7 +37,10 @@ export default function DeleteBooking({
 	});
 	const { t: tCommon } = useTranslation();
 
-	const { opened, close } = useStaticModalTransition(() => void navigate(".."));
+	const deletedRef = useRef(false);
+	const { opened, close } = useStaticModalTransition(() => {
+		void navigate(deletedRef.current ? "/" : "..");
+	});
 
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.delete(accommodationId, bookingId)
@@ -56,7 +60,10 @@ export default function DeleteBooking({
 					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: close
+							onSuccess: () => {
+								deletedRef.current = true;
+								close();
+							}
 						});
 					}}
 				>

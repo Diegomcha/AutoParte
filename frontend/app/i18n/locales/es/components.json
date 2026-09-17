@@ -91,5 +91,34 @@
 		"resources": "Alojamientos",
 		"resourceSlot": "Franja de alojamiento",
 		"agenda": "Agenda"
+	},
+	"newPasswordInput": {
+		"scoring": {
+			"0": {
+				"color": "gray",
+				"label": "Extremadamente débil"
+			},
+			"1": {
+				"color": "red",
+				"label": "Débil"
+			},
+			"2": {
+				"color": "orange",
+				"label": "Aceptable"
+			},
+			"3": {
+				"color": "yellow",
+				"label": "Relativamente fuerte"
+			},
+			"4": {
+				"color": "teal",
+				"label": "Fuerte"
+			}
+		},
+		"validatorErrors": {
+			"empty": "La contraseña no puede estar vacía",
+			"tooShort": "La contraseña debe tener al menos {{minLength}} caracteres",
+			"tooUnsecure": "La contraseña es demasiado débil"
+		}
 	}
 }

@@ -1,4 +1,4 @@
-import { useSubmit } from "react-router";
+import { useNavigate } from "react-router";
 
 import {
 	Button,
@@ -12,94 +12,98 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 
+import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import AuthService from "../../services/AuthService";
+import { queryFactory } from "~/services/Api";
+import AuthService from "~/services/AuthService";
 
-import type { LoginRequest } from "~/@types/api";
 import type { Route } from "./+types/login";
 
 export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 	// Redirect to the appropriate page if the user is already authenticated
 	if (await AuthService.isAuthenticated(true))
 		return AuthService.getSuccessRedirection(request);
-}
 
-export async function clientAction({ request }: Route.ClientActionArgs) {
-	const values = (await request.json()) as Required<LoginRequest>;
-	return await AuthService.performLogin(values);
+	return {
+		successRedirectPath: AuthService.getSuccessRedirectionPath(request.url)
+	};
 }
 
 export default function LoginPage({
-	actionData: logInSuccess
+	loaderData: { successRedirectPath }
 }: Route.ComponentProps) {
-	const { t } = useTranslation();
-	const submit = useSubmit();
+	const navigate = useNavigate();
+	const { t } = useTranslation("routes", { keyPrefix: "auth.login" });
+
+	const { mutate: login, isPending } = useMutation(queryFactory.auth.login());
 
 	const form = useForm({
+		mode: "uncontrolled",
 		initialValues: {
 			username: "",
 			password: "",
 			rememberMe: false
 		},
 		validate: {
-			username: isNotEmpty(t(($) => $.auth.login.form.errors.noUsername)),
-			password: isNotEmpty(t(($) => $.auth.login.form.errors.noPassword))
+			username: isNotEmpty(t(($) => $.form.username.errors.noUsername)),
+			password: isNotEmpty(t(($) => $.form.password.errors.noPassword))
 		}
 	});
-
-	// Handle login failure by setting a form error on the password field
-	if (logInSuccess === false) {
-		form.setFieldError(
-			"password",
-			t(($) => $.auth.login.form.errors.invalidCredentials)
-		);
-	}
 
 	return (
 		<Center bg="dark" h="100vh">
 			<Paper withBorder p="xl" w="100%" maw="28rem">
 				<Title ta="center" mb="lg">
-					{t(($) => $.auth.login.title)}
+					{t(($) => $.title)}
 				</Title>
 				<form
-					onSubmit={form.onSubmit((creds) =>
-						submit(creds, { encType: "application/json", method: "POST" })
-					)}
+					onSubmit={form.onSubmit((creds) => {
+						login(creds, {
+							onSuccess: (res) => {
+								if (res === true) void navigate(successRedirectPath);
+								else if (res === "USER_CREDENTIALS_EXPIRED")
+									void navigate(
+										AuthService.getCreatePasswordRedirectionPath(
+											creds,
+											successRedirectPath
+										)
+									);
+								else
+									form.setFieldError(
+										"password",
+										t(($) => $.backendErrors[res])
+									);
+							}
+						});
+					})}
 				>
 					<Stack>
 						<TextInput
 							key={form.key("username")}
-							name="username"
-							label={t(($) => $.auth.login.form.username)}
+							label={t(($) => $.form.username.label)}
+							autoComplete="username"
 							size="md"
 							radius="md"
 							{...form.getInputProps("username")}
 						/>
 						<PasswordInput
 							key={form.key("password")}
-							name="password"
-							label={t(($) => $.auth.login.form.password)}
-							type="password"
+							label={t(($) => $.form.password.label)}
+							autoComplete="current-password"
 							size="md"
 							radius="md"
 							{...form.getInputProps("password")}
 						/>
 						<Checkbox
 							key={form.key("rememberMe")}
-							name="remember-me"
-							label={t(($) => $.auth.login.form.rememberMe)}
+							label={t(($) => $.form.rememberMe.label)}
 							size="md"
 							radius="md"
 							{...form.getInputProps("rememberMe")}
 						/>
-						<Button
-							type="submit"
-							size="md"
-							radius="md"
-							loading={form.submitting}
-						>
-							{t(($) => $.auth.login.form.submit)}
+						<Button type="submit" size="md" radius="md" loading={isPending}>
+							{t(($) => $.form.submit)}
 						</Button>
 					</Stack>
 				</form>

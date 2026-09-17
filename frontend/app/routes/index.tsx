@@ -312,8 +312,12 @@ export default function ProtectedLayout({
 									<Menu.Divider />
 								</>
 							)}
+							<Menu.Label>{tCommon(($) => $.header.account.title)}</Menu.Label>
+							<Menu.Item component={Link} to="/auth/update-password">
+								{tCommon(($) => $.header.account.updatePassword)}
+							</Menu.Item>
 							<Menu.Item color="red" component={Link} to="/auth/logout">
-								{tCommon(($) => $.header.logout)}
+								{tCommon(($) => $.header.account.logout)}
 							</Menu.Item>
 						</Menu.Dropdown>
 					</Menu>

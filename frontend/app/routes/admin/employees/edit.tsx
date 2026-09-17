@@ -43,6 +43,7 @@ export default function EditEmployee({
 	);
 
 	const form = useForm({
+		mode: "uncontrolled",
 		initialValues: {
 			enabled: employee.enabled,
 			name: employee.name,
@@ -64,6 +65,10 @@ export default function EditEmployee({
 			)
 		}
 	});
+
+	const watchedFormValues = {
+		enabled: form.useWatchValue("enabled")
+	};
 
 	const { mutate: edit, isPending: isEditing } = useMutation(
 		queryFactory.employees.update(employee.id)
@@ -123,7 +128,7 @@ export default function EditEmployee({
 						variant="light"
 						{...form.getInputProps("enabled", { type: "checkbox" })}
 					>
-						{form.getValues().enabled
+						{watchedFormValues.enabled
 							? t(($) => $.admin.employees.properties.enabled.states.enabled)
 							: t(($) => $.admin.employees.properties.enabled.states.disabled)}
 					</Chip>

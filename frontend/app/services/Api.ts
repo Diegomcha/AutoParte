@@ -27,7 +27,8 @@ import type {
 	PageMetadata,
 	paths,
 	PersonDtoRequest,
-	ProblemDetail
+	ProblemDetail,
+	UpdatePasswordDto
 } from "../@types/api";
 
 const api = createFetchClient<paths, "*/*">({
@@ -55,6 +56,7 @@ api.use({
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
+			staleTime: Infinity, // Queries are considered fresh indefinitely
 			retry: (failureCount, error) => {
 				if (error.status >= 400 && error.status < 500) return false; // Don't retry for client errors
 				return failureCount < 3; // Retry up to 3 times for server errors
@@ -1064,7 +1066,6 @@ const queryFactory = {
 		countries: {
 			list: () =>
 				queryOptions({
-					staleTime: Infinity,
 					queryKey: ["catalogue", "countries"],
 					queryFn: async () =>
 						unwrapResponse(await api.GET("/api/catalogue/countries"))
@@ -1072,7 +1073,6 @@ const queryFactory = {
 			spanishProvinces: {
 				list: () =>
 					queryOptions({
-						staleTime: Infinity,
 						queryKey: [
 							...queryFactory.catalogue.countries.list().queryKey,
 							"ESP",
@@ -1086,7 +1086,6 @@ const queryFactory = {
 				municipalities: {
 					list: (provinceCode: string) =>
 						queryOptions({
-							staleTime: Infinity,
 							queryKey: [
 								...queryFactory.catalogue.countries.spanishProvinces.list()
 									.queryKey,
@@ -1104,7 +1103,6 @@ const queryFactory = {
 					postalCodes: {
 						list: (provinceCode: string, municipalityCode: string) =>
 							queryOptions({
-								staleTime: Infinity,
 								queryKey: [
 									...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
 										provinceCode
@@ -1134,21 +1132,18 @@ const queryFactory = {
 		},
 		genders: () =>
 			queryOptions({
-				staleTime: Infinity,
 				queryKey: ["catalogue", "genders"],
 				queryFn: async () =>
 					unwrapResponse(await api.GET("/api/catalogue/person/genders"))
 			}),
 		relationships: () =>
 			queryOptions({
-				staleTime: Infinity,
 				queryKey: ["catalogue", "relationships"],
 				queryFn: async () =>
 					unwrapResponse(await api.GET("/api/catalogue/person/relationships"))
 			}),
 		documentTypes: () =>
 			queryOptions({
-				staleTime: Infinity,
 				queryKey: ["catalogue", "documentTypes"],
 				queryFn: async () =>
 					unwrapResponse(await api.GET("/api/catalogue/document/types"))
@@ -1157,7 +1152,6 @@ const queryFactory = {
 	auth: {
 		me: () =>
 			queryOptions({
-				staleTime: Infinity,
 				queryKey: ["auth", "me"],
 				queryFn: async () => {
 					const res = await api.GET("/api/auth/me");
@@ -1183,7 +1177,19 @@ const queryFactory = {
 					});
 
 					// Handle 401 Unauthorized response (invalid credentials)
-					if (req.response.status === 401) return false;
+					if (req.response.status === 401) {
+						const error = req.error as ProblemDetail;
+
+						switch (error.detail) {
+							case "Bad credentials":
+								return "BAD_CREDENTIALS";
+							case "User credentials have expired":
+								return "USER_CREDENTIALS_EXPIRED";
+							case "User is disabled":
+								return "USER_DISABLED";
+						}
+					}
+
 					// Handle other non-OK responses
 					unwrapResponse(req);
 
@@ -1206,6 +1212,21 @@ const queryFactory = {
 				},
 				onSuccess: async () => {
 					await queryClient.invalidateQueries(queryFactory.auth.me());
+				}
+			}),
+		updatePassword: () =>
+			mutationOptions({
+				mutationFn: async (updatePasswordData: UpdatePasswordDto) => {
+					const response = await api.POST("/api/auth/update-password", {
+						body: updatePasswordData
+					});
+
+					// Handle invalid old password error (401)
+					if (response.response.status === 401) return false;
+
+					unwrapResponse(response);
+
+					return true;
 				}
 			})
 	},
