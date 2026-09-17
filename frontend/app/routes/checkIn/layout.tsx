@@ -84,7 +84,7 @@ export default function CheckInRoute({
 						<Stack gap={0} visibleFrom="md">
 							{/* Progress (nav) */}
 							<Stack component="nav" p={{ md: "xl", base: "lg" }} gap="lg">
-								<Title order={2} size="h5">
+								<Title order={3} size="h5">
 									{t(($) => $.progressSidebar.title)}
 								</Title>
 								<Stepper

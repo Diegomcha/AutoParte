@@ -38,6 +38,7 @@ export default [
 		route("input-guest-details", "./routes/checkIn/inputGuestDetails.tsx"),
 		route("send", "./routes/checkIn/send.tsx")
 	]),
+	route("check-in-completed", "./routes/checkIn/checkInCompleted.tsx"),
 	route("auth", "./routes/auth/layout.tsx", [
 		index("./routes/auth/index.tsx"),
 		route("login", "./routes/auth/login.tsx"),

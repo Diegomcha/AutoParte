@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 import {
 	Button,
@@ -13,7 +14,7 @@ import {
 import { useMediaQuery } from "@mantine/hooks";
 
 import { CheckIcon, SignatureIcon, SuitcaseIcon } from "@phosphor-icons/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import SignatureBox from "~/component/SignatureBox";
@@ -47,6 +48,8 @@ export async function clientLoader({
 export default function SendCheckIn({
 	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
+	const navigate = useNavigate();
+
 	const { t } = useTranslation("routes", {
 		keyPrefix: "checkIn.send"
 	});
@@ -54,6 +57,10 @@ export default function SendCheckIn({
 
 	const { data: people } = useSuspenseQuery(
 		queryFactory.accommodations.bookings.people.list(accommodationId, bookingId)
+	);
+
+	const { mutate: checkIn, isPending: isCheckingIn } = useMutation(
+		queryFactory.accommodations.bookings.checkIn(accommodationId, bookingId)
 	);
 
 	// Not everyone needs to sign
@@ -119,9 +126,16 @@ export default function SendCheckIn({
 						disabled={people.some(
 							(person) => person.mustSign && !person.hasSigned
 						)}
+						loading={isCheckingIn}
+						onClick={() => {
+							checkIn(undefined, {
+								onSuccess: () => {
+									void navigate("/check-in-completed");
+								}
+							});
+						}}
 					>
 						{tCommon(($) => $.buttons.finish)}
-						{/* TODO: Implement */}
 					</Button>
 				</Group>
 			</Stack>

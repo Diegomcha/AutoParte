@@ -38,6 +38,10 @@
 				}
 			}
 		},
+		"checkInCompleted": {
+			"title": "¡Registro completado!",
+			"description": "Ya puede salir de la página, su registro ha sido completado con éxito.\nGracias por utilizar nuestro servicio."
+		},
 		"progressSidebar": {
 			"title": "Tu progreso",
 			"description": "Sigue tu progreso a medida que completas cada paso del proceso de registro",

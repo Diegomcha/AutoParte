@@ -22,7 +22,7 @@ export default function CheckInBookingDetailsSidebar({
 
 	return (
 		<Stack p="xl" gap="lg" {...props}>
-			<Title order={4} size="h5">
+			<Title order={3} size="h5">
 				{t(($) => $.title)}
 			</Title>
 			<DataList component="section">
