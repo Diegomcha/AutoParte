@@ -49,7 +49,7 @@ import {
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import BookingStatusBadge from "~/component/BookingStatusBadge";
+import BookingStatusBadge from "~/component/bookings/BookingStatusBadge";
 import BooleanInputWithUndefined from "~/component/BooleanInputWithUndefined";
 import CommunicationTimelineItem from "~/component/CommunicationTimelineItem";
 import ComplexRequiredAsterisk from "~/component/ComplexRequiredLabel";
@@ -611,6 +611,7 @@ export default function BookingsPage({
 											color={t(($) => $.cancelSelfCheckIn.color)}
 											disabled={form.isDirty()}
 											loading={isPending}
+											flex={1}
 										>
 											{t(($) => $.cancelSelfCheckIn.button)}
 										</Button>

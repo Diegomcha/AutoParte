@@ -29,31 +29,31 @@
 					},
 					"CONFIRMATION_READY": {
 						"label": "Lista para confirmar",
-						"color": "blue"
+						"color": "teal.1"
 					},
 					"PENDING_CONFIRMATION": {
 						"label": "Pendiente de confirmar",
-						"color": "yellow"
+						"color": "teal.3"
 					},
 					"CONFIRMED": {
 						"label": "Confirmada",
-						"color": "pink"
+						"color": "teal"
 					},
 					"CHECK_IN_READY": {
 						"label": "Lista para registrar",
-						"color": "violet"
+						"color": "cyan.1"
 					},
 					"PENDING_CHECK_IN": {
 						"label": "Pendiente de registrar",
-						"color": "yellow"
+						"color": "cyan.3"
 					},
 					"CHECKED_IN": {
 						"label": "Registrada",
-						"color": "green"
+						"color": "cyan"
 					},
 					"PENDING_CANCELLATION": {
 						"label": "Pendiente de cancelar",
-						"color": "yellow"
+						"color": "gray.3"
 					},
 					"CANCELLED": {
 						"label": "Cancelada",

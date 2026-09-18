@@ -14,5 +14,6 @@ export const theme = createTheme({
 				size: "sm"
 			}
 		})
-	}
+	},
+	autoContrast: true
 });
