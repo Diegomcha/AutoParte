@@ -123,6 +123,10 @@
 				"buttonDisabled": "Gestionar viajeros (deshabilitado mientras se edita el número de personas)"
 			}
 		},
+		"people": {
+			"title": "Gestión de viajeros",
+			"requirement": "Para confirmar la reserva solo se necesitan los datos del titular; para registrar la entrada, los de todos los huéspedes."
+		},
 		"requestSelfCheckIn": {
 			"button": "Solicitar auto-registro",
 			"color": "violet",

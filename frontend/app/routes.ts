@@ -3,8 +3,6 @@ import { index, route } from "@react-router/dev/routes";
 import type { RouteConfig } from "@react-router/dev/routes";
 
 export default [
-	// TODO: REMOVE!
-	route("test", "./routes/test.tsx"),
 	route("/", "./routes/index.tsx", [
 		route(
 			"/accommodations/:accommodationId/bookings/:bookingId",
@@ -14,7 +12,8 @@ export default [
 					index("./routes/bookings/people/index.tsx"),
 					route("new", "./routes/bookings/people/new.tsx"),
 					route(":id", "./routes/bookings/people/edit.tsx", [
-						route("delete", "./routes/bookings/people/delete.tsx")
+						route("delete", "./routes/bookings/people/delete.tsx"),
+						route("signature", "./routes/bookings/people/signature.tsx")
 					])
 				]),
 				route("confirm", "./routes/bookings/confirm.tsx"),

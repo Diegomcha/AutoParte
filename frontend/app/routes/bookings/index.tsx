@@ -62,7 +62,7 @@ import Validators from "~/services/Validators";
 import type { BookingDtoRequest, BookingDtoResponse } from "~/@types/api";
 import type { Route } from "./+types/index";
 
-interface ContextType {
+export interface BookingsContextType {
 	booking: BookingDtoResponse;
 }
 
@@ -654,11 +654,11 @@ export default function BookingsPage({
 					</Group>
 				</form>
 			</Modal>
-			<Outlet context={{ booking } satisfies ContextType} />
+			<Outlet context={{ booking } satisfies BookingsContextType} />
 		</>
 	);
 }
 
 export function useBooking() {
-	return useOutletContext<ContextType>().booking;
+	return useOutletContext<BookingsContextType>().booking;
 }

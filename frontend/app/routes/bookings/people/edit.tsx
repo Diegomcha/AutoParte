@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, useOutletContext } from "react-router";
 
 import { useBooking } from "..";
 
@@ -6,7 +6,13 @@ import PersonForm from "~/component/PersonForm";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
 
+import type { PersonDtoResponse } from "~/@types/api";
+import type { BookingsContextType } from "..";
 import type { Route } from "./+types/edit";
+
+export interface EditPersonOutletContext extends BookingsContextType {
+	person: PersonDtoResponse;
+}
 
 export async function clientLoader({
 	params: { accommodationId, bookingId, id }
@@ -39,7 +45,11 @@ export default function EditPerson({
 				person={person}
 				readOnly={!booking.canBeModified}
 			/>
-			<Outlet context={{ booking }} />
+			<Outlet context={{ booking, person } satisfies EditPersonOutletContext} />
 		</>
 	);
+}
+
+export function usePerson() {
+	return useOutletContext<EditPersonOutletContext>().person;
 }

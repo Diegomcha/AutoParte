@@ -70,6 +70,19 @@ public class Person extends BaseEntity {
     }
 
     /**
+     * Sets the personal information for the Person instance.
+     *
+     * @param personalInfo The personal information to be associated with the Person instance. Must not be null.
+     * @implNote If the personal information indicates that the person does not need to sign and a signature is already present, the signature will be removed.
+     */
+    public void setPersonalInfo(@NonNull PersonalInfo personalInfo) {
+        if (Boolean.FALSE.equals(personalInfo.mustSign()) && this.signature != null)
+            this.signature = null;
+
+        this.personalInfo = personalInfo;
+    }
+
+    /**
      * Sets the address for the Person instance and manages the bidirectional relationship between Person and Address.
      *
      * @param address The address to be associated with the Person instance. Can be null.

@@ -151,5 +151,11 @@
 			"resourceSlot": "Franja de alojamiento",
 			"agenda": "Agenda"
 		}
+	},
+	"personForm": {
+		"signature": {
+			"button": "Ver firma",
+			"notSigned": "No ha sido firmado todavía"
+		}
 	}
 }

@@ -283,6 +283,19 @@
 					"undefined": "El número de soporte es obligatorio para NIF/NIE"
 				}
 			}
+		},
+		"signature": {
+			"label": "Firma",
+			"status": {
+				"mustSign": {
+					"label": "Debe firmar el parte de entrada de viajeros",
+					"color": "gray"
+				},
+				"hasSigned": {
+					"label": "Ha firmado el parte de entrada de viajeros",
+					"color": "green"
+				}
+			}
 		}
 	}
 }

@@ -15,7 +15,9 @@ import type { Route } from "./+types/layout";
 export default function BookingPeople({
 	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "bookings.people"
+	});
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -30,11 +32,11 @@ export default function BookingPeople({
 		<Modal
 			opened={opened}
 			onClose={close}
-			title={t(($) => $.people.title)}
+			title={t(($) => $.title)}
 			size="auto"
 		>
 			<Text size="xs" c="gray" mb={"sm"}>
-				{t(($) => $.people.requirement)}
+				{t(($) => $.requirement)}
 			</Text>
 			{/* People switcher */}
 			<Tabs mb="md" value={location.pathname} w={0} miw={"100%"}>

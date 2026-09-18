@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router";
 
 import {
 	ActionIcon,
@@ -10,7 +11,8 @@ import {
 	Space,
 	Stack,
 	Text,
-	TextInput
+	TextInput,
+	Tooltip
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { formRootRule, isEmail, isNotEmpty, useForm } from "@mantine/form";
@@ -18,7 +20,8 @@ import { formRootRule, isEmail, isNotEmpty, useForm } from "@mantine/form";
 import {
 	ArrowUUpLeftIcon,
 	FloppyDiskIcon,
-	ScanIcon
+	ScanIcon,
+	SignatureIcon
 } from "@phosphor-icons/react";
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -63,9 +66,9 @@ export default function PersonForm({
 	const { t: tPerson } = useTranslation("entities", {
 		keyPrefix: "person"
 	});
-	// const { t } = useTranslation("components", {
-	// 	keyPrefix: "personForm"
-	// });
+	const { t } = useTranslation("components", {
+		keyPrefix: "personForm"
+	});
 
 	const { countries, genders, relationships, documentTypes } =
 		useSuspenseQueries({
@@ -275,6 +278,9 @@ export default function PersonForm({
 						onSuccess: () => {
 							onUpdatedPerson?.(person.id);
 							form.resetDirty();
+
+							// Avoids race-conditions
+							onSubmit?.();
 						}
 					});
 				// Handle creating
@@ -283,10 +289,11 @@ export default function PersonForm({
 						onSuccess: (created) => {
 							onCreatedPerson?.(created.id);
 							form.resetDirty();
+
+							// Avoids race-conditions
+							onSubmit?.();
 						}
 					});
-
-				onSubmit?.();
 			})}
 			onReset={form.onReset}
 		>
@@ -492,27 +499,49 @@ export default function PersonForm({
 					</SimpleGrid>
 				</Fieldset>
 				<Group>
-					<Button
-						onClick={() => {
-							setMode("scanning");
-						}}
-						leftSection={<ScanIcon weight="bold" size={16} />}
-						hidden={readOnly}
-						visibleFrom="xs"
-					>
-						{tCommon(($) => $.buttons.scan)}
-					</Button>
-					<ActionIcon
-						variant="light"
-						size="input-sm"
-						onClick={() => {
-							setMode("scanning");
-						}}
-						hidden={readOnly}
-						hiddenFrom="xs"
-					>
-						<ScanIcon weight="bold" size={16} />
-					</ActionIcon>
+					<Group gap="xs">
+						{/* Scan button */}
+						<Button
+							onClick={() => {
+								setMode("scanning");
+							}}
+							leftSection={<ScanIcon weight="bold" size={16} />}
+							hidden={readOnly}
+							visibleFrom="xs"
+						>
+							{tCommon(($) => $.buttons.scan)}
+						</Button>
+						<ActionIcon
+							variant="light"
+							size="input-sm"
+							onClick={() => {
+								setMode("scanning");
+							}}
+							hidden={readOnly}
+							hiddenFrom="xs"
+						>
+							<ScanIcon weight="bold" size={16} />
+						</ActionIcon>
+						{/* Signature button */}
+						<Tooltip
+							label={t(($) => $.signature.notSigned)}
+							hidden={person?.hasSigned}
+						>
+							<Button
+								component={Link}
+								to={`/accommodations/${accommodationId}/bookings/${bookingId}/people/${person?.id ?? "unknown"}/signature`}
+								leftSection={<SignatureIcon weight="bold" size={16} />}
+								hidden={
+									checkInMode ??
+									mustSign(watchedFormValues.personalInfo.birthDate) !== true
+								}
+								disabled={!person?.hasSigned}
+								color="violet"
+							>
+								{t(($) => $.signature.button)}
+							</Button>
+						</Tooltip>
+					</Group>
 					<div style={{ flex: 1 }} />
 					<Group gap="xs">
 						<Button
@@ -552,6 +581,18 @@ export default function PersonForm({
 function isAdult(birthDate?: string) {
 	return birthDate
 		? TimeService().diff(TimeService(birthDate), "year") >= 18
+		: undefined;
+}
+
+/**
+ * Returns whether the person is a minor (under 14 years old) based on their birth date.
+ * May return undefined if the birth date is not provided.
+ * @param birthDate String representing the person's birth date.
+ * @returns True if the person is a minor, false if they are an adult, or undefined if the birth date is not provided.
+ */
+function mustSign(birthDate?: string) {
+	return birthDate
+		? TimeService().diff(TimeService(birthDate), "year") >= 14
 		: undefined;
 }
 
