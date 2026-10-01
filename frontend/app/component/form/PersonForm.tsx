@@ -26,15 +26,14 @@ import {
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
+import ComplexRequiredAsterisk from "~/component/ComplexRequiredLabel";
+import AddressSelect from "~/component/input/AddressSelect";
+import CountrySelect from "~/component/input/CountrySelect";
+import DocumentScanner from "~/component/input/DocumentScanner";
+import PhoneInput, { isValidPhoneNumber } from "~/component/input/PhoneInput";
 import { queryFactory } from "~/services/Api";
 import CountryService from "~/services/CountryService";
 import TimeService from "~/services/TimeService";
-
-import AddressSelect from "./AddressSelect";
-import ComplexRequiredAsterisk from "./ComplexRequiredLabel";
-import CountrySelect from "./CountrySelect";
-import DocumentScanner from "./DocumentScanner";
-import PhoneInput, { isValidPhoneNumber } from "./PhoneInput";
 
 import type { PersonDtoRequest, PersonDtoResponse } from "~/@types/api";
 import type { CountryCode } from "~/services/CountryService";

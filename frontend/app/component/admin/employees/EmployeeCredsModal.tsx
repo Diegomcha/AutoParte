@@ -21,21 +21,23 @@ export default function EmployeeCredsModal({
 	creds: EmployeeDtoCredentialsResponse;
 	description: string;
 }) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("components", {
+		keyPrefix: "employeeCredsModal"
+	});
 
 	return (
 		<Modal {...props}>
 			<Stack>
 				<Alert color="yellow" icon={<WarningIcon weight="bold" />}>
-					{t(($) => $.admin.employees.credentials.warning)}
+					{t(($) => $.warning)}
 				</Alert>
 				<Text>{description}</Text>
-				<Fieldset legend={t(($) => $.admin.employees.credentials.title)}>
+				<Fieldset legend={t(($) => $.title)}>
 					<TextInput
 						readOnly
 						leftSectionPointerEvents="none"
 						leftSection={<AtIcon />}
-						label={t(($) => $.admin.employees.credentials.fields.username)}
+						label={t(($) => $.fields.username)}
 						value={creds.email}
 						onClick={(event) => {
 							event.currentTarget.select();
@@ -45,7 +47,7 @@ export default function EmployeeCredsModal({
 						readOnly
 						leftSectionPointerEvents="none"
 						leftSection={<AsteriskIcon />}
-						label={t(($) => $.admin.employees.credentials.fields.password)}
+						label={t(($) => $.fields.password)}
 						value={creds.password}
 						onClick={(event) => {
 							event.currentTarget.select();

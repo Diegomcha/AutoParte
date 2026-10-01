@@ -7,7 +7,6 @@ import common from "./locales/es/common.json";
 import components from "./locales/es/components.json";
 import entities from "./locales/es/entities.json";
 import routes from "./locales/es/routes.json";
-import services from "./locales/es/services.json";
 
 import type { InitOptions } from "i18next";
 
@@ -17,13 +16,12 @@ export const i18nConfig = {
 	supportedLngs: ["es"],
 	defaultNS: "common",
 	fallbackNS: "common",
-	ns: ["common", "components", "services", "routes", "entities"],
+	ns: ["common", "components", "routes", "entities"],
 	// Preload the default language resources
 	resources: {
 		es: {
 			common,
 			components,
-			services,
 			routes,
 			entities
 		}

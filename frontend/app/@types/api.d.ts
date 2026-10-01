@@ -394,6 +394,23 @@ export interface paths {
         patch: operations["updateEmployee"];
         trace?: never;
     };
+    "/api/communications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get all communications */
+        get: operations["getGlobalCommunications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/catalogue/person/relationships": {
         parameters: {
             query?: never;
@@ -556,6 +573,91 @@ export interface paths {
         };
         /** Get address by id */
         get: operations["getAddressById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List accounts */
+        get: operations["getAccounts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accounts/{accountId}/security-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List security events by account */
+        get: operations["getSecurityEventsByAccount"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accounts/global/security-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List security events */
+        get: operations["getSecurityEvents"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accommodations/{accommodationId}/communications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get accommodation communications */
+        get: operations["getAccommodationCommunications"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accommodations/{accommodationId}/bookings/{bookingId}/communications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get booking communications */
+        get: operations["getBookingCommunications"];
         put?: never;
         post?: never;
         delete?: never;
@@ -767,6 +869,30 @@ export interface components {
             digitalSignatureEnabled: boolean;
             manualReviewEnabled: boolean;
         };
+        CommunicationDtoResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: uuid */
+            accommodationId: string;
+            accommodationName: string;
+            /** Format: uuid */
+            bookingId: string;
+            /** @enum {string} */
+            type: "BOOKING" | "CHECKIN" | "CANCELLATION";
+            /** @enum {string} */
+            status: "PENDING" | "SENT" | "SUCCEEDED" | "FAILED" | "PENDING_VOIDED" | "VOIDED";
+            /** Format: date-time */
+            sentTimestamp?: string;
+            error?: string;
+        };
+        PagedModelCommunicationDtoResponse: {
+            content?: components["schemas"]["CommunicationDtoResponse"][];
+            page?: components["schemas"]["PageMetadata"];
+        };
         ProvinceMunicipalityCodesDto: {
             provinceCode?: string;
             municipalityCode?: string;
@@ -787,6 +913,47 @@ export interface components {
             municipality: string;
             postalCode: string;
             country: string;
+        };
+        AccountDtoFull: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            enabled: boolean;
+            /** Format: date-time */
+            disabledAt?: string;
+            requiresReset: boolean;
+            username: string;
+            roles: string[];
+            /** Format: uuid */
+            employeeId?: string;
+        };
+        PagedModelAccountDtoFull: {
+            content?: components["schemas"]["AccountDtoFull"][];
+            page?: components["schemas"]["PageMetadata"];
+        };
+        PagedModelSecurityEventDto: {
+            content?: components["schemas"]["SecurityEventDto"][];
+            page?: components["schemas"]["PageMetadata"];
+        };
+        SecurityEventDto: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: uuid */
+            accountId: string;
+            /** Format: date-time */
+            timestamp: string;
+            /** @enum {string} */
+            type: "LOGIN" | "LOGOUT" | "PASSWORD_CHANGE" | "LOGIN_FAILED_CREDENTIALS" | "LOGIN_FAILED_CREDENTIALS_EXPIRED" | "LOGIN_FAILED_ACCOUNT_DISABLED" | "LOGIN_FAILED_ACCOUNT_LOCKED";
+            /** @enum {string} */
+            method: "USERNAME_PASSWORD" | "REMEMBER_ME";
+            remoteAddress: string;
         };
         AccommodationDtoEmployeeResponse: {
             enabled: boolean;
@@ -843,18 +1010,6 @@ export interface components {
             internetConnection?: boolean;
             holderName?: string;
             accommodationName: string;
-            communications: components["schemas"]["CommunicationDtoResponse"][];
-        };
-        CommunicationDtoResponse: {
-            /** Format: uuid */
-            id: string;
-            /** @enum {string} */
-            type: "BOOKING" | "CHECKIN" | "CANCELLATION";
-            /** @enum {string} */
-            status: "PENDING" | "SENT" | "SUCCEEDED" | "FAILED" | "PENDING_VOIDED" | "VOIDED";
-            /** Format: date-time */
-            sentTimestamp?: string;
-            error?: string;
         };
         PagedModelBookingDtoResponse: {
             content?: components["schemas"]["BookingDtoResponse"][];
@@ -954,14 +1109,19 @@ export type EmployeeDtoResponse = components['schemas']['EmployeeDtoResponse'];
 export type PageMetadata = components['schemas']['PageMetadata'];
 export type PagedModelEmployeeDtoResponse = components['schemas']['PagedModelEmployeeDtoResponse'];
 export type ConfigDtoResponse = components['schemas']['ConfigDtoResponse'];
+export type CommunicationDtoResponse = components['schemas']['CommunicationDtoResponse'];
+export type PagedModelCommunicationDtoResponse = components['schemas']['PagedModelCommunicationDtoResponse'];
 export type ProvinceMunicipalityCodesDto = components['schemas']['ProvinceMunicipalityCodesDto'];
 export type AccountDto = components['schemas']['AccountDto'];
 export type AddressDtoResponse = components['schemas']['AddressDtoResponse'];
+export type AccountDtoFull = components['schemas']['AccountDtoFull'];
+export type PagedModelAccountDtoFull = components['schemas']['PagedModelAccountDtoFull'];
+export type PagedModelSecurityEventDto = components['schemas']['PagedModelSecurityEventDto'];
+export type SecurityEventDto = components['schemas']['SecurityEventDto'];
 export type AccommodationDtoEmployeeResponse = components['schemas']['AccommodationDtoEmployeeResponse'];
 export type AccommodationDtoResponse = components['schemas']['AccommodationDtoResponse'];
 export type PagedModelAccommodationDtoResponse = components['schemas']['PagedModelAccommodationDtoResponse'];
 export type BookingDtoResponse = components['schemas']['BookingDtoResponse'];
-export type CommunicationDtoResponse = components['schemas']['CommunicationDtoResponse'];
 export type PagedModelBookingDtoResponse = components['schemas']['PagedModelBookingDtoResponse'];
 export type PaymentDtoResponse = components['schemas']['PaymentDtoResponse'];
 export type ContactInfoDtoResponse = components['schemas']['ContactInfoDtoResponse'];
@@ -2984,6 +3144,51 @@ export interface operations {
             };
         };
     };
+    getGlobalCommunications: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagedModelCommunicationDtoResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
     getPersonRelationships: {
         parameters: {
             query?: never;
@@ -3361,6 +3566,258 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["AddressDtoResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getAccounts: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagedModelAccountDtoFull"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getSecurityEventsByAccount: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path: {
+                accountId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagedModelSecurityEventDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getSecurityEvents: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagedModelSecurityEventDto"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getAccommodationCommunications: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index (0..N) */
+                page?: number;
+                /** @description The size of the page to be returned */
+                size?: number;
+                /** @description Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported. */
+                sort?: string[];
+            };
+            header?: never;
+            path: {
+                accommodationId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PagedModelCommunicationDtoResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getBookingCommunications: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                accommodationId: string;
+                bookingId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CommunicationDtoResponse"][];
                 };
             };
             /** @description Bad Request */

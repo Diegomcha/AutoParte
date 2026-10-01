@@ -24,22 +24,26 @@ export default function ViewEmployee({
 	loaderData: { employee }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.employees.view"
+	});
+	const { t: tEmployee } = useTranslation("entities", {
+		keyPrefix: "employee"
+	});
+	const { t: tEntity } = useTranslation("entities", {
+		keyPrefix: "common"
+	});
 
 	const { opened, close } = useStaticModalTransition(
 		() => void navigate("/admin/employees")
 	);
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.admin.employees.view.title)}
-		>
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
 			<DataList labelWidth={160}>
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.admin.employees.properties.enabled.label)}
+						{tEmployee(($) => $.enabled.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
 						<Chip
@@ -49,18 +53,18 @@ export default function ViewEmployee({
 							color="green"
 							variant="light"
 						>
-							{employee.enabled
-								? t(($) => $.admin.employees.properties.enabled.states.enabled)
-								: t(
-										($) => $.admin.employees.properties.enabled.states.disabled
-									)}
+							{tEmployee(($) =>
+								employee.enabled
+									? $.enabled.states.enabled
+									: $.enabled.states.disabled
+							)}
 						</Chip>
 					</DataList.ItemValue>
 				</DataList.Item>
 				<Divider />
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.common.properties.createdAt)}
+						{tEntity(($) => $.createdAt.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
 						{TimeService(employee.createdAt).fromNow()}
@@ -68,7 +72,7 @@ export default function ViewEmployee({
 				</DataList.Item>
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.common.properties.updatedAt)}
+						{tEntity(($) => $.updatedAt.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
 						{TimeService(employee.updatedAt).fromNow()}
@@ -77,30 +81,30 @@ export default function ViewEmployee({
 				<Divider />
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.admin.employees.properties.name.label)}
+						{tEmployee(($) => $.name.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>{employee.name}</DataList.ItemValue>
 				</DataList.Item>
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.admin.employees.properties.surname.label)}
+						{tEmployee(($) => $.surname.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>{employee.surname}</DataList.ItemValue>
 				</DataList.Item>
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.admin.employees.properties.email.label)}
+						{tEmployee(($) => $.email.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>{employee.email}</DataList.ItemValue>
 				</DataList.Item>
 				<Divider />
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.admin.employees.properties.accommodations.label)}
+						{tEmployee(($) => $.accommodations.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
 						{employee.accommodations.length === 0 ? (
-							t(($) => $.admin.employees.properties.accommodations.none)
+							tEmployee(($) => $.accommodations.value, { count: 0 })
 						) : (
 							<Stack gap={4}>
 								{employee.accommodations.map((accommodation) => (

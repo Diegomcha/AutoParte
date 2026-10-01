@@ -14,7 +14,12 @@ import type { Props } from "react-phone-number-input/input";
 export function isValidPhoneNumber(error?: ReactNode) {
 	return (value: Value | undefined) => {
 		if (value && !parsePhoneNumberFromString(value)?.isValid())
-			return error ?? t(($) => $.phoneInput.errors.invalidPhoneNumber);
+			return (
+				error ??
+				t(($) => $.phoneInput.errors.invalidPhoneNumber, {
+					ns: "components"
+				})
+			);
 	};
 }
 

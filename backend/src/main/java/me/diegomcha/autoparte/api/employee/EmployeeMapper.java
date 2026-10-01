@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.api.employee;
 
+import me.diegomcha.autoparte.api.common.PageableMapper;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCreate;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoCredentialsResponse;
 import me.diegomcha.autoparte.api.employee.dto.EmployeeDtoPatch;
@@ -8,9 +9,12 @@ import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Employee;
 import org.mapstruct.*;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.util.Map;
 
 @Mapper(componentModel = "spring")
-abstract class EmployeeMapper {
+abstract class EmployeeMapper extends PageableMapper {
 
     @Mapping(target = "enabled", source = "account.enabled")
     @Mapping(target = "disabledAt", source = "account.disabledAt")
@@ -28,6 +32,15 @@ abstract class EmployeeMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "email", qualifiedByName = "normalizeEmail")
     public abstract void patchEmployee(EmployeeDtoPatch patch, @MappingTarget Employee employee);
+
+    @Override
+    public Pageable translatePageable(Pageable pageable) {
+        return translatePageable(Map.of(
+                "enabled", "account.enabled",
+                "disabledAt", "account.disabledAt",
+                "email", "account.username"
+        ), pageable);
+    }
 
     // Helpers
 

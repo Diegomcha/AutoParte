@@ -15,7 +15,7 @@ import { FloppyDiskIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import BooleanInputWithUndefined from "~/component/BooleanInputWithUndefined";
+import BooleanInputWithUndefined from "~/component/input/BooleanInputWithUndefined";
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
@@ -37,7 +37,13 @@ export default function EditAccommodation({
 	loaderData: { accommodation, availableEmployees }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.accommodations.edit"
+	});
+	const { t: tCommon } = useTranslation();
+	const { t: tAccommodation } = useTranslation("entities", {
+		keyPrefix: "accommodation"
+	});
 
 	const { opened, close } = useStaticModalTransition(
 		() => void navigate("/admin/accommodations")
@@ -52,12 +58,8 @@ export default function EditAccommodation({
 			internetConnection: String(accommodation.internetConnection ?? undefined)
 		},
 		validate: {
-			name: isNotEmpty(
-				t(($) => $.admin.accommodations.properties.name.errors.noName)
-			),
-			sesCode: isNotEmpty(
-				t(($) => $.admin.accommodations.properties.sesCode.errors.noSesCode)
-			)
+			name: isNotEmpty(tAccommodation(($) => $.name.errors.noName)),
+			sesCode: isNotEmpty(tAccommodation(($) => $.sesCode.errors.noSesCode))
 		},
 		transformValues: (values) => ({
 			...values,
@@ -81,11 +83,7 @@ export default function EditAccommodation({
 	const isPending = isEditing || isLinkingEmployees || isUnlinkingEmployees;
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.admin.accommodations.edit.title)}
-		>
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
 			<form
 				onSubmit={form.onSubmit((data) => {
 					edit(data, {
@@ -94,19 +92,12 @@ export default function EditAccommodation({
 								if (errorCode === "NAME_IN_USE") {
 									form.setFieldError(
 										"name",
-										t(
-											($) =>
-												$.admin.accommodations.properties.name.errors.nameInUse
-										)
+										tAccommodation(($) => $.name.errors.nameInUse)
 									);
 								} else {
 									form.setFieldError(
 										"sesCode",
-										t(
-											($) =>
-												$.admin.accommodations.properties.sesCode.errors
-													.sesCodeInUse
-										)
+										tAccommodation(($) => $.sesCode.errors.sesCodeInUse)
 									);
 								}
 								return;
@@ -135,14 +126,14 @@ export default function EditAccommodation({
 						<TextInput
 							key={form.key("name")}
 							name="name"
-							label={t(($) => $.admin.accommodations.properties.name.label)}
+							label={tAccommodation(($) => $.name.label)}
 							withAsterisk
 							{...form.getInputProps("name")}
 						/>
 						<TextInput
 							key={form.key("sesCode")}
 							name="sesCode"
-							label={t(($) => $.admin.accommodations.properties.sesCode.label)}
+							label={tAccommodation(($) => $.sesCode.label)}
 							withAsterisk
 							{...form.getInputProps("sesCode")}
 						/>
@@ -150,23 +141,19 @@ export default function EditAccommodation({
 					<BooleanInputWithUndefined
 						key={form.key("internetConnection")}
 						name="internetConnection"
-						label={t(
-							($) => $.admin.accommodations.properties.internetConnection.label
-						)}
+						label={tAccommodation(($) => $.internetConnection.label)}
 						withAsterisk
 						{...form.getInputProps("internetConnection")}
 					/>
 					<Space />
 					<MultiSelect
 						key={form.key("employees")}
-						label={t(($) => $.admin.accommodations.properties.employees.label)}
+						label={tAccommodation(($) => $.employees.label)}
 						data={availableEmployees.map((employee) => ({
 							value: employee.id,
 							label: `${employee.name} ${employee.surname}`
 						}))}
-						nothingFoundMessage={t(
-							($) => $.admin.accommodations.edit.form.noAvailableEmployees
-						)}
+						nothingFoundMessage={t(($) => $.form.noAvailableEmployees)}
 						{...form.getInputProps("employees")}
 					/>
 				</Stack>
@@ -176,7 +163,7 @@ export default function EditAccommodation({
 						loading={isPending}
 						leftSection={<FloppyDiskIcon />}
 					>
-						{t(($) => $.buttons.save)}
+						{tCommon(($) => $.buttons.save)}
 					</Button>
 				</Group>
 			</form>

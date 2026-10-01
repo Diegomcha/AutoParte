@@ -5,6 +5,6 @@ import me.diegomcha.autoparte.domain.Account;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-interface AccountMapper {
+interface AuthMapper {
     AccountDto toDto(Account account);
 }

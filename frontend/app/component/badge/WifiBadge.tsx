@@ -14,10 +14,16 @@ export default function WifiBadge({
 	return (
 		<BooleanBadge
 			value={value}
-			icons={{
-				true: <WifiHighIcon />,
-				false: <WifiSlashIcon />,
-				undefined: <QuestionMarkIcon />
+			displayOpts={{
+				true: {
+					icon: <WifiHighIcon />
+				},
+				false: {
+					icon: <WifiSlashIcon />
+				},
+				null: {
+					icon: <QuestionMarkIcon />
+				}
 			}}
 		/>
 	);

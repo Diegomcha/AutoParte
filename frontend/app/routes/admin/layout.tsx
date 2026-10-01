@@ -4,10 +4,13 @@ import { AppShell, Box, NavLink } from "@mantine/core";
 
 import {
 	BedIcon,
+	BroadcastIcon,
 	FileTextIcon,
+	FingerprintSimpleIcon,
 	GearIcon,
 	SignOutIcon,
-	UserCircleIcon
+	UserCircleIcon,
+	UserListIcon
 } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
@@ -24,41 +27,62 @@ export async function clientLoader({ request }: Route.ClientLoaderArgs) {
 }
 
 export default function ProtectedAdminLayout() {
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", { keyPrefix: "admin" });
 
 	return (
-		<AppShell navbar={{ width: 150, breakpoint: "sm" }} padding="md">
+		<AppShell navbar={{ width: 200, breakpoint: "sm" }} padding="md">
 			<AppShell.Navbar>
 				<NavLink
 					component={RouterNavLink}
 					to="/admin/employees"
 					leftSection={<UserCircleIcon weight="bold" />}
-					label={t(($) => $.admin.nav.employees)}
+					label={t(($) => $.nav.employees.label)}
 				/>
 				<NavLink
 					component={RouterNavLink}
 					to="/admin/accommodations"
 					leftSection={<BedIcon weight="bold" />}
-					label={t(($) => $.admin.nav.accommodations)}
-				/>
-				<NavLink
-					component={RouterNavLink}
-					to="/admin/configuration"
-					leftSection={<GearIcon weight="bold" />}
-					label={t(($) => $.admin.nav.configuration)}
+					label={t(($) => $.nav.accommodations.label)}
 				/>
 				<NavLink
 					component={RouterNavLink}
 					to="/admin/logs"
 					leftSection={<FileTextIcon weight="bold" />}
-					label={t(($) => $.admin.nav.logs)}
-				/>
+					label={t(($) => $.nav.logs.label)}
+					defaultOpened
+				>
+					<NavLink
+						component={RouterNavLink}
+						to="/admin/logs/accounts"
+						leftSection={<UserListIcon weight="bold" />}
+						label={t(($) => $.nav.logs.subRoutes.accounts.label)}
+					/>
+					<NavLink
+						component={RouterNavLink}
+						to="/admin/logs/security"
+						leftSection={<FingerprintSimpleIcon weight="bold" />}
+						label={t(($) => $.nav.logs.subRoutes.security.label)}
+					/>
+					<NavLink
+						component={RouterNavLink}
+						to="/admin/logs/communications"
+						leftSection={<BroadcastIcon weight="bold" />}
+						label={t(($) => $.nav.logs.subRoutes.communications.label)}
+					/>
+				</NavLink>
+
 				<Box style={{ flex: 1 }} />
+				<NavLink
+					component={RouterNavLink}
+					to="/admin/configuration"
+					leftSection={<GearIcon weight="bold" />}
+					label={t(($) => $.nav.configuration.label)}
+				/>
 				<NavLink
 					component={RouterNavLink}
 					to="/"
 					leftSection={<SignOutIcon weight="bold" />}
-					label={t(($) => $.admin.nav.exit)}
+					label={t(($) => $.nav.exit.label)}
 				/>
 			</AppShell.Navbar>
 			<AppShell.Main>

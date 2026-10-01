@@ -17,7 +17,7 @@ import {
 } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import CountrySelect from "~/component/CountrySelect";
+import CountrySelect from "~/component/input/CountrySelect";
 import { queryFactory } from "~/services/Api";
 
 import type { AddressDtoRequest } from "~/@types/api";
@@ -33,7 +33,13 @@ export default function NewAddressForm({
 	handleNewAddress,
 	...props
 }: Readonly<NewAddressFormProps>) {
-	const { t } = useTranslation();
+	const { t } = useTranslation("components", {
+		keyPrefix: "newAddressForm"
+	});
+	const { t: tAddress } = useTranslation("entities", {
+		keyPrefix: "address"
+	});
+	const { t: tCommon } = useTranslation();
 
 	const { countries, spanishProvinces } = useSuspenseQueries({
 		queries: [
@@ -67,23 +73,17 @@ export default function NewAddressForm({
 		},
 		validate: {
 			addressLine1: isNotEmpty(
-				t(($) => $.people.newAddress.properties.addressLine1.errors.undefined)
+				tAddress(($) => $.addressLine1.errors.undefined)
 			),
-			country: isNotEmpty(
-				t(($) => $.people.newAddress.properties.country.errors.undefined)
-			),
+			country: isNotEmpty(tAddress(($) => $.country.errors.undefined)),
 			province: (value, values) => {
 				if (values.country === "ESP" && !value)
-					return t(
-						($) => $.people.newAddress.properties.province.errors.undefined
-					);
+					return tAddress(($) => $.province.errors.undefined);
 			},
 			municipality: isNotEmpty(
-				t(($) => $.people.newAddress.properties.municipality.errors.undefined)
+				tAddress(($) => $.municipality.errors.undefined)
 			),
-			postalCode: isNotEmpty(
-				t(($) => $.people.newAddress.properties.postalCode.errors.undefined)
-			)
+			postalCode: isNotEmpty(tAddress(($) => $.postalCode.errors.undefined))
 		},
 		transformValues: (values) => ({
 			addressLine1: values.addressLine1,
@@ -161,7 +161,7 @@ export default function NewAddressForm({
 	const { mutate, isPending } = useMutation(queryFactory.addresses.create());
 
 	return (
-		<Drawer title={t(($) => $.people.newAddress.title)} size="auto" {...props}>
+		<Drawer title={t(($) => $.title)} size="auto" {...props}>
 			<form
 				onSubmit={(e) => {
 					// Prevent the form submission from bubbling up to the parent form (if any) and triggering its submission.
@@ -179,14 +179,12 @@ export default function NewAddressForm({
 				onReset={form.onReset}
 			>
 				<Stack>
-					<Fieldset legend={t(($) => $.people.newAddress.legend)}>
+					<Fieldset legend={t(($) => $.legend)}>
 						<SimpleGrid cols={2}>
 							<TextInput
 								type="text"
 								autoComplete="address-line1"
-								label={t(
-									($) => $.people.newAddress.properties.addressLine1.label
-								)}
+								label={tAddress(($) => $.addressLine1.label)}
 								withAsterisk
 								key={form.key("addressLine1")}
 								{...form.getInputProps("addressLine1")}
@@ -194,15 +192,13 @@ export default function NewAddressForm({
 							<TextInput
 								type="text"
 								autoComplete="address-line2"
-								label={t(
-									($) => $.people.newAddress.properties.addressLine2.label
-								)}
+								label={tAddress(($) => $.addressLine2.label)}
 								key={form.key("addressLine2")}
 								{...form.getInputProps("addressLine2")}
 							/>
 							<CountrySelect
 								countries={countries as CountryCode[]}
-								label={t(($) => $.people.newAddress.properties.country.label)}
+								label={tAddress(($) => $.country.label)}
 								withAsterisk
 								key={form.key("country")}
 								{...form.getInputProps("country")}
@@ -215,7 +211,7 @@ export default function NewAddressForm({
 										label: provinceName
 									}))
 									.sort((a, b) => a.label.localeCompare(b.label))}
-								label={t(($) => $.people.newAddress.properties.province.label)}
+								label={tAddress(($) => $.province.label)}
 								withAsterisk={watchedFormValues.country === "ESP"}
 								disabled={watchedFormValues.country !== "ESP"}
 								searchable
@@ -236,9 +232,7 @@ export default function NewAddressForm({
 												}))
 												.sort((a, b) => a.label.localeCompare(b.label))
 										}
-										label={t(
-											($) => $.people.newAddress.properties.municipality.label
-										)}
+										label={tAddress(($) => $.municipality.label)}
 										withAsterisk
 										disabled={!watchedFormValues.province}
 										loading={isSpanishMunicipalitiesLoading}
@@ -252,9 +246,7 @@ export default function NewAddressForm({
 										data={spanishPostalCodes?.sort((a, b) =>
 											a.localeCompare(b)
 										)}
-										label={t(
-											($) => $.people.newAddress.properties.postalCode.label
-										)}
+										label={tAddress(($) => $.postalCode.label)}
 										withAsterisk
 										disabled={!watchedFormValues.municipality}
 										loading={isSpanishPostalCodesLoading}
@@ -269,9 +261,7 @@ export default function NewAddressForm({
 									<TextInput
 										type="text"
 										autoComplete="address-level2"
-										label={t(
-											($) => $.people.newAddress.properties.municipality.label
-										)}
+										label={tAddress(($) => $.municipality.label)}
 										withAsterisk
 										disabled={!watchedFormValues.country}
 										key={form.key("municipality")}
@@ -280,9 +270,7 @@ export default function NewAddressForm({
 									<TextInput
 										type="text"
 										autoComplete="postal-code"
-										label={t(
-											($) => $.people.newAddress.properties.postalCode.label
-										)}
+										label={tAddress(($) => $.postalCode.label)}
 										withAsterisk
 										disabled={!watchedFormValues.country}
 										key={form.key("postalCode")}
@@ -299,7 +287,7 @@ export default function NewAddressForm({
 						loading={isPending}
 						disabled={!form.isDirty()}
 					>
-						{t(($) => $.buttons.add)}
+						{tCommon(($) => $.buttons.add)}
 					</Button>
 				</Stack>
 			</form>

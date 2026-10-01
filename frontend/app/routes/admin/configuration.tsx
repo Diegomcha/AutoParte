@@ -28,7 +28,13 @@ export async function clientLoader() {
 }
 
 export default function ConfigPage() {
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.config"
+	});
+	const { t: tConfig } = useTranslation("entities", {
+		keyPrefix: "config"
+	});
+	const { t: tCommon } = useTranslation();
 
 	const { data: config } = useSuspenseQuery(queryFactory.configuration.get());
 
@@ -56,14 +62,11 @@ export default function ConfigPage() {
 		(isSesCredsValidUpdated ?? config.sesCredentialsValid);
 
 	let validationStatusText = t(($) =>
-		isSesCredsValid
-			? $.admin.config.sesValidation.valid
-			: $.admin.config.sesValidation.invalid
+		isSesCredsValid ? $.sesValidation.valid : $.sesValidation.invalid
 	);
-	if (isValidationError)
-		validationStatusText = t(($) => $.admin.config.sesValidation.error);
+	if (isValidationError) validationStatusText = t(($) => $.sesValidation.error);
 	if (isValidatingSesCreds)
-		validationStatusText = t(($) => $.admin.config.sesValidation.validating);
+		validationStatusText = t(($) => $.sesValidation.validating);
 
 	return (
 		<form
@@ -79,7 +82,7 @@ export default function ConfigPage() {
 			onReset={form.onReset}
 		>
 			<Group justify="space-between">
-				<Title order={2}>{t(($) => $.admin.config.title)}</Title>
+				<Title order={2}>{t(($) => $.title)}</Title>
 				<Group>
 					<Button
 						type="reset"
@@ -88,7 +91,7 @@ export default function ConfigPage() {
 						loading={isPending}
 						hidden={!form.isDirty()}
 					>
-						{t(($) => $.buttons.reset)}
+						{tCommon(($) => $.buttons.reset)}
 					</Button>
 					<Button
 						type="submit"
@@ -97,41 +100,32 @@ export default function ConfigPage() {
 						loading={isPending}
 						disabled={!form.isDirty()}
 					>
-						{t(($) => $.buttons.save)}
+						{tCommon(($) => $.buttons.save)}
 					</Button>
 				</Group>
 			</Group>
 			<Divider my="sm" />
 			<Center>
 				<Group align="top">
-					<Fieldset
-						legend={t(($) => $.admin.config.properties.sesCredentials.legend)}
-					>
+					<Fieldset legend={tConfig(($) => $.ses.title)}>
 						<Group grow>
 							<TextInput
 								key={form.key("sesUsername")}
 								name="sesUsername"
-								label={t(
-									($) => $.admin.config.properties.sesCredentials.username
-								)}
+								label={tConfig(($) => $.ses.username.label)}
 								{...form.getInputProps("sesUsername")}
 							/>
 							<TextInput
 								key={form.key("sesLandlordCode")}
 								name="sesLandlordCode"
-								label={t(
-									($) =>
-										$.admin.config.properties.sesCredentials.sesLandlordCode
-								)}
+								label={tConfig(($) => $.ses.landlordCode.label)}
 								{...form.getInputProps("sesLandlordCode")}
 							/>
 						</Group>
 						<PasswordInput
 							key={form.key("sesPassword")}
 							name="sesPassword"
-							label={t(
-								($) => $.admin.config.properties.sesCredentials.password
-							)}
+							label={tConfig(($) => $.ses.password.label)}
 							{...form.getInputProps("sesPassword")}
 						/>
 						<Divider my="sm" />
@@ -151,14 +145,16 @@ export default function ConfigPage() {
 							</Chip>
 						</Center>
 					</Fieldset>
-					<Fieldset legend={t(($) => $.admin.config.properties.toggles.legend)}>
+					<Fieldset legend={tConfig(($) => $.functionality.title)}>
 						<Stack>
 							<Switch
 								key={form.key("digitalSignatureEnabled")}
 								name="digitalSignatureEnabled"
-								label={t(
-									($) =>
-										$.admin.config.properties.toggles.digitalSignatureEnabled
+								label={tConfig(
+									($) => $.functionality.digitalSignatureEnabled.label
+								)}
+								description={tConfig(
+									($) => $.functionality.digitalSignatureEnabled.description
 								)}
 								{...form.getInputProps("digitalSignatureEnabled", {
 									type: "checkbox"
@@ -167,8 +163,11 @@ export default function ConfigPage() {
 							<Switch
 								key={form.key("manualReviewEnabled")}
 								name="manualReviewEnabled"
-								label={t(
-									($) => $.admin.config.properties.toggles.manualReviewEnabled
+								label={tConfig(
+									($) => $.functionality.manualReviewEnabled.label
+								)}
+								description={tConfig(
+									($) => $.functionality.manualReviewEnabled.description
 								)}
 								{...form.getInputProps("manualReviewEnabled", {
 									type: "checkbox"

@@ -19,7 +19,6 @@ import {
 	Stack,
 	Text,
 	TextInput,
-	Timeline,
 	Title,
 	Tooltip
 } from "@mantine/core";
@@ -40,7 +39,6 @@ import {
 	LinkIcon,
 	PaperPlaneTiltIcon,
 	PulseIcon,
-	StarIcon,
 	SuitcaseIcon,
 	TrashIcon,
 	UserListIcon,
@@ -49,10 +47,10 @@ import {
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import BookingStatusBadge from "~/component/bookings/BookingStatusBadge";
-import BooleanInputWithUndefined from "~/component/BooleanInputWithUndefined";
-import CommunicationTimelineItem from "~/component/CommunicationTimelineItem";
+import BookingStatusBadge from "~/component/booking/BookingStatusBadge";
+import CommunicationTimeline from "~/component/communicationTimeline/CommunicationTimeline";
 import ComplexRequiredAsterisk from "~/component/ComplexRequiredLabel";
+import BooleanInputWithUndefined from "~/component/input/BooleanInputWithUndefined";
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import NotificationsService from "~/services/NotificationsService";
@@ -513,33 +511,11 @@ export default function BookingsPage({
 								pr={8}
 							>
 								<ScrollArea.Autosize h="0" mih="100%" offsetScrollbars>
-									<Timeline
-										bulletSize={24}
-										lineWidth={2}
-										active={
-											["PENDING", "SENT", "PENDING_VOIDED"].includes(
-												booking.communications.at(-1)?.status ?? ""
-											)
-												? booking.communications.length - 1
-												: booking.communications.length
-										}
-									>
-										{/* Creation date */}
-										<Timeline.Item
-											bullet={<StarIcon weight="fill" />}
-											title={tBooking(($) => $.communications.types.CREATED)}
-										>
-											<Text size="sm" c="dark">
-												{TimeService(booking.createdAt).fromNow()}
-											</Text>
-										</Timeline.Item>
-										{booking.communications.map((communication) => (
-											<CommunicationTimelineItem
-												key={communication.id}
-												communication={communication}
-											/>
-										))}
-									</Timeline>
+									<CommunicationTimeline
+										accommodationId={accommodationId}
+										bookingId={bookingId}
+										createdAt={TimeService(booking.createdAt).toDate()}
+									/>
 								</ScrollArea.Autosize>
 							</Fieldset>
 							{/* Action buttons */}

@@ -1,4 +1,4 @@
-import { index, route } from "@react-router/dev/routes";
+import { index, prefix, route } from "@react-router/dev/routes";
 
 import type { RouteConfig } from "@react-router/dev/routes";
 
@@ -60,7 +60,11 @@ export default [
 			route(":id", "./routes/admin/accommodations/view.tsx"),
 			route(":id/edit", "./routes/admin/accommodations/edit.tsx"),
 			route(":id/delete", "./routes/admin/accommodations/delete.tsx")
+		]),
+		...prefix("logs", [
+			route("accounts", "./routes/admin/logs/accounts.tsx"),
+			route("security/:id?", "./routes/admin/logs/security.tsx"),
+			route("communications/:id?", "./routes/admin/logs/communications.tsx")
 		])
-		// TODO: Logs routes
 	])
 ] satisfies RouteConfig;

@@ -23,7 +23,9 @@ export default function ResetPasswordEmployee({
 	params: { id }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.employees.resetPassword"
+	});
 
 	const stack = useModalsStack(["confirmation", "credentials"]);
 	const { close } = useStaticModalStackTransition(
@@ -43,9 +45,9 @@ export default function ResetPasswordEmployee({
 			<Modal
 				{...stack.register("confirmation")}
 				onClose={close}
-				title={t(($) => $.admin.employees.resetPassword.title)}
+				title={t(($) => $.title)}
 			>
-				<Text>{t(($) => $.admin.employees.resetPassword.description)}</Text>
+				<Text>{t(($) => $.description)}</Text>
 				<Group justify="right" mt="md">
 					<Button
 						color="red"
@@ -59,7 +61,7 @@ export default function ResetPasswordEmployee({
 							});
 						}}
 					>
-						{t(($) => $.admin.employees.resetPassword.button)}
+						{t(($) => $.button)}
 					</Button>
 				</Group>
 			</Modal>
@@ -68,10 +70,8 @@ export default function ResetPasswordEmployee({
 					{...stack.register("credentials")}
 					creds={creds}
 					onClose={close}
-					title={t(($) => $.admin.employees.resetPassword.done.title)}
-					description={t(
-						($) => $.admin.employees.resetPassword.done.description
-					)}
+					title={t(($) => $.done.title)}
+					description={t(($) => $.done.description)}
 				/>
 			)}
 		</Modal.Stack>

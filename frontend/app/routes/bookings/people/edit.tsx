@@ -2,7 +2,7 @@ import { Outlet, useOutletContext } from "react-router";
 
 import { useBooking } from "..";
 
-import PersonForm from "~/component/PersonForm";
+import PersonForm from "~/component/form/PersonForm";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
 

@@ -59,6 +59,12 @@
                 <column name="deleted_at" insertable="false" updatable="false"/>
             </basic>
             <one-to-many name="securityLog" mapped-by="account"/>
+            <one-to-one name="employee" optional="true">
+                <cascade>
+                    <cascade-persist/>
+                    <cascade-remove/>
+                </cascade>
+            </one-to-one>
         </attributes>
     </entity>
 

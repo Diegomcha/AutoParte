@@ -11,7 +11,7 @@ import { lang } from "~/i18n";
 import { _api, _unwrapResponse, queryFactory } from "~/services/Api";
 import CountryService from "~/services/CountryService";
 
-import NewAddressForm from "./NewAddressForm";
+import NewAddressForm from "../form/NewAddressForm";
 
 import type { CountryCode } from "~/services/CountryService";
 

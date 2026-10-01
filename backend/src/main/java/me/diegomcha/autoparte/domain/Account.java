@@ -17,6 +17,8 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Account extends BaseEntity {
 
+    private Employee employee;
+
     @Setter
     private @NonNull String username;
     @ToString.Exclude
@@ -35,10 +37,15 @@ public class Account extends BaseEntity {
     @Setter
     private boolean requiresReset = true;
 
+    void _setEmployee(@NonNull Employee employee) {
+        this.employee = employee;
+    }
+
     /**
      * Sets the enabled status of the account.
      * If the account is disabled, the disabledAt timestamp is set to the current time.
      * If the account is enabled, the disabledAt timestamp is cleared (set to null).
+     *
      * @param enabled true to enable the account, false to disable it.
      */
     public void setEnabled(boolean enabled) {
@@ -49,6 +56,7 @@ public class Account extends BaseEntity {
     /**
      * Resets the account's password to the provided hashed password and
      * marks the account as requiring a password reset.
+     *
      * @param hashedPassword The new hashed password to set for the account. Must not be null.
      * @throws IllegalArgumentException if the hashedPassword is null.
      */
@@ -60,6 +68,7 @@ public class Account extends BaseEntity {
     /**
      * Sets the hashed password for the account and
      * marks the account as not requiring a password reset.
+     *
      * @param hashedPassword The new hashed password to set for the account. Must not be null.
      * @throws IllegalArgumentException if the hashedPassword is null.
      */
@@ -71,7 +80,12 @@ public class Account extends BaseEntity {
     Set<SecurityEvent> _getSecurityLog() {
         return this.securityLog;
     }
-    
+
+    /**
+     * Returns an unmodifiable copy of the security log associated with this account.
+     *
+     * @return An unmodifiable set of SecurityEvent instances representing the security log for this account.
+     */
     public @NonNull Set<@NonNull SecurityEvent> getSecurityLog() {
         return Set.copyOf(securityLog);
     }

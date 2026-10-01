@@ -30,7 +30,10 @@ export default function DeletePerson({
 	params: { accommodationId, bookingId, id }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "bookings.people.delete"
+	});
+	const { t: tCommon } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(
 		() =>
@@ -48,16 +51,12 @@ export default function DeletePerson({
 	);
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.people.delete.title)}
-		>
-			{t(($) => $.people.delete.description)}
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
+			{t(($) => $.description)}
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.buttons.cancel)}
+					{tCommon(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color="red"
@@ -69,7 +68,7 @@ export default function DeletePerson({
 						});
 					}}
 				>
-					{t(($) => $.buttons.delete)}
+					{tCommon(($) => $.buttons.delete)}
 				</Button>
 			</Group>
 		</Modal>

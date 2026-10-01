@@ -7,6 +7,177 @@
 			"cannotChangeAccommodation": "No se puede cambiar el alojamiento de la reserva."
 		}
 	},
+	"admin": {
+		"nav": {
+			"employees": { "label": "Empleados" },
+			"accommodations": {
+				"label": "Alojamientos"
+			},
+			"accounts": { "label": "Cuentas" },
+			"logs": {
+				"label": "Registros",
+				"subRoutes": {
+					"accounts": { "label": "Cuentas" },
+					"security": { "label": "Seguridad" },
+					"communications": { "label": "Comunicaciones" }
+				}
+			},
+			"configuration": { "label": "Configuración" },
+			"exit": { "label": "Salir del modo administrador" }
+		},
+		"config": {
+			"title": "Configuración",
+			"sesValidation": {
+				"validating": "Validando credenciales...",
+				"error": "Error al validar credenciales",
+				"invalid": "Credenciales inválidas",
+				"valid": "Credenciales válidas"
+			}
+		},
+		"accommodations": {
+			"index": {
+				"title": "Gestión de alojamientos",
+				"noRecords": "No hay alojamientos",
+				"addButton": { "label": "Añadir alojamiento", "color": "green" },
+				"tableButtons": {
+					"view": {
+						"tooltip": "Ver alojamiento",
+						"color": "green"
+					},
+					"edit": {
+						"tooltip": "Editar alojamiento",
+						"color": "blue"
+					},
+					"delete": {
+						"tooltip": "Eliminar alojamiento",
+						"color": "red"
+					}
+				},
+				"deleteMultiple": {
+					"title": "Eliminar alojamientos",
+					"description": "¿Estás seguro? Esta acción es IRREVERSIBLE.\nSe eliminarán {{count}} alojamientos."
+				}
+			},
+			"new": {
+				"title": "Añadir nuevo alojamiento",
+				"created": {
+					"title": "Alojamiento creado",
+					"description": "El alojamiento se ha creado correctamente."
+				}
+			},
+			"view": {
+				"title": "Detalles del alojamiento"
+			},
+			"edit": {
+				"title": "Editar alojamiento",
+				"form": {
+					"noAvailableEmployees": "No hay empleados disponibles"
+				}
+			},
+			"delete": {
+				"title": "Eliminar alojamiento",
+				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
+			}
+		},
+		"employees": {
+			"index": {
+				"title": "Gestión de empleados",
+				"noRecords": "No hay empleados",
+				"addButton": { "label": "Añadir empleado", "color": "green" },
+				"tableButtons": {
+					"view": {
+						"tooltip": "Ver empleado",
+						"color": "green"
+					},
+					"edit": {
+						"tooltip": "Editar empleado",
+						"color": "blue"
+					},
+					"delete": {
+						"tooltip": "Eliminar empleado",
+						"color": "red"
+					},
+					"resetPassword": {
+						"tooltip": "Restablecer contraseña",
+						"color": "orange"
+					}
+				},
+				"deleteMultiple": {
+					"title": "Eliminar empleados",
+					"description": "¿Estás seguro? Esta acción es IRREVERSIBLE.\nSe eliminarán {{count}} empleados."
+				}
+			},
+			"new": {
+				"title": "Añadir nuevo empleado",
+				"created": {
+					"title": "Empleado creado",
+					"description": "El empleado se ha creado correctamente."
+				}
+			},
+			"view": {
+				"title": "Detalles del empleado"
+			},
+			"edit": {
+				"title": "Editar empleado",
+				"form": {
+					"noAvailableAccommodations": "No hay alojamientos disponibles"
+				}
+			},
+			"delete": {
+				"title": "Eliminar empleado",
+				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
+			},
+			"resetPassword": {
+				"button": "Restablecer contraseña",
+				"title": "Restablecer contraseña",
+				"description": "¿Estás seguro? Esta acción restablecerá la contraseña del empleado.",
+				"done": {
+					"title": "Contraseña restablecida",
+					"description": "La contraseña del empleado se ha restablecido correctamente."
+				}
+			}
+		},
+		"logs": {
+			"accounts": {
+				"title": "Listado de cuentas",
+				"noRecords": "No hay cuentas",
+				"tableButtons": {
+					"viewEmployee": {
+						"tooltip": "Ver empleado",
+						"color": "grape"
+					},
+					"viewLogs": {
+						"tooltip": "Ver registros de seguridad",
+						"color": "blue"
+					}
+				}
+			},
+			"security": {
+				"title": "Registros de seguridad",
+				"noRecords": "No hay registros de seguridad",
+				"accountSelector": {
+					"label": "Filtrar por cuenta"
+				}
+			},
+			"communications": {
+				"title": "Registro de comunicaciones al ministerio",
+				"noRecords": "No hay registros de comunicaciones",
+				"accommodationSelector": {
+					"label": "Filtrar por alojamiento"
+				},
+				"tableButtons": {
+					"viewAccommodation": {
+						"tooltip": "Ver alojamiento",
+						"color": "grape"
+					},
+					"viewBooking": {
+						"tooltip": "Ver reserva",
+						"color": "cyan"
+					}
+				}
+			}
+		}
+	},
 	"auth": {
 		"login": {
 			"title": "Iniciar sesión",
@@ -124,8 +295,14 @@
 			}
 		},
 		"people": {
-			"title": "Gestión de viajeros",
-			"requirement": "Para confirmar la reserva solo se necesitan los datos del titular; para registrar la entrada, los de todos los huéspedes."
+			"index": {
+				"title": "Gestión de viajeros",
+				"requirement": "Para confirmar la reserva solo se necesitan los datos del titular; para registrar la entrada, los de todos los huéspedes."
+			},
+			"delete": {
+				"title": "Eliminar información del viajero",
+				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
+			}
 		},
 		"requestSelfCheckIn": {
 			"button": "Solicitar auto-registro",

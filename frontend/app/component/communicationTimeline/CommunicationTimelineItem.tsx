@@ -47,12 +47,16 @@ export default function CommunicationTimelineItem({
 			{...props}
 			bullet={
 				<Tooltip
-					label={tCommunication(($) => $.status[communication.status].label)}
+					label={tCommunication(
+						($) => $.status.states[communication.status].label
+					)}
 				>
 					<ThemeIcon
 						radius="xl"
 						size={22}
-						color={tCommunication(($) => $.status[communication.status].color)}
+						color={tCommunication(
+							($) => $.status.states[communication.status].color
+						)}
 					>
 						{communication.status === "SUCCEEDED"
 							? COMMUNICATION_TYPE_ICONS[communication.type]
@@ -67,11 +71,11 @@ export default function CommunicationTimelineItem({
 						: undefined
 				}
 			}}
-			title={tCommunication(($) => $.types[communication.type])}
+			title={tCommunication(($) => $.type.options[communication.type].label)}
 		>
 			{communication.sentTimestamp && (
 				<Text size="sm" c="dark">
-					{tCommunication(($) => $.sentDate, {
+					{tCommunication(($) => $.sentTimestamp.value, {
 						date: TimeService(communication.sentTimestamp).fromNow()
 					})}
 				</Text>

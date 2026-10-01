@@ -22,7 +22,10 @@ export default function DeleteAccommodation({
 	params: { id }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.accommodations.delete"
+	});
+	const { t: tCommon } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(
 		() => void navigate("/admin/accommodations")
@@ -33,16 +36,12 @@ export default function DeleteAccommodation({
 	);
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.admin.accommodations.delete.title)}
-		>
-			{t(($) => $.admin.accommodations.delete.description)}
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
+			{t(($) => $.description)}
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.buttons.cancel)}
+					{tCommon(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color="red"
@@ -54,7 +53,7 @@ export default function DeleteAccommodation({
 						});
 					}}
 				>
-					{t(($) => $.buttons.delete)}
+					{tCommon(($) => $.buttons.delete)}
 				</Button>
 			</Group>
 		</Modal>

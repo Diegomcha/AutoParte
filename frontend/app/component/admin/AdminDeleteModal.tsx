@@ -26,7 +26,7 @@ export default function AdminDeleteModal({
 	setDeleteModalOpen,
 	messages: { title, description }
 }: Readonly<AdminDeleteModalProps>) {
-	const { t } = useTranslation();
+	const { t: tCommon } = useTranslation();
 
 	const { mutate: deleteSelected, isPending: isDeleting } =
 		useMutation(mutation);
@@ -48,7 +48,7 @@ export default function AdminDeleteModal({
 					}}
 					color="gray"
 				>
-					{t(($) => $.buttons.cancel)}
+					{tCommon(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color="red"
@@ -66,7 +66,7 @@ export default function AdminDeleteModal({
 					leftSection={<TrashIcon weight="bold" />}
 					loading={isDeleting}
 				>
-					{t(($) => $.buttons.delete)}
+					{tCommon(($) => $.buttons.delete)}
 				</Button>
 			</Group>
 		</Modal>

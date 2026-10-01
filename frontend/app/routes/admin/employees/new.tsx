@@ -13,7 +13,13 @@ import { queryFactory } from "~/services/Api";
 
 export default function NewEmployee() {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.employees.new"
+	});
+	const { t: tEmployee } = useTranslation("entities", {
+		keyPrefix: "employee"
+	});
+	const { t: tCommon } = useTranslation();
 
 	const stack = useModalsStack(["new", "created"]);
 	const { close } = useStaticModalStackTransition(
@@ -30,15 +36,9 @@ export default function NewEmployee() {
 			email: ""
 		},
 		validate: {
-			name: isNotEmpty(
-				t(($) => $.admin.employees.properties.name.errors.noName)
-			),
-			surname: isNotEmpty(
-				t(($) => $.admin.employees.properties.surname.errors.noSurname)
-			),
-			email: isEmail(
-				t(($) => $.admin.employees.properties.email.errors.invalidEmail)
-			)
+			name: isNotEmpty(tEmployee(($) => $.name.errors.noName)),
+			surname: isNotEmpty(tEmployee(($) => $.surname.errors.noSurname)),
+			email: isEmail(tEmployee(($) => $.email.errors.invalidEmail))
 		}
 	});
 
@@ -53,7 +53,7 @@ export default function NewEmployee() {
 			<Modal
 				{...stack.register("new")}
 				onClose={close}
-				title={t(($) => $.admin.employees.new.title)}
+				title={t(($) => $.title)}
 			>
 				<form
 					onSubmit={form.onSubmit((data) => {
@@ -63,10 +63,7 @@ export default function NewEmployee() {
 								else
 									form.setFieldError(
 										"email",
-										t(
-											($) =>
-												$.admin.employees.properties.email.errors.emailInUse
-										)
+										tEmployee(($) => $.email.errors.emailInUse)
 									);
 							}
 						});
@@ -76,20 +73,20 @@ export default function NewEmployee() {
 						<TextInput
 							key={form.key("name")}
 							name="name"
-							label={t(($) => $.admin.employees.properties.name.label)}
+							label={tEmployee(($) => $.name.label)}
 							{...form.getInputProps("name")}
 						/>
 						<TextInput
 							key={form.key("surname")}
 							name="surname"
-							label={t(($) => $.admin.employees.properties.surname.label)}
+							label={tEmployee(($) => $.surname.label)}
 							{...form.getInputProps("surname")}
 						/>
 					</Group>
 					<TextInput
 						key={form.key("email")}
 						name="email"
-						label={t(($) => $.admin.employees.properties.email.label)}
+						label={tEmployee(($) => $.email.label)}
 						{...form.getInputProps("email")}
 					/>
 					<Group justify="right" mt="md">
@@ -98,7 +95,7 @@ export default function NewEmployee() {
 							loading={isCreating}
 							leftSection={<UserCirclePlusIcon />}
 						>
-							{t(($) => $.buttons.create)}
+							{tCommon(($) => $.buttons.create)}
 						</Button>
 					</Group>
 				</form>
@@ -108,8 +105,8 @@ export default function NewEmployee() {
 					{...stack.register("created")}
 					creds={created}
 					onClose={close}
-					title={t(($) => $.admin.employees.new.created.title)}
-					description={t(($) => $.admin.employees.new.created.description)}
+					title={t(($) => $.created.title)}
+					description={t(($) => $.created.description)}
 				/>
 			)}
 		</Modal.Stack>

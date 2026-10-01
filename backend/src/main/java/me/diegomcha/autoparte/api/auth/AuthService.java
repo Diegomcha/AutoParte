@@ -21,7 +21,7 @@ class AuthService {
     private static final Supplier<UnauthorizedException> UNAUTHORIZED_EXCEPTION = () ->
             new UnauthorizedException("Unauthenticated");
 
-    private final AccountMapper accountMapper;
+    private final AuthMapper authMapper;
     private final SecurityService securityService;
 
     /**
@@ -35,7 +35,7 @@ class AuthService {
         return Optional
                 .ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .map(securityService::getAccountFromAuthentication)
-                .map(accountMapper::toDto)
+                .map(authMapper::toDto)
                 .orElseThrow(UNAUTHORIZED_EXCEPTION);
     }
 

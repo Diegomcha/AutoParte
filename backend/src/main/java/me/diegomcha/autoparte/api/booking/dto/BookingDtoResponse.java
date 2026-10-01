@@ -4,10 +4,8 @@ import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotNull;
 import me.diegomcha.autoparte.domain.Booking;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
-import me.diegomcha.autoparte.domain.communication.Communication;
 
 import java.time.Instant;
-import java.util.Set;
 import java.util.UUID;
 
 public record BookingDtoResponse(
@@ -36,9 +34,7 @@ public record BookingDtoResponse(
         Boolean internetConnection,
 
         String holderName,
-        @Nonnull String accommodationName,
-
-        @Nonnull Set<CommunicationDtoResponse> communications
+        @Nonnull String accommodationName
 ) {
     public record PaymentDtoResponse(
             @Nonnull Payment.PaymentType type,
@@ -46,15 +42,6 @@ public record BookingDtoResponse(
             String holder,
             Instant date,
             Instant expiryDate
-    ) {
-    }
-
-    public record CommunicationDtoResponse(
-            @Nonnull UUID id,
-            @Nonnull Communication.CommunicationType type,
-            @Nonnull Communication.CommunicationStatus status,
-            Instant sentTimestamp,
-            String error
     ) {
     }
 }

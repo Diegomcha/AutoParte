@@ -22,7 +22,10 @@ export default function DeleteEmployee({
 	params: { id }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.employees.delete"
+	});
+	const { t: tCommon } = useTranslation();
 
 	const { opened, close } = useStaticModalTransition(
 		() => void navigate("/admin/employees")
@@ -31,16 +34,12 @@ export default function DeleteEmployee({
 	const { mutate, isPending } = useMutation(queryFactory.employees.delete(id));
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.admin.employees.delete.title)}
-		>
-			{t(($) => $.admin.employees.delete.description)}
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
+			{t(($) => $.description)}
 
 			<Group justify="right" mt="md" gap="xs">
 				<Button onClick={close} color="gray">
-					{t(($) => $.buttons.cancel)}
+					{tCommon(($) => $.buttons.cancel)}
 				</Button>
 				<Button
 					color="red"
@@ -52,7 +51,7 @@ export default function DeleteEmployee({
 					}}
 					leftSection={<TrashIcon weight="bold" />}
 				>
-					{t(($) => $.buttons.delete)}
+					{tCommon(($) => $.buttons.delete)}
 				</Button>
 			</Group>
 		</Modal>

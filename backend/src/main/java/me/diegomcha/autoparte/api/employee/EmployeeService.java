@@ -13,15 +13,11 @@ import me.diegomcha.autoparte.core.repos.EmployeeRepo;
 import me.diegomcha.autoparte.domain.Employee;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -36,11 +32,6 @@ class EmployeeService {
     private static final Supplier<ResourceConflictException> SAME_EMAIL_EXCEPTION = () ->
             new ResourceConflictException("An employee with the same email already exists");
 
-    private static final Map<String, String> EMPLOYEE_SORT_MAP = Map.of(
-            "enabled", "account.enabled",
-            "email", "account.username"
-    );
-
     private final EmployeeRepo employeeRepo;
     private final EmployeeMapper employeeMapper;
     private final PasswordEncoder passwordEncoder;
@@ -52,25 +43,7 @@ class EmployeeService {
      * @return A page of employees
      */
     public Page<EmployeeDtoResponse> getEmployees(@NonNull Pageable pageable) {
-        // Translate sorting properties to match the entity fields
-        if (pageable.getSort().isSorted()) {
-            List<Sort.Order> translatedOrders = pageable.getSort().stream()
-                    .map(order -> new Sort.Order(
-                            order.getDirection(),
-                            EMPLOYEE_SORT_MAP.getOrDefault(order.getProperty(), order.getProperty())
-                    ))
-                    .toList();
-
-            pageable = pageable.isUnpaged()
-                    ? Pageable.unpaged(Sort.by(translatedOrders))
-                    : PageRequest.of(
-                    pageable.getPageNumber(),
-                    pageable.getPageSize(),
-                    Sort.by(translatedOrders)
-            );
-        }
-
-        return employeeMapper.toResponse(employeeRepo.findAll(pageable));
+        return employeeMapper.toResponse(employeeRepo.findAll(employeeMapper.translatePageable(pageable)));
     }
 
     /**

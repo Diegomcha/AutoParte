@@ -33,6 +33,7 @@ public class Employee extends BaseEntity {
      */
     public Employee(@NonNull String name, @NonNull String surname, @NonNull String email, @NonNull String hashedPassword) {
         this.account = new Account(email, hashedPassword, Set.of("ROLE_EMPLOYEE"));
+        this.account._setEmployee(this);
         this.setName(name);
         this.setSurname(surname);
         // Run email validations

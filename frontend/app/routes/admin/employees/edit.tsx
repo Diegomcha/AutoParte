@@ -36,7 +36,13 @@ export default function EditEmployee({
 	loaderData: { employee, availableAccommodations }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.employees.edit"
+	});
+	const { t: tCommon } = useTranslation();
+	const { t: tEmployee } = useTranslation("entities", {
+		keyPrefix: "employee"
+	});
 
 	const { opened, close } = useStaticModalTransition(
 		() => void navigate("/admin/employees")
@@ -54,15 +60,9 @@ export default function EditEmployee({
 			)
 		},
 		validate: {
-			name: isNotEmpty(
-				t(($) => $.admin.employees.properties.name.errors.noName)
-			),
-			surname: isNotEmpty(
-				t(($) => $.admin.employees.properties.surname.errors.noSurname)
-			),
-			email: isEmail(
-				t(($) => $.admin.employees.properties.email.errors.invalidEmail)
-			)
+			name: isNotEmpty(tEmployee(($) => $.name.errors.noName)),
+			surname: isNotEmpty(tEmployee(($) => $.surname.errors.noSurname)),
+			email: isEmail(tEmployee(($) => $.email.errors.invalidEmail))
 		}
 	});
 
@@ -85,11 +85,7 @@ export default function EditEmployee({
 		isEditing || isLinkingAccommodations || isUnlinkingAccommodations;
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.admin.employees.edit.title)}
-		>
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
 			<form
 				onSubmit={form.onSubmit((data) => {
 					edit(data, {
@@ -97,7 +93,7 @@ export default function EditEmployee({
 							if (!success) {
 								form.setFieldError(
 									"email",
-									t(($) => $.admin.employees.properties.email.errors.emailInUse)
+									tEmployee(($) => $.email.errors.emailInUse)
 								);
 								return;
 							}
@@ -128,42 +124,42 @@ export default function EditEmployee({
 						variant="light"
 						{...form.getInputProps("enabled", { type: "checkbox" })}
 					>
-						{watchedFormValues.enabled
-							? t(($) => $.admin.employees.properties.enabled.states.enabled)
-							: t(($) => $.admin.employees.properties.enabled.states.disabled)}
+						{tEmployee(($) =>
+							watchedFormValues.enabled
+								? $.enabled.states.enabled
+								: $.enabled.states.disabled
+						)}
 					</Chip>
 					<div>
 						<Group grow>
 							<TextInput
 								key={form.key("name")}
 								name="name"
-								label={t(($) => $.admin.employees.properties.name.label)}
+								label={tEmployee(($) => $.name.label)}
 								{...form.getInputProps("name")}
 							/>
 							<TextInput
 								key={form.key("surname")}
 								name="surname"
-								label={t(($) => $.admin.employees.properties.surname.label)}
+								label={tEmployee(($) => $.surname.label)}
 								{...form.getInputProps("surname")}
 							/>
 						</Group>
 						<TextInput
 							key={form.key("email")}
 							name="email"
-							label={t(($) => $.admin.employees.properties.email.label)}
+							label={tEmployee(($) => $.email.label)}
 							{...form.getInputProps("email")}
 						/>
 					</div>
 					<MultiSelect
 						key={form.key("accommodations")}
-						label={t(($) => $.admin.employees.properties.accommodations.label)}
+						label={tEmployee(($) => $.accommodations.label)}
 						data={availableAccommodations.map((accommodation) => ({
 							value: accommodation.id,
 							label: accommodation.name
 						}))}
-						nothingFoundMessage={t(
-							($) => $.admin.employees.properties.accommodations.none
-						)}
+						nothingFoundMessage={t(($) => $.form.noAvailableAccommodations)}
 						{...form.getInputProps("accommodations")}
 					/>
 				</Stack>
@@ -173,7 +169,7 @@ export default function EditEmployee({
 						loading={isPending}
 						leftSection={<FloppyDiskIcon />}
 					>
-						{t(($) => $.buttons.save)}
+						{tCommon(($) => $.buttons.save)}
 					</Button>
 				</Group>
 			</form>

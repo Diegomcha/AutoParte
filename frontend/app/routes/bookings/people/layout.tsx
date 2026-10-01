@@ -16,7 +16,7 @@ export default function BookingPeople({
 	params: { accommodationId, bookingId }
 }: Route.ComponentProps) {
 	const { t } = useTranslation("routes", {
-		keyPrefix: "bookings.people"
+		keyPrefix: "bookings.people.index"
 	});
 	const navigate = useNavigate();
 	const location = useLocation();

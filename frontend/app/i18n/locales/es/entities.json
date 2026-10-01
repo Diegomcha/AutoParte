@@ -3,8 +3,190 @@
 		"id": {
 			"label": "Identificador"
 		},
-		"createdAt": { "label": "Fecha de creación" },
-		"updatedAt": { "label": "Fecha de actualización" }
+		"createdAt": { "label": "Fecha de creación", "format": "lll" },
+		"updatedAt": { "label": "Fecha de actualización", "format": "lll" }
+	},
+	"config": {
+		"ses": {
+			"title": "Credenciales SES",
+			"username": {
+				"label": "Usuario"
+			},
+			"password": {
+				"label": "Contraseña"
+			},
+			"landlordCode": {
+				"label": "Código de arrendador"
+			}
+		},
+		"functionality": {
+			"title": "Funcionalidades",
+			"digitalSignatureEnabled": {
+				"label": "Habilitar firma digital",
+				"description": "Permite a los viajeros firmar digitalmente el parte de entrada de viajeros.\nSi se desactiva, los viajeros deberían firmarlo en papel"
+			},
+			"manualReviewEnabled": {
+				"label": "Habilitar revisiones manuales",
+				"description": "Permite a los empleados revisar manualmente los partes de entrada de viajeros antes de que se registren en la plataforma SES tras un auto-registro.\nSi se desactiva, los partes de entrada de viajeros se registrarán automáticamente en la plataforma SES tras los auto-registros"
+			},
+			"logsRetentionDays": {
+				"label": "Días de retención de registros"
+			}
+		}
+	},
+	"accommodation": {
+		"name": {
+			"label": "Nombre",
+			"errors": {
+				"noName": "El nombre es obligatorio",
+				"nameInUse": "El nombre ya está registrado"
+			}
+		},
+		"sesCode": {
+			"label": "Código SES",
+			"errors": {
+				"noSesCode": "El código SES es obligatorio",
+				"sesCodeInUse": "El código SES ya está registrado"
+			}
+		},
+		"internetConnection": {
+			"label": "Conexión a Internet",
+			"states": {
+				"yes": "Sí",
+				"no": "No"
+			}
+		},
+		"employees": {
+			"label": "Empleados asignados",
+			"value": "{{count}} empleados",
+			"value_zero": "Ninguno"
+		}
+	},
+	"employee": {
+		"enabled": {
+			"label": "Estado",
+			"disabledTooltip": "Deshabilitado el {{date}}",
+			"states": {
+				"enabled": "Habilitado",
+				"disabled": "Deshabilitado"
+			}
+		},
+		"name": {
+			"label": "Nombre",
+			"errors": {
+				"noName": "El nombre es obligatorio"
+			}
+		},
+		"surname": {
+			"label": "Apellidos",
+			"errors": {
+				"noSurname": "Los apellidos son obligatorios"
+			}
+		},
+		"email": {
+			"label": "Correo electrónico",
+			"errors": {
+				"invalidEmail": "El correo electrónico no es válido",
+				"emailInUse": "El correo electrónico ya está registrado"
+			}
+		},
+		"accommodations": {
+			"label": "Alojamientos asignados",
+			"value": "{{count}} alojamientos",
+			"value_zero": "Ninguno"
+		}
+	},
+	"account": {
+		"username": {
+			"label": "Nombre de usuario"
+		},
+		"roles": {
+			"label": "Roles",
+			"options": {
+				"ROLE_ADMIN": {
+					"label": "Administrador",
+					"color": "yellow"
+				},
+				"ROLE_EMPLOYEE": {
+					"label": "Empleado",
+					"color": "blue"
+				}
+			},
+			"none": "Sin roles"
+		},
+		"enabled": {
+			"label": "Estado"
+		},
+		"requiresReset": {
+			"label": "Contraseña temporal"
+		},
+		"securityEvents": {
+			"account": {
+				"label": "Cuenta",
+				"unknown": "Cuenta desconocida"
+			},
+			"timestamp": {
+				"label": "Fecha y hora",
+				"format": "lll"
+			},
+			"type": {
+				"label": "Tipo de evento",
+				"descriptionLabel": "Descripción",
+				"options": {
+					"LOGIN": {
+						"label": "Inicio de sesión",
+						"description": "Inicio de sesión exitoso",
+						"color": "blue"
+					},
+					"LOGOUT": {
+						"label": "Cierre de sesión",
+						"description": "Cierre de sesión exitoso",
+						"color": "gray"
+					},
+					"PASSWORD_CHANGE": {
+						"label": "Cambio de contraseña",
+						"description": "Cambio de contraseña exitoso",
+						"color": "orange"
+					},
+					"LOGIN_FAILED_CREDENTIALS": {
+						"label": "Inicio de sesión fallido",
+						"description": "Inicio de sesión fallido por credenciales incorrectas",
+						"color": "red"
+					},
+					"LOGIN_FAILED_CREDENTIALS_EXPIRED": {
+						"label": "Inicio de sesión fallido",
+						"description": "Inicio de sesión fallido por credenciales temporales",
+						"color": "red"
+					},
+					"LOGIN_FAILED_ACCOUNT_DISABLED": {
+						"label": "Inicio de sesión fallido",
+						"description": "Inicio de sesión fallido por cuenta desactivada",
+						"color": "red"
+					},
+					"LOGIN_FAILED_ACCOUNT_LOCKED": {
+						"label": "Inicio de sesión fallido",
+						"description": "Inicio de sesión fallido por cuenta bloqueada",
+						"color": "red"
+					}
+				}
+			},
+			"method": {
+				"label": "Método de autenticación",
+				"options": {
+					"USERNAME_PASSWORD": {
+						"color": "indigo",
+						"label": "Credenciales"
+					},
+					"REMEMBER_ME": {
+						"color": "brown",
+						"label": "Cookies"
+					}
+				}
+			},
+			"remoteAddress": {
+				"label": "Dirección IP"
+			}
+		}
 	},
 	"booking": {
 		"details": {
@@ -132,38 +314,64 @@
 		},
 		"communications": {
 			"title": "Registro",
-			"sentDate": "Enviado {{date}}",
-			"status": {
-				"PENDING": {
-					"label": "Pendiente",
-					"color": "orange"
-				},
-				"SENT": {
-					"label": "Procesando",
-					"color": "teal"
-				},
-				"SUCCEEDED": {
-					"label": "Registrado sin errores",
-					"color": "green"
-				},
-				"FAILED": {
-					"label": "Error al registrar",
-					"color": "red"
-				},
-				"PENDING_VOIDED": {
-					"label": "Pendiente de anular",
-					"color": "gray"
-				},
-				"VOIDED": {
-					"label": "Anulado",
-					"color": "dark"
+			"accommodation": {
+				"label": "Alojamiento"
+			},
+			"type": {
+				"label": "Tipo",
+				"options": {
+					"BOOKING": {
+						"label": "Confirmación",
+						"color": "teal"
+					},
+					"CHECKIN": {
+						"label": "Entrada",
+						"color": "cyan"
+					},
+					"CANCELLATION": {
+						"label": "Cancelación",
+						"color": "gray"
+					}
 				}
 			},
-			"types": {
-				"CREATED": "Creación de la reserva",
-				"BOOKING": "Confirmación de la reserva",
-				"CHECKIN": "Registro de la entrada",
-				"CANCELLATION": "Cancelación de la reserva"
+			"status": {
+				"label": "Estado",
+				"states": {
+					"PENDING": {
+						"label": "Pendiente",
+						"color": "orange"
+					},
+					"SENT": {
+						"label": "Procesando",
+						"color": "teal"
+					},
+					"SUCCEEDED": {
+						"label": "Registrado sin errores",
+						"color": "green"
+					},
+					"FAILED": {
+						"label": "Error al registrar",
+						"color": "red"
+					},
+					"PENDING_VOIDED": {
+						"label": "Pendiente de anular",
+						"color": "gray"
+					},
+					"VOIDED": {
+						"label": "Anulado",
+						"color": "dark"
+					}
+				}
+			},
+			"sentTimestamp": {
+				"label": "Fecha y hora de envío",
+				"value": "Enviado {{date}}",
+				"format": "lll",
+				"none": "—"
+			},
+			"error": {
+				"label": "Error",
+				"none": "—"
 			}
 		},
 		"selfCheckInRequested": {
@@ -295,6 +503,41 @@
 					"label": "Ha firmado el parte de entrada de viajeros",
 					"color": "green"
 				}
+			}
+		}
+	},
+	"address": {
+		"addressLine1": {
+			"label": "Dirección (línea 1)",
+			"errors": {
+				"undefined": "La dirección es obligatoria"
+			}
+		},
+		"addressLine2": {
+			"label": "Dirección (línea 2)"
+		},
+		"municipality": {
+			"label": "Municipio",
+			"errors": {
+				"undefined": "El municipio es obligatorio"
+			}
+		},
+		"postalCode": {
+			"label": "Código postal",
+			"errors": {
+				"undefined": "El código postal es obligatorio"
+			}
+		},
+		"country": {
+			"label": "País",
+			"errors": {
+				"undefined": "El país es obligatorio"
+			}
+		},
+		"province": {
+			"label": "Provincia",
+			"errors": {
+				"undefined": "La provincia es obligatoria"
 			}
 		}
 	}

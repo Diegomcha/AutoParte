@@ -1,16 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet } from "react-router";
 
-import {
-	ActionIcon,
-	Badge,
-	Button,
-	Center,
-	Divider,
-	Group,
-	Title,
-	Tooltip
-} from "@mantine/core";
+import { Badge, Button, Center, Divider, Group, Title } from "@mantine/core";
 
 import {
 	CursorClickIcon,
@@ -25,6 +16,8 @@ import { DataTable, useDataTableColumns } from "mantine-datatable";
 import { useTranslation } from "react-i18next";
 
 import AdminDeleteModal from "~/component/admin/AdminDeleteModal";
+import TableActionButton from "~/component/admin/TableActionButton";
+import EnablementBadge from "~/component/badge/EnablementBadge";
 import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from "~/services/Api";
 import TimeService from "~/services/TimeService";
 
@@ -33,20 +26,36 @@ import type { DataTableSortStatus } from "mantine-datatable";
 
 const COLUMNS_STATE_KEY = "employee-table-columns";
 
+const DEFAULT_PAGE = 0;
+const DEFAULT_SORTING = {
+	columnAccessor: "id",
+	direction: "asc"
+} as const;
+
 export async function clientLoader() {
-	await queryClient.query(queryFactory.employees.pagedList());
+	await queryClient.query(
+		queryFactory.employees.pagedList({
+			page: DEFAULT_PAGE,
+			sorting: [DEFAULT_SORTING]
+		})
+	);
 }
 
 export default function EmployeesPage() {
-	const { t } = useTranslation();
-
-	const [page, setPage] = useState(0);
-	const [sortStatus, setSortStatus] = useState<
-		DataTableSortStatus<EmployeeDtoResponse>
-	>({
-		columnAccessor: "id",
-		direction: "asc"
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.employees.index"
 	});
+	const { t: tEmployee } = useTranslation("entities", {
+		keyPrefix: "employee"
+	});
+	const { t: tEntity } = useTranslation("entities", {
+		keyPrefix: "common"
+	});
+	const { t: tCommon } = useTranslation();
+
+	const [page, setPage] = useState(DEFAULT_PAGE);
+	const [sortStatus, setSortStatus] =
+		useState<DataTableSortStatus<EmployeeDtoResponse>>(DEFAULT_SORTING);
 	const [selected, setSelected] = useState<EmployeeDtoResponse[]>([]);
 	const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
@@ -65,28 +74,16 @@ export default function EmployeesPage() {
 				sortable: true,
 				resizable: true,
 				accessor: "enabled",
-				title: t(($) => $.admin.employees.properties.enabled.label),
+				title: tEmployee(($) => $.enabled.label),
 				render: (employee) => (
-					<Tooltip
-						label={t(
-							($) => $.admin.employees.properties.enabled.disabledTooltip,
-							{
-								date: employee.disabledAt
-									? TimeService(employee.disabledAt).format("LLL")
-									: null
-							}
-						)}
-						withArrow
-						disabled={!employee.disabledAt}
-					>
-						<Badge color={employee.enabled ? "green" : "gray"} variant="light">
-							{employee.enabled
-								? t(($) => $.admin.employees.properties.enabled.states.enabled)
-								: t(
-										($) => $.admin.employees.properties.enabled.states.disabled
-									)}
-						</Badge>
-					</Tooltip>
+					<EnablementBadge
+						enabled={employee.enabled}
+						disabledAt={
+							employee.disabledAt
+								? TimeService(employee.disabledAt).toDate()
+								: null
+						}
+					/>
 				)
 			},
 			{
@@ -94,7 +91,7 @@ export default function EmployeesPage() {
 				sortable: true,
 				resizable: true,
 				accessor: "name",
-				title: t(($) => $.admin.employees.properties.name.label),
+				title: tEmployee(($) => $.name.label),
 				render: (employee) => `${employee.name} ${employee.surname}`
 			},
 			{
@@ -102,37 +99,40 @@ export default function EmployeesPage() {
 				sortable: true,
 				resizable: true,
 				accessor: "email",
-				title: t(($) => $.admin.employees.properties.email.label)
+				title: tEmployee(($) => $.email.label)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
 				accessor: "createdAt",
-				title: t(($) => $.common.properties.createdAt),
-				render: (entity) => TimeService(entity.createdAt).format("LLLL")
+				title: tEntity(($) => $.createdAt.label),
+				render: (entity) =>
+					TimeService(entity.createdAt).format(
+						tEntity(($) => $.createdAt.format)
+					)
 			},
 			{
 				draggable: true,
 				sortable: true,
 				resizable: true,
 				accessor: "updatedAt",
-				title: t(($) => $.common.properties.updatedAt),
-				render: (entity) => TimeService(entity.updatedAt).format("LLLL")
+				title: tEntity(($) => $.updatedAt.label),
+				render: (entity) =>
+					TimeService(entity.updatedAt).format(
+						tEntity(($) => $.updatedAt.format)
+					)
 			},
 			{
 				accessor: "accommodations",
-				title: t(($) => $.admin.employees.properties.accommodations.label),
-				render: (employee) =>
-					employee.accommodations.length === 0 ? (
-						t(($) => $.admin.employees.properties.accommodations.none)
-					) : (
-						<Badge variant="light">
-							{t(($) => $.admin.employees.properties.accommodations.some, {
-								count: employee.accommodations.length
-							})}
-						</Badge>
-					)
+				title: tEmployee(($) => $.accommodations.label),
+				render: (employee) => (
+					<Badge variant="light">
+						{tEmployee(($) => $.accommodations.value, {
+							count: employee.accommodations.length
+						})}
+					</Badge>
+				)
 			},
 			{
 				accessor: "actions",
@@ -145,42 +145,46 @@ export default function EmployeesPage() {
 				width: "0%",
 				render: (employee) => (
 					<Group gap={4} wrap="nowrap" justify="center">
-						<ActionIcon
+						<TableActionButton
 							component={Link}
 							to={`/admin/employees/${employee.id}`}
 							size="sm"
 							variant="subtle"
-							color="green"
+							tooltip={t(($) => $.tableButtons.view.tooltip)}
+							color={t(($) => $.tableButtons.view.color)}
 						>
-							<EyeIcon weight="bold" />
-						</ActionIcon>
-						<ActionIcon
+							<EyeIcon />
+						</TableActionButton>
+						<TableActionButton
 							component={Link}
 							to={`/admin/employees/${employee.id}/edit`}
 							size="sm"
 							variant="subtle"
-							color="blue"
+							tooltip={t(($) => $.tableButtons.edit.tooltip)}
+							color={t(($) => $.tableButtons.edit.color)}
 						>
 							<PencilIcon />
-						</ActionIcon>
-						<ActionIcon
+						</TableActionButton>
+						<TableActionButton
 							component={Link}
 							to={`/admin/employees/${employee.id}/reset-password`}
 							size="sm"
 							variant="subtle"
-							color="orange"
+							tooltip={t(($) => $.tableButtons.resetPassword.tooltip)}
+							color={t(($) => $.tableButtons.resetPassword.color)}
 						>
 							<PasswordIcon />
-						</ActionIcon>
-						<ActionIcon
+						</TableActionButton>
+						<TableActionButton
 							component={Link}
 							to={`/admin/employees/${employee.id}/delete`}
 							size="sm"
 							variant="subtle"
-							color="red"
+							tooltip={t(($) => $.tableButtons.delete.tooltip)}
+							color={t(($) => $.tableButtons.delete.color)}
 						>
 							<TrashIcon />
-						</ActionIcon>
+						</TableActionButton>
 					</Group>
 				)
 			}
@@ -190,34 +194,34 @@ export default function EmployeesPage() {
 	return (
 		<>
 			<Group justify="space-between">
-				<Title order={2}>{t(($) => $.admin.employees.title)}</Title>
+				<Title order={2}>{t(($) => $.title)}</Title>
 				<Group>
 					<Button
-						color="red"
+						color={tCommon(($) => $.buttons.deleteSelected.color)}
 						leftSection={<TrashIcon weight="bold" size={16} />}
 						disabled={selected.length === 0}
 						onClick={() => {
 							setDeleteModalOpen(true);
 						}}
 					>
-						{t(($) => $.buttons.deleteSelected, {
+						{tCommon(($) => $.buttons.deleteSelected.label, {
 							count: selected.length
 						})}
 					</Button>
 					<Button
 						component={Link}
 						to="/admin/employees/new"
-						color="green"
+						color={t(($) => $.addButton.color)}
 						leftSection={<PlusIcon weight="bold" size={16} />}
 					>
-						{t(($) => $.admin.employees.new.button)}
+						{t(($) => $.addButton.label)}
 					</Button>
 				</Group>
 			</Group>
 			<Divider my="sm" />
 			<DataTable
 				height={"calc(100vh - 93px)"}
-				noRecordsText={t(($) => $.admin.employees.noRecords)}
+				noRecordsText={t(($) => $.noRecords)}
 				storeColumnsKey={COLUMNS_STATE_KEY}
 				columns={effectiveColumns}
 				pinLastColumn
@@ -240,9 +244,9 @@ export default function EmployeesPage() {
 				deleteModalOpen={deleteModalOpen}
 				setDeleteModalOpen={setDeleteModalOpen}
 				messages={{
-					title: t(($) => $.admin.employees.deleteMultiple.title),
+					title: t(($) => $.deleteMultiple.title),
 					description: (count: number) =>
-						t(($) => $.admin.employees.deleteMultiple.description, { count })
+						t(($) => $.deleteMultiple.description, { count })
 				}}
 			/>
 		</>

@@ -4,7 +4,7 @@ import { Badge, DataList, Divider, Modal, Stack } from "@mantine/core";
 
 import { useTranslation } from "react-i18next";
 
-import WifiBadge from "~/component/WifiBadge";
+import WifiBadge from "~/component/badge/WifiBadge";
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import TimeService from "~/services/TimeService";
@@ -26,22 +26,26 @@ export default function ViewAccommodation({
 	loaderData: { accommodation }
 }: Route.ComponentProps) {
 	const navigate = useNavigate();
-	const { t } = useTranslation();
+	const { t } = useTranslation("routes", {
+		keyPrefix: "admin.accommodations.view"
+	});
+	const { t: tAccommodation } = useTranslation("entities", {
+		keyPrefix: "accommodation"
+	});
+	const { t: tEntity } = useTranslation("entities", {
+		keyPrefix: "common"
+	});
 
 	const { opened, close } = useStaticModalTransition(
 		() => void navigate("/admin/accommodations")
 	);
 
 	return (
-		<Modal
-			opened={opened}
-			onClose={close}
-			title={t(($) => $.admin.accommodations.view.title)}
-		>
+		<Modal opened={opened} onClose={close} title={t(($) => $.title)}>
 			<DataList labelWidth={160}>
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.common.properties.createdAt)}
+						{tEntity(($) => $.createdAt.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
 						{TimeService(accommodation.createdAt).fromNow()}
@@ -49,7 +53,7 @@ export default function ViewAccommodation({
 				</DataList.Item>
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.common.properties.updatedAt)}
+						{tEntity(($) => $.updatedAt.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
 						{TimeService(accommodation.updatedAt).fromNow()}
@@ -58,21 +62,19 @@ export default function ViewAccommodation({
 				<Divider />
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.admin.accommodations.properties.name.label)}
+						{tAccommodation(($) => $.name.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>{accommodation.name}</DataList.ItemValue>
 				</DataList.Item>
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.admin.accommodations.properties.sesCode.label)}
+						{tAccommodation(($) => $.sesCode.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>{accommodation.sesCode}</DataList.ItemValue>
 				</DataList.Item>
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(
-							($) => $.admin.accommodations.properties.internetConnection.label
-						)}
+						{tAccommodation(($) => $.internetConnection.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
 						<WifiBadge value={accommodation.internetConnection} />
@@ -81,11 +83,11 @@ export default function ViewAccommodation({
 				<Divider />
 				<DataList.Item>
 					<DataList.ItemLabel>
-						{t(($) => $.admin.accommodations.properties.employees.label)}
+						{tAccommodation(($) => $.employees.label)}
 					</DataList.ItemLabel>
 					<DataList.ItemValue>
 						{accommodation.employees.length === 0 ? (
-							t(($) => $.admin.accommodations.properties.employees.none)
+							tAccommodation(($) => $.employees.value, { count: 0 })
 						) : (
 							<Stack gap={4}>
 								{accommodation.employees.map((employee) => (

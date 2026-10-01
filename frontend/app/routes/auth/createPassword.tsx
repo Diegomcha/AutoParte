@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import NewPasswordInput, {
 	isPasswordStrongEnough
-} from "~/component/NewPasswordInput";
+} from "~/component/input/NewPasswordInput";
 import { queryFactory } from "~/services/Api";
 import AuthService from "~/services/AuthService";
 import Validators from "~/services/Validators";

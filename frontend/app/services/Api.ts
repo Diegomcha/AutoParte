@@ -16,9 +16,11 @@ import type { ErrorResponse } from "react-router";
 import type {
 	AccommodationDtoRequest,
 	AccommodationDtoResponse,
+	AccountDtoFull,
 	AddressDtoRequest,
 	BookingDtoRequest,
 	BookingDtoResponse,
+	CommunicationDtoResponse,
 	ConfigDtoRequest,
 	EmployeeDtoCreate,
 	EmployeeDtoPatch,
@@ -28,6 +30,7 @@ import type {
 	paths,
 	PersonDtoRequest,
 	ProblemDetail,
+	SecurityEventDto,
 	UpdatePasswordDto
 } from "../@types/api";
 
@@ -77,6 +80,12 @@ interface Sort {
 	direction?: "asc" | "desc";
 }
 
+interface Pageable {
+	page?: number;
+	size?: number;
+	sorting?: Sort[];
+}
+
 interface RequiredPagedModel<T> {
 	content: T[];
 	page: Required<PageMetadata>;
@@ -90,6 +99,16 @@ function mapSorting(sorting: Sort[] | undefined): string[] | undefined {
 			? `${s.columnAccessor},${s.direction}`
 			: s.columnAccessor
 	);
+}
+
+function mapPageable(pageable: Pageable | undefined) {
+	return pageable
+		? {
+				page: pageable.page,
+				size: pageable.size,
+				sort: mapSorting(pageable.sorting)
+			}
+		: undefined;
 }
 
 const queryFactory = {
@@ -128,6 +147,57 @@ const queryFactory = {
 				}
 			})
 	},
+	accounts: {
+		list: () =>
+			queryOptions({
+				queryKey: ["accounts"],
+				queryFn: async () =>
+					unwrapResponse(
+						await api.GET("/api/accounts", {
+							params: { query: { page: 0, size: 0 } }
+						})
+					).content ?? []
+			}),
+		pagedList: (pageable: Pageable = {}) =>
+			queryOptions({
+				queryKey: ["accounts", pageable],
+				queryFn: async () =>
+					unwrapResponse(
+						await api.GET("/api/accounts", {
+							params: {
+								query: mapPageable(pageable)
+							}
+						})
+					) as RequiredPagedModel<AccountDtoFull>
+			}),
+		securityEvents: {
+			globalPaged: (pageable: Pageable = {}) =>
+				queryOptions({
+					queryKey: ["accounts", "global", "securityEvents", pageable],
+					queryFn: async () =>
+						unwrapResponse(
+							await api.GET("/api/accounts/global/security-events", {
+								params: {
+									query: mapPageable(pageable)
+								}
+							})
+						) as RequiredPagedModel<SecurityEventDto>
+				}),
+			accountPaged: (accountId: string, pageable: Pageable = {}) =>
+				queryOptions({
+					queryKey: ["accounts", accountId, "securityEvents", pageable],
+					queryFn: async () =>
+						unwrapResponse(
+							await api.GET("/api/accounts/{accountId}/security-events", {
+								params: {
+									path: { accountId },
+									query: mapPageable(pageable)
+								}
+							})
+						) as RequiredPagedModel<SecurityEventDto>
+				})
+		}
+	},
 	employees: {
 		list: () =>
 			queryOptions({
@@ -139,26 +209,14 @@ const queryFactory = {
 						})
 					).content ?? []
 			}),
-		pagedList: ({
-			page,
-			size,
-			sorting
-		}: {
-			page?: number;
-			size?: number;
-			sorting?: Sort[];
-		} = {}) =>
+		pagedList: (pageable: Pageable = {}) =>
 			queryOptions({
-				queryKey: ["employees", { page, size, sorting }],
+				queryKey: ["employees", pageable],
 				queryFn: async () =>
 					unwrapResponse(
 						await api.GET("/api/employees", {
 							params: {
-								query: {
-									page,
-									size,
-									sort: mapSorting(sorting)
-								}
+								query: mapPageable(pageable)
 							}
 						})
 					) as RequiredPagedModel<EmployeeDtoResponse>
@@ -361,26 +419,14 @@ const queryFactory = {
 						})
 					).content ?? []
 			}),
-		pagedList: ({
-			page,
-			size,
-			sorting
-		}: {
-			page?: number;
-			size?: number;
-			sorting?: Sort[];
-		} = {}) =>
+		pagedList: (pageable: Pageable = {}) =>
 			queryOptions({
-				queryKey: ["accommodations", { page, size, sorting }],
+				queryKey: ["accommodations", pageable],
 				queryFn: async () =>
 					unwrapResponse(
 						await api.GET("/api/accommodations", {
 							params: {
-								query: {
-									page,
-									size,
-									sort: mapSorting(sorting)
-								}
+								query: mapPageable(pageable)
 							}
 						})
 					) as RequiredPagedModel<AccommodationDtoResponse>
@@ -800,6 +846,27 @@ const queryFactory = {
 						);
 					}
 				}),
+			communications: {
+				list: (accommodationId: string, bookingId: string) =>
+					queryOptions({
+						queryKey: [
+							...queryFactory.accommodations.bookings.detail(
+								accommodationId,
+								bookingId
+							).queryKey,
+							"communications"
+						],
+						queryFn: async () =>
+							unwrapResponse(
+								await api.GET(
+									"/api/accommodations/{accommodationId}/bookings/{bookingId}/communications",
+									{
+										params: { path: { accommodationId, bookingId } }
+									}
+								)
+							)
+					})
+			},
 			people: {
 				list: (accommodationId: string, bookingId: string) =>
 					queryOptions({
@@ -1039,6 +1106,28 @@ const queryFactory = {
 							)
 					})
 			}
+		},
+		communications: {
+			pagedList: (accommodationId: string, pageable: Pageable = {}) =>
+				queryOptions({
+					queryKey: [
+						...queryFactory.accommodations.detail(accommodationId).queryKey,
+						"communications",
+						pageable
+					],
+					queryFn: async () =>
+						unwrapResponse(
+							await api.GET(
+								"/api/accommodations/{accommodationId}/communications",
+								{
+									params: {
+										path: { accommodationId },
+										query: mapPageable(pageable)
+									}
+								}
+							)
+						) as RequiredPagedModel<CommunicationDtoResponse>
+				})
 		}
 	},
 	addresses: {
@@ -1249,6 +1338,18 @@ const queryFactory = {
 
 					return unwrapResponse(res);
 				}
+			})
+	},
+	communications: {
+		pagedList: (pageable: Pageable = {}) =>
+			queryOptions({
+				queryKey: ["communications", pageable],
+				queryFn: async () =>
+					unwrapResponse(
+						await api.GET("/api/communications", {
+							params: { query: mapPageable(pageable) }
+						})
+					) as RequiredPagedModel<CommunicationDtoResponse>
 			})
 	}
 };

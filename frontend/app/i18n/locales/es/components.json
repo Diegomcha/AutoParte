@@ -157,5 +157,64 @@
 			"button": "Ver firma",
 			"notSigned": "No ha sido firmado todavía"
 		}
+	},
+	"enablementBadge": {
+		"disabledTooltip": "Deshabilitado el {{date}}",
+		"states": {
+			"enabled": {
+				"label": "Habilitado",
+				"color": "green"
+			},
+			"disabled": {
+				"label": "Deshabilitado",
+				"color": "gray"
+			}
+		}
+	},
+	"booleanBadge": {
+		"states": {
+			"true": {
+				"label": "Sí",
+				"color": "green"
+			},
+			"false": {
+				"label": "No",
+				"color": "red"
+			},
+			"null": {
+				"label": "Indefinido",
+				"color": "gray"
+			}
+		}
+	},
+	"communicationTimeline": {
+		"creationFakeEvent": {
+			"title": "Creación"
+		}
+	},
+	"employeeCredsModal": {
+		"title": "Credenciales de acceso",
+		"fields": {
+			"username": "Nombre de usuario",
+			"password": "Contraseña temporal"
+		},
+		"description": "Estas son las credenciales de acceso del empleado.",
+		"warning": "No podrás volver a ver la contraseña."
+	},
+	"phoneInput": {
+		"errors": {
+			"invalidPhoneNumber": "El número de teléfono no es válido"
+		}
+	},
+	"booleanInputWithUndefined": {
+		"options": {
+			"true": "Sí",
+			"false": "No",
+			"undefined": "Indefinido"
+		}
+	},
+	"newAddressForm": {
+		"title": "Añadir nueva dirección",
+		"legend": "Dirección del viajero"
 	}
 }

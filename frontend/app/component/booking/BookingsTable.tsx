@@ -9,8 +9,8 @@ import { useTranslation } from "react-i18next";
 
 import TimeService from "~/services/TimeService";
 
-import BooleanBadge from "../BooleanBadge";
-import WifiBadge from "../WifiBadge";
+import BooleanBadge from "../badge/BooleanBadge";
+import WifiBadge from "../badge/WifiBadge";
 import BookingStatusBadge from "./BookingStatusBadge";
 
 import type {
@@ -114,9 +114,14 @@ export default function BookingsTable({
 				render: (booking) => (
 					<BooleanBadge
 						value={booking.selfCheckInRequested}
-						icons={{
-							true: <PaperPlaneTiltIcon weight="bold" />,
-							false: <ChatSlashIcon weight="bold" />
+						displayOpts={{
+							true: {
+								icon: <PaperPlaneTiltIcon weight="bold" />
+							},
+							false: {
+								color: "gray",
+								icon: <ChatSlashIcon weight="bold" />
+							}
 						}}
 					/>
 				),
