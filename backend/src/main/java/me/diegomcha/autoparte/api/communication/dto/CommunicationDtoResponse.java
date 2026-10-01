@@ -12,7 +12,6 @@ public record CommunicationDtoResponse(
         @Nonnull Instant updatedAt,
 
         @Nonnull UUID accommodationId,
-        @Nonnull String accommodationName,
         @Nonnull UUID bookingId,
 
         @Nonnull Communication.CommunicationType type,

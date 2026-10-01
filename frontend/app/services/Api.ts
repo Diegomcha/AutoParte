@@ -91,7 +91,12 @@ interface RequiredPagedModel<T> {
 	page: Required<PageMetadata>;
 }
 
+const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_SORTING = {
+	columnAccessor: "id",
+	direction: "asc"
+} as const;
 
 function mapSorting(sorting: Sort[] | undefined): string[] | undefined {
 	return sorting?.map((s) =>
@@ -104,7 +109,7 @@ function mapSorting(sorting: Sort[] | undefined): string[] | undefined {
 function mapPageable(pageable: Pageable | undefined) {
 	return pageable
 		? {
-				page: pageable.page,
+				page: pageable.page !== undefined ? pageable.page - 1 : undefined, // Adjust for 0-based indexing
 				size: pageable.size,
 				sort: mapSorting(pageable.sorting)
 			}
@@ -1425,7 +1430,9 @@ export {
 	api as _api,
 	unwrapResponse as _unwrapResponse,
 	ApiErrorResponse,
+	DEFAULT_PAGE,
 	DEFAULT_PAGE_SIZE,
+	DEFAULT_SORTING,
 	executeMutation,
 	queryClient,
 	queryFactory

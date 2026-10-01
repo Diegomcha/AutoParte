@@ -9,7 +9,13 @@ import { DataTable, useDataTableColumns } from "mantine-datatable";
 import { useTranslation } from "react-i18next";
 
 import TableActionButton from "~/component/admin/TableActionButton";
-import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from "~/services/Api";
+import {
+	DEFAULT_PAGE,
+	DEFAULT_PAGE_SIZE,
+	DEFAULT_SORTING,
+	queryClient,
+	queryFactory
+} from "~/services/Api";
 import TimeService from "~/services/TimeService";
 import Validators from "~/services/Validators";
 
@@ -18,12 +24,6 @@ import type { DataTableSortStatus } from "mantine-datatable";
 import type { Route } from "./+types/communications";
 
 const COLUMNS_STATE_KEY = "logs-communications-table-columns";
-
-const DEFAULT_PAGE = 0;
-const DEFAULT_SORTING = {
-	columnAccessor: "id",
-	direction: "asc"
-} as const;
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	if (id) Validators.validateUuids(id);
@@ -81,8 +81,18 @@ export default function LogsCommunicationsPage({
 				draggable: true,
 				sortable: true,
 				resizable: true,
-				accessor: "accommodationName",
-				title: tCommunication(($) => $.accommodation.label)
+				accessor: "accommodationId",
+				title: tCommunication(($) => $.accommodation.label),
+				render: (communication) =>
+					accommodations.find(
+						(accommodation) =>
+							accommodation.id === communication.accommodationId
+					)?.name ??
+					(communication.accommodationId
+						? tCommunication(($) => $.accommodation.deleted, {
+								id: communication.accommodationId
+							})
+						: tCommunication(($) => $.accommodation.unknown))
 			},
 			{
 				draggable: true,
@@ -169,30 +179,39 @@ export default function LogsCommunicationsPage({
 				),
 				textAlign: "center",
 				width: "0%",
-				render: (communication) => (
-					<Group gap={4} wrap="nowrap" justify="center">
-						<TableActionButton
-							component={Link}
-							to={`/admin/accommodations/${communication.accommodationId}`}
-							size="sm"
-							variant="subtle"
-							color={t(($) => $.tableButtons.viewAccommodation.color)}
-							tooltip={t(($) => $.tableButtons.viewAccommodation.tooltip)}
-						>
-							<BedIcon />
-						</TableActionButton>
-						<TableActionButton
-							component={Link}
-							to={`/accommodations/${communication.accommodationId}/bookings/${communication.bookingId}`}
-							size="sm"
-							variant="subtle"
-							color={t(($) => $.tableButtons.viewBooking.color)}
-							tooltip={t(($) => $.tableButtons.viewBooking.tooltip)}
-						>
-							<CalendarIcon />
-						</TableActionButton>
-					</Group>
-				)
+				render: (communication) => {
+					const isAccommodationAvailable = !accommodations.some(
+						(accommodation) =>
+							accommodation.id === communication.accommodationId
+					);
+
+					return (
+						<Group gap={4} wrap="nowrap" justify="center">
+							<TableActionButton
+								component={!isAccommodationAvailable ? Link : undefined}
+								to={`/admin/accommodations/${communication.accommodationId}`}
+								size="sm"
+								variant="subtle"
+								color={t(($) => $.tableButtons.viewAccommodation.color)}
+								tooltip={t(($) => $.tableButtons.viewAccommodation.tooltip)}
+								disabled={isAccommodationAvailable}
+							>
+								<BedIcon />
+							</TableActionButton>
+							<TableActionButton
+								component={!isAccommodationAvailable ? Link : undefined}
+								to={`/accommodations/${communication.accommodationId}/bookings/${communication.bookingId}`}
+								size="sm"
+								variant="subtle"
+								color={t(($) => $.tableButtons.viewBooking.color)}
+								tooltip={t(($) => $.tableButtons.viewBooking.tooltip)}
+								disabled={isAccommodationAvailable}
+							>
+								<CalendarIcon />
+							</TableActionButton>
+						</Group>
+					);
+				}
 			}
 		]
 	});

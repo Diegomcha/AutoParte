@@ -706,6 +706,10 @@ export interface components {
             sesLandlordCode?: string;
             digitalSignatureEnabled: boolean;
             manualReviewEnabled: boolean;
+            /** Format: int32 */
+            logsRetentionDays: number;
+            /** Format: int32 */
+            bookingsRetentionDays: number;
         };
         AccommodationDtoRequest: {
             name: string;
@@ -868,6 +872,10 @@ export interface components {
             sesCredentialsValid: boolean;
             digitalSignatureEnabled: boolean;
             manualReviewEnabled: boolean;
+            /** Format: int32 */
+            logsRetentionDays: number;
+            /** Format: int32 */
+            bookingsRetentionDays: number;
         };
         CommunicationDtoResponse: {
             /** Format: uuid */
@@ -878,7 +886,6 @@ export interface components {
             updatedAt: string;
             /** Format: uuid */
             accommodationId: string;
-            accommodationName: string;
             /** Format: uuid */
             bookingId: string;
             /** @enum {string} */

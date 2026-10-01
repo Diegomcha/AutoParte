@@ -22,7 +22,8 @@ public class Configuration extends BaseEntity {
     private boolean digitalSignatureEnabled = false;
     private boolean manualReviewEnabled = false;
 
-    private int logsRetentionDays = 3 * 365; // Default to 3 years (RD 933/2021)
+    private int logsRetentionDays = 1 * 365; // Default to 1 year (RGPD)
+    private int bookingsRetentionDays = 3 * 365; // Default to 3 years (RD 933/2021)
 
     private boolean sesCredentialsValid = false;
 

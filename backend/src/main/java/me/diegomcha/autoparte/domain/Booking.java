@@ -5,6 +5,7 @@ import me.diegomcha.autoparte.domain.base.BaseEntity;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.communication.CancellationCommunication;
 import me.diegomcha.autoparte.domain.communication.Communication;
+import org.hibernate.annotations.SQLSelect;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 
@@ -14,6 +15,7 @@ import java.util.*;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@SQLSelect(sql = "SELECT * from booking WHERE id = ?") // Allows graph traversal to soft-deleted entities (accommodation)
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Booking extends BaseEntity {
 

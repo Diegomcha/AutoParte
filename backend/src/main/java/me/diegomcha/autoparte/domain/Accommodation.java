@@ -2,6 +2,7 @@ package me.diegomcha.autoparte.domain;
 
 import lombok.*;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
+import org.hibernate.annotations.SQLSelect;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.SoftDeleteType;
 
@@ -13,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
+@SQLSelect(sql = "SELECT * from accommodation WHERE id = ?") // Allows graph traversal to soft-deleted entities
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Accommodation extends BaseEntity {
 
@@ -48,11 +50,19 @@ public class Accommodation extends BaseEntity {
         return Set.copyOf(this.employees);
     }
 
+    /**
+     * Adds an employee to the accommodation and establishes a bidirectional relationship.
+     * @param employee The employee to be added. Must not be null.
+     */
     public void addEmployee(@NonNull Employee employee) {
         employee._getAccommodations().add(this);
         this.employees.add(employee);
     }
 
+    /**
+     * Removes an employee from the accommodation and updates the bidirectional relationship.
+     * @param employee The employee to be removed. Must not be null.
+     */
     public void removeEmployee(@NonNull Employee employee) {
         employee._getAccommodations().remove(this);
         this.employees.remove(employee);
@@ -65,5 +75,4 @@ public class Accommodation extends BaseEntity {
     public Set<Booking> getBookings() {
         return Set.copyOf(this.bookings);
     }
-
 }

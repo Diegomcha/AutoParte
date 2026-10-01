@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 
 import { Badge, Divider, Group, Select, Title } from "@mantine/core";
@@ -15,7 +15,13 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable, useDataTableColumns } from "mantine-datatable";
 import { useTranslation } from "react-i18next";
 
-import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from "~/services/Api";
+import {
+	DEFAULT_PAGE,
+	DEFAULT_PAGE_SIZE,
+	DEFAULT_SORTING,
+	queryClient,
+	queryFactory
+} from "~/services/Api";
 import TimeService from "~/services/TimeService";
 import Validators from "~/services/Validators";
 
@@ -24,12 +30,6 @@ import type { DataTableSortStatus } from "mantine-datatable";
 import type { Route } from "./+types/security";
 
 const COLUMNS_STATE_KEY = "logs-security-table-columns";
-
-const DEFAULT_PAGE = 0;
-const DEFAULT_SORTING = {
-	columnAccessor: "id",
-	direction: "asc"
-} as const;
 
 export async function clientLoader({ params: { id } }: Route.ClientLoaderArgs) {
 	if (id) Validators.validateUuids(id);
@@ -78,6 +78,15 @@ export default function LogsSecurityPage({
 			: queryFactory.accounts.securityEvents.globalPaged(pageable)
 	);
 
+	useEffect(() => {
+		console.log(
+			page,
+			isLoading,
+			data?.page.totalElements,
+			data?.page.size ?? DEFAULT_PAGE_SIZE
+		);
+	}, [page, setPage, isLoading, data]);
+
 	const { effectiveColumns } = useDataTableColumns<SecurityEventDto>({
 		key: COLUMNS_STATE_KEY,
 		columns: [
@@ -95,12 +104,16 @@ export default function LogsSecurityPage({
 			{
 				hidden: !!id,
 				draggable: true,
+				sortable: true,
 				resizable: true,
 				accessor: "accountId",
 				title: tSecurityEvent(($) => $.account.label),
 				render: (event) =>
 					accounts.find((account) => account.id === event.accountId)
-						?.username ?? tSecurityEvent(($) => $.account.unknown)
+						?.username ??
+					(event.accountId
+						? tSecurityEvent(($) => $.account.deleted, { id: event.accountId })
+						: tSecurityEvent(($) => $.account.unknown))
 			},
 
 			{

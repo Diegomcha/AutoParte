@@ -28,10 +28,10 @@
 		"config": {
 			"title": "Configuración",
 			"sesValidation": {
-				"validating": "Validando credenciales...",
-				"error": "Error al validar credenciales",
-				"invalid": "Credenciales inválidas",
-				"valid": "Credenciales válidas"
+				"validating": "Validando...",
+				"error": "Error al validar",
+				"invalid": "Inválidas",
+				"valid": "Válidas"
 			}
 		},
 		"accommodations": {

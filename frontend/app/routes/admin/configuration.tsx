@@ -1,11 +1,12 @@
 import {
 	Button,
-	Center,
 	Chip,
 	Divider,
 	Fieldset,
 	Group,
+	NumberInput,
 	PasswordInput,
+	SimpleGrid,
 	Stack,
 	Switch,
 	TextInput,
@@ -105,9 +106,22 @@ export default function ConfigPage() {
 				</Group>
 			</Group>
 			<Divider my="sm" />
-			<Center>
-				<Group align="top">
-					<Fieldset legend={tConfig(($) => $.ses.title)}>
+			<SimpleGrid cols={3}>
+				<Fieldset legend={tConfig(($) => $.ses.title)}>
+					<Stack>
+						<Chip
+							color="green"
+							variant="light"
+							icon={
+								isValidatingSesCreds ? (
+									<SpinnerIcon className="animate-spin" />
+								) : undefined
+							}
+							checked={isValidatingSesCreds || isSesCredsValid}
+							disabled={form.isDirty() || isValidatingSesCreds}
+						>
+							{validationStatusText}
+						</Chip>
 						<Group grow>
 							<TextInput
 								key={form.key("sesUsername")}
@@ -128,55 +142,57 @@ export default function ConfigPage() {
 							label={tConfig(($) => $.ses.password.label)}
 							{...form.getInputProps("sesPassword")}
 						/>
-						<Divider my="sm" />
-						<Center>
-							<Chip
-								color="green"
-								variant="light"
-								icon={
-									isValidatingSesCreds ? (
-										<SpinnerIcon className="animate-spin" />
-									) : undefined
-								}
-								checked={isValidatingSesCreds || isSesCredsValid}
-								disabled={form.isDirty() || isValidatingSesCreds}
-							>
-								{validationStatusText}
-							</Chip>
-						</Center>
-					</Fieldset>
-					<Fieldset legend={tConfig(($) => $.functionality.title)}>
-						<Stack>
-							<Switch
-								key={form.key("digitalSignatureEnabled")}
-								name="digitalSignatureEnabled"
-								label={tConfig(
-									($) => $.functionality.digitalSignatureEnabled.label
-								)}
-								description={tConfig(
-									($) => $.functionality.digitalSignatureEnabled.description
-								)}
-								{...form.getInputProps("digitalSignatureEnabled", {
-									type: "checkbox"
-								})}
-							/>
-							<Switch
-								key={form.key("manualReviewEnabled")}
-								name="manualReviewEnabled"
-								label={tConfig(
-									($) => $.functionality.manualReviewEnabled.label
-								)}
-								description={tConfig(
-									($) => $.functionality.manualReviewEnabled.description
-								)}
-								{...form.getInputProps("manualReviewEnabled", {
-									type: "checkbox"
-								})}
-							/>
-						</Stack>
-					</Fieldset>
-				</Group>
-			</Center>
+					</Stack>
+				</Fieldset>
+				<Fieldset legend={tConfig(($) => $.functionality.title)}>
+					<Stack>
+						<Switch
+							key={form.key("digitalSignatureEnabled")}
+							name="digitalSignatureEnabled"
+							label={tConfig(
+								($) => $.functionality.digitalSignatureEnabled.label
+							)}
+							description={tConfig(
+								($) => $.functionality.digitalSignatureEnabled.description
+							)}
+							{...form.getInputProps("digitalSignatureEnabled", {
+								type: "checkbox"
+							})}
+						/>
+						<Switch
+							key={form.key("manualReviewEnabled")}
+							name="manualReviewEnabled"
+							label={tConfig(($) => $.functionality.manualReviewEnabled.label)}
+							description={tConfig(
+								($) => $.functionality.manualReviewEnabled.description
+							)}
+							{...form.getInputProps("manualReviewEnabled", {
+								type: "checkbox"
+							})}
+						/>
+					</Stack>
+				</Fieldset>
+				<Fieldset legend={tConfig(($) => $.retention.title)}>
+					<Stack>
+						<NumberInput
+							key={form.key("logsRetentionDays")}
+							label={tConfig(($) => $.retention.logsRetentionDays.label)}
+							description={tConfig(
+								($) => $.retention.logsRetentionDays.description
+							)}
+							{...form.getInputProps("logsRetentionDays")}
+						/>
+						<NumberInput
+							key={form.key("bookingsRetentionDays")}
+							label={tConfig(($) => $.retention.bookingsRetentionDays.label)}
+							description={tConfig(
+								($) => $.retention.bookingsRetentionDays.description
+							)}
+							{...form.getInputProps("bookingsRetentionDays")}
+						/>
+					</Stack>
+				</Fieldset>
+			</SimpleGrid>
 		</form>
 	);
 }

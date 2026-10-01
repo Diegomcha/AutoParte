@@ -134,9 +134,10 @@ class AccommodationService {
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class})
     public void deleteAccommodation(@NonNull UUID id) throws ResourceNotFoundException {
-        // Ensure accommodation exists
-        if (!accommodationRepo.existsById(id))
-            throw NOT_FOUND_EXCEPTION.get();
+        var accommodation = accommodationRepo.findById(id).orElseThrow(NOT_FOUND_EXCEPTION);
+
+        // Remove all employees from the accommodation before deletion
+        accommodation.getEmployees().forEach(accommodation::removeEmployee);
 
         accommodationRepo.deleteById(id);
     }

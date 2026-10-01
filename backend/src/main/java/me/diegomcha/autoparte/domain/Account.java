@@ -2,6 +2,7 @@ package me.diegomcha.autoparte.domain;
 
 import lombok.*;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
+import org.hibernate.annotations.SQLSelect;
 import org.hibernate.annotations.SoftDelete;
 import org.hibernate.annotations.SoftDeleteType;
 
@@ -14,6 +15,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @ToString
 @SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
+@SQLSelect(sql = "SELECT * from account WHERE id = ?") // Allows graph traversal to soft-deleted entities
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Account extends BaseEntity {
 

@@ -18,19 +18,19 @@ import { useTranslation } from "react-i18next";
 import AdminDeleteModal from "~/component/admin/AdminDeleteModal";
 import TableActionButton from "~/component/admin/TableActionButton";
 import EnablementBadge from "~/component/badge/EnablementBadge";
-import { DEFAULT_PAGE_SIZE, queryClient, queryFactory } from "~/services/Api";
+import {
+	DEFAULT_PAGE,
+	DEFAULT_PAGE_SIZE,
+	DEFAULT_SORTING,
+	queryClient,
+	queryFactory
+} from "~/services/Api";
 import TimeService from "~/services/TimeService";
 
 import type { EmployeeDtoResponse } from "~/@types/api";
 import type { DataTableSortStatus } from "mantine-datatable";
 
 const COLUMNS_STATE_KEY = "employee-table-columns";
-
-const DEFAULT_PAGE = 0;
-const DEFAULT_SORTING = {
-	columnAccessor: "id",
-	direction: "asc"
-} as const;
 
 export async function clientLoader() {
 	await queryClient.query(

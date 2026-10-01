@@ -28,9 +28,17 @@
 			"manualReviewEnabled": {
 				"label": "Habilitar revisiones manuales",
 				"description": "Permite a los empleados revisar manualmente los partes de entrada de viajeros antes de que se registren en la plataforma SES tras un auto-registro.\nSi se desactiva, los partes de entrada de viajeros se registrarán automáticamente en la plataforma SES tras los auto-registros"
-			},
+			}
+		},
+		"retention": {
+			"title": "Política de retención de datos",
 			"logsRetentionDays": {
-				"label": "Días de retención de registros"
+				"label": "Registros de seguridad",
+				"description": "Número de días que se conservarán los eventos de seguridad\n0 para conservarlos indefinidamente"
+			},
+			"bookingsRetentionDays": {
+				"label": "Reservas",
+				"description": "Número de días que se conservarán la información de las reservas finalizadas\n0 para conservarlas indefinidamente\nSegún el RD 933/2021, los hospedajes profesionales deben conservar los datos durante al menos 3 años (1095 días)"
 			}
 		}
 	},
@@ -123,6 +131,7 @@
 		"securityEvents": {
 			"account": {
 				"label": "Cuenta",
+				"deleted": "Cuenta eliminada#{{id}}",
 				"unknown": "Cuenta desconocida"
 			},
 			"timestamp": {
@@ -315,7 +324,9 @@
 		"communications": {
 			"title": "Registro",
 			"accommodation": {
-				"label": "Alojamiento"
+				"label": "Alojamiento",
+				"deleted": "Alojamiento eliminado#{{id}}",
+				"unknown": "Alojamiento desconocido"
 			},
 			"type": {
 				"label": "Tipo",

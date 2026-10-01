@@ -9,7 +9,11 @@ public record ConfigDtoResponse(
         @Nonnull String sesLandlordCode,
 
         @NotNull boolean sesCredentialsValid,
+        
         @NotNull boolean digitalSignatureEnabled,
-        @NotNull boolean manualReviewEnabled
+        @NotNull boolean manualReviewEnabled,
+
+        @NotNull int logsRetentionDays,
+        @NotNull int bookingsRetentionDays
 ) {
 }

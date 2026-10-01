@@ -56,15 +56,10 @@
                 <column nullable="false"/>
             </basic>
             <basic name="deletedAt">
-                <column name="deleted_at" insertable="false" updatable="false"/>
+                <column insertable="false" updatable="false"/>
             </basic>
             <one-to-many name="securityLog" mapped-by="account"/>
-            <one-to-one name="employee" optional="true">
-                <cascade>
-                    <cascade-persist/>
-                    <cascade-remove/>
-                </cascade>
-            </one-to-one>
+            <one-to-one name="employee" optional="true"/>
         </attributes>
     </entity>
 
@@ -118,7 +113,7 @@
             </basic>
             <many-to-one name="createdBy"/>
             <many-to-one name="lastModifiedBy"/>
-            <many-to-one name="accommodation" optional="false"/>
+            <many-to-one name="accommodation" optional="false" />
             <one-to-many name="people" mapped-by="booking">
                 <cascade>
                     <cascade-all/>
