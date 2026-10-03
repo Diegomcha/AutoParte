@@ -1,39 +1,80 @@
 name: autoparte
 
 services:
-    app:
-        image: ghcr.io/diegomcha/autoparte_app:main
-        container_name: autoparte_app
-        depends_on:
-            ocr:
-                condition: service_healthy
-            db:
-                condition: service_healthy
-        ports:
-            - 80:8080
-        environment:
-            - AUTOPARTE_SES_URL=https://hospedajes.pre-ses.mir.es/hospedajes-web/ws/v1/comunicacion
-            - AUTOPARTE_OCR_URL=http://ocr:80
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: autoparte_tunnel
+    restart: unless-stopped
+    depends_on:
+      - app
+    secrets:
+      - cf_tunnel_token
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN_FILE=/run/secrets/cf_tunnel_token
+  app:
+    image: ghcr.io/diegomcha/autoparte_app:main
+    container_name: autoparte_app
+    restart: unless-stopped
+    depends_on:
+      ocr:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    secrets:
+      - source: db_password
+        target: spring.datasource.password
+      - source: db_encryption_key
+        target: autoparte.security.db-encryption-key
+    environment:
+      # Configure external services
+      - AUTOPARTE_SES_URL=https://hospedajes.pre-ses.mir.es/hospedajes-web/ws/v1/comunicacion
+      - AUTOPARTE_OCR_URL=http://ocr:80
 
-            - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-            - SPRING_DATASOURCE_USERNAME=postgres
-            - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD}
-            - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    ocr:
-        image: ghcr.io/diegomcha/autoparte_ocr:main-cpu
-        container_name: autoparte_ocr
-        healthcheck:
-            test: ["CMD", "python", "-c", "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://localhost:80').status == 200 else 1)"]
-            timeout: 0.5s
-            start_interval: 1s
-            start_period: 10s
-    db:
-        image: dhi.io/postgres:18.4-alpine3.24
-        container_name: autoparte_db
-        environment:
-            - POSTGRES_PASSWORD=${DB_PASSWORD}
-        healthcheck:
-            test: ["CMD", "pg_isready"]
-            timeout: 0.5s
-            start_interval: 1s
-            start_period: 10s
+      # Configure datasource
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+
+      # Import secrets as configuration properties
+      - SPRING_CONFIG_IMPORT=optional:configtree:/run/secrets/
+  ocr:
+    image: ghcr.io/diegomcha/autoparte_ocr:main-cpu
+    container_name: autoparte_ocr
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request, sys; sys.exit(0 if urllib.request.urlopen('http://localhost:80').status == 200 else 1)",
+        ]
+      timeout: 0.5s
+      start_interval: 1s
+      start_period: 10s
+  db:
+    image: dhi.io/postgres:18.6-alpine3.23
+    container_name: autoparte_db
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    secrets:
+      - db_password
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      timeout: 0.5s
+      start_interval: 1s
+      start_period: 10s
+
+secrets:
+  cf_tunnel_token:
+    file: ./secrets/cf_tunnel_token.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  db_encryption_key:
+    file: ./secrets/db_encryption_key.txt
+
+volumes:
+  db_data:

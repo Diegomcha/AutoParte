@@ -1,0 +1,47 @@
+name: test deploy
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://autoparte.app
+    permissions:
+      id-token: write
+    steps:
+      # Checkout
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
+
+      # Setup
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: ${{ secrets.TS_TAGS }}
+
+      - name: Ping deployment server
+        run: tailscale ping ${{ vars.SERVER_HOST }}
+
+      - name: Perform deployment over SSH
+        env:
+          APP_PATH: ${{ vars.SERVER_PATH }}
+          HOST: ${{ vars.SERVER_HOST }}
+          USER: ${{ vars.SERVER_USER }}
+        run: |
+          scp docker-compose.yml $USER@$HOST:$APP_PATH
+
+          ssh $USER@$HOST << EOF
+            cd $APP_PATH
+            docker compose up -d --remove-orphans --pull always
+            docker image prune -f
+          EOF
