@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 @EqualsAndHashCode
 public class PersonalInfo {

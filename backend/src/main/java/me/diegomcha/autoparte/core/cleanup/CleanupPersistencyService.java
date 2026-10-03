@@ -2,10 +2,7 @@ package me.diegomcha.autoparte.core.cleanup;
 
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.config.DynamicConfigService;
-import me.diegomcha.autoparte.core.repos.AccommodationRepo;
-import me.diegomcha.autoparte.core.repos.AccountRepo;
-import me.diegomcha.autoparte.core.repos.BookingRepo;
-import me.diegomcha.autoparte.core.repos.SecurityEventRepo;
+import me.diegomcha.autoparte.core.repos.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,6 +24,7 @@ class CleanupPersistencyService {
     private final AccountRepo accountRepo;
     private final AccommodationRepo accommodationRepo;
     private final BookingRepo bookingRepo;
+    private final AddressRepo addressRepo;
 
     // * Cleanup methods: These methods clean up old records based on the configured retention periods.
 
@@ -86,6 +84,18 @@ class CleanupPersistencyService {
         logger.trace("Cleaning up soft deleted accommodations with no associated bookings");
         accommodationRepo.deleteSoftDeletedByBookingsEmpty();
         logger.trace("Finished cleanup of soft deleted accommodations");
+    }
+
+    // * Clean up orphan entities: These methods clean up orphaned entities that are no longer associated with any parent entity.
+
+
+    /**
+     * Cleans up addresses that are orphaned.
+     */
+    public void cleanupOrphanAddresses() {
+        logger.trace("Cleaning up orphan addresses with no associated people");
+        addressRepo.deleteByPeopleEmptyAndCreatedAtBefore(this.getCutoffDate(1)); // Cleanup addresses that are orphaned for more than 1 day
+        logger.trace("Finished cleanup of orphan addresses");
     }
 
     private Instant getCutoffDate(int retentionDays) {

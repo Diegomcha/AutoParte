@@ -1,8 +1,6 @@
 package me.diegomcha.autoparte.domain.person;
 
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import java.awt.*;
 import java.time.Instant;
@@ -16,7 +14,6 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode()
 public class Signature {
 
-    @JdbcTypeCode(SqlTypes.JSON)
     private @NonNull Map<Instant, List<Point>> paths;
     private @NonNull Instant signedAt;
 

@@ -4,6 +4,7 @@
                  xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_2.xsd"
                  version="3.2">
 
+
     <persistence-unit-metadata>
         <persistence-unit-defaults>
             <entity-listeners>
@@ -67,9 +68,13 @@
         <attributes>
             <basic name="name">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="surname">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
             <one-to-one name="account" optional="false">
                 <cascade>
@@ -113,7 +118,7 @@
             </basic>
             <many-to-one name="createdBy"/>
             <many-to-one name="lastModifiedBy"/>
-            <many-to-one name="accommodation" optional="false" />
+            <many-to-one name="accommodation" optional="false"/>
             <one-to-many name="people" mapped-by="booking">
                 <cascade>
                     <cascade-all/>
@@ -124,7 +129,7 @@
                     <cascade-all/>
                 </cascade>
             </one-to-many>
-            <one-to-one name="payment">
+            <one-to-one name="payment" orphan-removal="true">
                 <cascade>
                     <cascade-all/>
                 </cascade>
@@ -153,7 +158,7 @@
                     <cascade-persist/>
                 </cascade>
             </many-to-one>
-            <one-to-one name="document">
+            <one-to-one name="document" orphan-removal="true">
                 <cascade>
                     <cascade-all/>
                 </cascade>
@@ -168,6 +173,8 @@
             </basic>
             <basic name="remoteAddress">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="type">
                 <column nullable="false"/>
@@ -181,6 +188,18 @@
 
     <entity class="me.diegomcha.autoparte.domain.Configuration">
         <attributes>
+            <basic name="sesUsername">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="sesPassword">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="sesLandlordCode">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
             <basic name="sesCredentialsValid">
                 <column nullable="false"/>
             </basic>
@@ -192,6 +211,8 @@
             </basic>
             <basic name="rememberMeKey">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </entity>
@@ -201,15 +222,27 @@
         <attributes>
             <basic name="addressLine1">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="addressLine2">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="municipality">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="postalCode">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="country">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
             <one-to-many name="people" mapped-by="address"/>
         </attributes>
@@ -221,6 +254,10 @@
         <attributes>
             <basic name="type">
                 <column nullable="false"/>
+            </basic>
+            <basic name="holder">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </entity>
@@ -234,19 +271,79 @@
             </basic>
             <basic name="number">
                 <column nullable="false"/>
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </entity>
-    <entity class="me.diegomcha.autoparte.domain.person.document.DniDocument"/>
+    <entity class="me.diegomcha.autoparte.domain.person.document.DniDocument">
+        <attributes>
+            <basic name="supportNumber">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+        </attributes>
+    </entity>
 
-    <embeddable class="me.diegomcha.autoparte.domain.person.ContactInfo"/>
-    <embeddable class="me.diegomcha.autoparte.domain.person.PersonalInfo"/>
+    <embeddable class="me.diegomcha.autoparte.domain.person.ContactInfo">
+        <attributes>
+            <basic name="email">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="phoneNumber1">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="phoneNumber2">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+        </attributes>
+    </embeddable>
+    <embeddable class="me.diegomcha.autoparte.domain.person.PersonalInfo">
+        <attributes>
+            <basic name="name">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="firstSurname">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="secondSurname">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="nationality">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="birthDate">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="gender">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+        </attributes>
+    </embeddable>
     <embeddable class="me.diegomcha.autoparte.domain.person.Signature">
-    <attributes>
-        <basic name="paths">
-            <column column-definition="jsonb" />
-        </basic>
-    </attributes>
+        <attributes>
+            <basic name="paths">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="ipAddress">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+            <basic name="userAgent">
+                <convert
+                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+            </basic>
+        </attributes>
     </embeddable>
 
 </entity-mappings>

@@ -29,6 +29,11 @@ class CleanupTask {
         persistencyService.cleanupAccommodations();
         logger.debug("Finished cleanup of soft deleted entities with no associated records");
 
+        // Clean up orphaned records in the database
+        logger.debug("Starting cleanup of orphaned records in the database");
+        persistencyService.cleanupOrphanAddresses();
+        logger.debug("Finished cleanup of orphaned records in the database");
+
         logger.info("Database cleanup completed successfully");
     }
 

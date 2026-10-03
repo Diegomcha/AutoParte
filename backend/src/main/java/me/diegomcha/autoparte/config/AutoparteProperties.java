@@ -39,5 +39,6 @@ public class AutoparteProperties {
     @Data
     public static class SecurityProperties {
         private String initialAdminPassword = "admin";
+        private String dbEncryptionKey = "autoparte_autopa";
     }
 }
