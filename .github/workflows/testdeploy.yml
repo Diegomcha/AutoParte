@@ -38,9 +38,9 @@ jobs:
           HOST: ${{ vars.SERVER_HOST }}
           USER: ${{ vars.SERVER_USER }}
         run: |
-          scp docker-compose.yml $USER@$HOST:$APP_PATH
+          scp -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:$APP_PATH
 
-          ssh $USER@$HOST << EOF
+          ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
             cd $APP_PATH
             docker compose up -d --remove-orphans --pull always
             docker image prune -f
