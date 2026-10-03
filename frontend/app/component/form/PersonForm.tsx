@@ -69,20 +69,22 @@ export default function PersonForm({
 		keyPrefix: "personForm"
 	});
 
-	const { countries, genders, relationships, documentTypes } =
+	const { countries, genders, relationships, documentTypes, configuration } =
 		useSuspenseQueries({
 			queries: [
 				queryFactory.catalogue.countries.list(),
 				queryFactory.catalogue.genders(),
 				queryFactory.catalogue.relationships(),
-				queryFactory.catalogue.documentTypes()
+				queryFactory.catalogue.documentTypes(),
+				queryFactory.configuration.getPublic()
 			],
 			combine: (result) => {
 				return {
 					countries: result[0].data,
 					genders: result[1].data,
 					relationships: result[2].data,
-					documentTypes: result[3].data
+					documentTypes: result[3].data,
+					configuration: result[4].data
 				};
 			}
 		});
@@ -527,12 +529,14 @@ export default function PersonForm({
 							hidden={person?.hasSigned}
 						>
 							<Button
-								component={Link}
+								component={person?.hasSigned ? Link : undefined}
 								to={`/accommodations/${accommodationId}/bookings/${bookingId}/people/${person?.id ?? "unknown"}/signature`}
 								leftSection={<SignatureIcon weight="bold" size={16} />}
 								hidden={
 									checkInMode ??
-									mustSign(watchedFormValues.personalInfo.birthDate) !== true
+									((!configuration.digitalSignatureEnabled &&
+										!person?.hasSigned) ||
+										mustSign(watchedFormValues.personalInfo.birthDate) !== true)
 								}
 								disabled={!person?.hasSigned}
 								color="violet"

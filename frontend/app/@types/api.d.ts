@@ -279,6 +279,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** Finalize self-check-in for a booking */
+        post: operations["selfCheckInBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/accommodations/{accommodationId}/bookings/{id}/self-check-in-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
         /** Request self-check-in for a booking */
         post: operations["requestSelfCheckInForBooking"];
         /** Terminate self-check-in request for a booking */
@@ -392,6 +409,23 @@ export interface paths {
         head?: never;
         /** Update employee */
         patch: operations["updateEmployee"];
+        trace?: never;
+    };
+    "/api/config/public": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get public application configuration */
+        get: operations["getPublicConfig"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/communications": {
@@ -877,6 +911,9 @@ export interface components {
             /** Format: int32 */
             bookingsRetentionDays: number;
         };
+        PublicConfigDtoResponse: {
+            digitalSignatureEnabled: boolean;
+        };
         CommunicationDtoResponse: {
             /** Format: uuid */
             id: string;
@@ -1116,6 +1153,7 @@ export type EmployeeDtoResponse = components['schemas']['EmployeeDtoResponse'];
 export type PageMetadata = components['schemas']['PageMetadata'];
 export type PagedModelEmployeeDtoResponse = components['schemas']['PagedModelEmployeeDtoResponse'];
 export type ConfigDtoResponse = components['schemas']['ConfigDtoResponse'];
+export type PublicConfigDtoResponse = components['schemas']['PublicConfigDtoResponse'];
 export type CommunicationDtoResponse = components['schemas']['CommunicationDtoResponse'];
 export type PagedModelCommunicationDtoResponse = components['schemas']['PagedModelCommunicationDtoResponse'];
 export type ProvinceMunicipalityCodesDto = components['schemas']['ProvinceMunicipalityCodesDto'];
@@ -2470,6 +2508,70 @@ export interface operations {
             };
         };
     };
+    selfCheckInBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                accommodationId: string;
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Self-check-in request accepted and is pending processing */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Self-check-in processed successfully immediately */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
     requestSelfCheckInForBooking: {
         parameters: {
             query?: never;
@@ -2653,15 +2755,8 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Check-in request accepted and is pending processing */
-            202: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Check-in processed successfully immediately */
-            204: {
+            /** @description OK */
+            200: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3133,6 +3228,44 @@ export interface operations {
             };
             /** @description Conflict */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/problem+json": components["schemas"]["ProblemDetail"];
+                };
+            };
+        };
+    };
+    getPublicConfig: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PublicConfigDtoResponse"];
+                };
+            };
+            /** @description Bad Request */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };

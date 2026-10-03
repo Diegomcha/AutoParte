@@ -65,13 +65,14 @@ class SecurityConfig {
                                 "/api/docs/**",
                                 "/api/catalogue/**",
                                 "/api/ocr/**",
-                                "/api/addresses/**"
+                                "/api/addresses/**",
+                                "/api/config/public"
                         ).permitAll()
                         // Public access to bookings for self-check-in purposes
                         .requestMatchers(HttpMethod.GET, "/api/accommodations/{accommodationId}/bookings/{bookingId}").access(selfCheckInAuthorizationManager)
                         .requestMatchers(HttpMethod.GET, "/api/accommodations/{accommodationId}/bookings/{bookingId}/addresses").access(selfCheckInAuthorizationManager)
                         .requestMatchers("/api/accommodations/{accommodationId}/bookings/{bookingId}/people/**").access(selfCheckInAuthorizationManager)
-                        .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/checkin").access(selfCheckInAuthorizationManager)
+                        .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/self-check-in").access(selfCheckInAuthorizationManager)
                         // Protected routes for employees
                         .requestMatchers("/api/accommodations/{accommodationId}/bookings/**")
                         .access(AuthorizationManagers.anyOf(

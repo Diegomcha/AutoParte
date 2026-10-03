@@ -277,7 +277,7 @@
 				},
 				"send": {
 					"title": "Enviar registro",
-					"description": "Revisa y firma para completar el proceso"
+					"description": "Firma para completar el proceso"
 				}
 			}
 		}

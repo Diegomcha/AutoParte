@@ -155,7 +155,7 @@
 	"personForm": {
 		"signature": {
 			"button": "Ver firma",
-			"notSigned": "No ha sido firmado todavía"
+			"notSigned": "No ha sido firmado"
 		}
 	},
 	"enablementBadge": {
@@ -182,7 +182,7 @@
 				"color": "red"
 			},
 			"null": {
-				"label": "Indefinido",
+				"label": "No definido",
 				"color": "gray"
 			}
 		}
@@ -210,7 +210,7 @@
 		"options": {
 			"true": "Sí",
 			"false": "No",
-			"undefined": "Indefinido"
+			"undefined": "No definido"
 		}
 	},
 	"newAddressForm": {

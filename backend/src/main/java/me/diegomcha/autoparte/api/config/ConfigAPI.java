@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import me.diegomcha.autoparte.api.config.dto.ConfigDtoRequest;
 import me.diegomcha.autoparte.api.config.dto.ConfigDtoResponse;
+import me.diegomcha.autoparte.api.config.dto.PublicConfigDtoResponse;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 
@@ -14,8 +15,8 @@ public interface ConfigAPI {
     @Operation(summary = "Get current application configuration")
     ConfigDtoResponse getConfig();
 
-    // TODO:    @Operation(summary = "Get public application configuration")
-    // TODO:    PublicConfigDtoResponse getPublicConfig();
+    @Operation(summary = "Get public application configuration")
+    PublicConfigDtoResponse getPublicConfig();
 
     @Operation(summary = "Update application configuration")
     void updateConfig(ConfigDtoRequest patch);

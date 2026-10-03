@@ -123,6 +123,11 @@ const queryFactory = {
 				queryKey: ["configuration"],
 				queryFn: async () => unwrapResponse(await api.GET("/api/config"))
 			}),
+		getPublic: () =>
+			queryOptions({
+				queryKey: ["configuration", "public"],
+				queryFn: async () => unwrapResponse(await api.GET("/api/config/public"))
+			}),
 		update: () =>
 			mutationOptions({
 				mutationFn: async (data: ConfigDtoRequest) =>
@@ -817,12 +822,32 @@ const queryFactory = {
 						);
 					}
 				}),
-			requestSelfCheckIn: (accommodationId: string, bookingId: string) =>
+			selfCheckIn: (accommodationId: string, bookingId: string) =>
 				mutationOptions({
 					mutationFn: async () =>
 						unwrapResponse(
 							await api.POST(
 								"/api/accommodations/{accommodationId}/bookings/{id}/self-check-in",
+								{
+									params: { path: { accommodationId, id: bookingId } }
+								}
+							)
+						),
+					onSuccess: async () => {
+						await queryClient.invalidateQueries(
+							queryFactory.accommodations.bookings.detail(
+								accommodationId,
+								bookingId
+							)
+						);
+					}
+				}),
+			requestSelfCheckIn: (accommodationId: string, bookingId: string) =>
+				mutationOptions({
+					mutationFn: async () =>
+						unwrapResponse(
+							await api.POST(
+								"/api/accommodations/{accommodationId}/bookings/{id}/self-check-in-request",
 								{
 									params: { path: { accommodationId, id: bookingId } }
 								}
@@ -839,7 +864,7 @@ const queryFactory = {
 					mutationFn: async () =>
 						unwrapResponse(
 							await api.DELETE(
-								"/api/accommodations/{accommodationId}/bookings/{id}/self-check-in",
+								"/api/accommodations/{accommodationId}/bookings/{id}/self-check-in-request",
 								{
 									params: { path: { accommodationId, id: bookingId } }
 								}

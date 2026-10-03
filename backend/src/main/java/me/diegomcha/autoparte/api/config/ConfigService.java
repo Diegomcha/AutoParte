@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.config.dto.ConfigDtoRequest;
 import me.diegomcha.autoparte.api.config.dto.ConfigDtoResponse;
+import me.diegomcha.autoparte.api.config.dto.PublicConfigDtoResponse;
 import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
@@ -28,6 +29,15 @@ class ConfigService {
      */
     public ConfigDtoResponse getConfig() {
         return configMapper.toResponse(dynamicConfigService.getConfig());
+    }
+
+    /**
+     * Get the public accessible configuration.
+     *
+     * @return PublicConfigDtoResponse containing the public configuration.
+     */
+    public PublicConfigDtoResponse getPublicConfig() {
+        return configMapper.toPublicResponse(dynamicConfigService.getConfig());
     }
 
     /**

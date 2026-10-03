@@ -238,12 +238,11 @@ class BookingService {
      *
      * @param accommodationId The ID of the accommodation to which the booking belongs
      * @param id              The ID of the booking to check in
-     * @return true if the booking was checked in successfully, false if the booking needs to be reviewed manually
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
-     * @throws ResourceConflictException if the booking cannot be checked in in its current state
+     * @throws ResourceConflictException if the booking cannot be checked in its current state
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public boolean checkInBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public void checkInBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
@@ -253,19 +252,38 @@ class BookingService {
         if (!booking.canBeCheckedIn())
             throw CANNOT_BE_CHECKED_IN_EXCEPTION.get();
 
-        // If the user is not logged-in and manual review is enabled do not check-in directly
-        var isLoggedIn = Optional
-                .ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .map(securityService::getAccountFromAuthentication)
-                .isPresent();
+        booking.checkIn();
+    }
 
-        if (booking.isSelfCheckInRequested()) {
-            booking.terminateSelfCheckInRequest();
-            // TODO: Maybe send email here to notify the user that the self-check-in request has been completed
-        }
+    /**
+     * Finalizes the self-check-in process for the booking with the given ID for a specific accommodation.
+     * If manual review is enabled in the configuration, the booking will not be checked in directly
+     *
+     * @param accommodationId The ID of the accommodation to which the booking belongs
+     * @param id              The ID of the booking to finalize self-check-in
+     * @return true if the booking was checked in directly, false if manual review is enabled and the booking was not checked in
+     * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
+     * @throws ResourceConflictException if the booking cannot be checked in its current state or if self-check-in was not requested for the booking
+     */
+    @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
+    public boolean selfCheckIn(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+        this.ensureAccommodationExists(accommodationId);
 
-        // If the user is not logged-in and manual review is enabled, do not check-in
-        if (!isLoggedIn && dynamicConfigService.getConfig().isManualReviewEnabled())
+        var booking = bookingRepo
+                .findByAccommodationIdAndId(accommodationId, id)
+                .orElseThrow(NOT_FOUND_EXCEPTION);
+
+        if (!booking.canBeCheckedIn())
+            throw CANNOT_BE_CHECKED_IN_EXCEPTION.get();
+
+        if (!booking.isSelfCheckInRequested())
+            throw SELF_CHECK_IN_NOT_REQUESTED_EXCEPTION.get();
+
+        booking.terminateSelfCheckInRequest();
+        // TODO: Maybe send email here to notify the user that the self-check-in request has been completed
+
+        // If manual review is enabled, do not check in the booking directly
+        if (dynamicConfigService.getConfig().isManualReviewEnabled())
             return false;
 
         booking.checkIn();

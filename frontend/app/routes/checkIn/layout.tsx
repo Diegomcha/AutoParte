@@ -35,6 +35,10 @@ export async function clientLoader({
 }: Route.ClientLoaderArgs) {
 	Validators.validateUuids(accommodationId, bookingId);
 
+	const pubConfig = await queryClient.query(
+		queryFactory.configuration.getPublic()
+	);
+
 	const booking = await queryClient.query(
 		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
 	);
@@ -43,6 +47,7 @@ export async function clientLoader({
 		throw Validators.throwValidationErrorResponse("Booking cannot be modified");
 
 	return {
+		pubConfig,
 		booking
 	};
 }
@@ -50,7 +55,7 @@ export async function clientLoader({
 const STEP_ROUTES = ["verify-booking", "input-guest-details", "send"] as const;
 
 export default function CheckInRoute({
-	loaderData: { booking }
+	loaderData: { booking, pubConfig }
 }: Route.ComponentProps) {
 	const { t } = useTranslation("routes", {
 		keyPrefix: "checkIn"
@@ -111,13 +116,15 @@ export default function CheckInRoute({
 												$.progressSidebar.steps.inputGuestDetails.description
 										)}
 									/>
-									<Stepper.Step
-										icon={<SignatureIcon size={20} weight="bold" />}
-										label={t(($) => $.progressSidebar.steps.send.title)}
-										description={t(
-											($) => $.progressSidebar.steps.send.description
-										)}
-									/>
+									{pubConfig.digitalSignatureEnabled && (
+										<Stepper.Step
+											icon={<SignatureIcon size={20} weight="bold" />}
+											label={t(($) => $.progressSidebar.steps.send.title)}
+											description={t(
+												($) => $.progressSidebar.steps.send.description
+											)}
+										/>
+									)}
 								</Stepper>
 							</Stack>
 							<Divider hidden={!showBookingDetailsSidebar} />

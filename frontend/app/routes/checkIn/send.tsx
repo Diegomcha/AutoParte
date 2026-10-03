@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { redirect, useNavigate } from "react-router";
 
 import {
 	Button,
@@ -18,7 +18,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
 import SignatureBox from "~/component/input/SignatureBox";
-import { queryClient, queryFactory } from "~/services/Api";
+import { executeMutation, queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
 
 import type { PersonDtoResponse } from "~/@types/api";
@@ -43,6 +43,23 @@ export async function clientLoader({
 		throw Validators.throwValidationErrorResponse(
 			"Booking cannot be checked-in."
 		);
+
+	// If digital signature is not enabled, we can skip the signature step and directly check-in the booking
+	const pubConfig = await queryClient.query(
+		queryFactory.configuration.getPublic()
+	);
+
+	if (!pubConfig.digitalSignatureEnabled) {
+		await executeMutation(
+			queryFactory.accommodations.bookings.selfCheckIn(
+				accommodationId,
+				bookingId
+			),
+			undefined
+		);
+
+		return redirect("/check-in-completed");
+	}
 }
 
 export default function SendCheckIn({
@@ -59,8 +76,8 @@ export default function SendCheckIn({
 		queryFactory.accommodations.bookings.people.list(accommodationId, bookingId)
 	);
 
-	const { mutate: checkIn, isPending: isCheckingIn } = useMutation(
-		queryFactory.accommodations.bookings.checkIn(accommodationId, bookingId)
+	const { mutate: selfCheckIn, isPending: isCheckingIn } = useMutation(
+		queryFactory.accommodations.bookings.selfCheckIn(accommodationId, bookingId)
 	);
 
 	// Not everyone needs to sign
@@ -128,7 +145,7 @@ export default function SendCheckIn({
 						)}
 						loading={isCheckingIn}
 						onClick={() => {
-							checkIn(undefined, {
+							selfCheckIn(undefined, {
 								onSuccess: () => {
 									void navigate("/check-in-completed");
 								}

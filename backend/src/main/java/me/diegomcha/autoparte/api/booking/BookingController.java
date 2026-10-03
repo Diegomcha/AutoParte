@@ -69,14 +69,14 @@ class BookingController implements BookingAPI {
         bookingService.confirmBooking(accommodationId, id);
     }
 
-    @PostMapping("/{id}/self-check-in")
+    @PostMapping("/{id}/self-check-in-request")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
     public void requestSelfCheckInForBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceNotFoundException, ResourceConflictException {
         bookingService.requestSelfCheckInForBooking(accommodationId, id);
     }
 
-    @DeleteMapping("/{id}/self-check-in")
+    @DeleteMapping("/{id}/self-check-in-request")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
     public void terminateSelfCheckInRequestForBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceConflictException, ResourceNotFoundException {
@@ -85,8 +85,14 @@ class BookingController implements BookingAPI {
 
     @PostMapping("/{id}/check-in")
     @Override
-    public ResponseEntity<Void> checkInBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceConflictException, ResourceNotFoundException {
-        return bookingService.checkInBooking(accommodationId, id) ?
+    public void checkInBooking(@PathVariable UUID accommodationId, @PathVariable UUID id) throws ResourceConflictException, ResourceNotFoundException {
+        bookingService.checkInBooking(accommodationId, id);
+    }
+
+    @PostMapping("/{id}/self-check-in")
+    @Override
+    public ResponseEntity<Void> selfCheckInBooking(@PathVariable UUID accommodationId,@PathVariable UUID id) throws ResourceConflictException, ResourceNotFoundException {
+        return bookingService.selfCheckIn(accommodationId, id) ?
                 ResponseEntity.noContent().build() :
                 ResponseEntity.accepted().build();
     }

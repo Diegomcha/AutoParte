@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.config.dto.ConfigDtoRequest;
 import me.diegomcha.autoparte.api.config.dto.ConfigDtoResponse;
+import me.diegomcha.autoparte.api.config.dto.PublicConfigDtoResponse;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,12 @@ class ConfigController implements ConfigAPI {
     @Override
     public ConfigDtoResponse getConfig() {
         return configService.getConfig();
+    }
+
+    @GetMapping("/public")
+    @Override
+    public PublicConfigDtoResponse getPublicConfig() {
+        return configService.getPublicConfig();
     }
 
     @PutMapping
