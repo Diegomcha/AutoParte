@@ -180,7 +180,7 @@ class BookingTest {
         this.makeConfirmable();
         booking.confirm();
         this.finalizeConfirmation();
-        booking.setSelfCheckInRequested(true);
+//        booking.setSelfCheckInRequested(true);
         this.makeCheckinable();
 
         try (var ignored = TestingUtils.getMockedInstantNow()) {

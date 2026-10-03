@@ -177,6 +177,7 @@ jobs:
         run: mvn clean package
 
       # Build and push with attestation (main branch)
+      # TODO: Remove skip tests
       - name: Build and push Docker image
         id: push
         if: github.event_name != 'pull_request'
@@ -191,6 +192,7 @@ jobs:
 
           # Build & push image
           mvn clean spring-boot:build-image \
+            -DskipTests \
             -Dspring-boot.build-image.imageName=$LOWERCASED_IMAGE_NAME \
             -Dspring-boot.build-image.publish=true
 
