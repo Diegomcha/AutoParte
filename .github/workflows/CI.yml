@@ -264,3 +264,45 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_ocr
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    needs:
+      - build-app
+      - build-ocr
+    environment:
+      name: production
+      url: https://autoparte.app
+    permissions:
+      id-token: write
+    steps:
+      # Checkout
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
+
+      # Setup
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@d1b6cd204f8dceda5b3eaad7f1f767be390056cd # v4.2.0
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: ${{ secrets.TS_TAGS }}
+
+      - name: Ping deployment server
+        run: tailscale ping ${{ vars.SERVER_HOST }} --c 1
+
+      - name: Perform deployment over SSH
+        env:
+          APP_PATH: ${{ vars.SERVER_PATH }}
+          HOST: ${{ vars.SERVER_HOST }}
+          USER: ${{ vars.SERVER_USER }}
+        run: |
+          scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null docker-compose.yml $USER@$HOST:$APP_PATH
+
+          ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$HOST << EOF
+            cd $APP_PATH
+            docker compose up -d --remove-orphans --pull always --quiet-pull -y
+            docker image prune -f
+          EOF
