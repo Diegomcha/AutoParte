@@ -11,21 +11,11 @@
     </parent>
     <groupId>me.diegomcha</groupId>
     <artifactId>autoparte</artifactId>
-    <name/>
-    <description/>
-    <url/>
+    <name>AutoParte</name>
+    <url>https://github.com/Diegomcha/AutoParte</url>
     <licenses>
         <license/>
     </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
     <properties>
         <sonar.organization>diegomcha</sonar.organization>
         <java.version>21</java.version>
@@ -41,6 +31,8 @@
         <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
         <maven-resources.version>3.5.0</maven-resources.version>
         <tika.version>3.3.1</tika.version>
+        <jaxws-maven-plugin.version>4.0.5</jaxws-maven-plugin.version>
+        <jaxb-maven-plugin.version>4.0.16</jaxb-maven-plugin.version>
     </properties>
     <dependencies>
         <dependency>
@@ -323,7 +315,7 @@
             <plugin>
                 <groupId>com.sun.xml.ws</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
-                <version>4.0.5</version>
+                <version>${jaxws-maven-plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -339,7 +331,7 @@
             <plugin>
                 <groupId>org.jvnet.jaxb</groupId>
                 <artifactId>jaxb-maven-plugin</artifactId>
-                <version>4.0.16</version>
+                <version>${jaxb-maven-plugin.version}</version>
                 <configuration>
                     <schemaDirectory>
                         ${project.basedir}/src/main/resources/ses/data
@@ -355,11 +347,33 @@
             </plugin>
             <!--Get frontend build-->
             <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>clean-spa-assets</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.outputDirectory}/static</directory>
+                                    <followSymlinks>false</followSymlinks>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- 2. Copy the frontend build output -->
+            <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>${maven-resources.version}</version>
                 <executions>
                     <execution>
-                        <id>move-assets</id>
+                        <id>move-spa-assets</id>
                         <phase>process-resources</phase>
                         <goals>
                             <goal>copy-resources</goal>
