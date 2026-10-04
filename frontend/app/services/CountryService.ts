@@ -61,7 +61,7 @@ class CountryService {
 }
 
 // Configure countries library with the detected language
-i18nCountries.registerLocale(modulesLocales.i18nCountries);
+i18nCountries.registerLocale(await modulesLocales.i18nCountries());
 
 export default new CountryService();
 

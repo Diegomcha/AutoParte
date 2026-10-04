@@ -41,9 +41,16 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import "./i18n";
 
-polyfillCountryFlagEmojis();
-
 export function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
+	useEffect(() => {
+		// Defer flag emoji polyfill so it doesn't block initial mount
+		if ("requestIdleCallback" in window) {
+			requestIdleCallback(() => polyfillCountryFlagEmojis());
+		} else {
+			setTimeout(() => polyfillCountryFlagEmojis(), 1000);
+		}
+	}, []);
+
 	return (
 		<html lang="en" {...mantineHtmlProps}>
 			<head>
@@ -72,6 +79,34 @@ export function HydrateFallback() {
 	useEffect(() => {
 		nprogress.start();
 	}, []);
+
+	return (
+		<div className="hydrate-fallback-shell">
+			<style>{`
+                .hydrate-fallback-shell {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    width: 100vw;
+                    background-color: transparent;
+                }
+                .hydrate-spinner {
+                    width: 36px;
+                    height: 36px;
+                    border: 3px solid #e9ecef;
+                    border-top: 3px solid #228be6;
+                    border-radius: 50%;
+                    animation: rr-spin 0.8s linear infinite;
+                }
+                @keyframes rr-spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `}</style>
+			<div className="hydrate-spinner" />
+		</div>
+	);
 }
 
 export default function App() {

@@ -23,6 +23,7 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"allowSyntheticDefaultImports": true,
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+		"allowImportingTsExtensions": true
 	}
 }

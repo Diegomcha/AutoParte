@@ -3,11 +3,13 @@ import * as zxcvbnCommonPackage from "@zxcvbn-ts/language-common";
 
 import { modulesLocales } from "~/i18n";
 
+const langPackage = await modulesLocales.zxcvbn();
+
 export default new ZxcvbnFactory({
-	translations: modulesLocales.zxcvbn.translations,
+	translations: langPackage.translations,
 	graphs: zxcvbnCommonPackage.adjacencyGraphs,
 	dictionary: {
 		...zxcvbnCommonPackage.dictionary,
-		...modulesLocales.zxcvbn.dictionary
+		...langPackage.dictionary
 	}
 });

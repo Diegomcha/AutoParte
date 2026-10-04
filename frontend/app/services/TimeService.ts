@@ -17,6 +17,6 @@ dayjs.extend(isBetween);
 dayjs.extend(duration);
 
 // Set the locale for dayjs based on the detected language
-dayjs.locale(modulesLocales.dayjs);
+dayjs.locale(await modulesLocales.dayjs());
 
 export default dayjs;

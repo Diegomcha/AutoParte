@@ -74,15 +74,13 @@ const modulesLocaleMap = {
 
 // Loads the required locale for each third-party library based on the detected language
 export const modulesLocales = Object.fromEntries(
-	await Promise.all(
-		Object.entries(modulesLocaleMap).map(async ([library, map]) => {
-			const locale = await map[lang]();
+	Object.entries(modulesLocaleMap).map(([library, map]) => {
+		const locale = map[lang];
 
-			return [library, locale] as const;
-		})
-	)
+		return [library, locale] as const;
+	})
 ) as {
-	[K in keyof typeof modulesLocaleMap]: Awaited<
-		ReturnType<(typeof modulesLocaleMap)[K][SupportedLanguage]>
-	>;
+	[
+		K in keyof typeof modulesLocaleMap
+	]: (typeof modulesLocaleMap)[K][SupportedLanguage];
 };

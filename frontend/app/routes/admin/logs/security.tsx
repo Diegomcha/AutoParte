@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Outlet, useNavigate } from "react-router";
 
 import { Badge, Divider, Group, Select, Title } from "@mantine/core";
