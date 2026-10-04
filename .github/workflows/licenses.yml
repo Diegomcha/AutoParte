@@ -21,7 +21,6 @@ jobs:
         uses: anistark/feluda@c9e5737c2fe7e02d86abd9d4aedee00b371f1d9b
         with:
           fail-on-restrictive: true
-          update-badge: true
 
       - name: Generate compliance files
         run: |
