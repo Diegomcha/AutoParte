@@ -70,9 +70,11 @@ jobs:
 
       # 4. Auto-commit updated file back to GitHub
       - name: Commit and Push Changes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add THIRD_PARTY_NOTICES.md
-          git commit -m "docs: update THIRD_PARTY_NOTICES.md [skip ci]" || echo "No changes to commit"
-          git push origin main || echo "No changes to push"
+        uses: planetscale/ghcommit-action@a6b150b81dca5dd027baa898604418eec9e11465 # v0.2.22
+        with:
+          commit_message: "docs: 📜 update THIRD_PARTY_NOTICES.md [skip ci]"
+          repo: ${{ github.repository }}
+          branch: ${{ github.ref_name }}
+          file_pattern: "THIRD_PARTY_NOTICES.md"
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
