@@ -1,0 +1,51 @@
+name: Test licensing CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - "ocr/pyproject.toml"
+      - "ocr/uv.lock"
+      - "backend/pom.xml"
+  workflow_dispatch:
+
+jobs:
+  update-licenses:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Scan licenses
+        uses: anistark/feluda@v1.17.0
+        with:
+          fail-on-restrictive: true
+          update-badge: true
+
+      - name: Generate compliance files
+        run: |
+          echo "1" | feluda generate  # Auto-select NOTICE file
+          echo "2" | feluda generate  # Auto-select THIRD_PARTY_LICENSES file
+
+      - name: Generate SBOM
+        run: |
+          feluda sbom spdx --output sbom.spdx.json
+          feluda sbom cyclonedx --output sbom.cyclonedx.json
+
+      - name: Validate SBOM files
+        run: |
+          feluda sbom validate sbom.spdx.json --output sbom-spdx-validation.txt
+          feluda sbom validate sbom.cyclonedx.json --output sbom-cyclonedx-validation.txt
+
+      - name: Upload compliance artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-compliance
+          path: |
+            NOTICE
+            THIRD_PARTY_LICENSES.md
+            sbom.spdx.json
+            sbom.cyclonedx.json
+            sbom-spdx-validation.txt
+            sbom-cyclonedx-validation.txt
