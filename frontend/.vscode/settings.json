@@ -9,8 +9,5 @@
 		"connectionId": "diegomcha",
 		"projectKey": "Diegomcha_AutoParte"
 	},
-	"conventionalCommits.scopes": ["frontend"],
-	"licenser.projectName": "AutoParte",
-	"licenser.license": "Custom",
-	"licenser.customSPDXId": "GPL-3.0-or-later"
+	"conventionalCommits.scopes": ["frontend"]
 }

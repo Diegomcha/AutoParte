@@ -6,8 +6,5 @@
   "conventionalCommits.scopes": ["ocr"],
   "python.testing.pytestArgs": ["test"],
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true,
-  "licenser.projectName": "AutoParte",
-  "licenser.license": "Custom",
-  "licenser.customSPDXId": "GPL-3.0-or-later"
+  "python.testing.pytestEnabled": true
 }
