@@ -303,6 +303,7 @@ jobs:
 
           ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$HOST << EOF
             cd $APP_PATH
-            docker compose up -d --remove-orphans --pull always --quiet-pull -y
+            chmod 640 docker-compose.yml
+            docker compose up -d --remove-orphans --pull always --quiet-pull
             docker image prune -f
           EOF

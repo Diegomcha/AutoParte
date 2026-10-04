@@ -4,6 +4,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.http.CacheControl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
@@ -12,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableJpaAuditing
@@ -19,8 +21,15 @@ import java.io.IOException;
 class ApplicationConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Immutable caching for fingerprinted JS/CSS bundles from Vite/Bun (/assets/**)
+        registry.addResourceHandler("/assets/**")
+                .addResourceLocations("classpath:/static/assets/")
+                .setCacheControl(CacheControl.maxAge(365, TimeUnit.DAYS).cachePublic().immutable());
+
+        // No caching for index.html and other non-fingerprinted files (e.g., /favicon.ico, /robots.txt)
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
+                .setCacheControl(CacheControl.noCache().mustRevalidate())
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {
                     @Override

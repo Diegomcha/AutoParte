@@ -12,9 +12,6 @@ services:
     command: tunnel --no-autoupdate run
     environment:
       - TUNNEL_TOKEN_FILE=/run/secrets/cf_tunnel_token
-    sysctls:
-      - net.core.rmem_max=7500000
-      - net.core.wmem_max=7500000
   app:
     image: ghcr.io/diegomcha/autoparte_app:main
     container_name: autoparte_app
