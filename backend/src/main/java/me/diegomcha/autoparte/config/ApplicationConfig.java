@@ -29,7 +29,6 @@ class ApplicationConfig implements WebMvcConfigurer {
         // No caching for index.html and other non-fingerprinted files (e.g., /favicon.ico, /robots.txt)
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
-                .setCacheControl(CacheControl.noCache().mustRevalidate())
                 .resourceChain(true)
                 .addResolver(new PathResourceResolver() {
                     @Override
@@ -42,6 +41,10 @@ class ApplicationConfig implements WebMvcConfigurer {
 
                         // Never send API requests to the frontend fallback.
                         if (resourcePath.equals("api") || resourcePath.startsWith("api/"))
+                            return null;
+
+                        // If the user asks for a file with an extension (e.g., /static/logo.png), but it doesn't exist, return 404.
+                        if (resourcePath.contains("."))
                             return null;
 
                         // If the file doesn't exist, it's likely a React Router path

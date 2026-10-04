@@ -78,15 +78,6 @@ export default function LogsSecurityPage({
 			: queryFactory.accounts.securityEvents.globalPaged(pageable)
 	);
 
-	useEffect(() => {
-		console.log(
-			page,
-			isLoading,
-			data?.page.totalElements,
-			data?.page.size ?? DEFAULT_PAGE_SIZE
-		);
-	}, [page, setPage, isLoading, data]);
-
 	const { effectiveColumns } = useDataTableColumns<SecurityEventDto>({
 		key: COLUMNS_STATE_KEY,
 		columns: [
