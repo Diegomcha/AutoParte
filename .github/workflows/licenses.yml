@@ -1,4 +1,4 @@
-name: Test licensing CI
+name: Generate THIRD_PARTY_NOTICES.md
 
 on:
   push:
@@ -12,49 +12,65 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # Needed to commit THIRD_PARTY_NOTICES.md back to repo
 
 jobs:
-  scan-licenses:
-    name: Scan ${{ matrix.directory }}
+  update-licenses:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory: [frontend, backend, ocr]
-    defaults:
-      run:
-        working-directory: ${{ matrix.directory }}
     steps:
+      # CHECKOUT
       - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # V6.0.2
 
-      - name: Scan licenses
-        uses: anistark/feluda@c9e5737c2fe7e02d86abd9d4aedee00b371f1d9b
+      # SETUP
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
-          fail-on-restrictive: true
-          update-badge: false
+          bun-version-file: frontend/package.json
 
-      - name: Generate compliance files
-        run: |
-          echo "1" | feluda generate  # Auto-select NOTICE file
-          echo "2" | feluda generate  # Auto-select THIRD_PARTY_LICENSES file
-
-      - name: Generate SBOM
-        run: |
-          feluda sbom spdx --output sbom.spdx.json
-          feluda sbom cyclonedx --output sbom.cyclonedx.json
-
-      - name: Validate SBOM files
-        run: |
-          feluda sbom validate sbom.spdx.json --output sbom-spdx-validation.txt
-          feluda sbom validate sbom.cyclonedx.json --output sbom-cyclonedx-validation.txt
-
-      - name: Upload compliance artifacts
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      - name: Cache Bun dependencies
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
-          name: license-compliance-${{ matrix.directory }}
-          path: |
-            ${{ matrix.directory }}/NOTICE
-            ${{ matrix.directory }}/THIRD_PARTY_LICENSES.md
-            ${{ matrix.directory }}/sbom.spdx.json
-            ${{ matrix.directory }}/sbom.cyclonedx.json
+          path: ~/.bun/install/cache
+          key: bun-deps-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('frontend/bun.lock') }}
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          java-version: 21
+          distribution: temurin
+          cache: maven
+          cache-dependency-path: backend/pom.xml
+
+      - name: Set up UV
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          working-directory: ocr
+
+      # GENERATE LICENSE REPORTS
+      - name: Generate frontend licenses report
+        working-directory: frontend
+        run: |
+          bun ci --frozen-lockfile
+          bunx license-checker@v25.0.1 --production --json > ../.github/licenses-frontend.json
+
+      - name: Generate OCR licenses report
+        working-directory: ocr
+        run: |
+          uv sync --locked --extra cpu,dev --no-install-project
+          uv run --with pip-licenses==5.5.5 pip-licenses --format=json --ignore-package=autoparte-ocr --output-file=../.github/licenses-ocr.json
+
+      - name: Generate backend licenses report
+        working-directory: backend
+        run: mvn license:add-third-party
+
+      # 3. Merge Reports into Root File
+      - name: Merge notices into THIRD_PARTY_NOTICES.md
+        run: uv run .github/scripts/merge_licenses.py
+
+      # 4. Auto-commit updated file back to GitHub
+      - name: Commit and Push Changes
+        uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
+        with:
+          commit_message: "docs: update THIRD_PARTY_NOTICES.md [skip ci]"
+          file_pattern: "THIRD_PARTY_NOTICES.md"

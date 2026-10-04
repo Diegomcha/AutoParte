@@ -14,7 +14,10 @@
     <name>AutoParte</name>
     <url>https://github.com/Diegomcha/AutoParte</url>
     <licenses>
-        <license/>
+        <license>
+            <name>GPL-3.0-or-later</name>
+            <url>https://github.com/Diegomcha/AutoParte/LICENSE</url>
+        </license>
     </licenses>
     <properties>
         <sonar.organization>diegomcha</sonar.organization>
@@ -370,7 +373,6 @@
             <!-- 2. Copy the frontend build output -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources.version}</version>
                 <executions>
                     <execution>
                         <id>move-spa-assets</id>
@@ -379,14 +381,10 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>
-                                ${project.build.outputDirectory}/static
-                            </outputDirectory>
+                            <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>
-                                        ${project.basedir}/../frontend/build/client
-                                    </directory>
+                                    <directory>${project.basedir}/../frontend/build/client</directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>
