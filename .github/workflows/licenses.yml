@@ -15,11 +15,19 @@ permissions:
   contents: read
 
 jobs:
-  update-licenses:
+  scan-licenses:
+    name: Scan ${{ matrix.directory }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: [frontend, backend, ocr]
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+
       - name: Scan licenses
         uses: anistark/feluda@c9e5737c2fe7e02d86abd9d4aedee00b371f1d9b
         with:
@@ -44,11 +52,9 @@ jobs:
       - name: Upload compliance artifacts
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
-          name: license-compliance
+          name: license-compliance-${{ matrix.directory }}
           path: |
-            NOTICE
-            THIRD_PARTY_LICENSES.md
-            sbom.spdx.json
-            sbom.cyclonedx.json
-            sbom-spdx-validation.txt
-            sbom-cyclonedx-validation.txt
+            ${{ matrix.directory }}/NOTICE
+            ${{ matrix.directory }}/THIRD_PARTY_LICENSES.md
+            ${{ matrix.directory }}/sbom.spdx.json
+            ${{ matrix.directory }}/sbom.cyclonedx.json
