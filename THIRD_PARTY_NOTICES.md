@@ -31,6 +31,7 @@
 | @jridgewell/resolve-uri | 3.1.2 | MIT |
 | @jridgewell/sourcemap-codec | 1.5.5 | MIT |
 | @jridgewell/trace-mapping | 0.3.31 | MIT |
+| @mantine/code-highlight | 9.7.1 | MIT |
 | @mantine/core | 9.6.1 | MIT |
 | @mantine/dates | 9.6.1 | MIT |
 | @mantine/form | 9.6.1 | MIT |
@@ -142,6 +143,7 @@
 | hsl-to-hex | 1.0.0 | MIT |
 | hsl-to-rgb-for-reals | 1.1.1 | ISC |
 | html-parse-stringify | 4.0.1 | MIT |
+| html-to-image | 1.11.13 | MIT |
 | https-proxy-agent | 5.0.1 | MIT |
 | hyphen | 1.6.6 | ISC |
 | i18n-iso-countries | 7.14.0 | MIT |
