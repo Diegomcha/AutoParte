@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.5</version>
+        <version>4.1.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>me.diegomcha</groupId>
@@ -22,18 +22,18 @@
     <properties>
         <sonar.organization>diegomcha</sonar.organization>
         <java.version>21</java.version>
-        <sentry-plugin.version>0.11.0</sentry-plugin.version>
-        <sentry.version>8.53.0</sentry.version>
-        <sentry-profiler.version>8.53.0</sentry-profiler.version>
+        <!-- Deps. versions -->
+        <springdoc-openapi-starter-webmvc-ui.version>3.1.1</springdoc-openapi-starter-webmvc-ui.version>
+        <sentry-async-profiler.version>8.60.0</sentry-async-profiler.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
-        <commons-text.version>1.10.0</commons-text.version>
-        <uuid-generator.version>5.2.0</uuid-generator.version>
-        <jacoco.version>0.8.12</jacoco.version>
-        <libphonenumber.version>9.0.30</libphonenumber.version>
-        <springdoc-openapi.version>3.0.3</springdoc-openapi.version>
-        <maven-resources.version>3.5.0</maven-resources.version>
-        <tika.version>3.3.1</tika.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <commons-text.version>1.15.0</commons-text.version>
+        <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
+        <libphonenumber.version>9.0.41</libphonenumber.version>
+        <tika.version>4.1.0</tika.version>
+        <!-- Build plugins versions -->
+        <sentry-plugin.version>0.11.0</sentry-plugin.version>
+        <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
         <jaxws-maven-plugin.version>4.0.5</jaxws-maven-plugin.version>
         <jaxb-maven-plugin.version>4.0.16</jaxb-maven-plugin.version>
     </properties>
@@ -75,21 +75,6 @@
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry-spring-boot-4</artifactId>
-            <version>${sentry.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.sentry</groupId>
-            <artifactId>sentry-async-profiler</artifactId>
-            <version>${sentry-profiler.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc-openapi.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
@@ -102,6 +87,10 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
@@ -111,6 +100,17 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-async-profiler</artifactId>
+            <version>${sentry-async-profiler.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok-mapstruct-binding</artifactId>
-            <version>${lombok-mapstruct.version}</version>
+            <version>${lombok-mapstruct-binding.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -130,17 +130,13 @@
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
-            <version>${uuid-generator.version}</version>
+            <version>${java-uuid-generator.version}</version>
         </dependency>
         <dependency>
             <groupId>com.googlecode.libphonenumber</groupId>
             <artifactId>libphonenumber</artifactId>
             <version>${libphonenumber.version}</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents.client5</groupId>
-            <artifactId>httpclient5</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -285,7 +281,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco.version}</version>
+                <version>${jacoco-maven-plugin.version}</version>
                 <executions>
                     <!-- Attach the JaCoCo agent before tests run -->
                     <execution>

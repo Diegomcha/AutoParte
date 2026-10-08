@@ -10,7 +10,16 @@ Sentry.init({
 		// To disable sending user data and HTTP bodies, uncomment the lines below. For more info visit:
 		// https://docs.sentry.io/platforms/javascript/guides/react-router/configuration/options/#dataCollection
 		userInfo: false,
-		httpBodies: []
+		cookies: false,
+		httpHeaders: {
+			request: { deny: ["forwarded", "-ip", "remote-", "via", "-user"] },
+			response: { deny: ["forwarded", "-ip", "remote-", "via", "-user"] }
+		},
+		httpBodies: [],
+		urlQueryParams: { deny: ["forwarded", "-ip", "remote-", "via", "-user"] },
+		genAI: { inputs: false, outputs: false },
+		databaseQueryData: false,
+		graphQL: { document: false, variables: false }
 	},
 	integrations: [
 		// Registers and configures the Tracing integration,
@@ -22,16 +31,17 @@ Sentry.init({
 		Sentry.replayIntegration()
 	],
 	environment: import.meta.env.MODE,
-	// Enable logs to be sent to Sentry
-	enableLogs: true,
 	// Set tracesSampleRate to 1.0 to capture 100%
 	// of transactions for tracing.
-	// TODO: We recommend adjusting this value in production
 	// Learn more at
 	// https://docs.sentry.io/platforms/javascript/guides/react-router/configuration/options/#traces-sample-rate
-	tracesSampleRate: 1.0,
-	// TODO: Set `tracePropagationTargets` to declare which URL(s) should have trace propagation enabled
-	tracePropagationTargets: [/^\//, /^https:\/\/yourserver\.io\/api/],
+	tracesSampleRate: import.meta.env.PROD ? 0.1 : 1.0,
+	tracePropagationTargets: [
+		// Matches relative paths (e.g., fetch('/api/...')) and absolute URLs containing '/api'
+		"/api",
+		// Matches all relative endpoints on your app if you have endpoints outside /api
+		/^\//
+	],
 	// Capture Replay for 10% of all sessions,
 	// plus 100% of sessions with an error
 	// Learn more at

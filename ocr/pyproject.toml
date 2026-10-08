@@ -3,8 +3,8 @@ name = "autoparte-ocr"
 requires-python = "~=3.11.0"
 license = "GPL-3.0-or-later"
 dependencies = [
-    "fastapi~=0.141.1",
-    "granian~=2.8.1",
+    "fastapi~=0.143.0",
+    "granian~=2.8.4",
     "mrz~=0.6.2",
     "python-multipart~=0.0.32",
     "rapidocr~=3.9.2",
@@ -13,13 +13,13 @@ dependencies = [
 dynamic = ["version"]
 
 [project.optional-dependencies]
-deploy = ["uvloop~=0.22.1"]
-cpu = ["onnxruntime~=1.28.0"]
-gpu = ["onnxruntime-gpu~=1.28.0"]
-dev = ["fastapi[standard]~=0.141.1", "pytest~=9.1.1", "pytest-cov~=7.1.0"]
+deploy = ["uvloop~=0.23.0"]
+cpu = ["onnxruntime~=1.30.0"]
+gpu = ["onnxruntime-gpu~=1.30.0"]
+dev = ["fastapi[standard]~=0.143.0", "pytest~=9.1.1", "pytest-cov~=7.1.0"]
 
 [build-system]
-requires = ["setuptools~=82.0.1", "setuptools_scm[simple]~=10.2.0"]
+requires = ["setuptools~=84.0.0", "setuptools_scm[simple]~=10.3.4"]
 build-backend = "setuptools.build_meta"
 
 [tool.uv]

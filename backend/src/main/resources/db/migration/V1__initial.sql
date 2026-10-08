@@ -12,10 +12,12 @@ create table accommodation
 );
 create table accommodation_employees
 (
+    deleted_at        timestamp(6) with time zone,
     accommodations_id uuid not null,
     employees_id      uuid not null,
     primary key (accommodations_id, employees_id)
 );
+comment on column accommodation_employees.deleted_at is 'Soft-delete indicator';
 create table account
 (
     enabled         boolean                     not null,
