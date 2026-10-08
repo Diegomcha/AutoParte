@@ -58,7 +58,7 @@ jobs:
         working-directory: frontend
         run: |
           bun ci --frozen-lockfile
-          bunx license-checker@v25.0.1 --production --json > ../.github/licenses-frontend.json
+          bunx -b license-checker@v25.0.1 --production --json > ../.github/licenses-frontend.json
 
       - name: Generate OCR licenses report
         working-directory: ocr

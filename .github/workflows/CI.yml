@@ -57,17 +57,17 @@ jobs:
         working-directory: frontend
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: bun run build
+        run: bun run -b build
 
       - name: (Frontend) Run ESLint and generate report
         working-directory: frontend
         continue-on-error: true
-        run: bun run lint:ci
+        run: bun run -b lint:ci
 
       - name: (Frontend) Run tests and generate coverage
         working-directory: frontend
         continue-on-error: true
-        run: bun run test --coverage
+        run: bun run -b test --coverage
 
       # BACKEND
       - name: (Backend) Copy dependencies for SonarQube
@@ -153,7 +153,7 @@ jobs:
         working-directory: frontend
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: bun run build
+        run: bun run -b build
 
       # Test building images (PR)
       - name: Build with Maven (No Publish)
