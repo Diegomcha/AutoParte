@@ -5,6 +5,7 @@ import {
 	QueryClient,
 	queryOptions
 } from "@tanstack/react-query";
+import { t } from "i18next";
 import Cookies from "js-cookie";
 import createFetchClient from "openapi-fetch";
 
@@ -68,7 +69,7 @@ const queryClient = new QueryClient({
 		},
 		mutations: {
 			onError: (error) => {
-				NotificationsService.error(`An error occurred: ${error.message}`); // TODO: localize this message
+				NotificationsService.error(t(($) => $.error.api));
 				Sentry.captureException(error);
 			}
 		}
@@ -1219,6 +1220,27 @@ const queryFactory = {
 									)
 								)
 						}),
+					listWProvinceCode: (provinceCode: string) =>
+						queryOptions({
+							queryKey: [
+								...queryFactory.catalogue.countries.spanishProvinces.list()
+									.queryKey,
+								provinceCode,
+								"municipalities",
+								{ withProvinceCode: true }
+							],
+							queryFn: async () =>
+								[
+									provinceCode,
+									unwrapResponse(
+										await api.GET(
+											`/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities`,
+											{ params: { path: { provinceCode } } }
+										)
+									)
+								] as const
+						}),
+
 					postalCodes: {
 						list: (provinceCode: string, municipalityCode: string) =>
 							queryOptions({

@@ -216,5 +216,56 @@
 	"newAddressForm": {
 		"title": "Añadir nueva dirección",
 		"legend": "Dirección del viajero"
+	},
+	"pdf": {
+		"booking": {
+			"meta": {
+				"title": "Reserva {{id}}"
+			},
+			"header": {
+				"title": "Documento de reserva",
+				"subtitle": "Generado por $t(common:meta.name) el {{date}}",
+				"subtitleDateFormat": "LLL"
+			},
+			"footer": {
+				"pagination": "Página {{currentPage}} / {{totalPages}}"
+			},
+			"sections": {
+				"accommodationAndDates": {
+					"title": "Alojamiento y fechas"
+				},
+				"otherDetails": {
+					"title": "Otros detalles"
+				},
+				"payment": {
+					"title": "Pago"
+				},
+				"communications": {
+					"title": "Comunicaciones",
+					"empty": "No hay comunicaciones registradas"
+				},
+				"people": {
+					"title": "Viajeros",
+					"text": "La información de los viajeros disponible aparece segregada por páginas a continuación."
+				}
+			},
+			"person": {
+				"title": "{{number}}. {{name}} {{firstSurname}} {{secondSurname}}",
+				"sections": {
+					"signature": {
+						"title": "Firma",
+						"notRequired": "No se requiere firma",
+						"context": "$t(components:signatureBox.details, {\"signedAt\": \"{{signedAt}}\", \"ip\": \"{{ip}}\" })",
+						"context_zero": "Al firmar, usted confirma los datos de la reserva son correctos y veraces, y suscribe el parte de entrada de viajeros conforme al RD 933/2021."
+					}
+				}
+			}
+		}
+	},
+	"jsonViewer": {
+		"copyLabel": "Copiar",
+		"copiedLabel": "Copiado",
+		"expandAllLabel": "Expandir todo",
+		"collapseAllLabel": "Colapsar todo"
 	}
 }

@@ -27,7 +27,12 @@ export default [
 					"./routes/bookings/cancelSelfCheckIn.tsx"
 				),
 				route("cancel", "./routes/bookings/cancel.tsx"),
-				route("delete", "./routes/bookings/delete.tsx")
+				route("delete", "./routes/bookings/delete.tsx"),
+				route("export", "./routes/bookings/export/layout.tsx", [
+					index("./routes/bookings/export/index.tsx"),
+					route("pdf", "./routes/bookings/export/pdf.tsx"),
+					route("json", "./routes/bookings/export/json.tsx")
+				])
 			]
 		)
 	]),

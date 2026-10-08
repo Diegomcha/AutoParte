@@ -69,29 +69,11 @@ export default function AddressSelect({
 					.filter((address) => address.country === "ESP")
 					.map((address) => address.municipality.slice(0, 2))
 			)
-			// eslint-disable-next-line @tanstack/query/prefer-query-options -- Special case for fetching municipalities based on province codes
-		).map((provinceCode) => ({
-			queryKey: [
-				...queryFactory.catalogue.countries.spanishProvinces.municipalities.list(
-					provinceCode
-				).queryKey,
-				{ component: "AddressSelect" }
-			],
-			queryFn: async () =>
-				[
-					provinceCode,
-					_unwrapResponse(
-						await _api.GET(
-							"/api/catalogue/countries/ESP/provinces/{provinceCode}/municipalities",
-							{
-								params: {
-									path: { provinceCode }
-								}
-							}
-						)
-					)
-				] as const
-		}))
+		).map((provinceCode) =>
+			queryFactory.catalogue.countries.spanishProvinces.municipalities.listWProvinceCode(
+				provinceCode
+			)
+		)
 	});
 
 	// Create a map of province codes to their municipalities for quick lookup

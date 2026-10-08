@@ -30,7 +30,16 @@ export default function ProtectedAdminLayout() {
 	const { t } = useTranslation("routes", { keyPrefix: "admin" });
 
 	return (
-		<AppShell navbar={{ width: 200, breakpoint: "sm" }} padding="md">
+		<AppShell
+			navbar={{
+				width: 200,
+				collapsed: {
+					mobile: true
+				},
+				breakpoint: "xs"
+			}}
+			padding="md"
+		>
 			<AppShell.Navbar>
 				<NavLink
 					component={RouterNavLink}

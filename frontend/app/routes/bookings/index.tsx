@@ -33,7 +33,7 @@ import {
 	ClockIcon,
 	ExportIcon,
 	EyeIcon,
-	FileCsvIcon,
+	FileCodeIcon,
 	FilePdfIcon,
 	FloppyDiskIcon,
 	LinkIcon,
@@ -243,37 +243,38 @@ export default function BookingsPage({
 							{t(($) => $.index.title)}
 						</Title>
 						<Group>
+							{!form.isDirty() && (
+								<Menu>
+									<Menu.Target>
+										<Button
+											leftSection={<ExportIcon weight="bold" size={16} />}
+											color={tCommon(($) => $.buttons.export.color)}
+											loading={isPending}
+										>
+											{tCommon(($) => $.buttons.export.label)}
+										</Button>
+									</Menu.Target>
+									<Menu.Dropdown>
+										<Menu.Item
+											component={Link}
+											to="export/pdf"
+											leftSection={<FilePdfIcon weight="bold" size={16} />}
+										>
+											{tCommon(($) => $.export.pdf.button)}
+										</Menu.Item>
+										<Menu.Item
+											component={Link}
+											to="export/json"
+											leftSection={<FileCodeIcon weight="bold" size={16} />}
+										>
+											{tCommon(($) => $.export.json.button)}
+										</Menu.Item>
+									</Menu.Dropdown>
+								</Menu>
+							)}
 							{booking.canBeModified ? (
 								<>
-									{!form.isDirty() ? (
-										<Menu width={120}>
-											<Menu.Target>
-												<Button
-													leftSection={<ExportIcon weight="bold" size={16} />}
-													color="grape"
-													loading={isPending}
-												>
-													{tCommon(($) => $.buttons.export)}
-												</Button>
-											</Menu.Target>
-											<Menu.Dropdown>
-												<Menu.Label>Formato</Menu.Label>
-												<Menu.Item
-													// component={PDFDownloadLink}
-													// document={<BookingPDF />}
-													// fileName={`booking-${booking.id}.pdf`}
-													leftSection={<FilePdfIcon weight="bold" size={16} />}
-												>
-													PDF
-												</Menu.Item>
-												<Menu.Item
-													leftSection={<FileCsvIcon weight="bold" size={16} />}
-												>
-													CSV
-												</Menu.Item>
-											</Menu.Dropdown>
-										</Menu>
-									) : (
+									{form.isDirty() && (
 										<Button
 											type="reset"
 											color="gray"
@@ -468,7 +469,7 @@ export default function BookingsPage({
 									<TextInput
 										key={form.key("payment.mean")}
 										name="payment.mean"
-										label={tBooking(($) => $.payment.mean)}
+										label={tBooking(($) => $.payment.mean.label)}
 										disabled={watchedFormValues.payment.type == null}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("payment.mean")}
@@ -476,7 +477,7 @@ export default function BookingsPage({
 									<TextInput
 										key={form.key("payment.holder")}
 										name="payment.holder"
-										label={tBooking(($) => $.payment.holder)}
+										label={tBooking(($) => $.payment.holder.label)}
 										disabled={watchedFormValues.payment.type == null}
 										readOnly={!booking.canBeModified}
 										{...form.getInputProps("payment.holder")}

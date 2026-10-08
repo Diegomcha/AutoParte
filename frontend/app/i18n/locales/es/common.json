@@ -10,6 +10,7 @@
 			"logout": "Cerrar sesión"
 		}
 	},
+	"undefined": "—",
 	"buttons": {
 		"create": "Crear",
 		"add": "Añadir",
@@ -23,7 +24,10 @@
 		"cancel": "Cancelar",
 		"reset": "Restablecer",
 		"back": "Volver",
-		"export": "Exportar",
+		"export": {
+			"label": "Exportar",
+			"color": "grape"
+		},
 		"scan": "Escanear",
 		"finish": "Finalizar"
 	},
@@ -33,6 +37,7 @@
 		"checkOutDate": "Fecha de salida"
 	},
 	"error": {
+		"api": "Se ha producido un error al contactar con el servidor.",
 		"status": {
 			"400": "Solicitud incorrecta",
 			"403": "Acceso denegado",
@@ -55,6 +60,19 @@
 		"success": {
 			"title": "Éxito",
 			"color": "green"
+		}
+	},
+	"export": {
+		"pdf": {
+			"button": "PDF",
+			"title": "Documento PDF"
+		},
+		"json": {
+			"button": "JSON",
+			"title": "Archivo JSON"
+		},
+		"print": {
+			"button": "Imprimir (PDF)"
 		}
 	}
 }

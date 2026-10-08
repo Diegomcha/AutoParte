@@ -4,12 +4,11 @@ import { InputBase } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
 
 import { t } from "i18next";
-import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { parsePhoneNumberFromString } from "libphonenumber-js/min";
 import BasePhoneInput from "react-phone-number-input/input";
 
 import type { ReactNode } from "react";
-import type { Value } from "react-phone-number-input";
-import type { Props } from "react-phone-number-input/input";
+import type { Props, Value } from "react-phone-number-input/input";
 
 export function isValidPhoneNumber(error?: ReactNode) {
 	return (value: Value | undefined) => {

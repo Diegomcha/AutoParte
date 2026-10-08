@@ -3,6 +3,7 @@
 @import "@mantine/nprogress/styles.css";
 @import "@mantine/schedule/styles.css";
 @import "@mantine/notifications/styles.css";
+@import "@mantine/code-highlight/styles.css";
 
 @import "mantine-datatable/styles.css";
 
@@ -16,6 +17,11 @@
 
 * {
 	white-space: pre-line;
+}
+
+body {
+	min-height: 100vh;
+	min-width: 100vw;
 }
 
 [hidden] {
@@ -36,4 +42,26 @@
 	transition-property: rotate;
 	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	transition-duration: 150ms;
+}
+
+@media print {
+	@page {
+		size: landscape;
+	}
+
+	/* Hide the navbar */
+	.mantine-AppShell-navbar {
+		display: none !important;
+	}
+
+	/* Reset main content spacing and padding */
+	.mantine-AppShell-main {
+		padding: 0 !important;
+		padding-left: 0 !important;
+		margin: 0 !important;
+	}
+
+	.hide-on-print {
+		display: none !important;
+	}
 }

@@ -1,13 +1,25 @@
 import { useState } from "react";
 import { Link, Outlet } from "react-router";
 
-import { Badge, Center, Divider, Group, Title } from "@mantine/core";
+import {
+	Badge,
+	Button,
+	Center,
+	Divider,
+	Group,
+	Menu,
+	Modal,
+	Title
+} from "@mantine/core";
 
 import {
 	ClockCountdownIcon,
 	CursorClickIcon,
+	ExportIcon,
+	FileCodeIcon,
 	ListMagnifyingGlassIcon,
 	PasswordIcon,
+	PrinterIcon,
 	UserGearIcon,
 	UserIcon
 } from "@phosphor-icons/react";
@@ -18,6 +30,7 @@ import { useTranslation } from "react-i18next";
 import TableActionButton from "~/component/admin/TableActionButton";
 import BooleanBadge from "~/component/badge/BooleanBadge";
 import EnablementBadge from "~/component/badge/EnablementBadge";
+import JSONViewer from "~/component/JSONViewer";
 import {
 	DEFAULT_PAGE,
 	DEFAULT_PAGE_SIZE,
@@ -49,10 +62,13 @@ export default function LogsAccountsPage() {
 		keyPrefix: "account"
 	});
 	const { t: tEntity } = useTranslation("entities");
+	const { t: tCommon } = useTranslation();
 
 	const [page, setPage] = useState(DEFAULT_PAGE);
 	const [sortStatus, setSortStatus] =
 		useState<DataTableSortStatus<AccountDtoFull>>(DEFAULT_SORTING);
+
+	const [exportModalOpened, setExportModalOpened] = useState(false);
 
 	const { data, isLoading } = useQuery(
 		queryFactory.accounts.pagedList({
@@ -161,6 +177,8 @@ export default function LogsAccountsPage() {
 			},
 			{
 				accessor: "actions",
+				titleClassName: "hide-on-print",
+				cellsClassName: "hide-on-print",
 				title: (
 					<Center>
 						<CursorClickIcon weight="bold" />
@@ -199,7 +217,37 @@ export default function LogsAccountsPage() {
 
 	return (
 		<>
-			<Title order={2}>{t(($) => $.title)}</Title>
+			<Group justify="space-between">
+				<Title order={2}>{t(($) => $.title)}</Title>
+				<Group className="hide-on-print">
+					<Menu>
+						<Menu.Target>
+							<Button
+								leftSection={<ExportIcon weight="bold" size={16} />}
+								color={tCommon(($) => $.buttons.export.color)}
+							>
+								{tCommon(($) => $.buttons.export.label)}
+							</Button>
+						</Menu.Target>
+						<Menu.Dropdown>
+							<Menu.Item
+								onClick={print}
+								leftSection={<PrinterIcon weight="bold" size={16} />}
+							>
+								{tCommon(($) => $.export.print.button)}
+							</Menu.Item>
+							<Menu.Item
+								onClick={() => {
+									setExportModalOpened(true);
+								}}
+								leftSection={<FileCodeIcon weight="bold" size={16} />}
+							>
+								{tCommon(($) => $.export.json.button)}
+							</Menu.Item>
+						</Menu.Dropdown>
+					</Menu>
+				</Group>
+			</Group>
 			<Divider my="sm" />
 			<DataTable
 				height={"calc(100vh - 93px)"}
@@ -217,6 +265,21 @@ export default function LogsAccountsPage() {
 				onSortStatusChange={setSortStatus}
 			/>
 			<Outlet />
+			<Modal
+				title={tCommon(($) => $.export.json.title)}
+				opened={exportModalOpened}
+				onClose={() => {
+					setExportModalOpened(false);
+				}}
+				size="90%"
+				styles={{
+					body: {
+						padding: 0
+					}
+				}}
+			>
+				<JSONViewer allExpanded value={data?.content} />
+			</Modal>
 		</>
 	);
 }

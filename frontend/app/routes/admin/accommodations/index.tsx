@@ -129,6 +129,8 @@ export default function AccommodationsPage() {
 			},
 			{
 				accessor: "actions",
+				titleClassName: "hide-on-print",
+				cellsClassName: "hide-on-print",
 				title: (
 					<Center>
 						<CursorClickIcon weight="bold" />
@@ -180,6 +182,7 @@ export default function AccommodationsPage() {
 				<Title order={2}>{t(($) => $.title)}</Title>
 				<Group>
 					<Button
+						className="hide-on-print"
 						color={tCommon(($) => $.buttons.deleteSelected.color)}
 						leftSection={<TrashIcon weight="bold" size={16} />}
 						disabled={selected.length === 0}
@@ -192,6 +195,7 @@ export default function AccommodationsPage() {
 						})}
 					</Button>
 					<Button
+						className="hide-on-print"
 						component={Link}
 						to="/admin/accommodations/new"
 						color={t(($) => $.addButton.color)}
@@ -218,6 +222,7 @@ export default function AccommodationsPage() {
 				onSortStatusChange={setSortStatus}
 				selectedRecords={selected}
 				onSelectedRecordsChange={setSelected}
+				selectionColumnClassName="hide-on-print"
 			/>
 			<Outlet />
 			<AdminDeleteModal

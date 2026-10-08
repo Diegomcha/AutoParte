@@ -1,10 +1,10 @@
 import i18nCountries from "i18n-iso-countries";
-import { isSupportedCountry } from "libphonenumber-js";
+import { isSupportedCountry } from "libphonenumber-js/min";
 
 import { lang, modulesLocales } from "~/i18n";
 
 import type { Alpha2Code, Alpha3Code } from "i18n-iso-countries";
-import type { CountryCode as PhoneCountryCode } from "libphonenumber-js";
+import type { CountryCode as PhoneCountryCode } from "libphonenumber-js/min";
 
 class CountryService {
 	/**

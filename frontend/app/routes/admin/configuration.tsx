@@ -12,7 +12,7 @@ import {
 	TextInput,
 	Title
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
+import { isInRange, useForm } from "@mantine/form";
 
 import {
 	ArrowUUpLeftIcon,
@@ -43,7 +43,8 @@ export default function ConfigPage() {
 		mode: "uncontrolled",
 		initialValues: config,
 		validate: {
-			//TODO:
+			bookingsRetentionDays: isInRange({ min: 0 }),
+			logsRetentionDays: isInRange({ min: 0 })
 		}
 	});
 

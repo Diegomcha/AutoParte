@@ -259,10 +259,12 @@
 				}
 			},
 			"startTime": {
-				"label": "Fecha de inicio"
+				"label": "Fecha de inicio",
+				"format": "LL"
 			},
 			"endTime": {
-				"label": "Fecha de fin"
+				"label": "Fecha de fin",
+				"format": "LL"
 			},
 			"duration": {
 				"label": "Duración",
@@ -282,10 +284,15 @@
 				"label": "Nº de habitaciones",
 				"value_one": "{{count}} habitación",
 				"value_other": "{{count}} habitaciones",
-				"value_zero": "—"
+				"value_zero": "$t(common:undefined)"
 			},
 			"internetConnection": {
-				"label": "Conexión a Internet"
+				"label": "Conexión a Internet",
+				"states": {
+					"true": "Sí",
+					"false": "No",
+					"null": "$t(common:undefined)"
+				}
 			}
 		},
 		"payment": {
@@ -306,8 +313,12 @@
 					"undefinedWhenSelfCheckInRequested": "El tipo de pago es obligatorio cuando se ha solicitado el auto-registro\nSi lo deseas puedes cancelar la solicitud de auto-registro para eliminarlo"
 				}
 			},
-			"mean": "Medio",
-			"holder": "Titular",
+			"mean": {
+				"label": "Medio"
+			},
+			"holder": {
+				"label": "Titular"
+			},
 			"date": {
 				"label": "Fecha",
 				"format": "DD/MM/YYYY"
@@ -315,6 +326,7 @@
 			"expiryDate": {
 				"label": "Fecha de caducidad",
 				"placeholder": "MM / AA",
+				"format": "MM / YY",
 				"errors": {
 					"invalid": "La fecha de caducidad no es válida",
 					"beforePaymentDate": "La fecha de caducidad no puede ser anterior a la fecha de pago"
@@ -357,15 +369,15 @@
 						"color": "teal"
 					},
 					"SUCCEEDED": {
-						"label": "Registrado sin errores",
+						"label": "Registrado",
 						"color": "green"
 					},
 					"FAILED": {
-						"label": "Error al registrar",
+						"label": "Error",
 						"color": "red"
 					},
 					"PENDING_VOIDED": {
-						"label": "Pendiente de anular",
+						"label": "Pendiente",
 						"color": "gray"
 					},
 					"VOIDED": {
@@ -375,14 +387,14 @@
 				}
 			},
 			"sentTimestamp": {
-				"label": "Fecha y hora de envío",
+				"label": "Fecha de envío",
 				"value": "Enviado {{date}}",
 				"format": "lll",
-				"none": "—"
+				"none": "$t(common:undefined)"
 			},
 			"error": {
 				"label": "Error",
-				"none": "—"
+				"none": "$t(common:undefined)"
 			}
 		},
 		"selfCheckInRequested": {
@@ -431,6 +443,8 @@
 			},
 			"address": {
 				"label": "Dirección",
+				"spanishMunicipality": "{{municipality}} ({{province}})",
+				"value": "{{addressLine1}}\n{{addressLine2}}\n{{postalCode}}, {{municipality}}\n{{country}}",
 				"errors": {
 					"undefined": "La dirección es obligatoria"
 				}
@@ -505,6 +519,7 @@
 		},
 		"signature": {
 			"label": "Firma",
+			"format": "LLLL",
 			"status": {
 				"mustSign": {
 					"label": "Debe firmar el parte de entrada de viajeros",
