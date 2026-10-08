@@ -1082,8 +1082,8 @@ const queryFactory = {
 						mutationFn: async (
 							signaturePaths: operations["addSignature"]["requestBody"]["content"]["application/json"]
 						) =>
-							await Promise.all([
-								api.POST(
+							unwrapResponse(
+								await api.POST(
 									"/api/accommodations/{accommodationId}/bookings/{bookingId}/people/{id}/signature",
 									{
 										params: {
@@ -1096,7 +1096,7 @@ const queryFactory = {
 										body: signaturePaths
 									}
 								)
-							]),
+							),
 						onSuccess: async () => {
 							await Promise.all([
 								queryClient.invalidateQueries(
