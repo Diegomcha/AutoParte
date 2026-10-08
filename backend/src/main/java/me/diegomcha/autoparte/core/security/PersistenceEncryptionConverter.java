@@ -4,6 +4,7 @@ package me.diegomcha.autoparte.core.security;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import me.diegomcha.autoparte.config.AutoparteProperties;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.ObjectMapper;
 
@@ -45,7 +46,7 @@ public class PersistenceEncryptionConverter implements AttributeConverter<Object
 
     // Encrypt
     @Override
-    public byte[] convertToDatabaseColumn(Object attribute) {
+    public byte @Nullable [] convertToDatabaseColumn(Object attribute) {
         if (attribute == null) return null;
 
         try {

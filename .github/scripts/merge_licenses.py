@@ -2,8 +2,12 @@ import json
 import os
 import re
 from collections import Counter
+from datetime import datetime, timezone
 
-OUTPUT_FILE = "THIRD_PARTY_NOTICES.md"
+# Target directory and file path for GitHub Wiki output
+OUTPUT_DIR = os.path.join(".github", "wiki")
+OUTPUT_FILE = os.path.join(OUTPUT_DIR, "THIRD_PARTY_NOTICES.md")
+
 FRONTEND_LICENSES_JSON = ".github/licenses-frontend.json"
 OCR_LICENSES_JSON = ".github/licenses-ocr.json"
 BACKEND_LICENSES_TXT = "backend/target/generated-sources/license/THIRD-PARTY.txt"
@@ -63,22 +67,29 @@ if os.path.exists(BACKEND_LICENSES_TXT):
             if not line or line.startswith("Lists of") or line.startswith("==="):
                 continue
 
-            # Linear tail GAV extraction allowing optional trailing URL/suffix inside parens
-            tail_match = re.search(
-                r"\(([^()\s:]+:[^()\s:]+:[^()\s:]+(?::[^()\s:]+)?)[^)]*\)$",
-                line,
-            )
-            if not tail_match:
+            # Check for trailing parenthetical block containing GAV
+            if not line.endswith(")"):
                 continue
 
-            gav_str = tail_match.group(1)
-            prefix = line[: tail_match.start()].strip()
+            last_open = line.rfind("(")
+            if last_open == -1:
+                continue
+
+            # Extract content inside final parentheses: "group:artifact:version - http://..."
+            tail_content = line[last_open + 1 : -1].strip()
+
+            # Split off trailing URL/description if present (" - http...")
+            gav_str = tail_content.split(" - ")[0].strip()
 
             gav_parts = gav_str.split(":")
+            if len(gav_parts) < 3:
+                continue
+
             artifact_id = gav_parts[1]
             version = gav_parts[-1]
+            prefix = line[:last_open].strip()
 
-            # Linear license prefix extraction with correctly quantified repeating group
+            # License prefix extraction
             lic_match = re.match(r"^(\([^)]+\)(?:\s*\([^)]+\))*)", prefix)
             if lic_match:
                 lic_str = lic_match.group(1).strip()
@@ -108,9 +119,14 @@ for display_name, artifact_id, version, lic_str in raw_java:
         pkg_name = display_name
     java_rows.append((pkg_name, version, lic_str))
 
+# --- Prepare Metadata & Directory ---
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+current_timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+
 # --- Write Unified Output ---
 sections = [
     "# Third-Party Open Source Notices\n",
+    f"*Last updated: {current_timestamp} UTC*\n",
     "## 1. Frontend (npm)\n",
     "\n".join(create_table(frontend_rows)),
     "\n## 2. OCR (pip)\n",
@@ -121,3 +137,5 @@ sections = [
 
 with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
     f.write("\n".join(sections) + "\n")
+
+print(f"Successfully generated third-party notice at {OUTPUT_FILE}")

@@ -6,6 +6,7 @@ import me.diegomcha.autoparte.core.validation.Validations;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class DniDocument extends Document {
 
     private @NonNull String supportNumber;

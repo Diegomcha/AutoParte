@@ -1,7 +1,6 @@
 package me.diegomcha.autoparte.api.person;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;

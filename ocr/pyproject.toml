@@ -23,6 +23,8 @@ requires = ["setuptools~=84.0.0", "setuptools_scm[simple]~=10.3.4"]
 build-backend = "setuptools.build_meta"
 
 [tool.uv]
+no-binary-package = ["autoparte-ocr", "antlr4-python3-runtime"]
+no-build = true
 exclude-dependencies = ["opencv-python"]
 
 [tool.setuptools_scm]

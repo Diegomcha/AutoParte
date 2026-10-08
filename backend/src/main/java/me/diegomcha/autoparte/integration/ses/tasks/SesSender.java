@@ -116,7 +116,7 @@ class SesSender extends SesTask {
                             batch.stream().filter(cancellation ->
                                     cancellation.getBooking().getCommunications().stream().noneMatch(c -> c.getStatus() == Communication.CommunicationStatus.SENT)).toList())
                     .takeWhile(batch -> !batch.isEmpty())
-                    .forEach(batch -> { // TODO: Not sure if this works...
+                    .forEach(batch -> {
                         var commsToCancel = batch.stream()
                                 .flatMap(cancellation -> cancellation.getBooking().getCommunications().stream())
                                 .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION && c.getStatus() == Communication.CommunicationStatus.SUCCEEDED)

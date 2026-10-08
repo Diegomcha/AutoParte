@@ -1,10 +1,8 @@
 package me.diegomcha.autoparte.api.catalogue;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.catalogue.services.CatalogueService;
 import me.diegomcha.autoparte.api.catalogue.services.LocationCatalogueService;
-import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceCode;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;

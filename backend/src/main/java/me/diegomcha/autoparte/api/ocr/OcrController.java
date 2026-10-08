@@ -1,11 +1,9 @@
 package me.diegomcha.autoparte.api.ocr;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.ocr.dto.PartialPersonDtoRequest;
 import me.diegomcha.autoparte.core.exception.ResourceUnprocessableException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
-import me.diegomcha.autoparte.core.validation.annotations.Image;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;

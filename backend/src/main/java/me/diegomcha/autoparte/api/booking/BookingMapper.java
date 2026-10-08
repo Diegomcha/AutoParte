@@ -66,7 +66,7 @@ abstract class BookingMapper {
             return null;
 
         var holder = booking.getPeople().getFirst();
-        return String.format("%s %s.", holder.getPersonalInfo().getName(), holder.getPersonalInfo().getFirstSurname().charAt(0));
+        return holder.getPersonalInfo().getName() + " "  + holder.getPersonalInfo().getFirstSurname().charAt(0) + ".";
     }
 
     protected Payment map(BookingDtoRequest.PaymentDtoRequest dto) {

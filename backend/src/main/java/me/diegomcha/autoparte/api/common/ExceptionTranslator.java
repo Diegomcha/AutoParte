@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(ExceptionTranslator.class);
-
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ProblemDetail handleResourceNotFoundException(ResourceNotFoundException ex) {

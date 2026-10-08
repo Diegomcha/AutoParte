@@ -13,15 +13,12 @@ import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
 import me.diegomcha.autoparte.core.repos.BookingRepo;
 import me.diegomcha.autoparte.core.security.SecurityService;
-import me.diegomcha.autoparte.domain.Booking;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 

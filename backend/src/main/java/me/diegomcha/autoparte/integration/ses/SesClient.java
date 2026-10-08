@@ -20,7 +20,6 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.ws.client.WebServiceTransportException;
 import org.springframework.ws.client.core.WebServiceTemplate;
-import org.springframework.xml.transform.StringResult;
 
 import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayOutputStream;
@@ -35,7 +34,6 @@ import java.util.zip.ZipOutputStream;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class SesClient {
 
-    // TODO: Adjust these values based on SES service limitations
     public static final int MAX_BOOKING_BATCH_SIZE = 100;
     public static final int MAX_CHECKIN_BATCH_SIZE = 100;
     public static final int MAX_CHECK_BATCH_SIZE = 10;
@@ -124,10 +122,6 @@ public class SesClient {
     }
 
     private String encodePeticion(@NonNull Object obj) {
-        // TODO: remove
-        StringResult result = new StringResult();
-        marshaller.marshal(obj, result);
-
         try (var outputStream = new ByteArrayOutputStream()) {
             try (var zipStream = new ZipOutputStream(outputStream)) {
                 zipStream.putNextEntry(new ZipEntry("peticion.xml"));
