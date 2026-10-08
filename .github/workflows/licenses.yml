@@ -9,6 +9,8 @@ on:
       - "ocr/pyproject.toml"
       - "ocr/uv.lock"
       - "backend/pom.xml"
+      - ".github/scripts/merge_licenses.py"
+      - ".github/workflows/licenses.yml"
   workflow_dispatch:
 
 permissions:

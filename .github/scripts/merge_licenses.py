@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 # Target directory and file path for GitHub Wiki output
 OUTPUT_DIR = os.path.join(".github", "wiki")
-OUTPUT_FILE = os.path.join(OUTPUT_DIR, "THIRD_PARTY_NOTICES.md")
+OUTPUT_FILE = os.path.join(OUTPUT_DIR, "Third-Party-Notices.md")
 
 FRONTEND_LICENSES_JSON = ".github/licenses-frontend.json"
 OCR_LICENSES_JSON = ".github/licenses-ocr.json"
@@ -125,7 +125,6 @@ current_timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
 # --- Write Unified Output ---
 sections = [
-    "# Third-Party Open Source Notices\n",
     f"*Last updated: {current_timestamp} UTC*\n",
     "## 1. Frontend (npm)\n",
     "\n".join(create_table(frontend_rows)),
