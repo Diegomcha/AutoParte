@@ -42,13 +42,4 @@ abstract class SesTask {
                 break;
         }
     }
-
-    /**
-     * Checks if the SES credentials are valid.
-     *
-     * @return true if the SES credentials are valid, false otherwise
-     */
-    protected boolean credentialsAreValid() {
-        return dynamicConfigService.getConfig().isSesCredentialsValid();
-    }
 }

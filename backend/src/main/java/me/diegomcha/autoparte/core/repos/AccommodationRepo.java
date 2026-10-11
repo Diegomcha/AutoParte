@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,7 +18,7 @@ public interface AccommodationRepo extends CrudRepository<Accommodation, UUID>, 
 
     boolean existsByName(String name);
 
-    Collection<Accommodation> findByBookingsCommunicationsTypeAndBookingsCommunicationsStatus(Communication.CommunicationType type, Communication.CommunicationStatus status);
+    Accommodation findFirstByBookingsCommunicationsTypeAndBookingsCommunicationsStatus(Communication.CommunicationType type, Communication.CommunicationStatus status);
 
     Page<Accommodation> findByEmployeesId(UUID employeeId, Pageable pageable);
 

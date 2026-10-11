@@ -2,7 +2,6 @@ package me.diegomcha.autoparte.integration.ses.tasks;
 
 import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
-import me.diegomcha.autoparte.core.exception.ExceptionWrapper;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.domain.communication.CancellationCommunication;
 import me.diegomcha.autoparte.domain.communication.Communication;
@@ -11,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -27,7 +27,7 @@ class SesSender extends SesTask {
     @Scheduled(cron = "0 0 */2 * * *")
     void schedule() {
         try {
-            if (!this.credentialsAreValid()) {
+            if (!this.persistencyService.areSesCredentialsValid()) {
                 logger.warn("SES credentials are not validated, skipping sending pending communications");
                 return;
             }
@@ -40,119 +40,103 @@ class SesSender extends SesTask {
         }
     }
 
-    private void sendBookings() {
+    private void sendBookings() throws BadConfigurationException, ServiceUnavailableException {
         logger.debug("Sending pending bookings to SES");
 
-        try (var pendingCommunications = persistencyService.getBatchOfPendingCommunications(
-                Communication.CommunicationType.BOOKING,
-                SesClient.MAX_BOOKING_BATCH_SIZE
-        )) {
-            pendingCommunications.forEach(batch -> {
-                var request = sesClient.prepareSendBooking(
-                        batch.stream().map(Communication::getBooking).toList()
-                );
+        List<Communication> batch;
+        while (!(
+                batch = persistencyService.getNextBatchOfPendingCommunications(
+                        Communication.CommunicationType.BOOKING,
+                        SesClient.MAX_BOOKING_BATCH_SIZE
+                )
+        ).isEmpty()) {
+            var request = sesClient.prepareSendBooking(
+                    batch.stream().map(Communication::getBooking).toList()
+            );
 
-                logger.trace("Sending batch of {} bookings to SES", batch.size());
+            logger.trace("Sending batch of {} bookings to SES", batch.size());
 
-                try {
-                    var batchId = sesClient.sendCommunication(request);
-                    logger.trace("Batch of {} bookings sent to SES with batchId {}", batch.size(), batchId);
+            var batchId = sesClient.sendCommunication(request);
+            logger.trace("Batch of {} bookings sent to SES with batchId {}", batch.size(), batchId);
 
-                    // Update the communications in the batch to mark them as sent
-                    batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
-                    persistencyService.updateCommunications(batch);
-                } catch (ServiceUnavailableException |
-                         BadConfigurationException e) {
-                    throw new ExceptionWrapper(e);
-                }
-            });
-
-            logger.info("Finished sending pending bookings to SES");
+            // Update the communications in the batch to mark them as sent
+            batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
+            persistencyService.updateCommunications(batch);
         }
+
+        logger.info("Finished sending pending bookings to SES");
     }
 
-    private void sendCheckIns() {
+    private void sendCheckIns() throws BadConfigurationException, ServiceUnavailableException {
         logger.debug("Sending pending check-ins to SES");
 
-        try (var pendingCommunications = persistencyService.getBatchOfPendingCommunicationsGroupedByAccommodation(
-                Communication.CommunicationType.CHECKIN,
-                SesClient.MAX_CHECKIN_BATCH_SIZE
-        )) {
-            pendingCommunications.forEach(batch -> {
-                var request = sesClient.prepareSendCheckIn(
-                        batch.getFirst().getBooking().getAccommodation().getSesCode(), // All communications in the batch belong to the same accommodation
-                        batch.stream().map(Communication::getBooking).toList()
-                );
+        List<Communication> batch;
+        while (!(
+                batch = persistencyService.getNextBatchOfPendingCommunicationsGroupedByAccommodation(
+                        Communication.CommunicationType.CHECKIN,
+                        SesClient.MAX_CHECKIN_BATCH_SIZE
+                )
+        ).isEmpty()) {
+            var request = sesClient.prepareSendCheckIn(
+                    batch.getFirst().getBooking().getAccommodation().getSesCode(), // All communications in the batch belong to the same accommodation
+                    batch.stream().map(Communication::getBooking).toList()
+            );
 
-                logger.trace("Sending batch of {} check-ins to SES", batch.size());
+            logger.trace("Sending batch of {} check-ins to SES", batch.size());
 
-                try {
-                    var batchId = sesClient.sendCommunication(request);
-                    logger.trace("Batch of {} check-ins sent to SES with batchId {}", batch.size(), batchId);
+            var batchId = sesClient.sendCommunication(request);
+            logger.trace("Batch of {} check-ins sent to SES with batchId {}", batch.size(), batchId);
 
-                    // Update the communications in the batch to mark them as sent
-                    batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
-                    persistencyService.updateCommunications(batch);
-                } catch (ServiceUnavailableException |
-                         BadConfigurationException e) {
-                    throw new ExceptionWrapper(e);
-                }
-            });
-
-            logger.info("Finished sending pending check-ins to SES");
+            // Update the communications in the batch to mark them as sent
+            batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
+            persistencyService.updateCommunications(batch);
         }
+
+        logger.info("Finished sending pending check-ins to SES");
     }
 
-    private void sendCancellations() {
+    private void sendCancellations() throws BadConfigurationException, ServiceUnavailableException {
         logger.debug("Sending pending cancellations to SES");
 
-        try (var pendingCommunications = persistencyService.getBatchOfPendingCommunications(
-                Communication.CommunicationType.CANCELLATION,
-                SesClient.MAX_CANCEL_BATCH_SIZE / 2 // Each cancellation may have up to 2 successful communications which need to be canceled
-        )) {
-            pendingCommunications
-                    // Ensure there are no pending communications for the booking
-                    .map(batch ->
-                            batch.stream().filter(cancellation ->
-                                    cancellation.getBooking().getCommunications().stream().noneMatch(c -> c.getStatus() == Communication.CommunicationStatus.SENT)).toList())
-                    .takeWhile(batch -> !batch.isEmpty())
-                    .forEach(batch -> {
-                        var commsToCancel = batch.stream()
-                                .flatMap(cancellation -> cancellation.getBooking().getCommunications().stream())
-                                .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION && c.getStatus() == Communication.CommunicationStatus.SUCCEEDED)
-                                .toList();
+        List<Communication> batch;
+        while (!(
+                batch = persistencyService.getNextBatchOfPendingCommunications(
+                                Communication.CommunicationType.CANCELLATION,
+                                SesClient.MAX_CANCEL_BATCH_SIZE / 2 // Each cancellation may have up to 2 successful communications which need to be canceled
+                        )
+                        // Ensure there are no pending communications for the booking
+                        .stream().filter(cancellation -> cancellation.getBooking().getCommunications().stream().noneMatch(c -> c.getStatus() == Communication.CommunicationStatus.SENT)).toList()
+        ).isEmpty()) {
+            var commsToCancel = batch.stream()
+                    .flatMap(cancellation -> cancellation.getBooking().getCommunications().stream())
+                    .filter(c -> c.getType() != Communication.CommunicationType.CANCELLATION && c.getStatus() == Communication.CommunicationStatus.SUCCEEDED)
+                    .toList();
 
-                        // If there are no communications to cancel, mark the cancellations as finished successfully and update them in the database
-                        if (commsToCancel.isEmpty()) {
-                            logger.trace("Batch of {} cancellations has no communications to cancel, succeeding immediately", batch.size());
+            // If there are no communications to cancel, mark the cancellations as finished successfully and update them in the database
+            if (commsToCancel.isEmpty()) {
+                logger.trace("Batch of {} cancellations has no communications to cancel, succeeding immediately", batch.size());
 
-                            batch.forEach(withCounter((counter, communication) -> ((CancellationCommunication) communication).markFinishedSuccessfully()));
-                            persistencyService.updateCommunications(batch);
-                            return;
-                        }
+                batch.forEach(communication -> ((CancellationCommunication) communication).markFinishedSuccessfully());
+                persistencyService.updateCommunications(batch);
+                return;
+            }
 
-                        var request = sesClient.prepareSendCancellation(
-                                commsToCancel.stream().map(Communication::getSesId).toList()
-                        );
+            var request = sesClient.prepareSendCancellation(
+                    commsToCancel.stream().map(Communication::getSesId).toList()
+            );
 
-                        logger.trace("Sending batch of {} cancellations to SES ({} communications to cancel)", batch.size(), commsToCancel.size());
+            logger.trace("Sending batch of {} cancellations to SES ({} communications to cancel)", batch.size(), commsToCancel.size());
 
-                        try {
-                            var batchId = sesClient.sendCommunication(request);
-                            logger.trace("Batch of {} cancellations sent to SES with batchId {}", batch.size(), batchId);
+            var batchId = sesClient.sendCommunication(request);
+            logger.trace("Batch of {} cancellations sent to SES with batchId {}", batch.size(), batchId);
 
-                            // Update the communications in the batch to mark them as sent & the communications to cancel to mark them as pending voided
-                            batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
-                            commsToCancel.forEach(Communication::markPendingVoided);
-                            persistencyService.updateCommunications(Stream.concat(batch.stream(), commsToCancel.stream()).toList());
-                        } catch (ServiceUnavailableException |
-                                 BadConfigurationException e) {
-                            throw new ExceptionWrapper(e);
-                        }
-                    });
-
-            logger.info("Finished sending pending cancellations to SES");
+            // Update the communications in the batch to mark them as sent & the communications to cancel to mark them as pending voided
+            batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
+            commsToCancel.forEach(Communication::markPendingVoided);
+            persistencyService.updateCommunications(Stream.concat(batch.stream(), commsToCancel.stream()).toList());
         }
+
+        logger.info("Finished sending pending cancellations to SES");
     }
 
     private <T> Consumer<T> withCounter(BiConsumer<Integer, T> consumer) {
