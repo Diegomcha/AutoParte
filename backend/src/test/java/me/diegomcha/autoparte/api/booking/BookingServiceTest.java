@@ -311,6 +311,8 @@ class BookingServiceTest {
 
     @Test
     void testRequestSelfCheckInForBooking() throws ResourceNotFoundException, ResourceConflictException {
+        this.booking.setPayment(this.payment);
+
         bookingService.requestSelfCheckInForBooking(accommodation.getId(), booking.getId());
 
         var dbBooking = bookingRepo.findByAccommodationIdAndId(accommodation.getId(), booking.getId()).orElseThrow();
