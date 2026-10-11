@@ -26,9 +26,11 @@ services:
         target: spring.datasource.password
       - source: db_encryption_key
         target: autoparte.security.db-encryption-key
+      - source: initial_admin_password
+        target: autoparte.security.initial-admin-password
     environment:
       # Configure external services
-      - AUTOPARTE_SES_URL=https://hospedajes.pre-ses.mir.es/hospedajes-web/ws/v1/comunicacion
+      - AUTOPARTE_SES_URL=https://hospedajes.pre-ses.mir.es/hospedajes-web/ws/v1/comunicacion # Use the SES pre-production environment
       - AUTOPARTE_OCR_URL=http://ocr:80
 
       # Configure datasource
@@ -76,6 +78,8 @@ secrets:
     file: ./secrets/db_password.txt
   db_encryption_key:
     file: ./secrets/db_encryption_key.txt
+  initial_admin_password:
+    file: ./secrets/initial_admin_password.txt
 
 volumes:
   db_data:
