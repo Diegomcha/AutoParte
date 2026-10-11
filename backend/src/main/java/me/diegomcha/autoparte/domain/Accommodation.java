@@ -2,9 +2,9 @@ package me.diegomcha.autoparte.domain;
 
 import lombok.*;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SQLSelect;
-import org.hibernate.annotations.SoftDelete;
-import org.hibernate.annotations.SoftDeleteType;
 
 import java.time.Instant;
 import java.util.HashSet;
@@ -13,7 +13,8 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@SoftDelete(strategy = SoftDeleteType.TIMESTAMP, columnName = "deleted_at")
+@SQLDelete(sql = "UPDATE accommodation SET deleted_at = CURRENT_TIMESTAMP WHERE id = ? AND VERSION = ?")
+@SQLRestriction("deleted_at IS NULL")
 @SQLSelect(sql = "SELECT * from accommodation WHERE id = ?") // Allows graph traversal to soft-deleted entities
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Accommodation extends BaseEntity {
