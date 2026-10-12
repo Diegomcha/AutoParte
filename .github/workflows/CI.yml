@@ -279,7 +279,7 @@ jobs:
         with:
           oauth-client-id: ${{ secrets.TS_CLIENT_ID }}
           audience: ${{ secrets.TS_AUDIENCE }}
-          tags: ${{ secrets.TS_TAGS }}
+          tags: ${{ vars.TS_TAGS }}
 
       - name: Ping deployment server
         run: tailscale ping ${{ vars.SERVER_HOST }} --c 1

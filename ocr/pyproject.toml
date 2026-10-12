@@ -14,7 +14,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 deploy = ["uvloop~=0.23.0"]
 cpu = ["onnxruntime~=1.31.0"]
-gpu = ["onnxruntime-gpu~=1.31.0"]
+gpu = ["onnxruntime-gpu~=1.31.0", "torch~=2.11.0"]
 dev = ["fastapi[standard]~=0.143.0", "pytest~=9.1.1", "pytest-cov~=7.1.0"]
 
 [build-system]
