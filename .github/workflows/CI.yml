@@ -2,6 +2,13 @@ name: CI-CD
 
 on:
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: "Deploy to demo environment"
+        type: boolean
+        required: false
+        default: false
+
   push:
     branches:
       - main
@@ -238,6 +245,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=min
 
       - name: Generate artifact attestation
         uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
@@ -250,7 +259,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') || inputs.deploy
     needs:
       - build-app
       - build-ocr

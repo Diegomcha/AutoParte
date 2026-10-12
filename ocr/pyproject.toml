@@ -1,21 +1,20 @@
 [project]
 name = "autoparte-ocr"
-requires-python = "~=3.11.0"
+requires-python = "~=3.11.17"
 license = "GPL-3.0-or-later"
 dependencies = [
     "fastapi~=0.143.0",
     "granian~=2.8.4",
     "mrz~=0.6.2",
     "python-multipart~=0.0.32",
-    "rapidocr~=3.9.2",
-    "opencv-python-headless~=5.0.0.93",
+    "rapidocr~=3.10.0",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 deploy = ["uvloop~=0.23.0"]
-cpu = ["onnxruntime~=1.30.0"]
-gpu = ["onnxruntime-gpu~=1.30.0"]
+cpu = ["onnxruntime~=1.31.0"]
+gpu = ["onnxruntime-gpu~=1.31.0"]
 dev = ["fastapi[standard]~=0.143.0", "pytest~=9.1.1", "pytest-cov~=7.1.0"]
 
 [build-system]
@@ -23,9 +22,8 @@ requires = ["setuptools~=84.0.0", "setuptools_scm[simple]~=10.3.4"]
 build-backend = "setuptools.build_meta"
 
 [tool.uv]
-no-binary-package = ["autoparte-ocr", "antlr4-python3-runtime"]
+no-binary-package = ["autoparte-ocr"]
 no-build = true
-exclude-dependencies = ["opencv-python"]
 
 [tool.setuptools_scm]
 root = ".."
