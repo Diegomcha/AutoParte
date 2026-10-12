@@ -17,10 +17,11 @@ COPY --from=dhi.io/uv:0.13.0 /usr/local/bin/uv /usr/local/bin/
 WORKDIR /app
 
 # Install Python & dependencies
+RUN uv venv --system-site-packages
 RUN --mount=type=cache,target=/opt/uv-cache/ \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-build --no-install-project --system-site-packages --extra gpu,deploy 
+    uv sync --locked --no-build --no-install-project --extra gpu,deploy 
 
 # Copy project files
 COPY *.py ./
