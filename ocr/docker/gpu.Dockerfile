@@ -11,11 +11,13 @@ ENV UV_NO_DEV=1
 ENV UV_LINK_MODE=copy
 ENV UV_COMPILE_BYTECODE=1
 
+# Install UV
+COPY --from=dhi.io/uv:0.13.0 /usr/local/bin/uv /usr/local/bin/
+
 WORKDIR /app
 
 # Install Python & dependencies
-RUN --mount=from=dhi.io/uv:0.13.0,source=/usr/local/bin/uv,target=/usr/local/bin/uv \ 
-    --mount=type=cache,target=/opt/uv-cache/ \
+RUN --mount=type=cache,target=/opt/uv-cache/ \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-build --no-install-project --system-site-packages --extra gpu,deploy 
