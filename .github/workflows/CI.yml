@@ -282,7 +282,7 @@ jobs:
           tags: ${{ vars.TS_TAGS }}
 
       - name: Ping deployment server
-        run: tailscale ping ${{ vars.SERVER_HOST }} --c 1
+        run: tailscale ping --c 1 ${{ vars.SERVER_HOST }}
 
       - name: Perform deployment over SSH
         env:
