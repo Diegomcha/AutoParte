@@ -2,8 +2,6 @@
 
 AutoParte is a self-hostable web application designed for accommodations to manage bookings while "automatically" complying with Spanish legal reporting obligations for bookings & check-ins.
 
-
-
 ## Main features
 
 - 🏛️ **Automated legal compliance ([RD 933/2021](https://www.boe.es/diario_boe/txt.php?id=BOE-A-2021-17461))**  
@@ -18,9 +16,14 @@ AutoParte is a self-hostable web application designed for accommodations to mana
 - 🔒 **[RGPD](https://www.boe.es/doue/2016/119/L00001-00088.pdf)-compliant**  
   Protects sensitive guest information with robust database-level encryption and accommodation-based access controls.
 
-## Installation & usage
+## Application guides
 
-As the installation and usage instructions are extensive, please refer to the [Installation & Usage](https://github.com/Diegomcha/AutoParte/wiki/Installation-&-Usage) wiki page.
+Each guide lives on its own wiki page:
+
+- [Deployment](https://github.com/Diegomcha/AutoParte/wiki/Deployment).
+- [Administration](https://github.com/Diegomcha/AutoParte/wiki/Administration).
+- [User guide](https://github.com/Diegomcha/AutoParte/wiki/User-Guide).
+- [Development](https://github.com/Diegomcha/AutoParte/wiki/Development).
 
 ## Project structure
 

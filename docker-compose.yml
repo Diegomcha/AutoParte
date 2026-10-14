@@ -16,6 +16,10 @@ services:
     image: ghcr.io/diegomcha/autoparte_app:main
     container_name: autoparte_app
     restart: unless-stopped
+    # Uncomment the following line to expose the application directly on the host machine.
+    # This is not recommended for security reasons.
+    # ports:
+    #   - "80:8080"
     depends_on:
       ocr:
         condition: service_healthy
@@ -30,7 +34,7 @@ services:
         target: autoparte.security.initial-admin-password
     environment:
       # Configure external services
-      - AUTOPARTE_SES_URL=https://hospedajes.pre-ses.mir.es/hospedajes-web/ws/v1/comunicacion # Use the SES pre-production environment
+      - AUTOPARTE_SES_URL=https://hospedajes.pre-ses.mir.es/hospedajes-web/ws/v1/comunicacion # Use the SES pre-production environment. Remove this line to use the production environment.
       - AUTOPARTE_OCR_URL=http://ocr:80
 
       # Configure datasource
@@ -40,9 +44,10 @@ services:
       # Import secrets as configuration properties
       - SPRING_CONFIG_IMPORT=optional:configtree:/run/secrets/
   ocr:
-    image: ghcr.io/diegomcha/autoparte_ocr:main-cpu
+    image: ghcr.io/diegomcha/autoparte_ocr:main-cpu # Change to `main-gpu` if you have an NVIDIA GPU and want to use it for OCR.
     container_name: autoparte_ocr
     restart: unless-stopped
+    # gpus: all
     healthcheck:
       test:
         [
