@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
-@EqualsAndHashCode()
+@EqualsAndHashCode
 public class Signature {
 
     private @NonNull Map<Instant, List<Point>> paths;
@@ -23,9 +23,9 @@ public class Signature {
     /**
      * Constructor for creating a Signature instance.
      *
-     * @param paths            A map of timestamps to lists of Point objects representing the signature paths. Must not be null.
-     * @param ipAddress        IP address from which the signature was captured. Must not be null.
-     * @param userAgent        User agent string of the device used to capture the signature. Must not be null.
+     * @param paths     A map of timestamps to lists of Point objects representing the signature paths. Must not be null.
+     * @param ipAddress IP address from which the signature was captured. Must not be null.
+     * @param userAgent User agent string of the device used to capture the signature. Must not be null.
      */
     public Signature(@NonNull Map<Instant, List<Point>> paths, @NonNull String ipAddress, @NonNull String userAgent) {
         this.paths = paths.entrySet().stream()

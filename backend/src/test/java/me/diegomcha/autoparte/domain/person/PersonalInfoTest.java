@@ -29,6 +29,7 @@ class PersonalInfoTest {
             // Valid
             new PersonalInfo("name", "surname", "ESP", null, TestingUtils.PAST_INSTANT, null);
             new PersonalInfo("name", "surname", "ESP", null, TestingUtils.INSTANT, null);
+            new PersonalInfo("name", "surname", "ESP", null, null, null);
 
             // Future birthdate
             Assertions.assertThrows(IllegalArgumentException.class, () -> new PersonalInfo("name", "surname", "ESP", null, TestingUtils.FUTURE_INSTANT, null));
@@ -36,47 +37,85 @@ class PersonalInfoTest {
     }
 
     private static final Object[][] IS_COMPLETE_MCDC = new Boolean[][]{
-            new Boolean[]{true, true,   /* = */ true},
-            new Boolean[]{true, false,  /* = */ false},
-            new Boolean[]{false, false, /* = */ true},
+            new Boolean[]{true, true, true,     /* = */ true},
+            new Boolean[]{false, true, true,    /* = */ false},
+            new Boolean[]{true, true, false,    /* = */ false},
+            new Boolean[]{true, false, false,   /* = */ true},
     };
 
     @ParameterizedTest
     @FieldSource("IS_COMPLETE_MCDC")
-    void testIsComplete(boolean reqSSur, boolean hasSSur, boolean expected) {
+    void testIsComplete(boolean hasBirthdate, boolean reqSSur, boolean hasSSur, boolean expected) {
         var secondSurname = hasSSur ? "2surname" : null;
+        var birthDate = hasBirthdate ? TestingUtils.PAST_INSTANT : null;
 
         try (var ignored = TestingUtils.getMockedInstantNow()) {
-            var pInfo = new PersonalInfo("name", "surname", secondSurname, null, TestingUtils.PAST_INSTANT, null);
+            var pInfo = new PersonalInfo("name", "surname", secondSurname, null, birthDate, null);
             Assertions.assertEquals(expected, pInfo.isCompleteForCheckIn(reqSSur));
         }
     }
 
-    private static final Object[][] BIRTHDATES = new Object[][]{
+    private static final Object[][] ADULT_BIRTHDATES = new Object[][]{
             new Object[]{
-                    TestingUtils.INSTANT.minus(17 * 365, ChronoUnit.DAYS), // Minor
+                    TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_ADULT_AGE - 1) * 365, ChronoUnit.DAYS), // Minor
                     false
             },
             new Object[]{
-                    TestingUtils.INSTANT.minus((18 * 365) - 1, ChronoUnit.DAYS), // Almost adult
+                    TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_ADULT_AGE * 365) - 1, ChronoUnit.DAYS), // Almost adult
                     false
             },
             new Object[]{
-                    TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS), // Just adult
+                    TestingUtils.INSTANT.minus(PersonalInfo.SPAIN_ADULT_AGE * 365, ChronoUnit.DAYS), // Just adult
                     true
             },
             new Object[]{
-                    TestingUtils.INSTANT.minus(19 * 365, ChronoUnit.DAYS), // Adult
+                    TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_ADULT_AGE + 1) * 365, ChronoUnit.DAYS), // Adult
                     true
             },
+            new Object[]{
+                    null, // No birthdate
+                    null
+            }
     };
 
     @ParameterizedTest
-    @FieldSource("BIRTHDATES")
-    void testIsAdult(Instant birthDate, boolean expected) {
+    @FieldSource("ADULT_BIRTHDATES")
+    void testIsAdult(Instant birthDate, Boolean expected) {
         var pInfo = new PersonalInfo("name", "surname", null, null, birthDate, null);
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             Assertions.assertEquals(expected, pInfo.isAdult());
+        }
+    }
+
+    private static final Object[][] SIGNER_BIRTHDATES = new Object[][]{
+            new Object[]{
+                    TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_MUST_SIGN_AGE - 1) * 365, ChronoUnit.DAYS), // No required
+                    false
+            },
+            new Object[]{
+                    TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_MUST_SIGN_AGE * 365) - 1, ChronoUnit.DAYS), // Almost required
+                    false
+            },
+            new Object[]{
+                    TestingUtils.INSTANT.minus(PersonalInfo.SPAIN_MUST_SIGN_AGE * 365, ChronoUnit.DAYS), // Just required
+                    true
+            },
+            new Object[]{
+                    TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_MUST_SIGN_AGE + 1) * 365, ChronoUnit.DAYS), // Required
+                    true
+            },
+            new Object[]{
+                    null, // No birthdate
+                    null
+            }
+    };
+
+    @ParameterizedTest
+    @FieldSource("SIGNER_BIRTHDATES")
+    void testMustSign(Instant birthDate, Boolean expected) {
+        var pInfo = new PersonalInfo("name", "surname", null, null, birthDate, null);
+        try (var ignored = TestingUtils.getMockedInstantNow()) {
+            Assertions.assertEquals(expected, pInfo.mustSign());
         }
     }
 }

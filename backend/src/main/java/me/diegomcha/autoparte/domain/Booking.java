@@ -254,6 +254,9 @@ public class Booking extends BaseEntity {
         if (!this.canBeConfirmed())
             throw new IllegalStateException("Booking cannot be confirmed");
 
+        // Terminate self check-in request if it is active
+        if (this.selfCheckInRequested) this.terminateSelfCheckInRequest();
+
         this.addCommunication(Communication.CommunicationType.BOOKING);
     }
 

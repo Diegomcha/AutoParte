@@ -120,13 +120,34 @@ class CommunicationTest {
     void testMarkVoidedFailed() {
         communication.markSent(batchId, 0);
 
-        // TODO: markVoided when FAILED is not allowed
+        Assertions.assertThrows(IllegalStateException.class, () -> communication.markVoided());
+        Assertions.assertEquals(Communication.CommunicationStatus.SENT, communication.getStatus());
+
+        communication.markFinishedFailed("Error");
 
         Assertions.assertThrows(IllegalStateException.class, () -> communication.markVoided());
-
-        Assertions.assertEquals(Communication.CommunicationStatus.SENT, communication.getStatus());
+        Assertions.assertEquals(Communication.CommunicationStatus.FAILED, communication.getStatus());
     }
 
-    // TODO: Test revertFromPendingVoided
+    @Test
+    void testRevertFromPendingVoided() {
+        communication.markSent(batchId, 0);
+        communication.markFinishedSuccessfully(sesId);
+        communication.markPendingVoided();
+
+        communication.revertFromPendingVoided();
+
+        Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, communication.getStatus());
+    }
+
+    @Test
+    void testRevertFromPendingVoidedFailed() {
+        communication.markSent(batchId, 0);
+        communication.markFinishedSuccessfully(sesId);
+
+        Assertions.assertThrows(IllegalStateException.class, () -> communication.revertFromPendingVoided());
+
+        Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, communication.getStatus());
+    }
 
 }

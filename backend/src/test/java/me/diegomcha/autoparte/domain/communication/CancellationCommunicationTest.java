@@ -72,6 +72,11 @@ class CancellationCommunicationTest {
         Assertions.assertEquals(Communication.CommunicationStatus.PENDING, communication.getStatus());
     }
 
-    // TODO: test revertFromPendingVoided
+    @Test
+    void testRevertFromPendingVoidedFails() {
+        Assertions.assertThrows(UnsupportedOperationException.class, () -> communication.revertFromPendingVoided());
+
+        Assertions.assertEquals(Communication.CommunicationStatus.PENDING, communication.getStatus());
+    }
 
 }

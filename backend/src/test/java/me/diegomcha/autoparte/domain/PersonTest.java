@@ -5,6 +5,7 @@ import me.diegomcha.autoparte.domain.address.Address;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
 import me.diegomcha.autoparte.domain.person.ContactInfo;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
+import me.diegomcha.autoparte.domain.person.Signature;
 import me.diegomcha.autoparte.domain.person.document.Document;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.FieldSource;
 
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 
 class PersonTest {
 
@@ -61,7 +63,7 @@ class PersonTest {
     @ParameterizedTest
     @FieldSource("IS_COMPLETE_MCDC")
     void testIsComplete(boolean completePInfo, boolean isAdult, boolean hasDInfo, boolean hasRelationship, boolean hasAddress, boolean expected) {
-        var birthDate = isAdult ? TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS) : TestingUtils.PAST_INSTANT;
+        var birthDate = isAdult ? TestingUtils.INSTANT.minus(PersonalInfo.SPAIN_ADULT_AGE * 365, ChronoUnit.DAYS) : TestingUtils.PAST_INSTANT;
         var pInfo = new PersonalInfo("Name", "Surname", completePInfo ? "2Surname" : null, null, birthDate, null);
         var dInfo = hasDInfo
                 ? Document.of(Document.DocumentType.NIF, "54095720L", "SUPPORT")
@@ -76,6 +78,62 @@ class PersonTest {
         var craftedPerson = new Person(this.booking, pInfo, new ContactInfo(null, null, "email@email.com"), dInfo, address, relationship);
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             Assertions.assertEquals(expected, craftedPerson.isCompleteForCheckIn());
+        }
+    }
+
+    @Test
+    void testSetPersonalInfoRemovesSignature() {
+        var address = Address.of("Line1", null, "Municipality", "PostalCode", "USA");
+        var document = Document.of(Document.DocumentType.NIF, "12345678Z", "SUPPORT");
+
+        var mustSignPInfo = new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus(PersonalInfo.SPAIN_MUST_SIGN_AGE * 365, ChronoUnit.DAYS), null);
+        var mustNotSignPInfo = new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_MUST_SIGN_AGE - 1) * 365, ChronoUnit.DAYS), null);
+
+        this.person.setRelationship(Person.PersonRelationship.CHILD);
+        this.person.setDocument(document);
+        this.person.setAddress(address);
+
+        try (var ignored = TestingUtils.getMockedInstantNow()) {
+            this.person.setPersonalInfo(mustSignPInfo);
+            this.person.setSignature(new Signature(Map.of(), "IP_ADDRESS", "USER_AGENT"));
+
+            this.person.setPersonalInfo(mustSignPInfo);
+            Assertions.assertNotNull(this.person.getSignature());
+
+            this.person.setPersonalInfo(mustNotSignPInfo);
+            Assertions.assertNull(this.person.getSignature());
+        }
+    }
+
+    @Test
+    void testSetSignatureValidation() {
+        var signature = new Signature(Map.of(), "IP_ADDRESS", "USER_AGENT");
+
+        var address = Address.of("Line1", null, "Municipality", "PostalCode", "USA");
+
+        var mustSignPInfo = new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus(PersonalInfo.SPAIN_MUST_SIGN_AGE * 365, ChronoUnit.DAYS), null);
+        var mustNotSignPInfo = new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_MUST_SIGN_AGE - 1) * 365, ChronoUnit.DAYS), null);
+
+        // Make semi-complete (only missing address)
+        var document = Document.of(Document.DocumentType.NIF, "12345678Z", "SUPPORT");
+        this.person.setDocument(document);
+        this.person.setRelationship(Person.PersonRelationship.CHILD);
+
+        // Test all combinations of must sign and complete for check-in
+        try (var ignored = TestingUtils.getMockedInstantNow()) {
+            this.person.setPersonalInfo(mustNotSignPInfo);
+            Assertions.assertThrows(IllegalStateException.class, () -> this.person.setSignature(signature)); // Not complete for check-in & must not sign
+
+            this.person.setAddress(address);
+            Assertions.assertThrows(IllegalStateException.class, () -> this.person.setSignature(signature)); // Must not sign
+
+            this.person.setAddress(null);
+            this.person.setPersonalInfo(mustSignPInfo);
+            Assertions.assertThrows(IllegalStateException.class, () -> this.person.setSignature(signature)); // Not complete for check-in
+
+            this.person.setAddress(address);
+            this.person.setSignature(signature); // Complete for check-in & must sign
+            Assertions.assertEquals(signature, this.person.getSignature());
         }
     }
 }

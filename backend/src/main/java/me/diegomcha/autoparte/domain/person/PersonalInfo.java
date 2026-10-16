@@ -13,8 +13,8 @@ import java.time.Instant;
 @EqualsAndHashCode
 public class PersonalInfo {
 
-    private static final int SPAIN_ADULT_AGE = 18;
-    private static final int SPAIN_MUST_SIGN_AGE = 16;
+    public static final int SPAIN_ADULT_AGE = 18;
+    public static final int SPAIN_MUST_SIGN_AGE = 16;
 
     public enum PersonalInfoGender {
         MALE, // H

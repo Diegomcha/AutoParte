@@ -103,7 +103,7 @@ public class Person extends BaseEntity {
         var requiresSecondSurname = this.document != null && this.document.requiresSecondSurname();
 
         return personalInfo.isCompleteForCheckIn(requiresSecondSurname) &&
-                isAdult != null && (isAdult ? this.document != null : this.relationship != null) &&
+                (Boolean.TRUE.equals(isAdult) ? this.document != null : this.relationship != null) && // If the personal info is complete isAdult must be defined
                 address != null;
     }
 
@@ -118,8 +118,7 @@ public class Person extends BaseEntity {
         if (!this.isCompleteForCheckIn())
             throw new IllegalStateException("Person is not complete for check-in");
 
-        var mustSign = this.personalInfo.mustSign();
-        if (mustSign == null || !mustSign)
+        if (Boolean.FALSE.equals(this.personalInfo.mustSign())) // mustSign is defined because the person is complete for check-in
             throw new IllegalStateException("Person does not need to sign");
 
         this.signature = signature;

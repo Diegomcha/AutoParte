@@ -159,6 +159,8 @@ class BookingTest {
         Assertions.assertTrue(this.booking.getCommunications().isEmpty());
 
         this.makeConfirmable();
+        this.booking.setPayment(this.payment);
+        this.booking.requestSelfCheckIn();
 
         this.booking.confirm();
 
@@ -167,6 +169,8 @@ class BookingTest {
             Assertions.assertEquals(this.booking, communication.getBooking());
             Assertions.assertEquals(Communication.CommunicationType.BOOKING, communication.getType());
         });
+
+        Assertions.assertFalse(booking.isSelfCheckInRequested());
 
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.confirm());
         Assertions.assertEquals(1, this.booking.getCommunications().size());
@@ -180,19 +184,19 @@ class BookingTest {
         this.makeConfirmable();
         booking.confirm();
         this.finalizeConfirmation();
-//        booking.setSelfCheckInRequested(true);
         this.makeCheckinable();
+        booking.requestSelfCheckIn();
 
         try (var ignored = TestingUtils.getMockedInstantNow()) {
             this.booking.checkIn();
         }
 
-        Assertions.assertFalse(booking.isSelfCheckInRequested());
-
         var checkinComms = this.booking.getCommunications(Communication.CommunicationType.CHECKIN);
         Assertions.assertEquals(1, checkinComms.size());
         Assertions.assertEquals(this.booking, checkinComms.getLast().getBooking());
         Assertions.assertEquals(Communication.CommunicationType.CHECKIN, checkinComms.getLast().getType());
+
+        Assertions.assertFalse(booking.isSelfCheckInRequested());
 
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.checkIn());
         Assertions.assertEquals(2, this.booking.getCommunications().size());
@@ -200,21 +204,25 @@ class BookingTest {
 
     @Test
     void testCancellation() {
+        this.booking.setPayment(this.payment);
+        booking.requestSelfCheckIn();
         this.makeConfirmable();
 
         // Booking cannot be canceled when no communications have been sent, only deleted
         Assertions.assertThrows(IllegalStateException.class, () -> this.booking.cancel());
 
         this.booking.confirm();
+
         this.booking.cancel();
 
-        var cancelations = this.booking.getCommunications(Communication.CommunicationType.CANCELLATION);
-        Assertions.assertEquals(1, cancelations.size());
-        cancelations.forEach(communication -> {
+        var cancellations = this.booking.getCommunications(Communication.CommunicationType.CANCELLATION);
+        Assertions.assertEquals(1, cancellations.size());
+        cancellations.forEach(communication -> {
             Assertions.assertEquals(this.booking, communication.getBooking());
             Assertions.assertEquals(Communication.CommunicationType.CANCELLATION, communication.getType());
             Assertions.assertEquals(Communication.CommunicationStatus.SUCCEEDED, communication.getStatus());
         });
+        Assertions.assertFalse(booking.isSelfCheckInRequested());
 
         this.makeCheckinable();
 
@@ -283,6 +291,126 @@ class BookingTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> this.booking.removePerson(person));
     }
 
+    @Test
+    void testCanBeDeleted() {
+        Assertions.assertTrue(this.booking.canBeDeleted());
+
+        this.makeConfirmable();
+        Assertions.assertTrue(this.booking.canBeDeleted());
+
+        this.booking.confirm();
+        Assertions.assertFalse(this.booking.canBeDeleted());
+    }
+
+    @Test
+    void testCanBeConfirmed() {
+        try (var ignored = TestingUtils.getMockedInstantNow()) {
+            Assertions.assertFalse(this.booking.canBeConfirmed());
+
+            this.makeConfirmable();
+            Assertions.assertTrue(this.booking.canBeConfirmed());
+
+            this.booking.confirm();
+            Assertions.assertFalse(this.booking.canBeConfirmed());
+
+            this.finalizeConfirmation();
+            this.makeCheckinable();
+            Assertions.assertFalse(this.booking.canBeConfirmed());
+
+            var bookingReadyForCheckInWithoutConfirmation = new Booking(
+                    this.accommodation,
+                    TestingUtils.INSTANT,
+                    TestingUtils.INSTANT.plusSeconds(3600),
+                    1,
+                    this.payment,
+                    null,
+                    null
+            );
+            new Person(
+                    bookingReadyForCheckInWithoutConfirmation,
+                    new PersonalInfo("Name", "Surname", "2Surname", null,
+                            TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS), null),
+                    new ContactInfo(null, null, "email@email.com"),
+                    Document.of(Document.DocumentType.NIF, "54095720L", "SUPPORT"),
+                    Address.of("Line1", null, "Municipality", "PostalCode", "USA"),
+                    null
+            );
+
+            bookingReadyForCheckInWithoutConfirmation.checkIn();
+        }
+    }
+
+    @Test
+    void testCanBeCheckedIn() {
+        try (var ignored = TestingUtils.getMockedInstantNow()) {
+            Assertions.assertFalse(this.booking.canBeCheckedIn());
+
+            this.makeConfirmable();
+            this.makeCheckinable();
+            Assertions.assertTrue(this.booking.canBeCheckedIn());
+
+            this.booking.checkIn();
+            Assertions.assertFalse(this.booking.canBeCheckedIn());
+        }
+    }
+
+    @Test
+    void testCanBeCancelled() {
+        Assertions.assertFalse(this.booking.canBeCancelled());
+
+        this.makeConfirmable();
+        Assertions.assertFalse(this.booking.canBeCancelled());
+
+        this.booking.confirm();
+        Assertions.assertTrue(this.booking.canBeCancelled());
+
+        this.booking.cancel();
+        Assertions.assertFalse(this.booking.canBeCancelled());
+    }
+
+    @Test
+    void testCanSelfCheckInBeRequested() {
+        Assertions.assertFalse(this.booking.canSelfCheckInBeRequested());
+
+        this.makeConfirmable();
+        Assertions.assertTrue(this.booking.canSelfCheckInBeRequested());
+
+        this.booking.requestSelfCheckIn();
+        Assertions.assertFalse(this.booking.canSelfCheckInBeRequested());
+
+        this.booking.terminateSelfCheckInRequest();
+        Assertions.assertTrue(this.booking.canSelfCheckInBeRequested());
+
+        this.booking.confirm();
+        Assertions.assertFalse(this.booking.canSelfCheckInBeRequested());
+
+        finalizeConfirmation();
+        Assertions.assertTrue(this.booking.canSelfCheckInBeRequested());
+    }
+
+    @Test
+    void testRequestSelfCheckIn() {
+        Assertions.assertThrows(IllegalStateException.class, () -> this.booking.requestSelfCheckIn());
+
+        this.booking.setPayment(this.payment);
+        this.booking.requestSelfCheckIn();
+        Assertions.assertTrue(this.booking.isSelfCheckInRequested());
+
+        Assertions.assertThrows(IllegalStateException.class, () -> this.booking.requestSelfCheckIn());
+    }
+
+    @Test
+    void testTerminateSelfCheckInRequest() {
+        Assertions.assertThrows(IllegalStateException.class, () -> this.booking.terminateSelfCheckInRequest());
+
+        this.booking.setPayment(this.payment);
+        this.booking.requestSelfCheckIn();
+        this.booking.terminateSelfCheckInRequest();
+        Assertions.assertFalse(this.booking.isSelfCheckInRequested());
+
+        Assertions.assertThrows(IllegalStateException.class, () -> this.booking.terminateSelfCheckInRequest());
+    }
+
     private void makeConfirmable() {
         booking.setPayment(this.payment);
         new Person(this.booking, new PersonalInfo("Name", "Surname", null, null, TestingUtils.PAST_INSTANT, null), new ContactInfo(null, null, "email@email.com"), null, null, null);
@@ -294,6 +422,7 @@ class BookingTest {
         person.setPersonalInfo(new PersonalInfo("Name", "Surname", "2Surname", null, TestingUtils.INSTANT.minus(18 * 365, ChronoUnit.DAYS), null));
         person.setDocument(Document.of(Document.DocumentType.NIF, "54095720L", "SUPPORT"));
         person.setAddress(Address.of("Line1", null, "Municipality", "PostalCode", "USA"));
+        person.setRelationship(Person.PersonRelationship.CHILD);
     }
 
     private void finalizeConfirmation() {
