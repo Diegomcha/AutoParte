@@ -62,6 +62,7 @@ deploy = [
 ]
 dev = [
     { name = "fastapi", extra = ["standard"] },
+    { name = "granian", extra = ["reload"] },
     { name = "pytest" },
     { name = "pytest-cov" },
 ]
@@ -74,6 +75,7 @@ requires-dist = [
     { name = "fastapi", specifier = "~=0.143.0" },
     { name = "fastapi", extras = ["standard"], marker = "extra == 'dev'", specifier = "~=0.143.0" },
     { name = "granian", specifier = "~=2.8.4" },
+    { name = "granian", extras = ["reload"], marker = "extra == 'dev'", specifier = "~=2.8.4" },
     { name = "mrz", specifier = "~=0.6.2" },
     { name = "onnxruntime", marker = "extra == 'cpu'", specifier = "~=1.31.0" },
     { name = "onnxruntime-gpu", marker = "extra == 'gpu'", specifier = "~=1.31.0" },
@@ -382,6 +384,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/cf/5a/33e3a1ef9b7f6397c3af588b50fc2ab459757ee0544be3830935fa940f6a/granian-2.8.4-pp311-pypy311_pp73-musllinux_1_1_armv7l.whl", hash = "sha256:1032f054bc0492fd918cccc0e833ded93a7374e5c244ca1dd3cdf9e2bc98ec6a", size = 5075021, upload-time = "2026-09-30T15:12:30.848Z" },
     { url = "https://files.pythonhosted.org/packages/42/e7/d20a00ce6d1715ea1f57178858c66060288c4b66f0edd8d70743d3bfbee7/granian-2.8.4-pp311-pypy311_pp73-musllinux_1_1_x86_64.whl", hash = "sha256:5be0afda13782037eb113839490a5b8961328a881446181630240a534f5065f4", size = 5195343, upload-time = "2026-09-30T15:12:32.489Z" },
     { url = "https://files.pythonhosted.org/packages/15/28/fc2b466122444d4408276f084d10e5f4179207134c7bc019e0b270dee440/granian-2.8.4-pp311-pypy311_pp73-win_amd64.whl", hash = "sha256:7146d2083b7fdb24dda922fc77efb9cab57c5f74a52224b37ad32ebc757a50ec", size = 3156895, upload-time = "2026-09-30T15:12:34.114Z" },
+]
+
+[package.optional-dependencies]
+reload = [
+    { name = "watchfiles" },
 ]
 
 [[package]]

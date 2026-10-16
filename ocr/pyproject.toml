@@ -15,7 +15,12 @@ dynamic = ["version"]
 deploy = ["uvloop~=0.23.0"]
 cpu = ["onnxruntime~=1.31.0"]
 gpu = ["onnxruntime-gpu~=1.31.0"]
-dev = ["fastapi[standard]~=0.143.0", "pytest~=9.1.1", "pytest-cov~=7.1.0"]
+dev = [
+    "fastapi[standard]~=0.143.0",
+    "pytest~=9.1.1",
+    "pytest-cov~=7.1.0",
+    "granian[reload]~=2.8.4",
+]
 
 [build-system]
 requires = ["setuptools~=84.0.0", "setuptools_scm[simple]~=10.3.4"]
