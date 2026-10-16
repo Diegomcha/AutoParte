@@ -15,6 +15,7 @@ import org.junit.jupiter.params.provider.FieldSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,14 +31,16 @@ class AccommodationServiceTest {
     private AccommodationRepo repo;
     @Autowired
     private AccommodationService service;
-
-    private Accommodation accommodation;
     @Autowired
     private EmployeeRepo employeeRepo;
+
+    private Employee employee;
+    private Accommodation accommodation;
 
     @BeforeEach
     void setUp() {
         this.accommodation = repo.save(new Accommodation("Name", "00000", null));
+        this.employee = employeeRepo.save(new Employee("Name", "Surname", "employee@example.com", "hashedpassword"));
     }
 
     @Test
@@ -53,7 +56,23 @@ class AccommodationServiceTest {
         accommodationsPage = service.getAccommodations(Pageable.unpaged());
 
         Assertions.assertEquals(0, accommodationsPage.getTotalElements());
-        // TODO: Test as an admin and as an employee
+    }
+
+    @Test
+    @WithMockUser("employee@example.com")
+    void testGetAccommodationsAsEmployee() {
+        // No assigned accommodations
+        var accommodationsPage = service.getAccommodations(Pageable.unpaged());
+
+        Assertions.assertEquals(0, accommodationsPage.getTotalElements());
+
+        // Assign employee to accommodation
+        accommodation.addEmployee(employee);
+
+        accommodationsPage = service.getAccommodations(Pageable.unpaged());
+
+        Assertions.assertEquals(1, accommodationsPage.getTotalElements());
+        Assertions.assertEquals(accommodation.getId(), accommodationsPage.getContent().getFirst().id());
     }
 
     @Test
@@ -166,8 +185,6 @@ class AccommodationServiceTest {
 
     @Test
     void testAssignationEmployeeToAccommodation() throws ResourceNotFoundException, ResourceConflictException {
-        var employee = employeeRepo.save(new Employee("Name", "Surname", "email@email.com", "hashedpassword"));
-
         Assertions.assertNotNull(accommodation.getId());
         Assertions.assertNotNull(employee.getId());
 
@@ -182,8 +199,6 @@ class AccommodationServiceTest {
 
     @Test
     void testFailedAssignationEmployeeToAccommodation() throws ResourceConflictException, ResourceNotFoundException {
-        var employee = employeeRepo.save(new Employee("Name", "Surname", "email@email.com", "hashedpassword"));
-
         Assertions.assertNotNull(accommodation.getId());
         Assertions.assertNotNull(employee.getId());
 

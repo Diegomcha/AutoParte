@@ -11,7 +11,7 @@ public record SecurityEventDto(
         @Nonnull Instant createdAt,
         @Nonnull Instant updatedAt,
 
-        @Nonnull UUID accountId,
+        UUID accountId,
 
         @Nonnull Instant timestamp,
         @Nonnull SecurityEvent.SecurityEventType type,

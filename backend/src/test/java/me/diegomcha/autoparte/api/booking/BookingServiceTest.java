@@ -2,6 +2,7 @@ package me.diegomcha.autoparte.api.booking;
 
 import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
+import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadRequestException;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
@@ -28,8 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
-// TODO: somewhere put a credit card payment to exercise the BookingMapper
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
 @Transactional
@@ -40,6 +39,8 @@ class BookingServiceTest {
     private AccommodationRepo accommodationRepo;
     @Autowired
     private BookingRepo bookingRepo;
+    @Autowired
+    private DynamicConfigService dynamicConfigService;
 
     private Accommodation accommodation;
     private Payment payment;
@@ -69,7 +70,6 @@ class BookingServiceTest {
 
     @Test
     void testGetBookingsWithDateFilter() throws ResourceNotFoundException, BadRequestException {
-
         Assertions.assertEquals(0, bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), TestingUtils.FUTURE_INSTANT.plusSeconds(1), null).getTotalElements());
         Assertions.assertEquals(0, bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), null, TestingUtils.INSTANT.minusSeconds(1)).getTotalElements());
 
@@ -78,7 +78,6 @@ class BookingServiceTest {
 
         Assertions.assertThrows(BadRequestException.class, () ->
                 bookingService.getBookings(accommodation.getId(), Pageable.unpaged(), TestingUtils.FUTURE_INSTANT, TestingUtils.INSTANT));
-
     }
 
     @Test
@@ -99,8 +98,6 @@ class BookingServiceTest {
 
         Assertions.assertEquals(booking.canBeModified(), bookingResponse.canBeModified());
         Assertions.assertEquals("Name S.", bookingResponse.holderName());
-
-//        Assertions.assertNotNull(bookingResponse.communications());
     }
 
     @Test
@@ -190,12 +187,19 @@ class BookingServiceTest {
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
                 bookingService.updateBooking(randomId, randomId, updateBooking));
 
-        // TODO: Test update booking that cannot be modified
+        makeConfirmable();
+        booking.confirm();
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.updateBooking(accommodation.getId(), booking.getId(), updateBooking));
 
-
-        // TODO: Test update booking with 2 ppl linked to 1 ppl
-
-
+        booking = bookingRepo.save(new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 2, null, null, null));
+        new Person(booking, new PersonalInfo("One", "Person", null, null, TestingUtils.PAST_INSTANT, null),
+                new ContactInfo(null, null, "one@example.com"), null, null, null);
+        new Person(booking, new PersonalInfo("Two", "Person", null, null, TestingUtils.PAST_INSTANT, null),
+                new ContactInfo(null, null, "two@example.com"), null, null, null);
+        var fewerPeople = new BookingDtoRequest(TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1, null, null, null);
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.updateBooking(accommodation.getId(), booking.getId(), fewerPeople));
     }
 
     @Test
@@ -242,8 +246,6 @@ class BookingServiceTest {
 
         Assertions.assertTrue(dbBooking.isPresent());
         Assertions.assertEquals(Booking.BookingStatus.PENDING_CHECK_IN, dbBooking.get().getStatus());
-
-        // TODO: Test when manual review is required
     }
 
     @Test
@@ -325,10 +327,84 @@ class BookingServiceTest {
                 bookingService.requestSelfCheckInForBooking(accommodation.getId(), UUID.randomUUID()));
         Assertions.assertThrows(ResourceConflictException.class, () ->
                 bookingService.requestSelfCheckInForBooking(accommodation.getId(), booking.getId()));
-        // TODO: Check when booking cannot be modified
+        booking = bookingRepo.save(new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1, null, null, null));
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.requestSelfCheckInForBooking(accommodation.getId(), booking.getId()));
     }
 
-    // TODO: Test deleteBooking
+    @Test
+    void testTerminateSelfCheckInRequest() throws ResourceNotFoundException, ResourceConflictException {
+        booking.setPayment(payment);
+        bookingService.requestSelfCheckInForBooking(accommodation.getId(), booking.getId());
+        bookingService.terminateSelfCheckInRequestForBooking(accommodation.getId(), booking.getId());
+        Assertions.assertFalse(booking.isSelfCheckInRequested());
+
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.terminateSelfCheckInRequestForBooking(accommodation.getId(), booking.getId()));
+    }
+
+    @Test
+    void testSelfCheckInWithAndWithoutManualReview() throws ResourceNotFoundException, ResourceConflictException {
+        makeConfirmable();
+        booking.confirm();
+        finalizeConfirmation();
+        makeCheckinable();
+
+        bookingService.requestSelfCheckInForBooking(accommodation.getId(), booking.getId());
+
+        Assertions.assertTrue(bookingService.selfCheckIn(accommodation.getId(), booking.getId()));
+        Assertions.assertEquals(Booking.BookingStatus.PENDING_CHECK_IN, booking.getStatus());
+
+        this.payment = Payment.of(Payment.PaymentType.ON_SITE, null, null, null, null);
+        booking = bookingRepo.save(new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1,
+                payment, null, null));
+        makeConfirmable();
+        booking.confirm();
+        finalizeConfirmation();
+        makeCheckinable();
+        dynamicConfigService.updateConfig(config -> config.setManualReviewEnabled(true));
+
+        bookingService.requestSelfCheckInForBooking(accommodation.getId(), booking.getId());
+
+        Assertions.assertFalse(bookingService.selfCheckIn(accommodation.getId(), booking.getId()));
+        Assertions.assertEquals(Booking.BookingStatus.CHECK_IN_READY, booking.getStatus());
+    }
+
+    @Test
+    void testSelfCheckInFailed() {
+        makeConfirmable();
+        booking.confirm();
+        finalizeConfirmation();
+
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.selfCheckIn(accommodation.getId(), booking.getId()));
+
+        makeCheckinable();
+
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.selfCheckIn(accommodation.getId(), booking.getId()));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                bookingService.selfCheckIn(UUID.randomUUID(), booking.getId()));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                bookingService.selfCheckIn(accommodation.getId(), UUID.randomUUID()));
+    }
+
+    @Test
+    void testDeleteBooking() throws ResourceNotFoundException, ResourceConflictException {
+        bookingService.deleteBooking(accommodation.getId(), booking.getId());
+        Assertions.assertTrue(bookingRepo.findById(booking.getId()).isEmpty());
+
+        booking = bookingRepo.save(new Booking(accommodation, TestingUtils.INSTANT, TestingUtils.FUTURE_INSTANT, 1,
+                null, null, null));
+        makeConfirmable();
+        booking.confirm();
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                bookingService.deleteBooking(accommodation.getId(), booking.getId()));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                bookingService.deleteBooking(UUID.randomUUID(), booking.getId()));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                bookingService.deleteBooking(accommodation.getId(), UUID.randomUUID()));
+    }
 
     private void makeConfirmable() {
         booking.setPayment(this.payment);

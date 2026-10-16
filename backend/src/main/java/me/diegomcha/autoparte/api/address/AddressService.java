@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.api.address;
 
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.address.dto.AddressDtoRequest;
 import me.diegomcha.autoparte.api.address.dto.AddressDtoResponse;
@@ -38,7 +39,7 @@ class AddressService {
      * @return The address with the given ID, or empty if it does not exist
      * @throws ResourceNotFoundException if no address with the given ID exists
      */
-    public AddressDtoResponse getAddress(UUID id) throws ResourceNotFoundException {
+    public AddressDtoResponse getAddress(@NonNull UUID id) throws ResourceNotFoundException {
         return addressRepo.findById(id)
                 .map(addressMapper::toResponse)
                 .orElseThrow(NOT_FOUND_EXCEPTION);
@@ -52,8 +53,9 @@ class AddressService {
      * @return A list of addresses associated with the given booking ID
      * @throws ResourceNotFoundException if no booking with the given ID exists
      */
-    public List<AddressDtoResponse> getBookingAddresses(UUID accommodationId, UUID bookingId) throws ResourceNotFoundException {
-        this.ensureBookingExists(accommodationId, bookingId);
+    public List<AddressDtoResponse> getBookingAddresses(@NonNull UUID accommodationId, @NonNull UUID bookingId) throws ResourceNotFoundException {
+        if (!bookingRepo.existsByAccommodationIdAndId(accommodationId, bookingId))
+            throw BOOKING_NOT_FOUND_EXCEPTION.get();
 
         return addressRepo.findByBooking(bookingId)
                 .stream()
@@ -68,15 +70,9 @@ class AddressService {
      * @return An EntityDtoCreated containing the ID of the newly created address
      */
     @Transactional
-    public EntityDtoCreated createAddress(AddressDtoRequest dto) {
+    public EntityDtoCreated createAddress(@NonNull AddressDtoRequest dto) {
         var address = addressMapper.fromCreate(dto);
         address = addressRepo.save(address);
         return entityMapper.toCreated(address);
     }
-
-    private void ensureBookingExists(UUID accommodationId, UUID bookingId) throws ResourceNotFoundException {
-        if (!bookingRepo.existsByAccommodationIdAndId(accommodationId, bookingId))
-            throw BOOKING_NOT_FOUND_EXCEPTION.get();
-    }
-
 }

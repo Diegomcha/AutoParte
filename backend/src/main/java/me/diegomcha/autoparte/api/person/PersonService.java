@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.api.person;
 
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.api.common.EntityMapper;
@@ -58,7 +59,7 @@ class PersonService {
      * @return A list of people associated with the specified booking
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation
      */
-    public List<PersonDtoResponse> getPeople(UUID accommodationId, UUID bookingId) throws ResourceNotFoundException {
+    public List<PersonDtoResponse> getPeople(@NonNull UUID accommodationId, @NonNull UUID bookingId) throws ResourceNotFoundException {
         this.ensureBookingExists(accommodationId, bookingId);
 
         return personMapper.toResponse(personRepo.findByBookingAccommodationIdAndBookingIdOrderById(accommodationId, bookingId));
@@ -73,7 +74,7 @@ class PersonService {
      * @return The person associated with the specified booking and accommodation
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no person with the given ID exists for the specified booking
      */
-    public PersonDtoResponse getPerson(UUID accommodationId, UUID bookingId, UUID personId) throws ResourceNotFoundException {
+    public PersonDtoResponse getPerson(@NonNull UUID accommodationId, @NonNull UUID bookingId, @NonNull UUID personId) throws ResourceNotFoundException {
         this.ensureBookingExists(accommodationId, bookingId);
 
         return personRepo
@@ -95,7 +96,7 @@ class PersonService {
      *                                   if the booking is already full and cannot accommodate additional people
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public EntityDtoCreated addPerson(UUID accommodationId, UUID bookingId, PersonDtoRequest dto) throws ResourceNotFoundException, ResourceConflictException {
+    public EntityDtoCreated addPerson(@NonNull UUID accommodationId, @NonNull UUID bookingId, @NonNull PersonDtoRequest dto) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureBookingCanBeModified(accommodationId, bookingId);
 
         var booking = bookingRepo
@@ -124,7 +125,7 @@ class PersonService {
      * @throws ResourceConflictException if the booking cannot be modified in its current state
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void updatePerson(UUID accommodationId, UUID bookingId, UUID personId, PersonDtoRequest dto) throws ResourceNotFoundException, ResourceConflictException {
+    public void updatePerson(@NonNull UUID accommodationId, @NonNull UUID bookingId, @NonNull UUID personId, @NonNull PersonDtoRequest dto) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureBookingCanBeModified(accommodationId, bookingId);
 
         var person = personRepo
@@ -144,7 +145,7 @@ class PersonService {
      * @throws ResourceConflictException if the booking cannot be modified in its current state
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void removePerson(UUID accommodationId, UUID bookingId, UUID personId) throws ResourceNotFoundException, ResourceConflictException {
+    public void removePerson(@NonNull UUID accommodationId, @NonNull UUID bookingId, @NonNull UUID personId) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureBookingCanBeModified(accommodationId, bookingId);
 
         var person = personRepo
@@ -168,7 +169,7 @@ class PersonService {
      * @throws ResourceConflictException if the booking cannot be modified in its current state
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void addSignature(UUID accommodationId, UUID bookingId, UUID personId, Map<Instant, List<Point>> signaturePaths, String ipAddr, String userAgent) throws ResourceNotFoundException, ResourceConflictException {
+    public void addSignature(@NonNull UUID accommodationId, @NonNull UUID bookingId, @NonNull UUID personId, @NonNull Map<Instant, List<Point>> signaturePaths, @NonNull String ipAddr, @NonNull String userAgent) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureBookingCanBeModified(accommodationId, bookingId);
 
         var person = personRepo
@@ -191,7 +192,7 @@ class PersonService {
      * @return The signature for the specified person
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation, if no person with the given ID exists for the specified booking, or if the person does not have a signature
      */
-    public SignatureDtoResponse getSignature(UUID accommodationId, UUID bookingId, UUID personId) throws ResourceNotFoundException {
+    public SignatureDtoResponse getSignature(@NonNull UUID accommodationId, @NonNull UUID bookingId, @NonNull UUID personId) throws ResourceNotFoundException {
         this.ensureBookingExists(accommodationId, bookingId);
 
         var person = personRepo
@@ -201,12 +202,12 @@ class PersonService {
         return personMapper.toSignatureResponse(Optional.ofNullable(person.getSignature()).orElseThrow(SIGNATURE_NOT_PRESENT_EXCEPTION));
     }
 
-    private void ensureBookingExists(UUID accommodationId, UUID bookingId) throws ResourceNotFoundException {
+    private void ensureBookingExists(@NonNull UUID accommodationId, @NonNull UUID bookingId) throws ResourceNotFoundException {
         if (!bookingRepo.existsByAccommodationIdAndId(accommodationId, bookingId))
             throw BOOKING_NOT_FOUND_EXCEPTION.get();
     }
 
-    private void ensureBookingCanBeModified(UUID accommodationId, UUID bookingId) throws ResourceNotFoundException, ResourceConflictException {
+    private void ensureBookingCanBeModified(@NonNull UUID accommodationId, @NonNull UUID bookingId) throws ResourceNotFoundException, ResourceConflictException {
         var booking = bookingRepo
                 .findByAccommodationIdAndId(accommodationId, bookingId)
                 .orElseThrow(BOOKING_NOT_FOUND_EXCEPTION);

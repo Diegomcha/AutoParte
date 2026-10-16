@@ -1,5 +1,6 @@
 package me.diegomcha.autoparte.api.account;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.account.dto.AccountDtoFull;
 import me.diegomcha.autoparte.api.account.dto.SecurityEventDto;
@@ -33,7 +34,7 @@ class AccountService {
      * @param pageable Pagination information (page number, size, sorting)
      * @return A page of accounts
      */
-    public Page<AccountDtoFull> getAccounts(Pageable pageable) {
+    public Page<AccountDtoFull> getAccounts(@NonNull Pageable pageable) {
         return accountRepo.findAll(pageable).map(accountMapper::toDto);
     }
 
@@ -43,7 +44,7 @@ class AccountService {
      * @param pageable Pagination information (page number, size, sorting)
      * @return A page of security events
      */
-    public Page<SecurityEventDto> getSecurityEvents(Pageable pageable) {
+    public Page<SecurityEventDto> getSecurityEvents(@NonNull Pageable pageable) {
         return securityEventRepo.findAll(pageable).map(accountMapper::toDto);
     }
 
@@ -55,7 +56,7 @@ class AccountService {
      * @return A page of security events associated with the specified account
      * @throws ResourceNotFoundException If the account with the given ID does not exist
      */
-    public Page<SecurityEventDto> getSecurityEventsByAccountId(UUID accountId, Pageable pageable) throws ResourceNotFoundException {
+    public Page<SecurityEventDto> getSecurityEventsByAccountId(@NonNull UUID accountId, @NonNull Pageable pageable) throws ResourceNotFoundException {
         if (!accountRepo.existsById(accountId))
             throw NOT_FOUND_EXCEPTION.get();
 

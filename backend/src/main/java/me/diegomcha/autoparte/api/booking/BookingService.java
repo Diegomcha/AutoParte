@@ -1,6 +1,7 @@
 package me.diegomcha.autoparte.api.booking;
 
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
@@ -12,7 +13,6 @@ import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
 import me.diegomcha.autoparte.core.repos.BookingRepo;
-import me.diegomcha.autoparte.core.security.SecurityService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,7 +53,6 @@ class BookingService {
     private final AccommodationRepo accommodationRepo;
     private final EntityMapper entityMapper;
     private final DynamicConfigService dynamicConfigService;
-    private final SecurityService securityService;
 
     /**
      * Returns a paginated list of bookings for a specific accommodation.
@@ -65,7 +64,7 @@ class BookingService {
      * @return A page of bookings for the specified accommodation
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
-    public Page<BookingDtoResponse> getBookings(UUID accommodationId, Pageable pageable, Instant startRange, Instant endRange) throws ResourceNotFoundException, BadRequestException {
+    public Page<BookingDtoResponse> getBookings(@NonNull UUID accommodationId, @NonNull Pageable pageable, Instant startRange, Instant endRange) throws ResourceNotFoundException, BadRequestException {
         this.ensureAccommodationExists(accommodationId);
         if (startRange != null && endRange != null && startRange.isAfter(endRange))
             throw new BadRequestException("Start date cannot be after end date");
@@ -81,7 +80,7 @@ class BookingService {
      * @return The booking with the given ID for the specified accommodation, or empty if it does not exist
      * @throws ResourceNotFoundException if no booking with the given ID exists for the specified accommodation or if no accommodation with the given ID exists
      */
-    public BookingDtoResponse getBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException {
+    public BookingDtoResponse getBooking(@NonNull UUID accommodationId, @NonNull UUID id) throws ResourceNotFoundException {
         this.ensureAccommodationExists(accommodationId);
         return bookingRepo
                 .findByAccommodationIdAndId(accommodationId, id)
@@ -98,7 +97,7 @@ class BookingService {
      * @throws ResourceNotFoundException if no accommodation with the given ID exists
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class})
-    public EntityDtoCreated createBooking(UUID accommodationId, BookingDtoRequest booking) throws ResourceNotFoundException {
+    public EntityDtoCreated createBooking(@NonNull UUID accommodationId, @NonNull BookingDtoRequest booking) throws ResourceNotFoundException {
         var accommodation = accommodationRepo
                 .findById(accommodationId)
                 .orElseThrow(ACCOMMODATION_NOT_FOUND_EXCEPTION);
@@ -118,7 +117,7 @@ class BookingService {
      * @throws ResourceConflictException if the number of people in the update is less than the current number of people in the booking
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void updateBooking(UUID accommodationId, UUID id, BookingDtoRequest update) throws ResourceNotFoundException, ResourceConflictException {
+    public void updateBooking(@NonNull UUID accommodationId, @NonNull UUID id, @NonNull BookingDtoRequest update) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
@@ -145,7 +144,7 @@ class BookingService {
      * @throws ResourceConflictException if the booking cannot be deleted
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void deleteBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public void deleteBooking(@NonNull UUID accommodationId, @NonNull UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
@@ -168,7 +167,7 @@ class BookingService {
      * @throws ResourceConflictException if the booking cannot be confirmed in its current state
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void confirmBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public void confirmBooking(@NonNull UUID accommodationId, @NonNull UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
@@ -191,7 +190,7 @@ class BookingService {
      * @throws ResourceConflictException if the booking cannot be modified or if self-check-in has already been requested for the booking
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void requestSelfCheckInForBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public void requestSelfCheckInForBooking(@NonNull UUID accommodationId, @NonNull UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
@@ -215,7 +214,7 @@ class BookingService {
      * @throws ResourceConflictException if the self-check-in was not requested for the booking
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void terminateSelfCheckInRequestForBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public void terminateSelfCheckInRequestForBooking(@NonNull UUID accommodationId, @NonNull UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
@@ -239,7 +238,7 @@ class BookingService {
      * @throws ResourceConflictException if the booking cannot be checked in its current state
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void checkInBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public void checkInBooking(@NonNull UUID accommodationId, @NonNull UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
@@ -263,7 +262,7 @@ class BookingService {
      * @throws ResourceConflictException if the booking cannot be checked in its current state or if self-check-in was not requested for the booking
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public boolean selfCheckIn(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public boolean selfCheckIn(@NonNull UUID accommodationId, @NonNull UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo
@@ -296,7 +295,7 @@ class BookingService {
      * @throws ResourceConflictException if the booking cannot be cancelled
      */
     @Transactional(rollbackFor = {ResourceNotFoundException.class, ResourceConflictException.class})
-    public void cancelBooking(UUID accommodationId, UUID id) throws ResourceNotFoundException, ResourceConflictException {
+    public void cancelBooking(@NonNull UUID accommodationId, @NonNull UUID id) throws ResourceNotFoundException, ResourceConflictException {
         this.ensureAccommodationExists(accommodationId);
 
         var booking = bookingRepo

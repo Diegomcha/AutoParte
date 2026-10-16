@@ -25,6 +25,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -92,6 +96,9 @@ class PersonServiceTest {
         Assertions.assertThrows(ResourceNotFoundException.class, () ->
                 service.getPerson(accommodation.getId(), booking.getId(), UUID.randomUUID())
         );
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                service.getPerson(UUID.randomUUID(), booking.getId(), person.getId())
+        );
     }
 
     @Test
@@ -125,6 +132,17 @@ class PersonServiceTest {
         Assertions.assertEquals("jane.smith@example.com", savedPerson.getContactInfo().getEmail());
         Assertions.assertEquals(address, savedPerson.getAddress());
         Assertions.assertEquals(Person.PersonRelationship.SPOUSE, savedPerson.getRelationship());
+
+        booking.setNumberOfPeople(3);
+        var withoutAddress = new PersonDtoRequest(
+                personalInfoReq,
+                contactInfoReq,
+                documentReq,
+                null,
+                Person.PersonRelationship.SPOUSE
+        );
+        var withoutAddressCreated = service.addPerson(accommodation.getId(), booking.getId(), withoutAddress);
+        Assertions.assertNull(personRepo.findById(withoutAddressCreated.id()).orElseThrow().getAddress());
     }
 
     @Test
@@ -204,10 +222,18 @@ class PersonServiceTest {
         Assertions.assertEquals("DoeUpdated", updatedPerson.getPersonalInfo().getFirstSurname());
         Assertions.assertEquals("john.updated@example.com", updatedPerson.getContactInfo().getEmail());
         Assertions.assertEquals("PASUPDATED", updatedPerson.getDocument().getNumber());
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                service.updatePerson(accommodation.getId(), booking.getId(), UUID.randomUUID(), dto));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                service.updatePerson(accommodation.getId(), booking.getId(), person.getId(),
+                        new PersonDtoRequest(personalInfoReq, contactInfoReq, documentReq, UUID.randomUUID(), null)));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                service.updatePerson(UUID.randomUUID(), booking.getId(), person.getId(), dto));
     }
 
     @Test
-    void testUpdatePersonWhileBookingNotModifiable(){
+    void testUpdatePersonWhileBookingNotModifiable() {
         // Set booking to not modifiable
         booking.confirm();
         booking.cancel();
@@ -237,6 +263,63 @@ class PersonServiceTest {
         service.removePerson(accommodation.getId(), booking.getId(), person.getId());
 
         Assertions.assertFalse(personRepo.existsById(person.getId()));
+        Assertions.assertFalse(booking.getPeople().contains(person));
+
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                service.removePerson(accommodation.getId(), booking.getId(), person.getId()));
+    }
+
+    @Test
+    void testRemovePersonWhileBookingNotModifiable() {
+        booking.confirm();
+        booking.cancel();
+
+        Assertions.assertThrows(ResourceConflictException.class, () ->
+                service.removePerson(accommodation.getId(), booking.getId(), person.getId()));
+    }
+
+    @Test
+    void testAddAndGetSignature() throws ResourceNotFoundException, ResourceConflictException {
+        person.setPersonalInfo(new PersonalInfo(
+                "John", "Doe", "Second", "USA",
+                Instant.parse("2000-01-01T00:00:00Z"),
+                PersonalInfo.PersonalInfoGender.MALE
+        ));
+        var timestamp = Instant.parse("2024-01-01T00:00:00Z");
+        var paths = Map.of(timestamp, List.of(new Point(1, 2)));
+
+        service.addSignature(accommodation.getId(), booking.getId(), person.getId(), paths, "127.0.0.1", "JUnit");
+
+        var signature = service.getSignature(accommodation.getId(), booking.getId(), person.getId());
+        Assertions.assertEquals(paths, signature.paths());
+        Assertions.assertEquals("127.0.0.1", signature.ipAddress());
+        Assertions.assertEquals("JUnit", signature.userAgent());
+        Assertions.assertNotNull(signature.signedAt());
+    }
+
+    @Test
+    void testSignatureFailures() {
+        var paths = Map.of(Instant.parse("2024-01-01T00:00:00Z"), List.of(new Point(1, 2)));
+
+        var accommodationId = accommodation.getId();
+        var bookingId = booking.getId();
+        var personId = person.getId();
+
+        Assertions.assertThrows(IllegalStateException.class, () ->
+                service.addSignature(accommodationId, bookingId, personId, paths, "127.0.0.1", "JUnit"));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                service.getSignature(accommodationId, bookingId, personId));
+        Assertions.assertThrows(ResourceNotFoundException.class, () ->
+                service.getSignature(UUID.randomUUID(), bookingId, personId));
+
+        person.setPersonalInfo(new PersonalInfo(
+                "John", "Doe", "Second", "USA",
+                Instant.parse("2015-01-01T00:00:00Z"),
+                PersonalInfo.PersonalInfoGender.MALE
+        ));
+        person.setDocument(null);
+        person.setRelationship(Person.PersonRelationship.CHILD);
+        Assertions.assertThrows(IllegalStateException.class, () ->
+                service.addSignature(accommodationId, bookingId, personId, paths, "127.0.0.1", "JUnit"));
     }
 }
-
