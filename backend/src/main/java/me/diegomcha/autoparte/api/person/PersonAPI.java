@@ -2,7 +2,6 @@ package me.diegomcha.autoparte.api.person;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -39,7 +38,7 @@ public interface PersonAPI {
     void removePerson(UUID accommodationId, UUID bookingId, UUID id) throws ResourceNotFoundException, ResourceConflictException;
 
     @Operation(summary = "Sign booking")
-    void addSignature(UUID accommodationId, UUID bookingId, UUID id, @Valid @Nonnull Map<@NotNull Instant, @NotNull List<@NotNull Point>> signaturePaths, HttpServletRequest request) throws ResourceNotFoundException, ResourceConflictException;
+    void addSignature(UUID accommodationId, UUID bookingId, UUID id, @Valid @NotNull Map<@NotNull Instant, @NotNull List<@NotNull Point>> signaturePaths, HttpServletRequest request) throws ResourceNotFoundException, ResourceConflictException;
 
     @Operation(summary = "Get signature for person in booking")
     SignatureDtoResponse getSignature(UUID accommodationId, UUID bookingId, UUID id) throws ResourceNotFoundException;

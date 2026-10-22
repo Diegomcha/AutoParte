@@ -1,21 +1,21 @@
 package me.diegomcha.autoparte.api.account.dto;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 import me.diegomcha.autoparte.domain.SecurityEvent;
 
 import java.time.Instant;
 import java.util.UUID;
 
 public record SecurityEventDto(
-        @Nonnull UUID id,
-        @Nonnull Instant createdAt,
-        @Nonnull Instant updatedAt,
+        @NotNull UUID id,
+        @NotNull Instant createdAt,
+        @NotNull Instant updatedAt,
 
         UUID accountId,
 
-        @Nonnull Instant timestamp,
-        @Nonnull SecurityEvent.SecurityEventType type,
-        @Nonnull SecurityEvent.SecurityEventMethod method,
-        @Nonnull String remoteAddress
+        @NotNull Instant timestamp,
+        @NotNull SecurityEvent.SecurityEventType type,
+        @NotNull SecurityEvent.SecurityEventMethod method,
+        @NotNull String remoteAddress
 ) {
 }

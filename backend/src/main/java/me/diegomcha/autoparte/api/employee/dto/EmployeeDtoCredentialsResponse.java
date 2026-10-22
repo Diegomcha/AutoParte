@@ -1,14 +1,14 @@
 package me.diegomcha.autoparte.api.employee.dto;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
 public record EmployeeDtoCredentialsResponse(
-        @Nonnull UUID id,
+        @NotNull UUID id,
 
-        @Nonnull String email,
-        @Nonnull String password
+        @NotNull String email,
+        @NotNull String password
 ) {
 
 }

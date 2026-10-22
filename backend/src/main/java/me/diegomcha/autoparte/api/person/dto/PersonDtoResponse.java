@@ -1,6 +1,5 @@
 package me.diegomcha.autoparte.api.person.dto;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotNull;
 import me.diegomcha.autoparte.domain.Person;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
@@ -10,24 +9,24 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record PersonDtoResponse(
-        @Nonnull UUID id,
-        @Nonnull Instant createdAt,
-        @Nonnull Instant updatedAt,
+        @NotNull UUID id,
+        @NotNull Instant createdAt,
+        @NotNull Instant updatedAt,
 
         @NotNull boolean hasSigned,
 
         Boolean isAdult,
         Boolean mustSign,
 
-        @Nonnull PersonDtoResponse.PersonalInfoDtoResponse personalInfo,
-        @Nonnull PersonDtoResponse.ContactInfoDtoResponse contactInfo,
+        @NotNull PersonDtoResponse.PersonalInfoDtoResponse personalInfo,
+        @NotNull PersonDtoResponse.ContactInfoDtoResponse contactInfo,
         PersonDtoResponse.DocumentDtoResponse document,
         UUID address,
         Person.PersonRelationship relationship
 ) {
     public record PersonalInfoDtoResponse(
-            @Nonnull String name,
-            @Nonnull String firstSurname,
+            @NotNull String name,
+            @NotNull String firstSurname,
             String secondSurname,
             String nationality,
             Instant birthDate,
@@ -43,8 +42,8 @@ public record PersonDtoResponse(
     }
 
     public record DocumentDtoResponse(
-            @Nonnull Document.DocumentType type,
-            @Nonnull String number,
+            @NotNull Document.DocumentType type,
+            @NotNull String number,
             String supportNumber
     ) {
     }

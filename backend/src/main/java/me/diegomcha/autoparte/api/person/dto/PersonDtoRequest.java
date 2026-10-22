@@ -1,6 +1,5 @@
 package me.diegomcha.autoparte.api.person.dto;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -23,8 +22,8 @@ public record PersonDtoRequest(
         Person.PersonRelationship relationship
 ) {
     public record PersonalInfoDtoRequest(
-            @Nonnull String name,
-            @Nonnull String firstSurname,
+            @NotNull String name,
+            @NotNull String firstSurname,
             String secondSurname,
             @CountryCode(nullable = true) String nationality,
             @Past Instant birthDate,
@@ -42,8 +41,8 @@ public record PersonDtoRequest(
 
     @DniConstraint
     public record DocumentDtoRequest(
-            @Nonnull Document.DocumentType type,
-            @Nonnull String number,
+            @NotNull Document.DocumentType type,
+            @NotNull String number,
             String supportNumber
     ) {
     }

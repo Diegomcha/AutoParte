@@ -1,6 +1,5 @@
 package me.diegomcha.autoparte.api.account.dto;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
@@ -8,16 +7,16 @@ import java.util.Set;
 import java.util.UUID;
 
 public record AccountDtoFull(
-        @Nonnull UUID id,
-        @Nonnull Instant createdAt,
-        @Nonnull Instant updatedAt,
+        @NotNull UUID id,
+        @NotNull Instant createdAt,
+        @NotNull Instant updatedAt,
 
         @NotNull boolean enabled,
         Instant disabledAt,
         @NotNull boolean requiresReset,
 
-        @Nonnull String username,
-        @Nonnull Set<String> roles,
+        @NotNull String username,
+        @NotNull Set<String> roles,
 
         UUID employeeId
 ) {

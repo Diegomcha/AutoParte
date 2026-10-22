@@ -1,11 +1,11 @@
 package me.diegomcha.autoparte.api.auth.dto;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.Set;
 
 public record AccountDto(
-    @Nonnull String username,
-    @Nonnull Set<String> roles
+    @NotNull String username,
+    @NotNull Set<@NotNull String> roles
 ) {
 }

@@ -1,12 +1,11 @@
 package me.diegomcha.autoparte.api.config.dto;
 
-import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.NotNull;
 
 public record ConfigDtoResponse(
-        @Nonnull String sesUsername,
-        @Nonnull String sesPassword,
-        @Nonnull String sesLandlordCode,
+        @NotNull String sesUsername,
+        @NotNull String sesPassword,
+        @NotNull String sesLandlordCode,
 
         @NotNull boolean sesCredentialsValid,
 

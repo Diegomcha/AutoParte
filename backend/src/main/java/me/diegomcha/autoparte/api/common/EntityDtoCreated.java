@@ -1,12 +1,12 @@
 package me.diegomcha.autoparte.api.common;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.util.UUID;
 
 public record EntityDtoCreated(
-        @Nonnull UUID id,
-        @Nonnull Instant createdAt
+        @NotNull UUID id,
+        @NotNull Instant createdAt
 ) {
 }

@@ -1,28 +1,28 @@
 package me.diegomcha.autoparte.api.employee.dto;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
 public record EmployeeDtoResponse(
-        @Nonnull UUID id,
-        @Nonnull Instant createdAt,
-        @Nonnull Instant updatedAt,
+        @NotNull UUID id,
+        @NotNull Instant createdAt,
+        @NotNull Instant updatedAt,
 
-        @Nonnull Boolean enabled,
+        @NotNull Boolean enabled,
         Instant disabledAt,
 
-        @Nonnull String name,
-        @Nonnull String surname,
-        @Nonnull String email,
+        @NotNull String name,
+        @NotNull String surname,
+        @NotNull String email,
 
-        @Nonnull Set<EmployeeDtoAccommodationResponse> accommodations
+        @NotNull Set<EmployeeDtoAccommodationResponse> accommodations
         ) {
         public record EmployeeDtoAccommodationResponse(
-                @Nonnull UUID id,
-                @Nonnull String name
+                @NotNull UUID id,
+                @NotNull String name
         ) {
         }
 }

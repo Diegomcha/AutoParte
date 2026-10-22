@@ -1,28 +1,28 @@
 package me.diegomcha.autoparte.api.ocr.dto;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 import me.diegomcha.autoparte.domain.person.PersonalInfo;
 import me.diegomcha.autoparte.domain.person.document.Document;
 
 import java.time.Instant;
 
 public record PartialPersonDtoRequest(
-        @Nonnull PartialPersonalInfoDtoRequest personalInfo,
-        @Nonnull PartialDocumentDtoRequest document
+        @NotNull PartialPersonalInfoDtoRequest personalInfo,
+        @NotNull PartialDocumentDtoRequest document
 ) {
     public record PartialPersonalInfoDtoRequest(
-            @Nonnull String name,
-            @Nonnull String firstSurname,
+            @NotNull String name,
+            @NotNull String firstSurname,
             String secondSurname,
-            @Nonnull String nationality,
-            @Nonnull Instant birthDate,
-            @Nonnull PersonalInfo.PersonalInfoGender gender
+            @NotNull String nationality,
+            @NotNull Instant birthDate,
+            @NotNull PersonalInfo.PersonalInfoGender gender
     ) {
     }
 
     public record PartialDocumentDtoRequest(
-            @Nonnull Document.DocumentType type,
-            @Nonnull String number,
+            @NotNull Document.DocumentType type,
+            @NotNull String number,
             String supportNumber
     ) {
     }

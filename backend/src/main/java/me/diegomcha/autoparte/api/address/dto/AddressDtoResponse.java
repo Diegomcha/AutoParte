@@ -1,19 +1,19 @@
 package me.diegomcha.autoparte.api.address.dto;
 
-import jakarta.annotation.Nonnull;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 import java.util.UUID;
 
 public record AddressDtoResponse(
-        @Nonnull UUID id,
-        @Nonnull Instant createdAt,
-        @Nonnull Instant updatedAt,
+        @NotNull UUID id,
+        @NotNull Instant createdAt,
+        @NotNull Instant updatedAt,
 
-        @Nonnull String addressLine1,
+        @NotNull String addressLine1,
         String addressLine2,
-        @Nonnull String municipality,
-        @Nonnull String postalCode,
-        @Nonnull String country
+        @NotNull String municipality,
+        @NotNull String postalCode,
+        @NotNull String country
 ) {
 }

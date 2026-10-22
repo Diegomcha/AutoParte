@@ -2,8 +2,6 @@ package me.diegomcha.autoparte.api.communication;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import me.diegomcha.autoparte.api.account.dto.AccountDtoFull;
-import me.diegomcha.autoparte.api.account.dto.SecurityEventDto;
 import me.diegomcha.autoparte.api.communication.dto.CommunicationDtoResponse;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
