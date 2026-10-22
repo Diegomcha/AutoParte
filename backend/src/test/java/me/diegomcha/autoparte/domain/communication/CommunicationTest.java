@@ -75,6 +75,14 @@ class CommunicationTest {
     }
 
     @Test
+    void testMarkFailedNotSent() {
+        communication.markFinishedFailed("Error");
+
+        Assertions.assertEquals(Communication.CommunicationStatus.FAILED, communication.getStatus());
+        Assertions.assertEquals("Error", communication.getError());
+    }
+
+    @Test
     void testMarkFailedFailed() {
         communication.markSent(batchId, 0);
         communication.markFinishedSuccessfully(sesId);

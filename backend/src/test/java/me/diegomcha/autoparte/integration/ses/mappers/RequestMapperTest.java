@@ -68,16 +68,4 @@ class RequestMapperTest {
         Assertions.assertEquals("B", request.getPeticion().getCabecera().getTipoOperacion());
         Assertions.assertEquals("base64-encoded-zip-content", request.getPeticion().getSolicitud());
     }
-
-    // TODO: Move to SesClient test
-//    private void assertBase64ZipContent(String encoded) {
-//        try (var stringInput = new ByteArrayInputStream(Base64.getDecoder().decode(encoded))) {
-//            try (var unzipStream = new ZipInputStream(stringInput)) {
-//                unzipStream.getNextEntry();
-//                Assertions.assertEquals("<mocked-xml/>", new String(unzipStream.readAllBytes()));
-//            }
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to decode and unzip the base64 content", e);
-//        }
-//    }
 }

@@ -6,6 +6,7 @@ import es.mir.hospedajes.servicios.soap.tipocomunicacion.ResultadoRespuestaType;
 import es.mir.hospedajes.servicios.soap.tipocomunicacion.ResultadoType;
 import es.mir.hospedajes.servicios.soap.tipocomunicacion.WscomunicacionType;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
+import me.diegomcha.autoparte.core.exception.ServiceValidationException;
 import me.diegomcha.autoparte.integration.ses.dto.BatchDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -74,7 +75,7 @@ class ResponseMapperTest {
 
     @ParameterizedTest
     @FieldSource("BATCH_RESPONSES")
-    void testToBatchMapDto(ConsultaLoteResponse response, Object expected) throws BadConfigurationException {
+    void testToBatchMapDto(ConsultaLoteResponse response, Object expected) throws BadConfigurationException, ServiceValidationException {
         var result = mapper.toBatchMapDto(response);
         Assertions.assertEquals(expected, result);
     }
@@ -89,7 +90,7 @@ class ResponseMapperTest {
     }
 
     @Test
-    void testToUUID() throws BadConfigurationException {
+    void testToUUID() throws BadConfigurationException, ServiceValidationException {
         var result = mapper.toUUID(getComunicacionResponse(0, "Ok", "123e4567-e89b-12d3-a456-426614174000"));
         Assertions.assertEquals(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), result);
     }
@@ -98,6 +99,9 @@ class ResponseMapperTest {
     void testToUUIDError() {
         var clientError = getComunicacionResponse(10107, "Usuario incorrecto", null);
         Assertions.assertThrows(BadConfigurationException.class, () -> mapper.toUUID(clientError));
+
+        var validationError = getComunicacionResponse(10121, "Error de validación", null);
+        Assertions.assertThrows(ServiceValidationException.class, () -> mapper.toUUID(validationError));
 
         var otherError = getComunicacionResponse(10109, "No ha informado la cabecera", null);
         Assertions.assertThrows(RuntimeException.class, () -> mapper.toUUID(otherError));
