@@ -42,11 +42,15 @@ abstract class PersonMapper {
     protected abstract PersonDtoResponse.DocumentDtoResponse map(Document document);
 
     protected PersonalInfo map(PersonDtoRequest.PersonalInfoDtoRequest dto) {
-        return new PersonalInfo(dto.name(), dto.firstSurname(), dto.secondSurname(), dto.nationality(), dto.birthDate(), dto.gender());
+        return dto != null
+                ? new PersonalInfo(dto.name(), dto.firstSurname(), dto.secondSurname(), dto.nationality(), dto.birthDate(), dto.gender())
+                : null;
     }
 
     protected ContactInfo map(PersonDtoRequest.ContactInfoDtoRequest dto) {
-        return new ContactInfo(dto.phoneNumber1(), dto.phoneNumber2(), dto.email());
+        return dto != null
+                ? new ContactInfo(dto.phoneNumber1(), dto.phoneNumber2(), dto.email())
+                : null;
     }
 
     protected Document map(PersonDtoRequest.DocumentDtoRequest dto) {

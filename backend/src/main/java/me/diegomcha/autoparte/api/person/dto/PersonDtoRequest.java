@@ -2,6 +2,7 @@ package me.diegomcha.autoparte.api.person.dto;
 
 import jakarta.annotation.Nonnull;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import me.diegomcha.autoparte.core.validation.annotations.CountryCode;
 import me.diegomcha.autoparte.core.validation.annotations.DniConstraint;
@@ -15,8 +16,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 public record PersonDtoRequest(
-        @Nonnull PersonalInfoDtoRequest personalInfo,
-        @Nonnull ContactInfoDtoRequest contactInfo,
+        @NotNull PersonalInfoDtoRequest personalInfo,
+        @NotNull ContactInfoDtoRequest contactInfo,
         DocumentDtoRequest document,
         UUID address,
         Person.PersonRelationship relationship

@@ -57,9 +57,9 @@ public class AccountServiceTest {
     @Test
     void testGetSecurityEvents() {
         securityEventRepo.saveAll(List.of(
-           new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.LOGIN, SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD, employee.getAccount()),
-           new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.LOGIN_FAILED_CREDENTIALS, SecurityEvent.SecurityEventMethod.REMEMBER_ME, null),
-           new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.PASSWORD_CHANGE, SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD, admin)
+                new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.LOGIN, SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD, employee.getAccount()),
+                new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.LOGIN_FAILED_CREDENTIALS, SecurityEvent.SecurityEventMethod.REMEMBER_ME, null),
+                new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.PASSWORD_CHANGE, SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD, admin)
         ));
 
         var securityEventsPage = accountService.getSecurityEvents(Pageable.unpaged());
@@ -76,9 +76,9 @@ public class AccountServiceTest {
     @Test
     void testGetSecurityEventsByAccountId() throws ResourceNotFoundException {
         securityEventRepo.saveAll(List.of(
-           new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.LOGIN, SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD, employee.getAccount()),
-           new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.LOGIN_FAILED_CREDENTIALS, SecurityEvent.SecurityEventMethod.REMEMBER_ME, null),
-           new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.PASSWORD_CHANGE, SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD, admin)
+                new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.LOGIN, SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD, employee.getAccount()),
+                new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.LOGIN_FAILED_CREDENTIALS, SecurityEvent.SecurityEventMethod.REMEMBER_ME, null),
+                new SecurityEvent(Instant.now(), "addr", SecurityEvent.SecurityEventType.PASSWORD_CHANGE, SecurityEvent.SecurityEventMethod.USERNAME_PASSWORD, admin)
         ));
 
         var employeeEventsPage = accountService.getSecurityEventsByAccountId(employee.getAccount().getId(), Pageable.unpaged());

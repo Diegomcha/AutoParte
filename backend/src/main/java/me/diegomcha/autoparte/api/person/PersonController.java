@@ -2,6 +2,7 @@ package me.diegomcha.autoparte.api.person;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.api.person.dto.PersonDtoRequest;
@@ -61,7 +62,7 @@ class PersonController implements PersonAPI {
     @PostMapping("{id}/signature")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Override
-    public void addSignature(@PathVariable UUID accommodationId, @PathVariable UUID bookingId, @PathVariable UUID id, @RequestBody Map<Instant, List<Point>> signaturePath, HttpServletRequest request) throws  ResourceNotFoundException, ResourceConflictException {
+    public void addSignature(@PathVariable UUID accommodationId, @PathVariable UUID bookingId, @PathVariable UUID id, @RequestBody @NonNull Map<Instant, List<Point>> signaturePath, HttpServletRequest request) throws  ResourceNotFoundException, ResourceConflictException {
         String ipAddress = request.getRemoteAddr();
         String userAgent = request.getHeader("User-Agent");
 

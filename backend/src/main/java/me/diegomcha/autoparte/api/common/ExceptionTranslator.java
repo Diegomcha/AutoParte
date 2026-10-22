@@ -2,10 +2,7 @@ package me.diegomcha.autoparte.api.common;
 
 import io.sentry.Sentry;
 import me.diegomcha.autoparte.core.exception.*;
-import org.apache.coyote.BadRequestException;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.*;
 import org.springframework.validation.FieldError;

@@ -74,13 +74,13 @@ class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/accommodations/{accommodationId}/bookings/{bookingId}/self-check-in").access(selfCheckInAuthorizationManager)
                         // Protected routes for employees
                         .requestMatchers("/api/accommodations/{accommodationId}/bookings/**")
-                        .access(AuthorizationManagers.anyOf(
-                                accessEvals.hasRole(ADMIN_ROLE),
-                                AuthorizationManagers.allOf(
-                                        accessEvals.authenticated(),
-                                        accessEvals.accommodationAuthorizationManager()
-                                )
-                        ))
+                            .access(AuthorizationManagers.anyOf(
+                                    accessEvals.hasRole(ADMIN_ROLE),
+                                    AuthorizationManagers.allOf(
+                                            accessEvals.authenticated(),
+                                            accessEvals.accommodationAuthorizationManager()
+                                    )
+                            ))
                         .requestMatchers(HttpMethod.GET, "/api/accommodations").authenticated()
                         // Admin-only routes
                         .anyRequest().hasRole(ADMIN_ROLE)
