@@ -1,7 +1,6 @@
 name: Bug report
 description: Create a bug report to help us detect defects & improve AutoParte
 title: 'fix: '
-assignees: ''
 type: Bug
 
 body:
