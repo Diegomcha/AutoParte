@@ -43,7 +43,6 @@ class SecurityConfig {
     private static final String ADMIN_ROLE = "ADMIN";
     private static final String EMPLOYEE_ROLE = "EMPLOYEE";
 
-    // TODO: TEST SECURITY!!!
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityHandlers securityHandlers, DynamicConfigService dynamicConfigService, AccessEvals accessEvals) {
         var selfCheckInAuthorizationManager = AuthorizationManagers.anyOf(

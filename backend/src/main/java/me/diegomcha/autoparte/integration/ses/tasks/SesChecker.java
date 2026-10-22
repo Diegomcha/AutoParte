@@ -3,6 +3,7 @@ package me.diegomcha.autoparte.integration.ses.tasks;
 import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
+import me.diegomcha.autoparte.core.exception.ServiceValidationException;
 import me.diegomcha.autoparte.domain.communication.CancellationCommunication;
 import me.diegomcha.autoparte.domain.communication.Communication;
 import me.diegomcha.autoparte.integration.ses.SesClient;
@@ -20,7 +21,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// TODO: Test this class
 @Component
 class SesChecker extends SesTask {
 
@@ -43,7 +43,7 @@ class SesChecker extends SesTask {
         }
     }
 
-    private void checkPendingRegistrationBatches() throws BadConfigurationException, ServiceUnavailableException {
+    private void checkPendingRegistrationBatches() throws BadConfigurationException, ServiceUnavailableException, ServiceValidationException {
         logger.debug("Checking pending registration batches in SES");
 
         this.batchCheckingPipeline(
@@ -77,7 +77,7 @@ class SesChecker extends SesTask {
         logger.info("Finished checking pending registration batches in SES");
     }
 
-    private void checkPendingCancellationBatches() throws BadConfigurationException, ServiceUnavailableException {
+    private void checkPendingCancellationBatches() throws BadConfigurationException, ServiceUnavailableException, ServiceValidationException {
         logger.debug("Checking pending cancellation batches in SES");
 
         this.batchCheckingPipeline(
@@ -120,7 +120,7 @@ class SesChecker extends SesTask {
         logger.info("Finished checking pending cancellation batches in SES");
     }
 
-    private void batchCheckingPipeline(Supplier<Map<UUID, List<Communication>>> getNextBatch, TriConsumer<UUID, BatchDto, List<Communication>> batchStateProcessor) throws BadConfigurationException, ServiceUnavailableException {
+    private void batchCheckingPipeline(Supplier<Map<UUID, List<Communication>>> getNextBatch, TriConsumer<UUID, BatchDto, List<Communication>> batchStateProcessor) throws BadConfigurationException, ServiceUnavailableException, ServiceValidationException {
         // Filter out batches that are still processing, to avoid checking them again until they are finished
         var stillProcessingBatches = new HashSet<UUID>();
         Supplier<Map<UUID, List<Communication>>> getNextBatchWithProcessingFilter = () -> {

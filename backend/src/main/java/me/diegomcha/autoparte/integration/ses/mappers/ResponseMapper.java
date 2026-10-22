@@ -3,6 +3,7 @@ package me.diegomcha.autoparte.integration.ses.mappers;
 import es.mir.hospedajes.servicios.soap.comunicacion.ComunicacionResponse;
 import es.mir.hospedajes.servicios.soap.comunicacion.ConsultaLoteResponse;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
+import me.diegomcha.autoparte.core.exception.ServiceValidationException;
 import me.diegomcha.autoparte.integration.ses.dto.BatchDto;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 @Component
 public class ResponseMapper {
 
-    public Map<UUID, BatchDto> toBatchMapDto(ConsultaLoteResponse response) throws BadConfigurationException {
+    public Map<UUID, BatchDto> toBatchMapDto(ConsultaLoteResponse response) throws BadConfigurationException, ServiceValidationException {
         this.handleErrorResponse(response.getRespuesta().getCodigo(), response.getRespuesta().getDescripcion());
 
         return response.getResultado().stream()
@@ -26,13 +27,13 @@ public class ResponseMapper {
                                         batch.getResultadoComunicaciones() != null
                                                 ? batch.getResultadoComunicaciones().getResultadoComunicacion().stream()
                                                 .map(comunicacion ->
-                                                     new BatchDto.CommunicationDto(
-                                                             comunicacion.getOrden(),
-                                                             comunicacion.getCodigoComunicacion() != null
-                                                             ? UUID.fromString(comunicacion.getCodigoComunicacion())
-                                                             : null,
-                                                             comunicacion.getError()
-                                                     ))
+                                                        new BatchDto.CommunicationDto(
+                                                                comunicacion.getOrden(),
+                                                                comunicacion.getCodigoComunicacion() != null
+                                                                        ? UUID.fromString(comunicacion.getCodigoComunicacion())
+                                                                        : null,
+                                                                comunicacion.getError()
+                                                        ))
                                                 .toList()
                                                 : null
                                 ))
@@ -43,29 +44,25 @@ public class ResponseMapper {
                 ));
     }
 
-    public UUID toUUID(ComunicacionResponse response) throws BadConfigurationException {
+    public UUID toUUID(ComunicacionResponse response) throws BadConfigurationException, ServiceValidationException {
         this.handleErrorResponse(response.getRespuesta().getCodigo(), response.getRespuesta().getDescripcion());
 
         return UUID.fromString(response.getRespuesta().getLote());
     }
 
-    private void handleErrorResponse(int code, String description) throws BadConfigurationException {
+    private void handleErrorResponse(int code, String description) throws BadConfigurationException, ServiceValidationException {
         // Response was successful
         if (code == 0)
             return;
 
-        // Response was an error, throw a BadConfigurationException with the appropriate type
-        throw new BadConfigurationException(switch (code) {
-            case 10103 ->
-                    BadConfigurationException.BadConfigurationType.SES_UNKNOWN_LANDLORD_CODE;
-            case 10107 ->
-                    BadConfigurationException.BadConfigurationType.SES_BAD_CREDENTIALS;
-            case 10119 ->
-                    BadConfigurationException.BadConfigurationType.SES_LANDLORD_CANNOT_COMMUNICATE_TYPE;
-            case 10120 ->
-                    BadConfigurationException.BadConfigurationType.SES_LANDLORD_DISABLED_WEB_SERVICE;
-            default ->
-                    throw new RuntimeException("Unexpected error code from SES: " + code + " - " + description);
-        });
+        // Handle known validation errors
+        if (ServiceValidationException.matchesCode(code))
+            throw new ServiceValidationException(code, description);
+
+        // Handle known configuration errors
+        if (BadConfigurationException.matchesCode(code))
+            throw new BadConfigurationException(code, description);
+
+        throw new RuntimeException("Unexpected error code from SES: [" + code + "] " + description);
     }
 }

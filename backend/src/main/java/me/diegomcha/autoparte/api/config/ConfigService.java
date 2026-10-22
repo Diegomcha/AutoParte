@@ -56,15 +56,21 @@ class ConfigService {
      * @throws BadConfigurationException   if the SES credentials are invalid or misconfigured.
      * @throws ServiceUnavailableException if the SES service is unavailable or cannot be reached.
      */
-    @Transactional(rollbackFor = {BadConfigurationException.class, ServiceUnavailableException.class})
+    @Transactional(rollbackFor = {ServiceUnavailableException.class})
     public void validateSesCredentials() throws BadConfigurationException, ServiceUnavailableException {
-        // Check if SES is configured in the application configuration
-        if (!dynamicConfigService.getConfig().isSesConfigured())
-            throw new BadConfigurationException(BadConfigurationException.BadConfigurationType.NO_CREDENTIALS_PROVIDED);
+        try {
+            // Credentials must be configured before checking the connection
+            if (!dynamicConfigService.getConfig().isSesConfigured())
+                throw new BadConfigurationException(BadConfigurationException.BadConfigurationType.NO_CREDENTIALS_PROVIDED);
 
-        sesClient.checkConnection();
+            sesClient.checkConnection();
 
-        // If the connection is successful, update the configuration to mark SES credentials as valid
-        dynamicConfigService.updateConfig(config -> config.setSesCredentialsValid(true));
+            // If the connection is successful, update the configuration to mark SES credentials as valid
+            dynamicConfigService.updateConfig(config -> config.setSesCredentialsValid(true));
+        } catch (BadConfigurationException e) {
+            // If the SES credentials are invalid, update the configuration to mark SES credentials as invalid and rethrow the exception
+            dynamicConfigService.updateConfig(config -> config.setSesCredentialsValid(false));
+            throw e;
+        }
     }
 }

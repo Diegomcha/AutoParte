@@ -9,7 +9,6 @@ import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.integration.ses.SesClient;
 import org.slf4j.Logger;
 
-// TODO: Test this class
 @RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 abstract class SesTask {
 

@@ -95,10 +95,10 @@ public class Communication extends BaseEntity {
      * Marks the communication as FAILED, updating its status and recording the error.
      *
      * @param error The error associated with the failure. Must not be null.
-     * @throws IllegalStateException if the communication is not in SENT status.
+     * @throws IllegalStateException if the communication is not in SENT or PENDING status.
      */
     public void markFinishedFailed(String error) {
-        if (this.status != CommunicationStatus.SENT)
+        if (this.status != CommunicationStatus.SENT && this.status != CommunicationStatus.PENDING)
             throw new IllegalStateException("Communication must be in SENT status to mark as FAILED");
 
         this.status = CommunicationStatus.FAILED;

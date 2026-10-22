@@ -3,6 +3,7 @@ package me.diegomcha.autoparte.integration.ses.tasks;
 import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
+import me.diegomcha.autoparte.core.exception.ServiceValidationException;
 import me.diegomcha.autoparte.domain.communication.CancellationCommunication;
 import me.diegomcha.autoparte.domain.communication.Communication;
 import me.diegomcha.autoparte.integration.ses.SesClient;
@@ -16,7 +17,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-// TODO: Test this class
 @Component
 class SesSender extends SesTask {
 
@@ -56,11 +56,18 @@ class SesSender extends SesTask {
 
             logger.trace("Sending batch of {} bookings to SES", batch.size());
 
-            var batchId = sesClient.sendCommunication(request);
-            logger.trace("Batch of {} bookings sent to SES with batchId {}", batch.size(), batchId);
+            try {
+                var batchId = sesClient.sendCommunication(request);
+                logger.trace("Batch of {} bookings sent to SES with batchId {}", batch.size(), batchId);
 
-            // Update the communications in the batch to mark them as sent
-            batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
+                // Update the communications in the batch to mark them as sent
+                batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
+            } catch (ServiceValidationException e) {
+                logger.warn("Failed to send batch of {} bookings to SES due to validation error: {}", batch.size(), e.getMessage());
+
+                // Mark all communications in the batch as failed
+                batch.forEach(communication -> communication.markFinishedFailed(e.getMessage()));
+            }
             persistencyService.updateCommunications(batch);
         }
 
@@ -84,11 +91,18 @@ class SesSender extends SesTask {
 
             logger.trace("Sending batch of {} check-ins to SES", batch.size());
 
-            var batchId = sesClient.sendCommunication(request);
-            logger.trace("Batch of {} check-ins sent to SES with batchId {}", batch.size(), batchId);
+            try {
+                var batchId = sesClient.sendCommunication(request);
+                logger.trace("Batch of {} check-ins sent to SES with batchId {}", batch.size(), batchId);
 
-            // Update the communications in the batch to mark them as sent
-            batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
+                // Update the communications in the batch to mark them as sent
+                batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
+            } catch (ServiceValidationException e) {
+                logger.warn("Failed to send batch of {} check-ins to SES due to validation error: {}", batch.size(), e.getMessage());
+
+                // Mark all communications in the batch as failed
+                batch.forEach(communication -> communication.markFinishedFailed(e.getMessage()));
+            }
             persistencyService.updateCommunications(batch);
         }
 
@@ -127,12 +141,19 @@ class SesSender extends SesTask {
 
             logger.trace("Sending batch of {} cancellations to SES ({} communications to cancel)", batch.size(), commsToCancel.size());
 
-            var batchId = sesClient.sendCommunication(request);
-            logger.trace("Batch of {} cancellations sent to SES with batchId {}", batch.size(), batchId);
+            try {
+                var batchId = sesClient.sendCommunication(request);
+                logger.trace("Batch of {} cancellations sent to SES with batchId {}", batch.size(), batchId);
 
-            // Update the communications in the batch to mark them as sent & the communications to cancel to mark them as pending voided
-            batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
-            commsToCancel.forEach(Communication::markPendingVoided);
+                // Update the communications in the batch to mark them as sent & the communications to cancel to mark them as pending voided
+                batch.forEach(withCounter((counter, communication) -> communication.markSent(batchId, counter)));
+                commsToCancel.forEach(Communication::markPendingVoided);
+            } catch (ServiceValidationException e) {
+                logger.warn("Failed to send batch of {} cancellations to SES due to validation error: {}", batch.size(), e.getMessage());
+
+                // Mark all communications in the batch as failed
+                batch.forEach(communication -> communication.markFinishedFailed(e.getMessage()));
+            }
             persistencyService.updateCommunications(Stream.concat(batch.stream(), commsToCancel.stream()).toList());
         }
 

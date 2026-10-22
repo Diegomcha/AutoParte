@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-// TODO: Test this class
 public class Validations {
 
     public static final Set<String> VALID_COUNTRIES = Set.copyOf(Locale.getISOCountries(Locale.IsoCountryCode.PART1_ALPHA3));
