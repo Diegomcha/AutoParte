@@ -60,6 +60,10 @@ jobs:
         working-directory: frontend
         run: bun ci --frozen-lockfile
 
+      - name: (Frontend) Typecheck
+        working-directory: frontend
+        run: bun run -b typecheck:ci
+
       - name: (Frontend) Build
         working-directory: frontend
         env:
@@ -142,6 +146,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
           sep-tags: ","
+          flavor: |
+            latest=true
 
       - name: Log in to the Container registry
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
