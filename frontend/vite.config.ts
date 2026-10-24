@@ -11,7 +11,10 @@ export default defineConfig((config) => ({
 			{
 				org: "diegomcha",
 				project: "autoparte-front",
-				telemetry: false
+				telemetry: false,
+				sourcemaps: {
+					disable: process.env.SENTRY_SKIP_SOURCE_UPLOAD === "true"
+				}
 			},
 			config
 		)
