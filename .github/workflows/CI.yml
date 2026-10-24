@@ -167,20 +167,29 @@ jobs:
         working-directory: backend
         env:
           SENTRY_SKIP_SOURCE_UPLOAD: true
-          TAGS: ${{ steps.meta.outputs.tags }}
-          IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app
+          IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app:${{steps.meta.outputs.version}}
+          IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+          IMAGE_CREATED_DATE: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+          OCI_DESCRIPTION: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.description'] }}
+          OCI_LICENSES: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.licenses'] }}
+          OCI_REVISION: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+          OCI_SOURCE: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.source'] }}
+          OCI_TITLE: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.title'] }}
+          OCI_URL: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.url'] }}
+          OCI_VERSION: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+
         run: |
           # Lowercase the image name for consistency
-          LOWERCASED_IMAGE_NAME="${IMAGE_NAME,,}"
+          IMAGE_NAME="${IMAGE_NAME,,}"
+          export IMAGE_NAME
 
           # Build & push image
           mvn -B spring-boot:build-image \
             -DskipTests=true \
-            -Dspring-boot.build-image.imageName=$LOWERCASED_IMAGE_NAME \
             -Dspring-boot.build-image.publish=${{ github.event_name != 'pull_request' }}
 
           # Extract the image digest
-          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$LOWERCASED_IMAGE_NAME" | cut -d'@' -f2)
+          IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_NAME" | cut -d'@' -f2)
           echo "digest=${IMAGE_DIGEST}" >> $GITHUB_OUTPUT
 
       - name: Generate artifact attestation

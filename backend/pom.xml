@@ -23,10 +23,12 @@
         <sonar.organization>diegomcha</sonar.organization>
         <java.version>21</java.version>
         <!-- Deps. versions -->
-        <springdoc-openapi-starter-webmvc-ui.version>3.1.1</springdoc-openapi-starter-webmvc-ui.version>
+        <springdoc-openapi-starter-webmvc-ui.version>3.1.1
+        </springdoc-openapi-starter-webmvc-ui.version>
         <sentry-async-profiler.version>8.60.0</sentry-async-profiler.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
+        <lombok-mapstruct-binding.version>0.2.0
+        </lombok-mapstruct-binding.version>
         <commons-text.version>1.15.0</commons-text.version>
         <java-uuid-generator.version>5.2.0</java-uuid-generator.version>
         <libphonenumber.version>9.0.41</libphonenumber.version>
@@ -215,7 +217,23 @@
                         </exclude>
                     </excludes>
                     <image>
-                        <tags>${env.TAGS}</tags>
+                        <!-- Avoid this https://github.com/paketo-buildpacks/builder-noble-java-tiny/issues/344 -->
+                        <builder>
+                            paketobuildpacks/builder-noble-java-tiny@sha256:7c62dd7e66b277ec9fa2b60d0ad74c4e9ef15db7910dcdf51126e62a02a31463
+                        </builder>
+                        <name>${env.IMAGE_NAME}</name>
+                        <tags>${env.IMAGE_TAGS}</tags>
+                        <createdDate>${env.IMAGE_CREATED_DATE}</createdDate>
+                        <env>
+                            <BP_OCI_CREATED>${env.IMAGE_CREATED_DATE}</BP_OCI_CREATED>
+                            <BP_OCI_DESCRIPTION>${env.OCI_DESCRIPTION}</BP_OCI_DESCRIPTION>
+                            <BP_OCI_LICENSES>${env.OCI_LICENSES}</BP_OCI_LICENSES>
+                            <BP_OCI_REVISION>${env.OCI_REVISION}</BP_OCI_REVISION>
+                            <BP_OCI_SOURCE>${env.OCI_SOURCE}</BP_OCI_SOURCE>
+                            <BP_OCI_TITLE>${env.OCI_TITLE}</BP_OCI_TITLE>
+                            <BP_OCI_URL>${env.OCI_URL}</BP_OCI_URL>
+                            <BP_OCI_VERSION>${env.OCI_VERSION}</BP_OCI_VERSION>
+                        </env>
                     </image>
                 </configuration>
             </plugin>
@@ -355,10 +373,13 @@
                             <goal>clean</goal>
                         </goals>
                         <configuration>
-                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <excludeDefaultDirectories>true
+                            </excludeDefaultDirectories>
                             <filesets>
                                 <fileset>
-                                    <directory>${project.build.outputDirectory}/static</directory>
+                                    <directory>
+                                        ${project.build.outputDirectory}/static
+                                    </directory>
                                     <followSymlinks>false</followSymlinks>
                                 </fileset>
                             </filesets>
@@ -377,10 +398,14 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                            <outputDirectory>
+                                ${project.build.outputDirectory}/static
+                            </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.basedir}/../frontend/build/client</directory>
+                                    <directory>
+                                        ${project.basedir}/../frontend/build/client
+                                    </directory>
                                     <filtering>false</filtering>
                                 </resource>
                             </resources>
