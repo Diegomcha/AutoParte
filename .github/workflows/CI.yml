@@ -161,18 +161,9 @@ jobs:
           SENTRY_SKIP_SOURCE_UPLOAD: true
         run: bun run -b build
 
-      # Test building images (PR)
-      - name: Build with Maven (No Publish)
-        if: github.event_name == 'pull_request'
-        working-directory: backend
-        env:
-          SENTRY_SKIP_SOURCE_UPLOAD: true
-        run: mvn clean package
-
-      # Build and push with attestation (main branch)
+      # Build image (and push with attestation)
       - name: Build and push Docker image
         id: push
-        if: github.event_name != 'pull_request'
         working-directory: backend
         env:
           SENTRY_SKIP_SOURCE_UPLOAD: true
@@ -183,9 +174,10 @@ jobs:
           LOWERCASED_IMAGE_NAME="${IMAGE_NAME,,}"
 
           # Build & push image
-          mvn clean spring-boot:build-image \
+          mvn -B spring-boot:build-image \
+            -DskipTests=true \
             -Dspring-boot.build-image.imageName=$LOWERCASED_IMAGE_NAME \
-            -Dspring-boot.build-image.publish=true
+            -Dspring-boot.build-image.publish=${{ github.event_name != 'pull_request' }}
 
           # Extract the image digest
           IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$LOWERCASED_IMAGE_NAME" | cut -d'@' -f2)
