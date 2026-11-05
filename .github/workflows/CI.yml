@@ -42,6 +42,12 @@ jobs:
         with:
           bun-version-file: frontend/package.json
 
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: frontend/package.json
+          package-manager-cache: false # Disable automatic npm caching if not required
+
       - name: Set up JDK 21
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
@@ -62,24 +68,24 @@ jobs:
 
       - name: (Frontend) Typecheck
         working-directory: frontend
-        run: bun run -b typecheck:ci
+        run: bun run typecheck:ci
 
       - name: (Frontend) Build
         working-directory: frontend
         env:
           SENTRY_SKIP_SOURCE_UPLOAD: ${{ github.event_name == 'pull_request' }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: bun run -b build
+        run: bun run build
 
       - name: (Frontend) Run ESLint and generate report
         working-directory: frontend
         continue-on-error: true
-        run: bun run -b lint:ci
+        run: bun run lint:ci
 
       - name: (Frontend) Run tests and generate coverage
         working-directory: frontend
         continue-on-error: true
-        run: bun run -b test --coverage
+        run: bun run test:cov
 
       # BACKEND
       - name: (Backend) Copy dependencies for SonarQube
@@ -135,6 +141,12 @@ jobs:
         with:
           bun-version-file: frontend/package.json
 
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: frontend/package.json
+          package-manager-cache: false # Disable automatic npm caching if not required
+
       - name: Set up JDK 21
         uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
@@ -168,7 +180,7 @@ jobs:
         working-directory: frontend
         env:
           SENTRY_SKIP_SOURCE_UPLOAD: true
-        run: bun run -b build
+        run: bun run build
 
       # Build image (and push with attestation)
       - name: Build and push Docker image
