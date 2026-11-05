@@ -62,7 +62,7 @@ jobs:
 
       - name: Generate OCR licenses report
         working-directory: ocr
-        run: uv run --locked --no-build --all-extras --with pip-licenses==5.5.5 pip-licenses --format=json --output-file=../.github/licenses-ocr.json
+        run: uv run --locked --no-build --all-extras --with pip-licenses==5.5.5 pip-licenses --ignore-packages=autoparte-ocr --format=json --output-file=../.github/licenses-ocr.json
 
       - name: Generate backend licenses report
         working-directory: backend
