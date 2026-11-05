@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none"><metadata><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/"><rdf:Description><dc:creator>RealFaviconGenerator</dc:creator><dc:source>https://realfavicongenerator.net</dc:source></rdf:Description></rdf:RDF></metadata><g clip-path="url(#clip0_1_4)">
+<rect width="100" height="100" rx="20" fill="#1E293B"></rect>
+<path d="M21.0266 72H9.69141L24.4144 28.3636H38.4556L53.1786 72H41.8434L31.5948 39.358H31.2539L21.0266 72ZM19.5138 54.8267H43.207V62.8381H19.5138V54.8267ZM55.8768 72V28.3636H73.9023C77.1694 28.3636 79.989 29.0028 82.3612 30.2812C84.7475 31.5455 86.587 33.3139 87.8796 35.5866C89.1722 37.8452 89.8185 40.473 89.8185 43.4702C89.8185 46.4815 89.158 49.1165 87.837 51.375C86.5302 53.6193 84.6623 55.3594 82.2333 56.5952C79.8043 57.831 76.9208 58.4489 73.5827 58.4489H62.4606V50.1392H71.6225C73.2134 50.1392 74.5415 49.8622 75.6069 49.3082C76.6864 48.7543 77.5032 47.9801 78.0572 46.9858C78.6112 45.9773 78.8881 44.8054 78.8881 43.4702C78.8881 42.1207 78.6112 40.956 78.0572 39.9759C77.5032 38.9815 76.6864 38.2145 75.6069 37.6747C74.5273 37.1349 73.1992 36.8651 71.6225 36.8651H66.4237V72H55.8768Z" fill="white"></path>
+</g><defs>
+<clipPath id="clip0_1_4">
+<rect width="100" height="100" fill="white"></rect>
+</clipPath>
+</defs></svg>
