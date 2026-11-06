@@ -9,6 +9,10 @@ export default defineConfig({
 		}
 	},
 	test: {
+		reporters: [
+			"default", // Vitest's default reporter so that terminal output is still visible
+			["vitest-sonar-reporter", { outputFile: "sonar-report.xml" }]
+		],
 		environment: "jsdom",
 		pool: "vmThreads",
 		setupFiles: ["./vitest.setup.ts"],

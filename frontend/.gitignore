@@ -3,6 +3,7 @@
 /node_modules/
 bun
 coverage
+sonar-report.xml
 eslint-report.json
 
 # React Router

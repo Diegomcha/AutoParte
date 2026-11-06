@@ -110,7 +110,7 @@ jobs:
       - name: (OCR) Install dependencies, run tests and generate reports
         working-directory: ocr
         continue-on-error: true
-        run: uv run --locked --no-build --extra cpu,dev -m pytest --cov --cov-report=xml --cov-branch
+        run: uv run --locked --no-build --extra cpu,dev -m pytest --cov --cov-report=xml --cov-branch --junitxml=test-reports.xml
 
       # SCAN
       - name: Analyze with SonarQube
