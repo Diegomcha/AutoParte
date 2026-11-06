@@ -55,7 +55,7 @@ class PersonalInfoTest {
         }
     }
 
-    private static final Object[][] ADULT_BIRTHDATES = new Object[][]{
+    private static final Object[][] ADULT_BIRTHDATES = {
             new Object[]{
                     TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_ADULT_AGE - 1) * 365, ChronoUnit.DAYS), // Minor
                     false
@@ -87,7 +87,7 @@ class PersonalInfoTest {
         }
     }
 
-    private static final Object[][] SIGNER_BIRTHDATES = new Object[][]{
+    private static final Object[][] SIGNER_BIRTHDATES = {
             new Object[]{
                     TestingUtils.INSTANT.minus((PersonalInfo.SPAIN_MUST_SIGN_AGE - 1) * 365, ChronoUnit.DAYS), // No required
                     false

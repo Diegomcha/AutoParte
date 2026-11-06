@@ -25,7 +25,7 @@ body {
 }
 
 [hidden] {
-	display: none !important;
+	display: none;
 }
 
 .animate-spin {
@@ -49,19 +49,20 @@ body {
 		size: landscape;
 	}
 
-	/* Hide the navbar */
-	.mantine-AppShell-navbar {
-		display: none !important;
+	/* Hide the navbar & header */
+	.mantine-AppShell-navbar,
+	.mantine-AppShell-header {
+		display: none;
 	}
 
 	/* Reset main content spacing and padding */
 	.mantine-AppShell-main {
-		padding: 0 !important;
-		padding-left: 0 !important;
-		margin: 0 !important;
+		padding: 0;
+		padding-left: 0;
+		margin: 0;
 	}
 
 	.hide-on-print {
-		display: none !important;
+		display: none;
 	}
 }

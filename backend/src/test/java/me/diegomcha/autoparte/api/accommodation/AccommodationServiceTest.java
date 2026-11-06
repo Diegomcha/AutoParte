@@ -112,7 +112,7 @@ class AccommodationServiceTest {
         Assertions.assertEquals(1, StreamSupport.stream(repo.findAll().spliterator(), false).count());
     }
 
-    private static final AccommodationDtoRequest[] UPDATES = new AccommodationDtoRequest[]{
+    private static final AccommodationDtoRequest[] UPDATES = {
             new AccommodationDtoRequest("Name", "00000", null),
             new AccommodationDtoRequest("Name1", "00000", null),
             new AccommodationDtoRequest("Name1", "00001", null),

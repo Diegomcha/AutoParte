@@ -202,7 +202,7 @@ class BookingService {
 
         booking.requestSelfCheckIn();
 
-        // TODO: Inject sending the email
+        // EMAIL: Inject sending the email
     }
 
     /**
@@ -226,7 +226,7 @@ class BookingService {
 
         booking.terminateSelfCheckInRequest();
 
-        // TODO: Maybe send email here to notify the user that the self-check-in request has been cancelled
+        // EMAIL: Maybe send email here to notify the user that the self-check-in request has been cancelled
     }
 
     /**
@@ -276,7 +276,7 @@ class BookingService {
             throw SELF_CHECK_IN_NOT_REQUESTED_EXCEPTION.get();
 
         booking.terminateSelfCheckInRequest();
-        // TODO: Maybe send email here to notify the user that the self-check-in request has been completed
+        // EMAIL: Maybe send email here to notify the user that the self-check-in request has been completed
 
         // If manual review is enabled, do not check in the booking directly
         if (dynamicConfigService.getConfig().isManualReviewEnabled())

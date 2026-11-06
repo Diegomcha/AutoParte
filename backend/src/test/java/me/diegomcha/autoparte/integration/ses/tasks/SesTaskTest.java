@@ -2,7 +2,6 @@ package me.diegomcha.autoparte.integration.ses.tasks;
 
 import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
-import me.diegomcha.autoparte.core.exception.ExceptionWrapper;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.domain.Configuration;
 import me.diegomcha.autoparte.integration.ses.SesClient;
@@ -52,19 +51,6 @@ class SesTaskTest {
         Assertions.assertFalse(configuration.isSesCredentialsValid());
         Mockito.verify(logger).error(BAD_CONFIG_LOG_FORMAT, BAD_CONFIG_TYPE);
         Mockito.verify(dynamicConfigService).updateConfig(Mockito.any());
-    }
-
-    @Test
-    void unwrapsExceptionWrapperBeforeHandling() {
-        var configuration = stubValidConfiguration();
-
-        task.handle(new ExceptionWrapper(new BadConfigurationException(
-                BadConfigurationException.BadConfigurationType.SES_BAD_CREDENTIALS
-        )));
-
-        Assertions.assertFalse(configuration.isSesCredentialsValid());
-        Mockito.verify(dynamicConfigService).updateConfig(Mockito.any());
-        Mockito.verify(logger).error(BAD_CONFIG_LOG_FORMAT, BAD_CONFIG_TYPE);
     }
 
     @Test

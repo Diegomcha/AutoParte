@@ -4,10 +4,12 @@ import es.mir.hospedajes.servicios.soap.comunicacion.ComunicacionResponse;
 import es.mir.hospedajes.servicios.soap.comunicacion.ConsultaLoteResponse;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceValidationException;
+import me.diegomcha.autoparte.core.exception.UnexpectedException;
 import me.diegomcha.autoparte.integration.ses.dto.BatchDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,19 +26,22 @@ public class ResponseMapper {
                                 new BatchDto(
                                         BatchDto.BatchDtoStatus.values()[batch.getCodigoEstado() - 1],
                                         batch.getDescEstado(),
-                                        batch.getResultadoComunicaciones() != null
-                                                ? batch.getResultadoComunicaciones().getResultadoComunicacion().stream()
-                                                .map(comunicacion ->
-                                                        new BatchDto.CommunicationDto(
-                                                                comunicacion.getOrden(),
-                                                                comunicacion.getCodigoComunicacion() != null
-                                                                        ? UUID.fromString(comunicacion.getCodigoComunicacion())
-                                                                        : null,
-                                                                comunicacion.getError()
-                                                        ))
-                                                .toList()
-                                                : null
-                                ))
+                                        Optional.ofNullable(batch.getResultadoComunicaciones())
+                                                .map(resultadoComunicaciones ->
+                                                        resultadoComunicaciones.getResultadoComunicacion().stream()
+                                                                .map(comunicacion ->
+                                                                        new BatchDto.CommunicationDto(
+                                                                                comunicacion.getOrden(),
+                                                                                Optional.ofNullable(comunicacion.getCodigoComunicacion())
+                                                                                        .map(UUID::fromString)
+                                                                                        .orElse(null),
+                                                                                comunicacion.getError()
+                                                                        ))
+                                                                .toList()
+                                                )
+                                                .orElse(null)
+                                )
+                        )
                 )
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -63,6 +68,6 @@ public class ResponseMapper {
         if (BadConfigurationException.matchesCode(code))
             throw new BadConfigurationException(code, description);
 
-        throw new RuntimeException("Unexpected error code from SES: [" + code + "] " + description);
+        throw new UnexpectedException("Unexpected error code from SES: [" + code + "] " + description);
     }
 }

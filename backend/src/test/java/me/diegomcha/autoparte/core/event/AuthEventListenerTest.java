@@ -39,7 +39,7 @@ class AuthEventListenerTest {
     private static final AuthenticationException AUTHENTICATION_EXCEPTION = new AuthenticationException("Test authentication") {
     };
 
-    private static final Object[][] EVENTS = new Object[][]{
+    private static final Object[][] EVENTS = {
             new Object[]{
                     false,
                     new AuthenticationSuccessEvent(USERPASSWORD_AUTHENTICATION),

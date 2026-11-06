@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "react-router build",
+		"dev": "react-router dev",
 		"lint": "eslint && prettier --check .",
 		"lint:ci": "eslint -f json > eslint-report.json",
 		"lint:fix": "eslint --fix && prettier --write .",

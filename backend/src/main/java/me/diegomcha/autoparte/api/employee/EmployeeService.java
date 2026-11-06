@@ -77,7 +77,7 @@ class EmployeeService {
         if (employeeRepo.existsByEmail(newEmployee.getEmail()))
             throw SAME_EMAIL_EXCEPTION.get();
 
-        // TODO: Send credentials via email
+        // EMAIL: Send credentials via email
 
         newEmployee = employeeRepo.save(newEmployee);
         return employeeMapper.toCredentials(newEmployee, password);
@@ -124,7 +124,7 @@ class EmployeeService {
         String password = this.getRandomSecurePassword();
         employee.getAccount().resetPassword(Objects.requireNonNull(passwordEncoder.encode(password)));
 
-        // TODO: Send credentials via email
+        // EMAIL: Send credentials via email
 
         return employeeMapper.toCredentials(employee, password);
     }

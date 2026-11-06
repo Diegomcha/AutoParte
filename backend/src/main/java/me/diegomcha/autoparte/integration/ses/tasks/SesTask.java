@@ -4,7 +4,6 @@ import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
-import me.diegomcha.autoparte.core.exception.ExceptionWrapper;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.integration.ses.SesClient;
 import org.slf4j.Logger;
@@ -20,14 +19,11 @@ abstract class SesTask {
 
     /**
      * Handles the given {@link Exception} by logging the error and capturing it with Sentry.
-     * It unwraps the exception if it is an instance of {@link ExceptionWrapper} to get the original cause.
      *
      * @param e the {@link Exception} to handle
      */
     protected void handleException(Exception e) {
-        var cause = e instanceof ExceptionWrapper ew ? ew.getCause() : e;
-
-        switch (cause) {
+        switch (e) {
             case ServiceUnavailableException ignored:
                 logger.warn("SES service unavailable, will retry later");
                 break;
@@ -36,8 +32,8 @@ abstract class SesTask {
                 dynamicConfigService.updateConfig(config -> config.setSesCredentialsValid(false));
                 break;
             default:
-                logger.error("Unexpected error occurred during a SES scheduled task", cause);
-                Sentry.captureException(cause);
+                logger.error("Unexpected error occurred during a SES scheduled task", e);
+                Sentry.captureException(e);
                 break;
         }
     }

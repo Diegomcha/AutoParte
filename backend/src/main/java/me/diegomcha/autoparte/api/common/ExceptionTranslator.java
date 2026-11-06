@@ -53,12 +53,6 @@ class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-    public ProblemDetail handleUnsupportedMediaException(UnsupportedMediaException ex) {
-        return ProblemDetail.forStatusAndDetail(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ProblemDetail handleBadConfigurationException(BadConfigurationException ex) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());

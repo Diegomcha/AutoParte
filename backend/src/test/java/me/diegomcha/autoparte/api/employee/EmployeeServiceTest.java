@@ -123,7 +123,7 @@ class EmployeeServiceTest {
         Assertions.assertEquals(1, StreamSupport.stream(employeeRepo.findAll().spliterator(), false).count());
     }
 
-    private static final EmployeeDtoPatch[][] UPDATE_PATCHES = new EmployeeDtoPatch[][]{
+    private static final EmployeeDtoPatch[][] UPDATE_PATCHES = {
             new EmployeeDtoPatch[]{
                     new EmployeeDtoPatch(null, null, null, null),                     // Patch
                     new EmployeeDtoPatch(true, "Name", "Surname", "email@email.com")  // Expected
