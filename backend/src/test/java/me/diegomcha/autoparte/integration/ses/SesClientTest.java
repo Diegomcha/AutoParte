@@ -5,7 +5,7 @@ import es.mir.hospedajes.servicios.soap.comunicacion.ComunicacionResponse;
 import es.mir.hospedajes.servicios.soap.comunicacion.ConsultaLoteRequest;
 import es.mir.hospedajes.servicios.soap.comunicacion.ConsultaLoteResponse;
 import jakarta.xml.bind.JAXBElement;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.domain.Booking;

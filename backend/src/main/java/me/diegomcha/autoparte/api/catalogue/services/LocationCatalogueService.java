@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.api.catalogue.services;
 
 import lombok.Getter;
 import lombok.NonNull;
-import me.diegomcha.autoparte.config.AutoparteProperties;
+import me.diegomcha.autoparte.core.config.AutoparteProperties;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 

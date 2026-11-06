@@ -3,7 +3,7 @@ package me.diegomcha.autoparte.integration.ses.tasks;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
 import me.diegomcha.autoparte.core.repos.CommunicationRepo;
 import me.diegomcha.autoparte.domain.Accommodation;

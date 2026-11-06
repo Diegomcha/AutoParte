@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.api.auth.dto.AccountDto;
 import me.diegomcha.autoparte.api.auth.dto.UpdatePasswordDto;
 import me.diegomcha.autoparte.core.exception.UnauthorizedException;
-import me.diegomcha.autoparte.core.security.SecurityService;
+import me.diegomcha.autoparte.infra.security.SecurityService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

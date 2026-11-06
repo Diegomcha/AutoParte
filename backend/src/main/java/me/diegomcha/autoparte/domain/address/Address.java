@@ -1,8 +1,8 @@
 package me.diegomcha.autoparte.domain.address;
 
 import lombok.*;
-import me.diegomcha.autoparte.core.validation.Validations;
 import me.diegomcha.autoparte.domain.Person;
+import me.diegomcha.autoparte.domain.Validations;
 import me.diegomcha.autoparte.domain.base.BaseEntity;
 
 import java.util.HashSet;

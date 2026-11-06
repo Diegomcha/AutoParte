@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.core.cleanup;
 
 import jakarta.persistence.EntityManager;
 import me.diegomcha.autoparte.TestingUtils;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.repos.*;
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Booking;

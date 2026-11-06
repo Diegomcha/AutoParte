@@ -3,7 +3,7 @@ package me.diegomcha.autoparte.api.catalogue;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceCode;
+import me.diegomcha.autoparte.api.common.validation.annotations.SpanishProvinceCode;
 
 import java.util.Map;
 import java.util.Set;

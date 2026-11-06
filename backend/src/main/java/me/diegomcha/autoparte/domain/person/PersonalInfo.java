@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.domain.person;
 
 import jakarta.annotation.Nullable;
 import lombok.*;
-import me.diegomcha.autoparte.core.validation.Validations;
+import me.diegomcha.autoparte.domain.Validations;
 
 import java.time.Duration;
 import java.time.Instant;

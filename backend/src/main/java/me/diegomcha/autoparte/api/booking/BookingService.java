@@ -7,7 +7,7 @@ import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoResponse;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.api.common.EntityMapper;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadRequestException;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;

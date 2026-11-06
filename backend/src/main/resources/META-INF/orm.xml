@@ -69,12 +69,12 @@
             <basic name="name">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="surname">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <one-to-one name="account" optional="false">
                 <cascade>
@@ -174,7 +174,7 @@
             <basic name="remoteAddress">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="type">
                 <column nullable="false"/>
@@ -190,15 +190,15 @@
         <attributes>
             <basic name="sesUsername">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="sesPassword">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="sesLandlordCode">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="sesCredentialsValid">
                 <column nullable="false"/>
@@ -212,7 +212,7 @@
             <basic name="rememberMeKey">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </entity>
@@ -223,26 +223,26 @@
             <basic name="addressLine1">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="addressLine2">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="municipality">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="postalCode">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="country">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <one-to-many name="people" mapped-by="address"/>
         </attributes>
@@ -257,7 +257,7 @@
             </basic>
             <basic name="holder">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </entity>
@@ -272,7 +272,7 @@
             <basic name="number">
                 <column nullable="false"/>
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </entity>
@@ -280,7 +280,7 @@
         <attributes>
             <basic name="supportNumber">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </entity>
@@ -289,15 +289,15 @@
         <attributes>
             <basic name="email">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="phoneNumber1">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="phoneNumber2">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </embeddable>
@@ -305,27 +305,27 @@
         <attributes>
             <basic name="name">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="firstSurname">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="secondSurname">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="nationality">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="birthDate">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="gender">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </embeddable>
@@ -333,15 +333,15 @@
         <attributes>
             <basic name="paths">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="ipAddress">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
             <basic name="userAgent">
                 <convert
-                        converter="me.diegomcha.autoparte.core.security.PersistenceEncryptionConverter"/>
+                        converter="me.diegomcha.autoparte.infra.security.PersistenceEncryptionConverter"/>
             </basic>
         </attributes>
     </embeddable>

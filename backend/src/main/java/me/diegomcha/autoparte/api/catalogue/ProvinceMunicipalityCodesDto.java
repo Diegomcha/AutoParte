@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.api.catalogue;
 
-import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceCode;
-import me.diegomcha.autoparte.core.validation.annotations.SpanishProvinceMunicipalityCodes;
+import me.diegomcha.autoparte.api.common.validation.annotations.SpanishProvinceCode;
+import me.diegomcha.autoparte.api.common.validation.annotations.SpanishProvinceMunicipalityCodes;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @SpanishProvinceMunicipalityCodes

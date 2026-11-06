@@ -8,12 +8,15 @@ import me.diegomcha.autoparte.api.accommodation.dto.AccommodationDtoResponse;
 import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
+import me.diegomcha.autoparte.infra.security.SecurityService;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -22,11 +25,22 @@ import java.util.UUID;
 class AccommodationController implements AccommodationAPI {
 
     private final AccommodationService accommodationService;
+    private final SecurityService securityService;
 
     @GetMapping
     @Override
     public Page<AccommodationDtoResponse> getAccommodations(@ParameterObject Pageable pageable) {
-        return accommodationService.getAccommodations(pageable);
+        // Retrieve the currently authenticated employee, if any
+        var employee = Optional
+                .ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(securityService::getAccountFromAuthentication)
+                .map(securityService::getEmployeeFromAccount);
+
+        return employee
+                // Employee
+                .map(emp -> accommodationService.getAccommodationsAccessibleByEmployee(emp.getId(), pageable))
+                // Admin
+                .orElseGet(() -> accommodationService.getAllAccommodations(pageable));
     }
 
     @PostMapping

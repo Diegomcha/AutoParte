@@ -2,9 +2,9 @@ package me.diegomcha.autoparte.api.address.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import me.diegomcha.autoparte.core.validation.annotations.CountryCode;
-import me.diegomcha.autoparte.core.validation.annotations.NullableNotBlank;
-import me.diegomcha.autoparte.core.validation.annotations.SpanishMunicipalityPostalCode;
+import me.diegomcha.autoparte.api.common.validation.annotations.CountryCode;
+import me.diegomcha.autoparte.api.common.validation.annotations.NullableNotBlank;
+import me.diegomcha.autoparte.api.common.validation.annotations.SpanishMunicipalityPostalCode;
 
 @SpanishMunicipalityPostalCode
 public record AddressDtoRequest(

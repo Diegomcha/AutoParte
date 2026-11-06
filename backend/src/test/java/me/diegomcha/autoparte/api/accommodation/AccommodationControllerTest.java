@@ -98,7 +98,7 @@ class AccommodationControllerTest extends BaseControllerTest {
     }
 
     @Test
-    void employeesCanBeAssignedAndUnassigned() throws Exception {
+    void employeesCanOnlyAccessAssignedAccommodationsAndAssignations() throws Exception {
         mockMvc.perform(get("/api/accommodations")
                         .with(user("test.employee@example.com").roles("EMPLOYEE")))
                 .andExpect(status().isOk())
@@ -114,7 +114,8 @@ class AccommodationControllerTest extends BaseControllerTest {
                         .with(user("test.employee@example.com").roles("EMPLOYEE")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").isArray())
-                .andExpect(jsonPath("$.content.length()").value(1));
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].id").value(accommodation.getId().toString()));
 
         mockMvc.perform(get("/api/accommodations/{id}", accommodation.getId())
                         .with(user("admin").roles("ADMIN")))

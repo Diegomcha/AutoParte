@@ -2,13 +2,13 @@ package me.diegomcha.autoparte.integration.ocr;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import me.diegomcha.autoparte.config.AutoparteProperties;
 import me.diegomcha.autoparte.core.exception.ResourceUnprocessableException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.integration.ocr.dto.MrzDto;
 import org.junit.jupiter.api.*;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.web.client.RestClient;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -38,10 +38,9 @@ class OcrClientTest {
 
     @BeforeEach
     void setUp() {
-        var properties = new AutoparteProperties();
-        properties.getOcr().setUrl("http://localhost:" + server.getAddress().getPort());
-
-        client = new OcrClient(properties);
+        client = new OcrClient(RestClient.builder()
+                .baseUrl("http://localhost:" + server.getAddress().getPort())
+                .build());
         image = new ByteArrayResource(new byte[]{1, 2, 3}) {
             @Override
             public String getFilename() {

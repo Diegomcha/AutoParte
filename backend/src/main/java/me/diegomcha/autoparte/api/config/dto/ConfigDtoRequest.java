@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.api.config.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import me.diegomcha.autoparte.core.validation.annotations.NullableNotBlank;
+import me.diegomcha.autoparte.api.common.validation.annotations.NullableNotBlank;
 
 public record ConfigDtoRequest(
         @NullableNotBlank String sesUsername,

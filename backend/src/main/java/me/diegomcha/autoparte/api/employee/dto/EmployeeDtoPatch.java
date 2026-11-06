@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.api.employee.dto;
 
 import jakarta.validation.constraints.Email;
-import me.diegomcha.autoparte.core.validation.annotations.NullableNotBlank;
+import me.diegomcha.autoparte.api.common.validation.annotations.NullableNotBlank;
 
 public record EmployeeDtoPatch(
         Boolean enabled,

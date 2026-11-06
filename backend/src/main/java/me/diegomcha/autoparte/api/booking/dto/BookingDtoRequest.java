@@ -2,8 +2,8 @@ package me.diegomcha.autoparte.api.booking.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import me.diegomcha.autoparte.core.validation.annotations.ExpiryDateAfterDateConstraint;
-import me.diegomcha.autoparte.core.validation.annotations.StartEndDatesConstraint;
+import me.diegomcha.autoparte.api.common.validation.annotations.ExpiryDateAfterDateConstraint;
+import me.diegomcha.autoparte.api.common.validation.annotations.StartEndDatesConstraint;
 import me.diegomcha.autoparte.domain.booking.payment.Payment;
 
 import java.time.Instant;

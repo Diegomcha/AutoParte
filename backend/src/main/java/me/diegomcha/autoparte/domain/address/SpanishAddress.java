@@ -3,7 +3,7 @@ package me.diegomcha.autoparte.domain.address;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import me.diegomcha.autoparte.core.validation.Validations;
+import me.diegomcha.autoparte.domain.Validations;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SpanishAddress extends Address {

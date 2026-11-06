@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.api.booking;
 
 import me.diegomcha.autoparte.TestingUtils;
 import me.diegomcha.autoparte.api.booking.dto.BookingDtoRequest;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadRequestException;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;

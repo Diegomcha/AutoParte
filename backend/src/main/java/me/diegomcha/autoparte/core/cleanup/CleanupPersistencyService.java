@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.core.cleanup;
 
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.repos.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

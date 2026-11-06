@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.integration.ocr;
 
 import io.sentry.Sentry;
 import lombok.NonNull;
-import me.diegomcha.autoparte.config.AutoparteProperties;
+import lombok.RequiredArgsConstructor;
 import me.diegomcha.autoparte.core.exception.ResourceUnprocessableException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.integration.ocr.dto.MrzDto;
@@ -15,15 +15,10 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
 @Service
+@RequiredArgsConstructor(access = lombok.AccessLevel.PROTECTED)
 public class OcrClient {
 
     private final RestClient client;
-
-    protected OcrClient(AutoparteProperties properties) {
-        this.client = RestClient.builder()
-                .baseUrl(properties.getOcr().getUrl())
-                .build();
-    }
 
     public MrzDto convertImageToMrz(@NonNull Resource image) throws ServiceUnavailableException, ResourceUnprocessableException {
         // Create the multipart request body

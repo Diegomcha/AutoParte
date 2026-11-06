@@ -2,7 +2,7 @@ package me.diegomcha.autoparte.integration.ses.tasks;
 
 import io.sentry.Sentry;
 import lombok.RequiredArgsConstructor;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.integration.ses.SesClient;

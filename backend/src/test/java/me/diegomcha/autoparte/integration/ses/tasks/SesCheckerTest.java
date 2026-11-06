@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.integration.ses.tasks;
 
 import me.diegomcha.autoparte.TestingUtils;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.core.exception.ServiceValidationException;

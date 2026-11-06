@@ -1,7 +1,7 @@
 package me.diegomcha.autoparte.api.config;
 
 import me.diegomcha.autoparte.api.config.dto.ConfigDtoRequest;
-import me.diegomcha.autoparte.config.DynamicConfigService;
+import me.diegomcha.autoparte.core.config.DynamicConfigService;
 import me.diegomcha.autoparte.core.exception.BadConfigurationException;
 import me.diegomcha.autoparte.core.exception.ServiceUnavailableException;
 import me.diegomcha.autoparte.core.repos.ConfigRepo;

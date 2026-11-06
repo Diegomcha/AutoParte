@@ -9,18 +9,16 @@ import me.diegomcha.autoparte.api.common.EntityDtoCreated;
 import me.diegomcha.autoparte.api.common.EntityMapper;
 import me.diegomcha.autoparte.core.exception.ResourceConflictException;
 import me.diegomcha.autoparte.core.exception.ResourceNotFoundException;
+import me.diegomcha.autoparte.core.exception.UnexpectedException;
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
 import me.diegomcha.autoparte.core.repos.EmployeeRepo;
-import me.diegomcha.autoparte.core.security.SecurityService;
 import me.diegomcha.autoparte.domain.Accommodation;
 import me.diegomcha.autoparte.domain.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -38,29 +36,37 @@ class AccommodationService {
     private static final Supplier<ResourceConflictException> SAME_NAME_EXCEPTION = () ->
             new ResourceConflictException("An accommodation with the same name already exists");
 
+    private static final Supplier<UnexpectedException> UNEXPECTED_EMPLOYEE_NOT_FOUND = () ->
+            new UnexpectedException("Employee ID not found");
+
     private final AccommodationMapper accommodationMapper;
     private final AccommodationRepo accommodationRepo;
     private final EmployeeRepo employeeRepo;
     private final EntityMapper entityMapper;
-    private final SecurityService securityService;
 
     /**
-     * Returns a paginated list of all accommodations taking into account the logged-in user access.
+     * Returns a paginated list of all accommodations
      *
      * @param pageable Pagination information (page number, size, sorting)
      * @return A page of accommodations
      */
-    public Page<AccommodationDtoResponse> getAccommodations(@NonNull Pageable pageable) {
-        var employee = Optional
-                .ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .map(securityService::getAccountFromAuthentication)
-                .map(securityService::getEmployeeFromAccount);
+    public Page<AccommodationDtoResponse> getAllAccommodations(@NonNull Pageable pageable) {
+        return accommodationMapper.toResponse(accommodationRepo.findAll(pageable));
+    }
 
-        return employee
-                // Employee
-                .map(emp -> accommodationMapper.toResponse(accommodationRepo.findByEmployeesId(emp.getId(), pageable)))
-                // Admin
-                .orElseGet(() -> accommodationMapper.toResponse(accommodationRepo.findAll(pageable)));
+    /**
+     * Returns a paginated list of accommodations accessible by the employee with the given ID.
+     * @param employeeId The ID of the employee for whom to retrieve accessible accommodations
+     * @param pageable Pagination information (page number, size, sorting)
+     * @return A page of accommodations accessible by the specified employee
+     * @throws UnexpectedException if the employee with the given ID does not exist
+     */
+    public Page<AccommodationDtoResponse> getAccommodationsAccessibleByEmployee(@NonNull UUID employeeId, @NonNull Pageable pageable) {
+        // Sanity check: Ensure the employee exists before proceeding
+        if (!employeeRepo.existsById(employeeId))
+            throw UNEXPECTED_EMPLOYEE_NOT_FOUND.get();
+
+        return accommodationMapper.toResponse(accommodationRepo.findByEmployeesId(employeeId, pageable));
     }
 
     /**

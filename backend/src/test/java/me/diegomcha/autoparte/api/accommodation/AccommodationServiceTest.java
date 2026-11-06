@@ -15,7 +15,6 @@ import org.junit.jupiter.params.provider.FieldSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,30 +45,29 @@ class AccommodationServiceTest {
     @Test
     void testGetAccommodations() {
         // One accommodation in the database
-        var accommodationsPage = service.getAccommodations(Pageable.unpaged());
+        var accommodationsPage = service.getAllAccommodations(Pageable.unpaged());
 
         Assertions.assertEquals(1, accommodationsPage.getTotalElements());
         Assertions.assertEquals(accommodation.getId(), accommodationsPage.getContent().getFirst().id());
 
         // No accommodations in the database
         repo.delete(accommodation);
-        accommodationsPage = service.getAccommodations(Pageable.unpaged());
+        accommodationsPage = service.getAllAccommodations(Pageable.unpaged());
 
         Assertions.assertEquals(0, accommodationsPage.getTotalElements());
     }
 
     @Test
-    @WithMockUser("employee@example.com")
-    void testGetAccommodationsAsEmployee() {
+    void testGetAccommodationsAccessibleByEmployee() {
         // No assigned accommodations
-        var accommodationsPage = service.getAccommodations(Pageable.unpaged());
+        var accommodationsPage = service.getAccommodationsAccessibleByEmployee(employee.getId(), Pageable.unpaged());
 
         Assertions.assertEquals(0, accommodationsPage.getTotalElements());
 
         // Assign employee to accommodation
         accommodation.addEmployee(employee);
 
-        accommodationsPage = service.getAccommodations(Pageable.unpaged());
+        accommodationsPage = service.getAccommodationsAccessibleByEmployee(employee.getId(), Pageable.unpaged());
 
         Assertions.assertEquals(1, accommodationsPage.getTotalElements());
         Assertions.assertEquals(accommodation.getId(), accommodationsPage.getContent().getFirst().id());
