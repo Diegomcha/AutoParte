@@ -2,14 +2,14 @@ import { useRef } from "react";
 
 import { PDFViewer } from "@react-pdf/renderer";
 
-import BookingPDF from "~/component/pdf/BookingPDF";
-import { CalendarRenderer } from "~/component/pdf/renderers/CalendarRenderer";
-import { SignatureRenderer } from "~/component/pdf/renderers/SignatureRenderer";
+import BookingPDF from "~/components/pdf/BookingPDF";
+import { CalendarRenderer } from "~/components/pdf/renderers/CalendarRenderer";
+import { SignatureRenderer } from "~/components/pdf/renderers/SignatureRenderer";
 
 import { useBookingExportContext } from "./layout";
 
-import type { CalendarRendererRef } from "~/component/pdf/renderers/CalendarRenderer";
-import type { SignatureExporterRef } from "~/component/pdf/renderers/SignatureRenderer";
+import type { CalendarRendererRef } from "~/components/pdf/renderers/CalendarRenderer";
+import type { SignatureExporterRef } from "~/components/pdf/renderers/SignatureRenderer";
 
 export default function BookingExportPDF() {
 	const signatureRenderer = useRef<SignatureExporterRef>(null);

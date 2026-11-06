@@ -17,7 +17,7 @@ vi.mock("react-router", async () => ({
 	}
 }));
 
-vi.mock("~/component/form/PersonForm", () => ({
+vi.mock("~/components/form/PersonForm", () => ({
 	default: (props: { onCreatedPerson: (id: string) => void }) =>
 		React.createElement(
 			"button",

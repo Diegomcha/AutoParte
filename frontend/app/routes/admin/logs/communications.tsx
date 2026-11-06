@@ -25,8 +25,8 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable, useDataTableColumns } from "mantine-datatable";
 import { useTranslation } from "react-i18next";
 
-import TableActionButton from "~/component/admin/TableActionButton";
-import JSONViewer from "~/component/JSONViewer";
+import TableActionButton from "~/components/admin/TableActionButton";
+import JSONViewer from "~/components/JSONViewer";
 import {
 	DEFAULT_PAGE,
 	DEFAULT_PAGE_SIZE,

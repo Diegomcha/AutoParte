@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 
 import { Modal } from "@mantine/core";
 
-import SignatureBox from "~/component/input/SignatureBox";
+import SignatureBox from "~/components/input/SignatureBox";
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";

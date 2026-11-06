@@ -17,7 +17,7 @@ import { CheckIcon, SignatureIcon, SuitcaseIcon } from "@phosphor-icons/react";
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import SignatureBox from "~/component/input/SignatureBox";
+import SignatureBox from "~/components/input/SignatureBox";
 import { executeMutation, queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
 

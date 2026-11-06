@@ -17,8 +17,8 @@ import { CaretRightIcon, UserCircleIcon } from "@phosphor-icons/react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import BookingsSchedule from "~/component/booking/BookingsSchedule";
-import BookingsTable from "~/component/booking/BookingsTable";
+import BookingsSchedule from "~/components/booking/BookingsSchedule";
+import BookingsTable from "~/components/booking/BookingsTable";
 import {
 	_api,
 	_unwrapResponse,

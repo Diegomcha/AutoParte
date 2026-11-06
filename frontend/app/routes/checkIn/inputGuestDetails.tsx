@@ -5,9 +5,9 @@ import { Stack } from "@mantine/core";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
 
-import CheckInPersonSelector from "~/component/checkIn/CheckInPersonSelector";
-import PersonForm from "~/component/form/PersonForm";
-import GuestDataInputSelector from "~/component/input/GuestDataInputSelector";
+import CheckInPersonSelector from "~/components/checkIn/CheckInPersonSelector";
+import PersonForm from "~/components/form/PersonForm";
+import GuestDataInputSelector from "~/components/input/GuestDataInputSelector";
 import { queryClient, queryFactory } from "~/services/Api";
 
 import { useCheckInRouteContext } from "./layout";

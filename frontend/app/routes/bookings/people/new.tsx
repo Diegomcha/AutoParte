@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router";
 
-import PersonForm from "~/component/form/PersonForm";
+import PersonForm from "~/components/form/PersonForm";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
 

@@ -1,4 +1,4 @@
-import JSONViewer from "~/component/JSONViewer";
+import JSONViewer from "~/components/JSONViewer";
 
 import { useBookingExportContext } from "./layout";
 

@@ -47,10 +47,10 @@ import {
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import BookingStatusBadge from "~/component/booking/BookingStatusBadge";
-import CommunicationTimeline from "~/component/communicationTimeline/CommunicationTimeline";
-import ComplexRequiredAsterisk from "~/component/ComplexRequiredLabel";
-import BooleanInputWithUndefined from "~/component/input/BooleanInputWithUndefined";
+import BookingStatusBadge from "~/components/booking/BookingStatusBadge";
+import CommunicationTimeline from "~/components/communicationTimeline/CommunicationTimeline";
+import ComplexRequiredAsterisk from "~/components/ComplexRequiredLabel";
+import BooleanInputWithUndefined from "~/components/input/BooleanInputWithUndefined";
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import NotificationsService from "~/services/NotificationsService";

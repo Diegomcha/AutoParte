@@ -27,10 +27,10 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable, useDataTableColumns } from "mantine-datatable";
 import { useTranslation } from "react-i18next";
 
-import TableActionButton from "~/component/admin/TableActionButton";
-import BooleanBadge from "~/component/badge/BooleanBadge";
-import EnablementBadge from "~/component/badge/EnablementBadge";
-import JSONViewer from "~/component/JSONViewer";
+import TableActionButton from "~/components/admin/TableActionButton";
+import BooleanBadge from "~/components/badge/BooleanBadge";
+import EnablementBadge from "~/components/badge/EnablementBadge";
+import JSONViewer from "~/components/JSONViewer";
 import {
 	DEFAULT_PAGE,
 	DEFAULT_PAGE_SIZE,

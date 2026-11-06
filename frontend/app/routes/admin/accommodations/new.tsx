@@ -7,7 +7,7 @@ import { PlusIcon } from "@phosphor-icons/react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
-import BooleanInputWithUndefined from "~/component/input/BooleanInputWithUndefined";
+import BooleanInputWithUndefined from "~/components/input/BooleanInputWithUndefined";
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryFactory } from "~/services/Api";
 

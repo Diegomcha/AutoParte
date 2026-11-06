@@ -19,7 +19,7 @@ import {
 } from "@phosphor-icons/react";
 import { useTranslation } from "react-i18next";
 
-import CheckInBookingDetailsSidebar from "~/component/checkIn/CheckInBookingDetails";
+import CheckInBookingDetailsSidebar from "~/components/checkIn/CheckInBookingDetails";
 import { queryClient, queryFactory } from "~/services/Api";
 import Validators from "~/services/Validators";
 

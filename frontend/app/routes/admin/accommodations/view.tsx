@@ -4,7 +4,7 @@ import { Badge, DataList, Divider, Modal, Stack } from "@mantine/core";
 
 import { useTranslation } from "react-i18next";
 
-import WifiBadge from "~/component/badge/WifiBadge";
+import WifiBadge from "~/components/badge/WifiBadge";
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
 import TimeService from "~/services/TimeService";

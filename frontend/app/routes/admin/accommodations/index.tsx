@@ -14,9 +14,9 @@ import { useQuery } from "@tanstack/react-query";
 import { DataTable, useDataTableColumns } from "mantine-datatable";
 import { useTranslation } from "react-i18next";
 
-import AdminDeleteModal from "~/component/admin/AdminDeleteModal";
-import TableActionButton from "~/component/admin/TableActionButton";
-import WifiBadge from "~/component/badge/WifiBadge";
+import AdminDeleteModal from "~/components/admin/AdminDeleteModal";
+import TableActionButton from "~/components/admin/TableActionButton";
+import WifiBadge from "~/components/badge/WifiBadge";
 import {
 	DEFAULT_PAGE,
 	DEFAULT_PAGE_SIZE,

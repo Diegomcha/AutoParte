@@ -6,7 +6,9 @@ import React from "react";
 import { vi } from "vitest";
 
 // Initialize application internationalization (i18n) settings for tests
-import "~/i18n";
+import i18n from "~/i18n";
+
+await i18n.changeLanguage("es");
 
 /**
  * Polyfill window.matchMedia for components that check media queries or screen sizes (e.g., Mantine UI)
