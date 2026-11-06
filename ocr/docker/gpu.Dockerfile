@@ -24,7 +24,7 @@ RUN --mount=type=cache,target=/opt/uv-cache/ \
     uv sync --locked --no-build --no-install-project --extra gpu,deploy 
 
 # Copy project files
-COPY *.py ./
+COPY src/*.py ./
 
 # Setup & download OCR models
 COPY docker/configs/gpu_config.yaml ./rapidocr_config.yaml

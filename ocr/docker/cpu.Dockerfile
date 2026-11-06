@@ -21,7 +21,7 @@ RUN --mount=from=dhi.io/uv:0.13.0,source=/usr/local/bin/uv,target=/usr/local/bin
     uv sync --locked --no-build --no-install-project --extra cpu,deploy
 
 # Copy project files
-COPY *.py ./
+COPY src/*.py ./
 
 # Setup & download OCR models
 COPY docker/configs/cpu_config.yaml ./rapidocr_config.yaml
