@@ -11,7 +11,16 @@ export default defineConfig({
 	test: {
 		reporters: [
 			"default", // Vitest's default reporter so that terminal output is still visible
-			["vitest-sonar-reporter", { outputFile: "sonar-report.xml" }]
+			[
+				"vitest-sonar-reporter",
+				{
+					outputFile: "sonar-report.xml",
+					onWritePath(path: string) {
+						// Prefix all paths with root directory
+						return `frontend/${path}`;
+					}
+				}
+			]
 		],
 		environment: "jsdom",
 		pool: "vmThreads",
