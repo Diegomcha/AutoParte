@@ -12,8 +12,7 @@ import type { InitOptions } from "i18next";
 
 export const i18nConfig = {
 	fallbackLng: "es",
-	// TODO: Translate to other languages
-	supportedLngs: ["es"],
+	supportedLngs: ["es", "en"],
 	defaultNS: "common",
 	fallbackNS: "common",
 	ns: ["common", "components", "routes", "entities"],
@@ -59,16 +58,16 @@ export const lang = i18n.language as (typeof i18nConfig.supportedLngs)[number];
 
 const modulesLocaleMap = {
 	dayjs: {
-		es: () => import("dayjs/locale/es")
-		// en: () => import("dayjs/locale/en")
+		es: () => import("dayjs/locale/es"),
+		en: () => import("dayjs/locale/en-gb")
 	},
 	i18nCountries: {
-		es: () => import("i18n-iso-countries/langs/es.json")
-		// en: () => import("i18n-iso-countries/langs/en.json")
+		es: () => import("i18n-iso-countries/langs/es.json"),
+		en: () => import("i18n-iso-countries/langs/en.json")
 	},
 	zxcvbn: {
-		es: () => import("@zxcvbn-ts/language-es-es")
-		// en: () => import("@zxcvbn-ts/language-en")
+		es: () => import("@zxcvbn-ts/language-es-es"),
+		en: () => import("@zxcvbn-ts/language-en")
 	}
 } satisfies Record<string, Record<SupportedLanguage, () => Promise<unknown>>>;
 

@@ -1,0 +1,353 @@
+{
+	"index": {
+		"errors": {
+			"noAccommodations": "No accommodations available. Please contact the administrator.",
+			"noAccommodationsAdmin": "No accommodations available.",
+			"noBookingsInPeriod": "No bookings exist in the selected period.",
+			"cannotChangeAccommodation": "Cannot change the accommodation of the booking."
+		}
+	},
+	"admin": {
+		"nav": {
+			"employees": { "label": "Employees" },
+			"accommodations": {
+				"label": "Accommodations"
+			},
+			"accounts": { "label": "Accounts" },
+			"logs": {
+				"label": "Logs",
+				"subRoutes": {
+					"accounts": { "label": "Accounts" },
+					"security": { "label": "Security" },
+					"communications": { "label": "Communications" }
+				}
+			},
+			"configuration": { "label": "Configuration" },
+			"exit": { "label": "Exit admin mode" }
+		},
+		"config": {
+			"title": "Configuration",
+			"sesValidation": {
+				"validating": "Validating...",
+				"error": "Validation error",
+				"invalid": "Invalid",
+				"valid": "Valid"
+			}
+		},
+		"accommodations": {
+			"index": {
+				"title": "Accommodation management",
+				"noRecords": "No accommodations",
+				"addButton": { "label": "Add accommodation", "color": "green" },
+				"tableButtons": {
+					"view": {
+						"tooltip": "View accommodation",
+						"color": "green"
+					},
+					"edit": {
+						"tooltip": "Edit accommodation",
+						"color": "blue"
+					},
+					"delete": {
+						"tooltip": "Delete accommodation",
+						"color": "red"
+					}
+				},
+				"deleteMultiple": {
+					"title": "Delete accommodations",
+					"description": "Are you sure? This action is IRREVERSIBLE.\n{{count}} accommodations will be deleted."
+				}
+			},
+			"new": {
+				"title": "Add new accommodation",
+				"created": {
+					"title": "Accommodation created",
+					"description": "The accommodation has been created successfully."
+				}
+			},
+			"view": {
+				"title": "Accommodation details"
+			},
+			"edit": {
+				"title": "Edit accommodation",
+				"form": {
+					"noAvailableEmployees": "No available employees"
+				}
+			},
+			"delete": {
+				"title": "Delete accommodation",
+				"description": "Are you sure? This action is IRREVERSIBLE."
+			}
+		},
+		"employees": {
+			"index": {
+				"title": "Employee management",
+				"noRecords": "No employees",
+				"addButton": { "label": "Add employee", "color": "green" },
+				"tableButtons": {
+					"view": {
+						"tooltip": "View employee",
+						"color": "green"
+					},
+					"edit": {
+						"tooltip": "Edit employee",
+						"color": "blue"
+					},
+					"delete": {
+						"tooltip": "Delete employee",
+						"color": "red"
+					},
+					"resetPassword": {
+						"tooltip": "Reset password",
+						"color": "orange"
+					}
+				},
+				"deleteMultiple": {
+					"title": "Delete employees",
+					"description": "Are you sure? This action is IRREVERSIBLE.\n{{count}} employees will be deleted."
+				}
+			},
+			"new": {
+				"title": "Add new employee",
+				"created": {
+					"title": "Employee created",
+					"description": "The employee has been created successfully."
+				}
+			},
+			"view": {
+				"title": "Employee details"
+			},
+			"edit": {
+				"title": "Edit employee",
+				"form": {
+					"noAvailableAccommodations": "No available accommodations"
+				}
+			},
+			"delete": {
+				"title": "Delete employee",
+				"description": "Are you sure? This action is IRREVERSIBLE."
+			},
+			"resetPassword": {
+				"button": "Reset password",
+				"title": "Reset password",
+				"description": "Are you sure? This action will reset the employee's password.",
+				"done": {
+					"title": "Password reset",
+					"description": "The employee's password has been reset successfully."
+				}
+			}
+		},
+		"logs": {
+			"accounts": {
+				"title": "Account list",
+				"noRecords": "No accounts",
+				"tableButtons": {
+					"viewEmployee": {
+						"tooltip": "View employee",
+						"color": "grape"
+					},
+					"viewLogs": {
+						"tooltip": "View security logs",
+						"color": "blue"
+					}
+				}
+			},
+			"security": {
+				"title": "Security logs",
+				"noRecords": "No security logs",
+				"accountSelector": {
+					"label": "Filter by account"
+				}
+			},
+			"communications": {
+				"title": "Ministry communications log",
+				"noRecords": "No communication logs",
+				"accommodationSelector": {
+					"label": "Filter by accommodation"
+				},
+				"tableButtons": {
+					"viewAccommodation": {
+						"tooltip": "View accommodation",
+						"color": "grape"
+					},
+					"viewBooking": {
+						"tooltip": "View booking",
+						"color": "cyan"
+					}
+				}
+			}
+		}
+	},
+	"auth": {
+		"login": {
+			"title": "Log in",
+			"form": {
+				"username": {
+					"label": "Username",
+					"errors": {
+						"noUsername": "Username is required"
+					}
+				},
+				"password": {
+					"label": "Password",
+					"errors": {
+						"noPassword": "Password is required"
+					}
+				},
+				"rememberMe": { "label": "Keep me logged in" },
+				"submit": "Log in"
+			},
+			"backendErrors": {
+				"BAD_CREDENTIALS": "Incorrect username or password",
+				"USER_DISABLED": "User disabled"
+			}
+		},
+		"createPassword": {
+			"title": "Create password",
+			"form": {
+				"newPassword": {
+					"label": "New password"
+				},
+				"submit": "Create password"
+			}
+		},
+		"updatePassword": {
+			"title": "Update password",
+			"form": {
+				"currentPassword": {
+					"label": "Current password",
+					"errors": {
+						"noCurrentPassword": "Current password is required",
+						"invalidCredentials": "Current password is incorrect"
+					}
+				},
+				"newPassword": {
+					"label": "New password"
+				},
+				"submit": "Update password"
+			}
+		}
+	},
+	"checkIn": {
+		"verify-booking": {
+			"title": "1. Booking verification",
+			"description": "Verify that the booking details are correct before proceeding with self-check-in",
+			"confirmation": {
+				"label": "I confirm that the booking details are correct",
+				"error": "You must confirm that the booking details are correct to continue"
+			},
+			"buttons": {
+				"verify": "Verify"
+			}
+		},
+		"input-guest-details": {
+			"title": "2. Complete traveler details",
+			"description": "Scan or add missing traveler information to continue the check-in process"
+		},
+		"send": {
+			"title": "3. Sign and submit registration",
+			"description": "Review and sign the registration to complete the process",
+			"explanation": "To complete the check-in process, travelers aged 14 or older must electronically sign the traveler check-in record.",
+			"table": {
+				"header": {
+					"person": "Traveler",
+					"signature": "Signature"
+				},
+				"signatureButton": {
+					"sign": "Sign",
+					"signed": "Signed"
+				}
+			}
+		},
+		"checkInCompleted": {
+			"title": "Check-in completed!",
+			"description": "You may now leave the page, your check-in has been completed successfully.\nThank you for using our service."
+		},
+		"progressSidebar": {
+			"title": "Your progress",
+			"description": "Track your progress as you complete each step of the check-in process",
+			"steps": {
+				"verifyBooking": {
+					"title": "Verify booking",
+					"description": "Confirm your booking details"
+				},
+				"inputGuestDetails": {
+					"title": "Complete traveler details",
+					"description": "Scan or add information"
+				},
+				"send": {
+					"title": "Submit registration",
+					"description": "Sign to complete the process"
+				}
+			}
+		}
+	},
+	"bookings": {
+		"index": {
+			"title": "Booking details",
+			"readOnly": {
+				"title": "Read-only",
+				"description": "The booking cannot be modified in this state"
+			},
+			"people": {
+				"button": "Manage travelers",
+				"buttonDisabled": "Manage travelers (disabled while editing the number of people)"
+			}
+		},
+		"people": {
+			"index": {
+				"title": "Traveler management",
+				"requirement": "To confirm the booking, only holder details are needed; to check in, details for all guests are required."
+			},
+			"delete": {
+				"title": "Delete traveler information",
+				"description": "Are you sure? This action is IRREVERSIBLE."
+			}
+		},
+		"requestSelfCheckIn": {
+			"button": "Request self-check-in",
+			"color": "violet",
+			"title": "Request self-check-in",
+			"description": "This action will request self-check-in for travelers.\nIf manual review is not enabled, the self-check-in will be automatically sent to the ministry once the process is complete.",
+			"notCheckInDayWarning": "In accordance with RD 933/2021, the communication of traveler check-in must be sent on the same day the travelers' arrival occurs.",
+			"linkModal": {
+				"title": "Self-check-in link",
+				"description": "Share this link with travelers so they can complete self-check-in.",
+				"alert": "The self-check-in link allows access to the self-check-in functionality without authentication.\nShare this link ONLY with travelers who need to perform self-check-in.",
+				"label": "Self-check-in link"
+			},
+			"linkCopied": "Self-check-in link copied to clipboard"
+		},
+		"cancelSelfCheckIn": {
+			"button": "Cancel self-check-in",
+			"color": "lime",
+			"title": "Cancel self-check-in",
+			"description": "This action will cancel the self-check-in request for the travelers."
+		},
+		"confirm": {
+			"button": "Confirm",
+			"color": "teal",
+			"title": "Confirm booking",
+			"description": "This action will confirm the booking and send the information to the ministry."
+		},
+		"checkIn": {
+			"button": "Check in",
+			"color": "cyan",
+			"title": "Check in travelers",
+			"description": "This action will register the travelers' check-in at the accommodation, notifying the ministry.",
+			"notCheckInDayWarning": "In accordance with RD 933/2021, the communication of traveler check-in must be sent on the same day the travelers' arrival occurs."
+		},
+		"cancel": {
+			"button": "Cancel",
+			"color": "orange",
+			"title": "Cancel booking",
+			"description": "This action will cancel the booking and propagate said cancellation to the ministry if the booking was previously confirmed.\nAre you sure? This action is IRREVERSIBLE."
+		},
+		"delete": {
+			"button": "Delete",
+			"color": "red",
+			"title": "Delete booking",
+			"description": "This action will permanently delete the booking and it cannot be recovered.\nAre you sure? This action is IRREVERSIBLE."
+		}
+	}
+}

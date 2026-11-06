@@ -1,0 +1,271 @@
+{
+	"addressSelect": {
+		"newButton": "New address",
+		"groups": {
+			"current": "Current address",
+			"booking": "Booking addresses",
+			"other": "Other addresses"
+		}
+	},
+	"checkIn": {
+		"bookingDetails": {
+			"title": "Booking details"
+		}
+	},
+	"documentScanner": {
+		"explanation": {
+			"title": "Scan identity document (ID card or passport)",
+			"message": "Place the machine-readable zone of the document inside the frame and press the scan button. This zone is located on the back of the ID card and at the bottom of the passport data page"
+		},
+		"progress": {
+			"status": {
+				"labels": {
+					"scanning": "Scanning",
+					"success": "Scan successful",
+					"noSuccess": "No document detected\nTry again"
+				},
+				"colors": {
+					"idle": "gray",
+					"scanning": "blue",
+					"noSuccess": "red",
+					"success": "green"
+				}
+			}
+		},
+		"mrzZone": {
+			"title": "Machine-readable zone",
+			"imgLabel": "Machine-readable zone (MRZ)"
+		},
+		"noCameraError": {
+			"title": "Camera access error",
+			"message": "Verify that your camera is connected and that both the browser and the page have access to it",
+			"retryButton": "Retry"
+		}
+	},
+	"guestDataInputSelector": {
+		"message": "Select how you would like to enter the travelers' details",
+		"options": {
+			"scanning": {
+				"label": "Document scanning (recommended)",
+				"color": "blue"
+			},
+			"manual": { "label": "Manually", "color": "gray" }
+		}
+	},
+	"signatureBox": {
+		"details": "Electronically signed on {{signedAt}} from IP address {{ip}}",
+		"disclaimer": "By signing electronically, you confirm that both the details you have entered and the booking details are correct and truthful, and you subscribe the traveler check-in record in accordance with RD 933/2021.",
+		"buttons": {
+			"clear": "Clear",
+			"sign": "Sign"
+		}
+	},
+	"complexRequiredAsterisk": {
+		"tooltips": {
+			"confirm": "Required to confirm / request booking self-check-in",
+			"checkIn": "Required to register the booking check-in"
+		}
+	},
+	"newPasswordInput": {
+		"scoring": {
+			"0": {
+				"color": "gray",
+				"label": "Extremely weak"
+			},
+			"1": {
+				"color": "red",
+				"label": "Weak"
+			},
+			"2": {
+				"color": "orange",
+				"label": "Fair"
+			},
+			"3": {
+				"color": "yellow",
+				"label": "Relatively strong"
+			},
+			"4": {
+				"color": "teal",
+				"label": "Strong"
+			}
+		},
+		"validatorErrors": {
+			"empty": "Password cannot be empty",
+			"tooShort": "Password must be at least {{minLength}} characters long",
+			"tooUnsecure": "Password is too weak"
+		}
+	},
+	"bookingsTable": {
+		"errors": {
+			"noBookingsInPeriod": "No bookings to display for the selected period"
+		},
+		"filters": {
+			"accommodation": {
+				"label": "Accommodation",
+				"description": "Show only bookings for the selected accommodations",
+				"placeholder": "Search accommodation"
+			},
+			"selfCheckInRequested": {
+				"label": "Self-check-in requested",
+				"description": "Show only bookings with requested self-check-in",
+				"options": {
+					"all": "All",
+					"yes": "Yes",
+					"no": "No"
+				}
+			},
+			"status": {
+				"label": "Status",
+				"description": "Show only bookings with the selected statuses",
+				"placeholder": "Search status"
+			}
+		}
+	},
+	"bookingsSchedule": {
+		"errors": {
+			"cannotChangeAccommodation": "Cannot change the accommodation of the booking"
+		},
+		"labels": {
+			"day": "Day",
+			"week": "Week",
+			"month": "Month",
+			"year": "Year",
+			"allDay": "All day",
+			"weekday": "Weekday",
+			"timeSlot": "Time slot",
+			"today": "Today",
+			"next": "Next",
+			"previous": "Previous",
+			"more": "More",
+			"selectMonth": "Select month",
+			"selectYear": "Select year",
+			"switchToDayView": "Switch to day view",
+			"switchToWeekView": "Switch to week view",
+			"switchToMonthView": "Switch to month view",
+			"switchToYearView": "Switch to year view",
+			"viewSelectLabel": "Select view",
+			"noEvents": "No events",
+			"moreLabel": "+{{count}} more",
+			"resource": "Accommodation",
+			"resources": "Accommodations",
+			"resourceSlot": "Accommodation slot",
+			"agenda": "Agenda"
+		}
+	},
+	"personForm": {
+		"signature": {
+			"button": "View signature",
+			"notSigned": "Not signed"
+		}
+	},
+	"enablementBadge": {
+		"disabledTooltip": "Disabled on {{date}}",
+		"states": {
+			"enabled": {
+				"label": "Enabled",
+				"color": "green"
+			},
+			"disabled": {
+				"label": "Disabled",
+				"color": "gray"
+			}
+		}
+	},
+	"booleanBadge": {
+		"states": {
+			"true": {
+				"label": "Yes",
+				"color": "green"
+			},
+			"false": {
+				"label": "No",
+				"color": "red"
+			},
+			"null": {
+				"label": "Undefined",
+				"color": "gray"
+			}
+		}
+	},
+	"communicationTimeline": {
+		"creationFakeEvent": {
+			"title": "Creation"
+		}
+	},
+	"employeeCredsModal": {
+		"title": "Access credentials",
+		"fields": {
+			"username": "Username",
+			"password": "Temporary password"
+		},
+		"description": "These are the employee's access credentials.",
+		"warning": "You will not be able to view the password again."
+	},
+	"phoneInput": {
+		"errors": {
+			"invalidPhoneNumber": "Phone number is invalid"
+		}
+	},
+	"booleanInputWithUndefined": {
+		"options": {
+			"true": "Yes",
+			"false": "No",
+			"undefined": "Undefined"
+		}
+	},
+	"newAddressForm": {
+		"title": "Add new address",
+		"legend": "Traveler address"
+	},
+	"pdf": {
+		"booking": {
+			"meta": {
+				"title": "Booking {{id}}"
+			},
+			"header": {
+				"title": "Booking document",
+				"subtitle": "Generated by $t(common:meta.name) on {{date}}",
+				"subtitleDateFormat": "LLL"
+			},
+			"footer": {
+				"pagination": "Page {{currentPage}} / {{totalPages}}"
+			},
+			"sections": {
+				"accommodationAndDates": {
+					"title": "Accommodation and dates"
+				},
+				"otherDetails": {
+					"title": "Other details"
+				},
+				"payment": {
+					"title": "Payment"
+				},
+				"communications": {
+					"title": "Communications",
+					"empty": "No communications recorded"
+				},
+				"people": {
+					"title": "Travelers",
+					"text": "Available traveler information is segregated by pages below."
+				}
+			},
+			"person": {
+				"title": "{{number}}. {{name}} {{firstSurname}} {{secondSurname}}",
+				"sections": {
+					"signature": {
+						"title": "Signature",
+						"notRequired": "Signature not required",
+						"context": "$t(components:signatureBox.details, {\"signedAt\": \"{{signedAt}}\", \"ip\": \"{{ip}}\" })",
+						"context_zero": "By signing, you confirm that the booking details are correct and truthful, and you subscribe the traveler check-in record in accordance with RD 933/2021."
+					}
+				}
+			}
+		}
+	},
+	"jsonViewer": {
+		"copyLabel": "Copy",
+		"copiedLabel": "Copied",
+		"expandAllLabel": "Expand all",
+		"collapseAllLabel": "Collapse all"
+	}
+}

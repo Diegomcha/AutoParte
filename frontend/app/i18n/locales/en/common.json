@@ -1,0 +1,78 @@
+{
+	"meta": {
+		"name": "AutoParte"
+	},
+	"header": {
+		"admin": "Admin mode",
+		"account": {
+			"title": "Account",
+			"updatePassword": "Update password",
+			"logout": "Log out"
+		}
+	},
+	"undefined": "—",
+	"buttons": {
+		"create": "Create",
+		"add": "Add",
+		"save": "Save",
+		"delete": "Delete",
+		"deleteSelected": {
+			"label_one": "Delete selected",
+			"label_other": "Delete selected",
+			"color": "red"
+		},
+		"cancel": "Cancel",
+		"reset": "Reset",
+		"back": "Back",
+		"export": {
+			"label": "Export",
+			"color": "grape"
+		},
+		"scan": "Scan",
+		"finish": "Finish"
+	},
+	"dates": {
+		"today": "Today",
+		"checkInDate": "Check-in date",
+		"checkOutDate": "Check-out date"
+	},
+	"error": {
+		"api": "An error occurred while contacting the server.",
+		"status": {
+			"400": "Bad request",
+			"403": "Access denied",
+			"404": "Page not found",
+			"503": "Service unavailable",
+			"default": "An unexpected error occurred."
+		},
+		"refreshButton": "Refresh page",
+		"disclaimer": "Don't worry, our development team has already been notified. Please try refreshing the page."
+	},
+	"notifications": {
+		"error": {
+			"title": "Error",
+			"color": "red"
+		},
+		"warning": {
+			"title": "Warning",
+			"color": "yellow"
+		},
+		"success": {
+			"title": "Success",
+			"color": "green"
+		}
+	},
+	"export": {
+		"pdf": {
+			"button": "PDF",
+			"title": "PDF document"
+		},
+		"json": {
+			"button": "JSON",
+			"title": "JSON file"
+		},
+		"print": {
+			"button": "Print (PDF)"
+		}
+	}
+}

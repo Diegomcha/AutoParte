@@ -1,0 +1,570 @@
+{
+	"common": {
+		"id": {
+			"label": "Identifier"
+		},
+		"createdAt": { "label": "Creation date", "format": "lll" },
+		"updatedAt": { "label": "Update date", "format": "lll" }
+	},
+	"config": {
+		"ses": {
+			"title": "SES credentials",
+			"username": {
+				"label": "Username"
+			},
+			"password": {
+				"label": "Password"
+			},
+			"landlordCode": {
+				"label": "Landlord code"
+			}
+		},
+		"functionality": {
+			"title": "Features",
+			"digitalSignatureEnabled": {
+				"label": "Enable digital signature",
+				"description": "Allows travelers to digitally sign the traveler check-in record.\nIf disabled, travelers must sign it on paper"
+			},
+			"manualReviewEnabled": {
+				"label": "Enable manual reviews",
+				"description": "Allows employees to manually review traveler check-in records before they are registered on the SES platform following a self-check-in.\nIf disabled, traveler check-in records will be automatically registered on the SES platform after self-check-ins"
+			}
+		},
+		"retention": {
+			"title": "Data retention policy",
+			"logsRetentionDays": {
+				"label": "Security logs",
+				"description": "Number of days security events will be retained\n0 to retain them indefinitely"
+			},
+			"bookingsRetentionDays": {
+				"label": "Bookings",
+				"description": "Number of days completed booking information will be retained\n0 to retain them indefinitely\nUnder RD 933/2021, professional accommodation providers must retain data for at least 3 years (1095 days)"
+			}
+		}
+	},
+	"accommodation": {
+		"name": {
+			"label": "Name",
+			"errors": {
+				"noName": "Name is required",
+				"nameInUse": "Name is already registered"
+			}
+		},
+		"sesCode": {
+			"label": "SES code",
+			"errors": {
+				"noSesCode": "SES code is required",
+				"sesCodeInUse": "SES code is already registered"
+			}
+		},
+		"internetConnection": {
+			"label": "Internet connection",
+			"states": {
+				"yes": "Yes",
+				"no": "No"
+			}
+		},
+		"employees": {
+			"label": "Assigned employees",
+			"value": "{{count}} employees",
+			"value_zero": "None"
+		}
+	},
+	"employee": {
+		"enabled": {
+			"label": "Status",
+			"disabledTooltip": "Disabled on {{date}}",
+			"states": {
+				"enabled": "Enabled",
+				"disabled": "Disabled"
+			}
+		},
+		"name": {
+			"label": "Name",
+			"errors": {
+				"noName": "Name is required"
+			}
+		},
+		"surname": {
+			"label": "Surnames",
+			"errors": {
+				"noSurname": "Surnames are required"
+			}
+		},
+		"email": {
+			"label": "Email",
+			"errors": {
+				"invalidEmail": "Email is invalid",
+				"emailInUse": "Email is already registered"
+			}
+		},
+		"accommodations": {
+			"label": "Assigned accommodations",
+			"value": "{{count}} accommodations",
+			"value_zero": "None"
+		}
+	},
+	"account": {
+		"username": {
+			"label": "Username"
+		},
+		"roles": {
+			"label": "Roles",
+			"options": {
+				"ROLE_ADMIN": {
+					"label": "Administrator",
+					"color": "yellow"
+				},
+				"ROLE_EMPLOYEE": {
+					"label": "Employee",
+					"color": "blue"
+				}
+			},
+			"none": "No roles"
+		},
+		"enabled": {
+			"label": "Status"
+		},
+		"requiresReset": {
+			"label": "Temporary password"
+		},
+		"securityEvents": {
+			"account": {
+				"label": "Account",
+				"deleted": "Account deleted#{{id}}",
+				"unknown": "Unknown account"
+			},
+			"timestamp": {
+				"label": "Date and time",
+				"format": "lll"
+			},
+			"type": {
+				"label": "Event type",
+				"descriptionLabel": "Description",
+				"options": {
+					"LOGIN": {
+						"label": "Login",
+						"description": "Successful login",
+						"color": "blue"
+					},
+					"LOGOUT": {
+						"label": "Log out",
+						"description": "Successful log out",
+						"color": "gray"
+					},
+					"PASSWORD_CHANGE": {
+						"label": "Password change",
+						"description": "Successful password change",
+						"color": "orange"
+					},
+					"LOGIN_FAILED_CREDENTIALS": {
+						"label": "Failed login",
+						"description": "Failed login due to incorrect credentials",
+						"color": "red"
+					},
+					"LOGIN_FAILED_CREDENTIALS_EXPIRED": {
+						"label": "Failed login",
+						"description": "Failed login due to temporary credentials",
+						"color": "red"
+					},
+					"LOGIN_FAILED_ACCOUNT_DISABLED": {
+						"label": "Failed login",
+						"description": "Failed login due to deactivated account",
+						"color": "red"
+					},
+					"LOGIN_FAILED_ACCOUNT_LOCKED": {
+						"label": "Failed login",
+						"description": "Failed login due to locked account",
+						"color": "red"
+					}
+				}
+			},
+			"method": {
+				"label": "Authentication method",
+				"options": {
+					"USERNAME_PASSWORD": {
+						"color": "indigo",
+						"label": "Credentials"
+					},
+					"REMEMBER_ME": {
+						"color": "brown",
+						"label": "Cookies"
+					}
+				}
+			},
+			"remoteAddress": {
+				"label": "IP address"
+			}
+		}
+	},
+	"booking": {
+		"details": {
+			"title": "Details",
+			"name": {
+				"noHolder": "{{numberOfPeople}} pax.",
+				"withHolder": "{{numberOfPeople}} pax. - {{holderName}}"
+			},
+			"holderName": {
+				"label": "Booking holder",
+				"undefined": "Undefined"
+			},
+			"accommodation": {
+				"label": "Accommodation"
+			},
+			"status": {
+				"label": "Status",
+				"states": {
+					"DRAFT": {
+						"label": "Draft",
+						"color": "dark"
+					},
+					"CONFIRMATION_READY": {
+						"label": "Ready to confirm",
+						"color": "teal.1"
+					},
+					"PENDING_CONFIRMATION": {
+						"label": "Pending confirmation",
+						"color": "teal.3"
+					},
+					"CONFIRMED": {
+						"label": "Confirmed",
+						"color": "teal"
+					},
+					"CHECK_IN_READY": {
+						"label": "Ready to check in",
+						"color": "cyan.1"
+					},
+					"PENDING_CHECK_IN": {
+						"label": "Pending check-in",
+						"color": "cyan.3"
+					},
+					"CHECKED_IN": {
+						"label": "Checked in",
+						"color": "cyan"
+					},
+					"PENDING_CANCELLATION": {
+						"label": "Pending cancellation",
+						"color": "gray.3"
+					},
+					"CANCELLED": {
+						"label": "Cancelled",
+						"color": "gray"
+					}
+				}
+			},
+			"date": {
+				"label": "Stay dates",
+				"errors": {
+					"undefined": "Stay dates are required"
+				}
+			},
+			"startTime": {
+				"label": "Start date",
+				"format": "LL"
+			},
+			"endTime": {
+				"label": "End date",
+				"format": "LL"
+			},
+			"duration": {
+				"label": "Duration",
+				"value_one": "{{count}} night",
+				"value_other": "{{count}} nights"
+			},
+			"numberOfPeople": {
+				"label": "Number of people",
+				"value_one": "{{count}} person",
+				"value_other": "{{count}} people",
+				"errors": {
+					"undefined": "Number of people is required",
+					"tooFew": "Traveler information exists for more people than indicated\nPlease remove the excess traveler information"
+				}
+			},
+			"numberOfRooms": {
+				"label": "Number of rooms",
+				"value_one": "{{count}} room",
+				"value_other": "{{count}} rooms",
+				"value_zero": "$t(common:undefined)"
+			},
+			"internetConnection": {
+				"label": "Internet connection",
+				"states": {
+					"true": "Yes",
+					"false": "No",
+					"null": "$t(common:undefined)"
+				}
+			}
+		},
+		"payment": {
+			"title": "Payment",
+			"type": {
+				"label": "Type",
+				"options": {
+					"CASH": "Cash",
+					"CREDIT_CARD": "Credit card",
+					"PLATFORM": "Payment platform",
+					"TRANSFER": "Bank transfer",
+					"MOBILE": "Mobile payment",
+					"GIFT_CARD": "Gift card",
+					"ON_SITE": "On-site payment",
+					"OTHER": "Other"
+				},
+				"errors": {
+					"undefinedWhenSelfCheckInRequested": "Payment type is required when self-check-in has been requested\nIf you wish, you can cancel the self-check-in request to remove it"
+				}
+			},
+			"mean": {
+				"label": "Method"
+			},
+			"holder": {
+				"label": "Holder"
+			},
+			"date": {
+				"label": "Date",
+				"format": "DD/MM/YYYY"
+			},
+			"expiryDate": {
+				"label": "Expiry date",
+				"placeholder": "MM / YY",
+				"format": "MM / YY",
+				"errors": {
+					"invalid": "Expiry date is invalid",
+					"beforePaymentDate": "Expiry date cannot be prior to the payment date"
+				}
+			}
+		},
+		"communications": {
+			"title": "Log",
+			"accommodation": {
+				"label": "Accommodation",
+				"deleted": "Accommodation deleted#{{id}}",
+				"unknown": "Unknown accommodation"
+			},
+			"type": {
+				"label": "Type",
+				"options": {
+					"BOOKING": {
+						"label": "Confirmation",
+						"color": "teal"
+					},
+					"CHECKIN": {
+						"label": "Check-in",
+						"color": "cyan"
+					},
+					"CANCELLATION": {
+						"label": "Cancellation",
+						"color": "gray"
+					}
+				}
+			},
+			"status": {
+				"label": "Status",
+				"states": {
+					"PENDING": {
+						"label": "Pending",
+						"color": "orange"
+					},
+					"SENT": {
+						"label": "Processing",
+						"color": "teal"
+					},
+					"SUCCEEDED": {
+						"label": "Registered",
+						"color": "green"
+					},
+					"FAILED": {
+						"label": "Error",
+						"color": "red"
+					},
+					"PENDING_VOIDED": {
+						"label": "Pending",
+						"color": "gray"
+					},
+					"VOIDED": {
+						"label": "Voided",
+						"color": "dark"
+					}
+				}
+			},
+			"sentTimestamp": {
+				"label": "Sending date",
+				"value": "Sent {{date}}",
+				"format": "lll",
+				"none": "$t(common:undefined)"
+			},
+			"error": {
+				"label": "Error",
+				"none": "$t(common:undefined)"
+			}
+		},
+		"selfCheckInRequested": {
+			"label": "Self-check-in requested"
+		}
+	},
+	"person": {
+		"personalInfo": {
+			"title": "Personal information",
+			"name": {
+				"label": "Name",
+				"errors": {
+					"undefined": "Name is required"
+				}
+			},
+			"firstSurname": {
+				"label": "First surname",
+				"errors": {
+					"undefined": "First surname is required"
+				}
+			},
+			"secondSurname": {
+				"label": "Second surname",
+				"errors": {
+					"undefined": "Second surname is required"
+				}
+			},
+			"nationality": {
+				"label": "Nationality"
+			},
+			"birthDate": {
+				"label": "Birth date",
+				"format": "DD/MM/YYYY",
+				"errors": {
+					"undefined": "Birth date is required",
+					"inFuture": "Birth date cannot be in the future"
+				}
+			},
+			"gender": {
+				"label": "Gender",
+				"options": {
+					"MALE": "Male",
+					"FEMALE": "Female",
+					"OTHER": "Other"
+				}
+			},
+			"address": {
+				"label": "Address",
+				"spanishMunicipality": "{{municipality}} ({{province}})",
+				"value": "{{addressLine1}}\n{{addressLine2}}\n{{postalCode}}, {{municipality}}\n{{country}}",
+				"errors": {
+					"undefined": "Address is required"
+				}
+			},
+			"relationship": {
+				"label": "Relationship",
+				"options": {
+					"GRANDPARENT": "Grandfather/Grandmother",
+					"GREAT_GRANDPARENT": "Great-grandfather/Great-grandmother",
+					"GREAT_GRANDCHILD": "Great-grandson/Great-granddaughter",
+					"SIBLING_IN_LAW": "Brother-in-law/Sister-in-law",
+					"SPOUSE": "Spouse",
+					"CHILD": "Son/Daughter",
+					"SIBLING": "Brother/Sister",
+					"GRANDCHILD": "Grandson/Granddaughter",
+					"PARENT": "Father/Mother",
+					"NEPHEW_NIECE": "Nephew/Niece",
+					"PARENT_IN_LAW": "Father-in-law/Mother-in-law",
+					"UNCLE_AUNT": "Uncle/Aunt",
+					"SON_DAUGHTER_IN_LAW": "Son-in-law/Daughter-in-law",
+					"TUTOR": "Tutor",
+					"OTHER": "Other"
+				},
+				"errors": {
+					"undefined": "Relationship is required"
+				}
+			}
+		},
+		"contactInfo": {
+			"title": "Contact methods",
+			"constraint": "At least one contact method is required",
+			"email": {
+				"label": "Email",
+				"errors": {
+					"invalid": "Email is invalid"
+				}
+			},
+			"phoneNumber1": {
+				"label": "Phone number"
+			},
+			"phoneNumber2": {
+				"label": "Alternative phone number"
+			}
+		},
+		"document": {
+			"title": "Identity document",
+			"type": {
+				"label": "Document type",
+				"options": {
+					"NIF": "NIF (Nationals)",
+					"NIE": "NIE (Foreigners)",
+					"PASSPORT": "Passport",
+					"OTHER": "Other document"
+				},
+				"errors": {
+					"undefined": "Document type is required"
+				}
+			},
+			"number": {
+				"label": "Document number",
+				"errors": {
+					"undefined": "Document number is required",
+					"invalidDni": "NIF/NIE is invalid"
+				}
+			},
+			"supportNumber": {
+				"label": "Support number",
+				"errors": {
+					"undefined": "Support number is required for NIF/NIE"
+				}
+			}
+		},
+		"signature": {
+			"label": "Signature",
+			"format": "LLLL",
+			"status": {
+				"mustSign": {
+					"label": "Must sign the traveler check-in record",
+					"color": "gray"
+				},
+				"hasSigned": {
+					"label": "Has signed the traveler check-in record",
+					"color": "green"
+				}
+			}
+		}
+	},
+	"address": {
+		"addressLine1": {
+			"label": "Address (line 1)",
+			"errors": {
+				"undefined": "Address is required"
+			}
+		},
+		"addressLine2": {
+			"label": "Address (line 2)"
+		},
+		"municipality": {
+			"label": "Municipality",
+			"errors": {
+				"undefined": "Municipality is required"
+			}
+		},
+		"postalCode": {
+			"label": "Postal code",
+			"errors": {
+				"undefined": "Postal code is required"
+			}
+		},
+		"country": {
+			"label": "Country",
+			"errors": {
+				"undefined": "Country is required"
+			}
+		},
+		"province": {
+			"label": "Province",
+			"errors": {
+				"undefined": "Province is required"
+			}
+		}
+	}
+}
