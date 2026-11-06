@@ -1377,7 +1377,7 @@ const queryFactory = {
 				mutationFn: async (file: Blob) => {
 					const res = await api.POST("/api/ocr/mrz", {
 						body: {
-							file: file as unknown as string // TODO: Improve api transformers to handle the files
+							file: file as unknown as string // This can be improved using api transformers.
 						},
 						bodySerializer: () => {
 							const fd = new FormData();

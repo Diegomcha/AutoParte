@@ -117,7 +117,7 @@ export default function RequestSelfCheckInForBooking({
 					<Alert color="yellow" icon={<WarningIcon weight="bold" />}>
 						{t(($) => $.linkModal.alert)}
 					</Alert>
-					{/* TODO: Cuando este el sistema de email habrá que cambiar esto */}
+					{/* EMAIL: Cuando este el sistema de email habrá que cambiar esto */}
 					<Text>{t(($) => $.linkModal.description)}</Text>
 					<TextInput
 						readOnly
