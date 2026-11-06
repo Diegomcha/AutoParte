@@ -84,7 +84,6 @@ jobs:
 
       - name: (Frontend) Run tests and generate coverage
         working-directory: frontend
-        continue-on-error: true
         run: bun run test:cov
 
       # BACKEND
@@ -101,7 +100,6 @@ jobs:
 
       - name: (Backend) Run tests and generate reports
         working-directory: backend
-        continue-on-error: true
         env:
           SENTRY_SKIP_SOURCE_UPLOAD: true
         run: mvn -B verify
@@ -110,7 +108,7 @@ jobs:
       - name: (OCR) Install dependencies, run tests and generate reports
         working-directory: ocr
         continue-on-error: true
-        run: uv run --locked --no-build --extra cpu,dev -m pytest --cov --cov-report=xml --cov-branch --junitxml=test-reports.xml
+        run: uv run --locked --no-build --extra cpu,dev -m pytest --cov --cov-report=xml --cov-branch --junitxml=test-reports.xml --junitprefix=ocr
 
       # SCAN
       - name: Analyze with SonarQube
