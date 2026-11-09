@@ -1,4 +1,4 @@
-package me.diegomcha.autoparte.config;
+package me.diegomcha.autoparte.infra.config;
 
 import me.diegomcha.autoparte.core.repos.AccommodationRepo;
 import me.diegomcha.autoparte.core.repos.BookingRepo;
