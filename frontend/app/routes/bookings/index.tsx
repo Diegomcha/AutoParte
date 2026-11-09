@@ -511,7 +511,13 @@ export default function BookingsPage({
 								flex={1}
 								pr={8}
 							>
-								<ScrollArea.Autosize h="0" mih="100%" offsetScrollbars>
+								<ScrollArea.Autosize
+									h="0"
+									mih="100%"
+									offsetScrollbars
+									miw="200"
+									maw="400"
+								>
 									<CommunicationTimeline
 										accommodationId={accommodationId}
 										bookingId={bookingId}

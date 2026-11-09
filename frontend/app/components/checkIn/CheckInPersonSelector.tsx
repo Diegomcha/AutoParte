@@ -1,5 +1,7 @@
 import { Scroller, Stepper } from "@mantine/core";
 
+import { useTranslation } from "react-i18next";
+
 import type { PersonDtoResponse } from "~/@types/api";
 
 export default function CheckInPersonSelector({
@@ -17,6 +19,10 @@ export default function CheckInPersonSelector({
 	activePersonIndex: number;
 	setActivePersonIndex: (index: number) => void;
 }) {
+	const { t } = useTranslation("components", {
+		keyPrefix: "checkIn.personSelector"
+	});
+
 	const personNames = Array.from({ length: numberOfPeople }, (_, index) => {
 		const person = people.at(index);
 		return [
@@ -24,7 +30,7 @@ export default function CheckInPersonSelector({
 			person
 				? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					`${person.personalInfo.name} ${person.personalInfo.firstSurname.at(0)!.toUpperCase()}.`
-				: `Viajero ${String(index + 1)}`
+				: t(($) => $.travellerPlaceholder, { number: index + 1 })
 		];
 	});
 

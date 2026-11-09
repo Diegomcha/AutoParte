@@ -10,6 +10,9 @@
 	"checkIn": {
 		"bookingDetails": {
 			"title": "Detalles de la reserva"
+		},
+		"personSelector": {
+			"travellerPlaceholder": "Viajero {{number}}"
 		}
 	},
 	"documentScanner": {
