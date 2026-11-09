@@ -77,3 +77,4 @@ jobs:
         uses: Andrew-Chen-Wang/github-wiki-action@1bbb4280446f9630e8e21a18012cbacf3b0f992e # v5.0.6
         with:
           path: .github/wiki
+          commit-message: "docs(licenses): update third-party licenses (${{github.run_number}})"
