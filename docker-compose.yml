@@ -13,7 +13,7 @@ services:
     environment:
       - TUNNEL_TOKEN_FILE=/run/secrets/cf_tunnel_token
   app:
-    image: ghcr.io/diegomcha/autoparte_app:main
+    image: ghcr.io/diegomcha/autoparte_app:latest
     container_name: autoparte_app
     restart: unless-stopped
     # Uncomment the following line to expose the application directly on the host machine.
@@ -44,7 +44,7 @@ services:
       # Import secrets as configuration properties
       - SPRING_CONFIG_IMPORT=optional:configtree:/run/secrets/
   ocr:
-    image: ghcr.io/diegomcha/autoparte_ocr:main-cpu # Change to `main-gpu` if you have an NVIDIA GPU and want to use it for OCR.
+    image: ghcr.io/diegomcha/autoparte_ocr:latest-cpu # Change to `latest-gpu` if you have an NVIDIA GPU and want to use it for OCR.
     container_name: autoparte_ocr
     restart: unless-stopped
     # gpus: all
