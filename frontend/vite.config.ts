@@ -13,7 +13,9 @@ export default defineConfig((config) => ({
 				project: "autoparte-front",
 				telemetry: false,
 				sourcemaps: {
-					disable: process.env.SENTRY_SKIP_SOURCE_UPLOAD === "true"
+					disable:
+						process.env.SENTRY_SKIP_SOURCE_UPLOAD === "true" ||
+						!process.env.SENTRY_AUTH_TOKEN
 				}
 			},
 			config

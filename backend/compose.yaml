@@ -1,16 +1,16 @@
 services:
   postgres:
-    image: 'dhi.io/postgres:18'
+    image: "dhi.io/postgres:18"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
-      - ./db_data:/var/lib/postgresql
+      - ./db_data:/var/lib/postgresql:rw
   ocr:
     build:
       context: ../ocr
       dockerfile: docker/cpu.Dockerfile
     ports:
-      - '6543:80'
+      - "6543:80"
