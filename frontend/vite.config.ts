@@ -12,10 +12,11 @@ export default defineConfig((config) => ({
 				org: "diegomcha",
 				project: "autoparte-front",
 				telemetry: false,
+				release: {
+					name: process.env.SENTRY_RELEASE
+				},
 				sourcemaps: {
-					disable:
-						process.env.SENTRY_SKIP_SOURCE_UPLOAD === "true" ||
-						!process.env.SENTRY_AUTH_TOKEN
+					disable: !process.env.SENTRY_AUTH_TOKEN
 				}
 			},
 			config

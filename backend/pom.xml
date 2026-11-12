@@ -234,6 +234,7 @@
                             <BP_OCI_TITLE>${env.OCI_TITLE}</BP_OCI_TITLE>
                             <BP_OCI_URL>${env.OCI_URL}</BP_OCI_URL>
                             <BP_OCI_VERSION>${env.OCI_VERSION}</BP_OCI_VERSION>
+                            <BPE_SENTRY_RELEASE>${env.SENTRY_RELEASE}</BPE_SENTRY_RELEASE>
                         </env>
                     </image>
                 </configuration>

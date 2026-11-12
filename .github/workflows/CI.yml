@@ -72,19 +72,16 @@ jobs:
 
       - name: (Frontend) Build
         working-directory: frontend
-        env:
-          SENTRY_SKIP_SOURCE_UPLOAD: ${{ github.event_name == 'pull_request' }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: bun run build
+
+      - name: (Frontend) Run tests and generate coverage
+        working-directory: frontend
+        run: bun run test:cov
 
       - name: (Frontend) Run ESLint and generate report
         working-directory: frontend
         continue-on-error: true
         run: bun run lint:ci
-
-      - name: (Frontend) Run tests and generate coverage
-        working-directory: frontend
-        run: bun run test:cov
 
       # BACKEND
       - name: (Backend) Copy dependencies for SonarQube
@@ -93,15 +90,10 @@ jobs:
 
       - name: (Backend) Build
         working-directory: backend
-        env:
-          SENTRY_SKIP_SOURCE_UPLOAD: ${{ github.event_name == 'pull_request' }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: mvn -B compile
 
       - name: (Backend) Run tests and generate reports
         working-directory: backend
-        env:
-          SENTRY_SKIP_SOURCE_UPLOAD: true
         run: mvn -B verify
 
       # OCR
@@ -167,6 +159,15 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Customization for Sentry release name
+      - name: Inject Sentry release name
+        run: |
+          if [[ "$GITHUB_REF_TYPE" == "tag" ]]; then
+            echo "SENTRY_RELEASE=$GITHUB_REF_NAME" >> "$GITHUB_ENV"
+          else
+            echo "SENTRY_RELEASE=$GITHUB_SHA" >> "$GITHUB_ENV"
+          fi
+
       # Build frontend
       - name: Install frontend dependencies
         working-directory: frontend
@@ -175,7 +176,7 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         env:
-          SENTRY_SKIP_SOURCE_UPLOAD: true
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: bun run build
 
       # Build image (and push with attestation)
@@ -183,7 +184,7 @@ jobs:
         id: push
         working-directory: backend
         env:
-          SENTRY_SKIP_SOURCE_UPLOAD: true
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}_app:${{steps.meta.outputs.version}}
           IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
           IMAGE_CREATED_DATE: ${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
