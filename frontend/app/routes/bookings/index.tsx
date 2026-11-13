@@ -203,22 +203,7 @@ export default function BookingsPage({
 
 		lastUpdatedRef.current = booking.updatedAt;
 
-		form.setValues({
-			date: [booking.startTime, booking.endTime],
-			numberOfPeople: booking.numberOfPeople,
-			payment: {
-				type: booking.payment?.type ?? null,
-				mean: booking.payment?.mean ?? "",
-				holder: booking.payment?.holder ?? "",
-				date: booking.payment?.date ?? null,
-				expiryDate: booking.payment?.expiryDate
-					? TimeService(booking.payment.expiryDate).format("MM / YY")
-					: ""
-			},
-			numberOfRooms: booking.numberOfRooms ?? "",
-			internetConnection: String(booking.internetConnection ?? undefined)
-		});
-
+		form.setValues(parseBookingIntoFormValues(booking));
 		form.resetDirty();
 	}, [booking, form]);
 
