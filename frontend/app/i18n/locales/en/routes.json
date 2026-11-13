@@ -183,9 +183,9 @@
 			"title": "Log in",
 			"form": {
 				"username": {
-					"label": "Username",
+					"label": "Username / Email",
 					"errors": {
-						"noUsername": "Username is required"
+						"noUsername": "Username / email is required"
 					}
 				},
 				"password": {

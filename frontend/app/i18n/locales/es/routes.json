@@ -183,9 +183,9 @@
 			"title": "Iniciar sesión",
 			"form": {
 				"username": {
-					"label": "Nombre de usuario",
+					"label": "Nombre de usuario / Correo electrónico",
 					"errors": {
-						"noUsername": "El nombre de usuario es obligatorio"
+						"noUsername": "El nombre de usuario / correo electrónico es obligatorio"
 					}
 				},
 				"password": {

@@ -198,7 +198,7 @@
 	"employeeCredsModal": {
 		"title": "Credenciales de acceso",
 		"fields": {
-			"username": "Nombre de usuario",
+			"username": "Nombre de usuario (correo electrónico)",
 			"password": "Contraseña temporal"
 		},
 		"description": "Estas son las credenciales de acceso del empleado.",

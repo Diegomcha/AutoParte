@@ -92,7 +92,7 @@
 			}
 		},
 		"email": {
-			"label": "Email",
+			"label": "Email (username)",
 			"errors": {
 				"invalidEmail": "Email is invalid",
 				"emailInUse": "Email is already registered"
