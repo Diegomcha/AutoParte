@@ -34,6 +34,8 @@ public class AutoparteProperties {
         private String initialLandlordCode;
         // -----
         private String url = "https://hospedajes.ses.mir.es/hospedajes-web/ws/v1/comunicacion";
+        private String senderTaskCron = "0 */10 * * * *";
+        private String checkerTaskCron = "0 5/10 * * * *";
     }
 
     @Data

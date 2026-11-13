@@ -28,7 +28,7 @@ class SesChecker extends SesTask {
         super(LoggerFactory.getLogger(SesChecker.class), dynamicConfigService, sesClient, persistencyService);
     }
 
-    @Scheduled(cron = "0 0 1/2 * * *")
+    @Scheduled(cron = "#{autoparteProperties.ses.checkerTaskCron}")
     void schedule() {
         try {
             if (!persistencyService.areSesCredentialsValid()) {
