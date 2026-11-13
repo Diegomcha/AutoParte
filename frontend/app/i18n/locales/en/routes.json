@@ -307,6 +307,7 @@
 		"requestSelfCheckIn": {
 			"button": "Request self-check-in",
 			"color": "violet",
+			"disabledTooltip": "Select a payment type first",
 			"title": "Request self-check-in",
 			"description": "This action will request self-check-in for travelers.\nIf manual review is not enabled, the self-check-in will be automatically sent to the ministry once the process is complete.",
 			"notCheckInDayWarning": "In accordance with RD 933/2021, the communication of traveler check-in must be sent on the same day the travelers' arrival occurs.",
@@ -316,7 +317,8 @@
 				"alert": "The self-check-in link allows access to the self-check-in functionality without authentication.\nShare this link ONLY with travelers who need to perform self-check-in.",
 				"label": "Self-check-in link"
 			},
-			"linkCopied": "Self-check-in link copied to clipboard"
+			"linkCopied": "Self-check-in link copied to clipboard",
+			"copyLinkTooltip": "Copy self-check-in link to clipboard"
 		},
 		"cancelSelfCheckIn": {
 			"button": "Cancel self-check-in",
@@ -327,12 +329,14 @@
 		"confirm": {
 			"button": "Confirm",
 			"color": "teal",
+			"disabledTooltip": "Complete the payment type and holder details first",
 			"title": "Confirm booking",
 			"description": "This action will confirm the booking and send the information to the ministry."
 		},
 		"checkIn": {
 			"button": "Check in",
 			"color": "cyan",
+			"disabledTooltip": "Fill in the payment type and the required details (red/cyan asterisk) for all travelers first",
 			"title": "Check in travelers",
 			"description": "This action will register the travelers' check-in at the accommodation, notifying the ministry.",
 			"notCheckInDayWarning": "In accordance with RD 933/2021, the communication of traveler check-in must be sent on the same day the travelers' arrival occurs."

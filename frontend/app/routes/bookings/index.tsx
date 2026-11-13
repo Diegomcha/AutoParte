@@ -1,9 +1,8 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Outlet, useNavigate, useOutletContext } from "react-router";
 
 import {
 	ActionIcon,
-	Box,
 	Button,
 	DataList,
 	Divider,
@@ -75,7 +74,12 @@ export async function clientLoader({
 }
 
 export default function BookingsPage({
-	params: { accommodationId, bookingId }
+	params: { accommodationId, bookingId },
+	matches: {
+		"1": {
+			loaderData: { accommodations }
+		}
+	}
 }: Route.ComponentProps) {
 	const { t } = useTranslation("routes", {
 		keyPrefix: "bookings"
@@ -91,6 +95,8 @@ export default function BookingsPage({
 
 	const { opened, close } = useStaticModalTransition(() => void navigate(`/`));
 
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- Accommodation is guaranteed to exist
+	const accommodation = accommodations.find((a) => a.id === accommodationId)!;
 	const { data: booking } = useSuspenseQuery(
 		queryFactory.accommodations.bookings.detail(accommodationId, bookingId)
 	);
@@ -106,21 +112,7 @@ export default function BookingsPage({
 	// Some are '' others null depending on how the mantine inputs behave... It's not ideal
 	const form = useForm({
 		mode: "uncontrolled",
-		initialValues: {
-			date: [booking.startTime, booking.endTime],
-			numberOfPeople: booking.numberOfPeople,
-			payment: {
-				type: booking.payment?.type ?? null,
-				mean: booking.payment?.mean ?? "",
-				holder: booking.payment?.holder ?? "",
-				date: booking.payment?.date ?? null,
-				expiryDate: booking.payment?.expiryDate
-					? TimeService(booking.payment.expiryDate).format("MM / YY")
-					: ""
-			},
-			numberOfRooms: booking.numberOfRooms ?? "",
-			internetConnection: String(booking.internetConnection ?? undefined)
-		},
+		initialValues: parseBookingIntoFormValues(booking),
 		validate: {
 			date: (value) =>
 				(value[0] == null || value[1] == null) &&
@@ -202,6 +194,33 @@ export default function BookingsPage({
 	const { mutate, isPending } = useMutation(
 		queryFactory.accommodations.bookings.update(accommodationId, bookingId)
 	);
+
+	// Sync form values when remote booking data updates in the background
+	const lastUpdatedRef = useRef(booking.updatedAt);
+	useEffect(() => {
+		// Skippers
+		if (form.isDirty() || booking.updatedAt === lastUpdatedRef.current) return;
+
+		lastUpdatedRef.current = booking.updatedAt;
+
+		form.setValues({
+			date: [booking.startTime, booking.endTime],
+			numberOfPeople: booking.numberOfPeople,
+			payment: {
+				type: booking.payment?.type ?? null,
+				mean: booking.payment?.mean ?? "",
+				holder: booking.payment?.holder ?? "",
+				date: booking.payment?.date ?? null,
+				expiryDate: booking.payment?.expiryDate
+					? TimeService(booking.payment.expiryDate).format("MM / YY")
+					: ""
+			},
+			numberOfRooms: booking.numberOfRooms ?? "",
+			internetConnection: String(booking.internetConnection ?? undefined)
+		});
+
+		form.resetDirty();
+	}, [booking, form]);
 
 	return (
 		<>
@@ -402,6 +421,7 @@ export default function BookingsPage({
 										name="internetConnection"
 										label={tBooking(($) => $.details.internetConnection.label)}
 										readOnly={!booking.canBeModified}
+										undefinedDisabled={accommodation.internetConnection != null}
 										{...form.getInputProps("internetConnection")}
 									/>
 									<NumberInput
@@ -526,112 +546,133 @@ export default function BookingsPage({
 								</ScrollArea.Autosize>
 							</Fieldset>
 							{/* Action buttons */}
-							<Stack
-								gap="xs"
-								hidden={
-									!booking.canBeConfirmed &&
-									!booking.canBeCheckedIn &&
-									!booking.canSelfCheckInBeRequested &&
-									!booking.selfCheckInRequested &&
-									!booking.canBeDeleted &&
-									!booking.canBeCancelled
-								}
-							>
-								<Button
-									component={!form.isDirty() ? Link : undefined}
-									to={`/accommodations/${accommodationId}/bookings/${bookingId}/confirm`}
-									leftSection={<CheckCircleIcon weight="bold" />}
-									color={t(($) => $.confirm.color)}
-									hidden={!booking.canBeConfirmed}
-									disabled={form.isDirty()}
-									loading={isPending}
-								>
-									{t(($) => $.confirm.button)}
-								</Button>
-								<Button
-									component={!form.isDirty() ? Link : undefined}
-									to={`/accommodations/${accommodationId}/bookings/${bookingId}/check-in`}
-									leftSection={<SuitcaseIcon weight="bold" />}
-									color={t(($) => $.checkIn.color)}
-									hidden={!booking.canBeCheckedIn}
-									disabled={form.isDirty()}
-									loading={isPending}
-								>
-									{t(($) => $.checkIn.button)}
-								</Button>
-								<Button
-									component={!form.isDirty() ? Link : undefined}
-									to={`/accommodations/${accommodationId}/bookings/${bookingId}/request-self-check-in`}
-									leftSection={<PaperPlaneTiltIcon weight="bold" />}
-									color={t(($) => $.requestSelfCheckIn.color)}
-									hidden={!booking.canSelfCheckInBeRequested}
-									disabled={form.isDirty()}
-									loading={isPending}
-								>
-									{t(($) => $.requestSelfCheckIn.button)}
-								</Button>
-								<Box hidden={!booking.selfCheckInRequested}>
+							<Stack gap="xs" hidden={form.isDirty()}>
+								<Stack gap="xs" hidden={!booking.canBeModified}>
 									<Button.Group>
-										<Button
-											color={t(($) => $.requestSelfCheckIn.color)}
-											disabled={form.isDirty()}
-											loading={isPending}
-											onClick={() => {
-												NotificationsService.success(
-													t(($) => $.requestSelfCheckIn.linkCopied)
-												);
-												void navigator.clipboard.writeText(
-													`${window.location.origin}/check-in/${accommodationId}/${bookingId}`
-												);
-											}}
+										{booking.status !== "CONFIRMED" &&
+											(booking.status !== "CHECK_IN_READY" ||
+												booking.canBeConfirmed) && (
+												<Tooltip
+													hidden={booking.canBeConfirmed}
+													label={t(($) => $.confirm.disabledTooltip)}
+												>
+													<Button
+														flex={1}
+														component={
+															booking.canBeConfirmed ? Link : undefined
+														}
+														to={`/accommodations/${accommodationId}/bookings/${bookingId}/confirm`}
+														leftSection={<CheckCircleIcon weight="bold" />}
+														color={t(($) => $.confirm.color)}
+														disabled={!booking.canBeConfirmed}
+														loading={isPending}
+													>
+														{t(($) => $.confirm.button)}
+													</Button>
+												</Tooltip>
+											)}
+										<Tooltip
+											hidden={booking.canBeCheckedIn}
+											label={t(($) => $.checkIn.disabledTooltip)}
 										>
-											<LinkIcon weight="bold" />
-										</Button>
-										<Button
-											component={!form.isDirty() ? Link : undefined}
-											to={`/accommodations/${accommodationId}/bookings/${bookingId}/cancel-self-check-in`}
-											leftSection={<ChatSlashIcon weight="bold" />}
-											color={t(($) => $.cancelSelfCheckIn.color)}
-											disabled={form.isDirty()}
-											loading={isPending}
-											flex={1}
-										>
-											{t(($) => $.cancelSelfCheckIn.button)}
-										</Button>
+											<Button
+												flex={1}
+												component={booking.canBeCheckedIn ? Link : undefined}
+												to={`/accommodations/${accommodationId}/bookings/${bookingId}/check-in`}
+												leftSection={<SuitcaseIcon weight="bold" />}
+												color={t(($) => $.checkIn.color)}
+												disabled={!booking.canBeCheckedIn}
+												hidden={
+													!booking.canBeCheckedIn &&
+													booking.status === "CHECKED_IN"
+												}
+												loading={isPending}
+											>
+												{t(($) => $.checkIn.button)}
+											</Button>
+										</Tooltip>
 									</Button.Group>
-								</Box>
+									{!booking.selfCheckInRequested ? (
+										<Tooltip
+											hidden={booking.canSelfCheckInBeRequested}
+											label={t(($) => $.requestSelfCheckIn.disabledTooltip)}
+										>
+											<Button
+												component={
+													booking.canSelfCheckInBeRequested ? Link : undefined
+												}
+												to={`/accommodations/${accommodationId}/bookings/${bookingId}/request-self-check-in`}
+												leftSection={<PaperPlaneTiltIcon weight="bold" />}
+												color={t(($) => $.requestSelfCheckIn.color)}
+												disabled={!booking.canSelfCheckInBeRequested}
+												loading={isPending}
+											>
+												{t(($) => $.requestSelfCheckIn.button)}
+											</Button>
+										</Tooltip>
+									) : (
+										<Button.Group>
+											<Tooltip
+												label={t(($) => $.requestSelfCheckIn.copyLinkTooltip)}
+											>
+												<Button
+													color={t(($) => $.requestSelfCheckIn.color)}
+													loading={isPending}
+													onClick={() => {
+														NotificationsService.success(
+															t(($) => $.requestSelfCheckIn.linkCopied)
+														);
+														void navigator.clipboard.writeText(
+															`${window.location.origin}/check-in/${accommodationId}/${bookingId}`
+														);
+													}}
+												>
+													<LinkIcon weight="bold" />
+												</Button>
+											</Tooltip>
+											<Button
+												component={Link}
+												to={`/accommodations/${accommodationId}/bookings/${bookingId}/cancel-self-check-in`}
+												leftSection={<ChatSlashIcon weight="bold" />}
+												color={t(($) => $.cancelSelfCheckIn.color)}
+												loading={isPending}
+												flex={1}
+											>
+												{t(($) => $.cancelSelfCheckIn.button)}
+											</Button>
+										</Button.Group>
+									)}
+								</Stack>
 
 								<Divider
 									hidden={
-										(!booking.canBeConfirmed &&
-											!booking.canBeCheckedIn &&
-											!booking.canSelfCheckInBeRequested &&
-											!booking.selfCheckInRequested) ||
+										!booking.canBeModified ||
 										(!booking.canBeDeleted && !booking.canBeCancelled)
 									}
 								/>
-								<Button
-									component={!form.isDirty() ? Link : undefined}
-									to={`/accommodations/${accommodationId}/bookings/${bookingId}/delete`}
-									leftSection={<TrashIcon weight="bold" />}
-									color={t(($) => $.delete.color)}
-									disabled={form.isDirty()}
-									hidden={!booking.canBeDeleted}
-									loading={isPending}
-								>
-									{t(($) => $.delete.button)}
-								</Button>
-								<Button
-									component={!form.isDirty() ? Link : undefined}
-									to={`/accommodations/${accommodationId}/bookings/${bookingId}/cancel`}
-									leftSection={<XIcon weight="bold" />}
-									color={t(($) => $.cancel.color)}
-									disabled={form.isDirty()}
-									hidden={!booking.canBeCancelled}
-									loading={isPending}
-								>
-									{t(($) => $.cancel.button)}
-								</Button>
+
+								<Stack gap="xs">
+									<Button
+										component={Link}
+										to={`/accommodations/${accommodationId}/bookings/${bookingId}/delete`}
+										leftSection={<TrashIcon weight="bold" />}
+										color={t(($) => $.delete.color)}
+										hidden={!booking.canBeDeleted}
+										loading={isPending}
+									>
+										{t(($) => $.delete.button)}
+									</Button>
+									<Button
+										component={Link}
+										to={`/accommodations/${accommodationId}/bookings/${bookingId}/cancel`}
+										leftSection={<XIcon weight="bold" />}
+										color={t(($) => $.cancel.color)}
+										hidden={!booking.canBeCancelled}
+										loading={isPending}
+									>
+										{t(($) => $.cancel.button)}
+									</Button>
+								</Stack>
 							</Stack>
 						</Stack>
 					</Group>
@@ -644,4 +685,22 @@ export default function BookingsPage({
 
 export function useBooking() {
 	return useOutletContext<BookingsContextType>().booking;
+}
+
+function parseBookingIntoFormValues(booking: BookingDtoResponse) {
+	return {
+		date: [booking.startTime, booking.endTime],
+		numberOfPeople: booking.numberOfPeople,
+		payment: {
+			type: booking.payment?.type ?? null,
+			mean: booking.payment?.mean ?? "",
+			holder: booking.payment?.holder ?? "",
+			date: booking.payment?.date ?? null,
+			expiryDate: booking.payment?.expiryDate
+				? TimeService(booking.payment.expiryDate).format("MM / YY")
+				: ""
+		},
+		numberOfRooms: booking.numberOfRooms ?? "",
+		internetConnection: String(booking.internetConnection ?? undefined)
+	};
 }

@@ -21,6 +21,7 @@ import BookingsSchedule from "~/components/booking/BookingsSchedule";
 import BookingsTable from "~/components/booking/BookingsTable";
 import {
 	_api,
+	_REFRESH_INTERVAL,
 	_unwrapResponse,
 	queryClient,
 	queryFactory
@@ -76,6 +77,7 @@ export default function ProtectedLayout({
 	const data = useSuspenseQueries({
 		// eslint-disable-next-line @tanstack/query/prefer-query-options -- Unique case
 		queries: filteredAccommodations.map((accommodation) => ({
+			staleTime: _REFRESH_INTERVAL,
 			queryKey: [
 				...queryFactory.accommodations.bookings.list(accommodation.id).queryKey,
 				getDateRange(view, date)
