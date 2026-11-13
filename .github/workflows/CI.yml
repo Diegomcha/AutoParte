@@ -204,7 +204,7 @@ jobs:
           # Build & push image
           mvn -B spring-boot:build-image \
             -DskipTests=true \
-            -Dspring-boot.build-image.publish=${{ github.event_name != 'pull_request' }}
+            -Dspring-boot.build-image.publish=true
 
           # Extract the image digest
           IMAGE_DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE_NAME" | cut -d'@' -f2)
@@ -265,7 +265,7 @@ jobs:
         with:
           context: ./ocr
           file: ./ocr/docker/${{ matrix.type }}.Dockerfile
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
