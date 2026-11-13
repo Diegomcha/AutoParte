@@ -339,22 +339,26 @@ public class Booking extends BaseEntity {
         // Cancelled
         if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.CANCELLATION))
             return BookingStatus.CANCELLED;
-        if (this.hasCommunicationOfType(Communication.CommunicationType.CANCELLATION))
+        if (this.hasPendingCommunicationOfType(Communication.CommunicationType.CANCELLATION))
             return BookingStatus.PENDING_CANCELLATION;
 
         // Checked-in
         if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.CHECKIN))
             return BookingStatus.CHECKED_IN;
-        if (this.hasCommunicationOfType(Communication.CommunicationType.CHECKIN))
+        if (this.hasPendingCommunicationOfType(Communication.CommunicationType.CHECKIN))
             return BookingStatus.PENDING_CHECK_IN;
+
+        // Pending confirmation had to be moved here to give it priority over check-in ready.
+        if (this.hasPendingCommunicationOfType(Communication.CommunicationType.BOOKING))
+            return BookingStatus.PENDING_CONFIRMATION;
+
+        // Check-in (II)
         if (this.payment != null && this.people.size() == this.numberOfPeople && this.people.stream().allMatch(Person::isCompleteForCheckIn))
             return BookingStatus.CHECK_IN_READY;
 
         // Confirmed
         if (this.hasSuccessfulCommunicationOfType(Communication.CommunicationType.BOOKING))
             return BookingStatus.CONFIRMED;
-        if (this.hasCommunicationOfType(Communication.CommunicationType.BOOKING))
-            return BookingStatus.PENDING_CONFIRMATION;
         if (this.payment != null && !this.people.isEmpty())
             return BookingStatus.CONFIRMATION_READY;
 
@@ -405,6 +409,10 @@ public class Booking extends BaseEntity {
 
     private boolean hasSuccessfulCommunicationOfType(@NonNull Communication.CommunicationType type) {
         return this.communications.stream().anyMatch(c -> c.getType() == type && c.getStatus() == Communication.CommunicationStatus.SUCCEEDED);
+    }
+
+    private boolean hasPendingCommunicationOfType(@NonNull Communication.CommunicationType type) {
+        return this.communications.stream().anyMatch(c -> c.getType() == type && c.getStatus() == Communication.CommunicationStatus.PENDING);
     }
 
     private void ensureBookingCanBeModified() {

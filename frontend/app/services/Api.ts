@@ -99,6 +99,8 @@ const DEFAULT_SORTING = {
 	direction: "asc"
 } as const;
 
+const REFRESH_INTERVAL = 10_000; // 10 seconds
+
 function mapSorting(sorting: Sort[] | undefined): string[] | undefined {
 	return sorting?.map((s) =>
 		s.direction != null
@@ -171,6 +173,7 @@ const queryFactory = {
 			}),
 		pagedList: (pageable: Pageable = {}) =>
 			queryOptions({
+				staleTime: REFRESH_INTERVAL,
 				queryKey: ["accounts", pageable],
 				queryFn: async () =>
 					unwrapResponse(
@@ -184,6 +187,7 @@ const queryFactory = {
 		securityEvents: {
 			globalPaged: (pageable: Pageable = {}) =>
 				queryOptions({
+					staleTime: REFRESH_INTERVAL,
 					queryKey: ["accounts", "global", "securityEvents", pageable],
 					queryFn: async () =>
 						unwrapResponse(
@@ -196,6 +200,7 @@ const queryFactory = {
 				}),
 			accountPaged: (accountId: string, pageable: Pageable = {}) =>
 				queryOptions({
+					staleTime: REFRESH_INTERVAL,
 					queryKey: ["accounts", accountId, "securityEvents", pageable],
 					queryFn: async () =>
 						unwrapResponse(
@@ -222,6 +227,7 @@ const queryFactory = {
 			}),
 		pagedList: (pageable: Pageable = {}) =>
 			queryOptions({
+				staleTime: REFRESH_INTERVAL,
 				queryKey: ["employees", pageable],
 				queryFn: async () =>
 					unwrapResponse(
@@ -432,6 +438,7 @@ const queryFactory = {
 			}),
 		pagedList: (pageable: Pageable = {}) =>
 			queryOptions({
+				staleTime: REFRESH_INTERVAL,
 				queryKey: ["accommodations", pageable],
 				queryFn: async () =>
 					unwrapResponse(
@@ -648,6 +655,7 @@ const queryFactory = {
 				}),
 			detail: (accommodationId: string, bookingId: string) =>
 				queryOptions({
+					refetchInterval: REFRESH_INTERVAL, // Refetch every 10 seconds regardless of focus or mount state
 					queryKey: [
 						...queryFactory.accommodations.detail(accommodationId).queryKey,
 						"bookings",
@@ -880,6 +888,7 @@ const queryFactory = {
 			communications: {
 				list: (accommodationId: string, bookingId: string) =>
 					queryOptions({
+						refetchInterval: REFRESH_INTERVAL, // Refetch every 10 seconds regardless of focus or mount state
 						queryKey: [
 							...queryFactory.accommodations.bookings.detail(
 								accommodationId,
@@ -1141,6 +1150,7 @@ const queryFactory = {
 		communications: {
 			pagedList: (accommodationId: string, pageable: Pageable = {}) =>
 				queryOptions({
+					staleTime: REFRESH_INTERVAL,
 					queryKey: [
 						...queryFactory.accommodations.detail(accommodationId).queryKey,
 						"communications",
@@ -1395,6 +1405,7 @@ const queryFactory = {
 	communications: {
 		pagedList: (pageable: Pageable = {}) =>
 			queryOptions({
+				staleTime: REFRESH_INTERVAL,
 				queryKey: ["communications", pageable],
 				queryFn: async () =>
 					unwrapResponse(
@@ -1476,6 +1487,7 @@ export {
 	// Should not be used directly unless custom query/mutation logic is needed. Use queryFactory and executeMutation instead.
 	api as _api,
 	unwrapResponse as _unwrapResponse,
+	REFRESH_INTERVAL as _REFRESH_INTERVAL,
 	ApiErrorResponse,
 	DEFAULT_PAGE,
 	DEFAULT_PAGE_SIZE,

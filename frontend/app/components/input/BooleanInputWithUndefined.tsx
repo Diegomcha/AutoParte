@@ -3,7 +3,9 @@ import { Group, Radio } from "@mantine/core";
 import { useTranslation } from "react-i18next";
 
 export default function BooleanInputWithUndefined(
-	props: Omit<Readonly<Radio.Group.Props>, "children">
+	props: Omit<Readonly<Radio.Group.Props>, "children"> & {
+		undefinedDisabled?: boolean;
+	}
 ) {
 	const { t } = useTranslation("components", {
 		keyPrefix: "booleanInputWithUndefined"
@@ -12,7 +14,11 @@ export default function BooleanInputWithUndefined(
 	return (
 		<Radio.Group {...props}>
 			<Group mt="xs">
-				<Radio value="undefined" label={t(($) => $.options.undefined)} />
+				<Radio
+					value="undefined"
+					disabled={props.undefinedDisabled}
+					label={t(($) => $.options.undefined)}
+				/>
 				<Radio value="false" label={t(($) => $.options.false)} />
 				<Radio value="true" label={t(($) => $.options.true)} />
 			</Group>

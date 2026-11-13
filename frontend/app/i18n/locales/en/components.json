@@ -198,7 +198,7 @@
 	"employeeCredsModal": {
 		"title": "Access credentials",
 		"fields": {
-			"username": "Username",
+			"username": "Username (email)",
 			"password": "Temporary password"
 		},
 		"description": "These are the employee's access credentials.",
