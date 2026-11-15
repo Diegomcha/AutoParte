@@ -318,40 +318,46 @@
 				"label": "Enlace para realizar el auto-registro"
 			},
 			"linkCopied": "Enlace del auto-registro copiado al portapapeles",
-			"copyLinkButton": "Copiar enlace del auto-registro"
+			"copyLinkButton": "Copiar enlace del auto-registro",
+			"doneFeedback": "Auto-registro habilitado"
 		},
 		"cancelSelfCheckIn": {
 			"button": "Cancelar auto-registro",
 			"color": "lime",
 			"title": "Cancelar auto-registro",
-			"description": "Esta acción cancelará la solicitud de auto-registro de los viajeros."
+			"description": "Esta acción cancelará la solicitud de auto-registro de los viajeros.",
+			"doneFeedback": "Auto-registro cancelado"
 		},
 		"confirm": {
 			"button": "Confirmar",
 			"color": "teal",
 			"disabledTooltip": "Completa el tipo de pago y los detalles del viajero titular primero",
 			"title": "Confirmar reserva",
-			"description": "Esta acción confirmará la reserva y enviará la información al ministerio."
+			"description": "Esta acción confirmará la reserva y enviará la información al ministerio.",
+			"doneFeedback": "Petición de confirmación realizada\nLa reserva se confirmará automáticamente una vez que el ministerio la valide"
 		},
 		"checkIn": {
 			"button": "Registrar entrada",
 			"color": "cyan",
 			"title": "Registrar entrada",
 			"description": "Esta acción registrará la entrada de los viajeros en el alojamiento informando al ministerio.",
-			"notCheckInDayWarning": "Conforme al RD 933/2021, la comunicación de la entrada de viajeros se debe enviar el mismo día que ocurra la entrada de los viajeros."
+			"notCheckInDayWarning": "Conforme al RD 933/2021, la comunicación de la entrada de viajeros se debe enviar el mismo día que ocurra la entrada de los viajeros.",
+			"doneFeedback": "Petición de registro de entrada realizada\nLa entrada se registrará automáticamente una vez que el ministerio la valide"
 		},
 		"cancel": {
 			"button": "Cancelar",
 			"color": "orange",
 			"title": "Cancelar reserva",
 			"disabledTooltip": "Completa primero el tipo de pago y los datos obligatorios (asterisco rojo/cian) de todos los viajeros",
-			"description": "Esta acción cancelará la reserva y propagará dicha cancelación al ministerio en caso de haber confirmado la reserva previamente.\n¿Estás seguro? Esta acción es IRREVERSIBLE."
+			"description": "Esta acción cancelará la reserva y propagará dicha cancelación al ministerio en caso de haber confirmado la reserva previamente.\n¿Estás seguro? Esta acción es IRREVERSIBLE.",
+			"doneFeedback": "Petición de cancelación realizada\nLa cancelación se procesará automáticamente una vez que el ministerio la valide"
 		},
 		"delete": {
 			"button": "Eliminar",
 			"color": "red",
 			"title": "Eliminar reserva",
-			"description": "Esta acción eliminará la reserva de forma permanente y no podrá ser recuperada.\n¿Estás seguro? Esta acción es IRREVERSIBLE."
+			"description": "Esta acción eliminará la reserva de forma permanente y no podrá ser recuperada.\n¿Estás seguro? Esta acción es IRREVERSIBLE.",
+			"doneFeedback": "Reserva eliminada"
 		}
 	}
 }
