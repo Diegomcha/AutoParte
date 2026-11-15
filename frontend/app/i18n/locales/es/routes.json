@@ -292,7 +292,8 @@
 			"people": {
 				"button": "Gestionar viajeros",
 				"buttonDisabled": "Gestionar viajeros (deshabilitado mientras se edita el número de personas)"
-			}
+			},
+			"dirtyEditor": "Guarda o cancela tus cambios"
 		},
 		"people": {
 			"index": {
@@ -301,13 +302,14 @@
 			},
 			"delete": {
 				"title": "Eliminar información del viajero",
-				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE."
+				"description": "¿Estás seguro? Esta acción es IRREVERSIBLE.",
+				"doneFeedback": "Información del viajero eliminada"
 			}
 		},
 		"requestSelfCheckIn": {
 			"button": "Solicitar auto-registro",
 			"color": "violet",
-			"disabledTooltip": "Selecciona un tipo de pago primero",
+			"disabledTooltip": "Selecciona un tipo de pago",
 			"title": "Solicitar auto-registro",
 			"description": "Esta acción solicitará el auto-registro de los viajeros.\nSi la revisión manual no está habilitada, el auto-registro se envíara automáticamente al ministerio una vez que se complete el proceso.",
 			"notCheckInDayWarning": "Conforme al RD 933/2021, la comunicación de la entrada de viajeros se debe enviar el mismo día que ocurra la entrada de los viajeros.",
@@ -318,7 +320,7 @@
 				"label": "Enlace para realizar el auto-registro"
 			},
 			"linkCopied": "Enlace del auto-registro copiado al portapapeles",
-			"copyLinkButton": "Copiar enlace del auto-registro",
+			"copyLinkTooltip": "Copiar enlace del auto-registro",
 			"doneFeedback": "Auto-registro habilitado"
 		},
 		"cancelSelfCheckIn": {
@@ -331,7 +333,7 @@
 		"confirm": {
 			"button": "Confirmar",
 			"color": "teal",
-			"disabledTooltip": "Completa el tipo de pago y los detalles del viajero titular primero",
+			"disabledTooltip": "Completa el tipo de pago y los detalles del viajero titular",
 			"title": "Confirmar reserva",
 			"description": "Esta acción confirmará la reserva y enviará la información al ministerio.",
 			"doneFeedback": "Petición de confirmación realizada\nLa reserva se confirmará automáticamente una vez que el ministerio la valide"
@@ -339,6 +341,7 @@
 		"checkIn": {
 			"button": "Registrar entrada",
 			"color": "cyan",
+			"disabledTooltip": "Completa primero el tipo de pago y los datos obligatorios (asterisco rojo/morado) de todos los viajeros",
 			"title": "Registrar entrada",
 			"description": "Esta acción registrará la entrada de los viajeros en el alojamiento informando al ministerio.",
 			"notCheckInDayWarning": "Conforme al RD 933/2021, la comunicación de la entrada de viajeros se debe enviar el mismo día que ocurra la entrada de los viajeros.",
@@ -348,7 +351,6 @@
 			"button": "Cancelar",
 			"color": "orange",
 			"title": "Cancelar reserva",
-			"disabledTooltip": "Completa primero el tipo de pago y los datos obligatorios (asterisco rojo/cian) de todos los viajeros",
 			"description": "Esta acción cancelará la reserva y propagará dicha cancelación al ministerio en caso de haber confirmado la reserva previamente.\n¿Estás seguro? Esta acción es IRREVERSIBLE.",
 			"doneFeedback": "Petición de cancelación realizada\nLa cancelación se procesará automáticamente una vez que el ministerio la valide"
 		},

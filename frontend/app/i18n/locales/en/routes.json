@@ -292,7 +292,8 @@
 			"people": {
 				"button": "Manage travelers",
 				"buttonDisabled": "Manage travelers (disabled while editing the number of people)"
-			}
+			},
+			"dirtyEditor": "Save or cancel your changes"
 		},
 		"people": {
 			"index": {
@@ -301,7 +302,8 @@
 			},
 			"delete": {
 				"title": "Delete traveler information",
-				"description": "Are you sure? This action is IRREVERSIBLE."
+				"description": "Are you sure? This action is IRREVERSIBLE.",
+				"doneFeedback": "Traveler information deleted"
 			}
 		},
 		"requestSelfCheckIn": {

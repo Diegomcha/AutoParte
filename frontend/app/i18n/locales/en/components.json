@@ -68,6 +68,10 @@
 		"tooltips": {
 			"confirm": "Required to confirm / request booking self-check-in",
 			"checkIn": "Required to register the booking check-in"
+		},
+		"colors": {
+			"confirm": "grape",
+			"checkIn": "blue"
 		}
 	},
 	"newPasswordInput": {
@@ -157,6 +161,8 @@
 		}
 	},
 	"personForm": {
+		"addedFeedback": "Traveler added",
+		"updatedFeedback": "Traveler updated",
 		"signature": {
 			"button": "View signature",
 			"notSigned": "Not signed"

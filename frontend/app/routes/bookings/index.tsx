@@ -4,6 +4,7 @@ import { Link, Outlet, useNavigate, useOutletContext } from "react-router";
 import {
 	ActionIcon,
 	Button,
+	Center,
 	DataList,
 	Divider,
 	Fieldset,
@@ -12,6 +13,7 @@ import {
 	Menu,
 	Modal,
 	NumberInput,
+	Overlay,
 	ScrollArea,
 	Select,
 	SimpleGrid,
@@ -531,7 +533,22 @@ export default function BookingsPage({
 								</ScrollArea.Autosize>
 							</Fieldset>
 							{/* Action buttons */}
-							<Stack gap="xs" hidden={form.isDirty()}>
+
+							<Stack gap="xs" pos="relative">
+								{form.isDirty() && (
+									<>
+										<Overlay
+											color="#fff"
+											backgroundOpacity={0.75}
+											blur={1}
+											zIndex={1}
+										/>
+
+										<Center pos="absolute" inset={0} style={{ zIndex: 2 }}>
+											<Text>{t(($) => $.index.dirtyEditor)}</Text>
+										</Center>
+									</>
+								)}
 								<Stack gap="xs" hidden={!booking.canBeModified}>
 									<Button.Group>
 										{booking.status !== "CONFIRMED" &&
@@ -543,6 +560,7 @@ export default function BookingsPage({
 												>
 													<Button
 														flex={1}
+														miw="max-content"
 														component={
 															booking.canBeConfirmed ? Link : undefined
 														}
@@ -562,6 +580,7 @@ export default function BookingsPage({
 										>
 											<Button
 												flex={1}
+												miw="max-content"
 												component={booking.canBeCheckedIn ? Link : undefined}
 												to={`/accommodations/${accommodationId}/bookings/${bookingId}/check-in`}
 												leftSection={<SuitcaseIcon weight="bold" />}
@@ -616,12 +635,13 @@ export default function BookingsPage({
 												</Button>
 											</Tooltip>
 											<Button
+												flex={1}
+												miw="max-content"
 												component={Link}
 												to={`/accommodations/${accommodationId}/bookings/${bookingId}/cancel-self-check-in`}
 												leftSection={<ChatSlashIcon weight="bold" />}
 												color={t(($) => $.cancelSelfCheckIn.color)}
 												loading={isPending}
-												flex={1}
 											>
 												{t(($) => $.cancelSelfCheckIn.button)}
 											</Button>

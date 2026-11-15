@@ -170,6 +170,9 @@ export default function SendCheckIn({
 						accommodationId={accommodationId}
 						bookingId={bookingId}
 						person={signer}
+						onSignature={() => {
+							setSigner(null);
+						}}
 					/>
 				)}
 			</Modal>

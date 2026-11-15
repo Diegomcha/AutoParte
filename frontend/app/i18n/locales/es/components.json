@@ -68,6 +68,10 @@
 		"tooltips": {
 			"confirm": "Requerido para poder confirmar / solicitar auto-registro de la reserva",
 			"checkIn": "Requerido para poder registrar la entrada de la reserva"
+		},
+		"colors": {
+			"confirm": "grape",
+			"checkIn": "blue"
 		}
 	},
 	"newPasswordInput": {
@@ -157,6 +161,8 @@
 		}
 	},
 	"personForm": {
+		"addedFeedback": "Viajero añadido",
+		"updatedFeedback": "Viajero actualizado",
 		"signature": {
 			"button": "Ver firma",
 			"notSigned": "No ha sido firmado"
