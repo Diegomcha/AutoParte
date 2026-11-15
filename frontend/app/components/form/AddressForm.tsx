@@ -13,6 +13,7 @@ import { FloppyDiskIcon } from "@phosphor-icons/react";
 import {
 	useMutation,
 	useQueries,
+	useQuery,
 	useSuspenseQueries
 } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -23,18 +24,18 @@ import { queryFactory } from "~/services/Api";
 import type { AddressDtoRequest } from "~/@types/api";
 import type { CountryCode } from "~/services/CountryService";
 
-export interface NewAddressFormProps extends React.ComponentProps<
-	typeof Drawer
-> {
+export interface AddressFormProps extends React.ComponentProps<typeof Drawer> {
 	handleNewAddress?: (addressId: string) => void;
+	editAddressId?: string;
 }
 
-export default function NewAddressForm({
+export default function AddressForm({
+	editAddressId,
 	handleNewAddress,
 	...props
-}: Readonly<NewAddressFormProps>) {
+}: Readonly<AddressFormProps>) {
 	const { t } = useTranslation("components", {
-		keyPrefix: "newAddressForm"
+		keyPrefix: "addressForm"
 	});
 	const { t: tAddress } = useTranslation("entities", {
 		keyPrefix: "address"
@@ -54,6 +55,11 @@ export default function NewAddressForm({
 		}
 	});
 
+	const { data: editAddress } = useQuery({
+		...queryFactory.addresses.detail(editAddressId ?? ""),
+		enabled: editAddressId != null
+	});
+
 	const form = useForm<
 		Omit<AddressDtoRequest, "municipality" | "postalCode"> & {
 			province?: string | null;
@@ -64,12 +70,18 @@ export default function NewAddressForm({
 	>({
 		mode: "uncontrolled",
 		initialValues: {
-			addressLine1: "",
-			addressLine2: "",
-			municipality: "",
-			postalCode: "",
-			country: "",
-			province: null
+			addressLine1: editAddress?.addressLine1 ?? "",
+			addressLine2: editAddress?.addressLine2 ?? "",
+			municipality:
+				(editAddress?.country === "ESP"
+					? editAddress.municipality.substring(2)
+					: editAddress?.municipality) ?? "",
+			postalCode: editAddress?.postalCode ?? "",
+			country: editAddress?.country ?? "",
+			province:
+				editAddress?.country === "ESP"
+					? editAddress.municipality.substring(0, 2)
+					: null
 		},
 		validate: {
 			addressLine1: isNotEmpty(
@@ -161,7 +173,11 @@ export default function NewAddressForm({
 	const { mutate, isPending } = useMutation(queryFactory.addresses.create());
 
 	return (
-		<Drawer title={t(($) => $.title)} size="auto" {...props}>
+		<Drawer
+			title={t(($) => $.title[editAddressId ? "edit" : "add"])}
+			size="auto"
+			{...props}
+		>
 			<form
 				onSubmit={(e) => {
 					// Prevent the form submission from bubbling up to the parent form (if any) and triggering its submission.
@@ -287,7 +303,7 @@ export default function NewAddressForm({
 						loading={isPending}
 						disabled={!form.isDirty()}
 					>
-						{tCommon(($) => $.buttons.add)}
+						{tCommon(($) => $.buttons[editAddressId ? "save" : "add"])}
 					</Button>
 				</Stack>
 			</form>

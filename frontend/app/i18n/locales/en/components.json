@@ -1,6 +1,7 @@
 {
 	"addressSelect": {
 		"newButton": "New address",
+		"editButton": "Edit current address",
 		"groups": {
 			"current": "Current address",
 			"booking": "Booking addresses",
@@ -216,8 +217,11 @@
 			"undefined": "Undefined"
 		}
 	},
-	"newAddressForm": {
-		"title": "Add new address",
+	"addressForm": {
+		"title": {
+			"add": "Add new address",
+			"edit": "Edit address"
+		},
 		"legend": "Traveler address"
 	},
 	"pdf": {

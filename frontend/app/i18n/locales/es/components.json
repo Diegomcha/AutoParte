@@ -1,6 +1,7 @@
 {
 	"addressSelect": {
 		"newButton": "Nueva dirección",
+		"editButton": "Editar dirección actual",
 		"groups": {
 			"current": "Dirección actual",
 			"booking": "Direcciones de la reserva",
@@ -216,8 +217,11 @@
 			"undefined": "No definido"
 		}
 	},
-	"newAddressForm": {
-		"title": "Añadir nueva dirección",
+	"addressForm": {
+		"title": {
+			"add": "Añadir nueva dirección",
+			"edit": "Editar dirección"
+		},
 		"legend": "Dirección del viajero"
 	},
 	"pdf": {

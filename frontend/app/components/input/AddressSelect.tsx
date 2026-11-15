@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CheckIcon, Group, Select, Text } from "@mantine/core";
 import { useUncontrolled } from "@mantine/hooks";
 
-import { PlusIcon } from "@phosphor-icons/react";
+import { PencilIcon, PlusIcon } from "@phosphor-icons/react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -11,7 +11,7 @@ import { lang } from "~/i18n";
 import { queryFactory } from "~/services/Api";
 import CountryService from "~/services/CountryService";
 
-import NewAddressForm from "../form/NewAddressForm";
+import AddressForm from "../form/AddressForm";
 
 import type { CountryCode } from "~/services/CountryService";
 
@@ -116,7 +116,7 @@ export default function AddressSelect({
 		onChange
 	});
 
-	const [openNewAddressForm, setOpenNewAddressForm] = useState(false);
+	const [openAddressForm, setOpenAddressForm] = useState(false);
 
 	return (
 		<>
@@ -124,11 +124,14 @@ export default function AddressSelect({
 				{...props}
 				value={_value}
 				onChange={(value) => {
-					if (value === "$new") setOpenNewAddressForm(true);
-					else handleChange(value);
+					if (value?.startsWith("$")) {
+						if (value === "$new") handleChange(null);
+						setOpenAddressForm(true);
+					} else handleChange(value);
 				}}
 				data={[
 					"$new",
+					...(_value != null ? ["$edit"] : []),
 					{
 						group: t(($) => $.groups.current),
 						items: selectData.filter((addr) => addr.value === _value)
@@ -153,12 +156,22 @@ export default function AddressSelect({
 					}
 				]}
 				renderOption={({ checked, option }) => {
-					// Display a special option for creating a new address
-					if (option.value === "$new") {
+					// Display special options
+					if (option.value.startsWith("$")) {
 						return (
 							<Group gap="xs" h={"100%"} w={"100%"} wrap="nowrap">
-								<PlusIcon width="1em" />
-								<Text size="sm">{t(($) => $.newButton)}</Text>
+								{option.value === "$new" && (
+									<>
+										<PlusIcon width="1em" />
+										<Text size="sm">{t(($) => $.newButton)}</Text>
+									</>
+								)}
+								{option.value === "$edit" && (
+									<>
+										<PencilIcon width="1em" />
+										<Text size="sm">{t(($) => $.editButton)}</Text>
+									</>
+								)}
 							</Group>
 						);
 					}
@@ -189,13 +202,15 @@ export default function AddressSelect({
 					width: "auto"
 				}}
 			/>
-			<NewAddressForm
-				opened={openNewAddressForm}
+			<AddressForm
+				key={_value ?? "new"}
+				opened={openAddressForm}
 				onClose={() => {
-					setOpenNewAddressForm(false);
+					setOpenAddressForm(false);
 				}}
+				editAddressId={_value ?? undefined}
 				handleNewAddress={(addressId) => {
-					setOpenNewAddressForm(false);
+					setOpenAddressForm(false);
 					setNewAddressesCache((prev) => [...prev, addressId]);
 					handleChange(addressId);
 				}}
