@@ -226,6 +226,9 @@
                         <tags>${env.IMAGE_TAGS}</tags>
                         <createdDate>${env.IMAGE_CREATED_DATE}</createdDate>
                         <env>
+                            <!-- Increases the estimated class space allocation by 20% -->
+                            <BPL_JVM_CLASS_ADJUSTMENT>120%</BPL_JVM_CLASS_ADJUSTMENT>
+                            
                             <BP_OCI_CREATED>${env.IMAGE_CREATED_DATE}</BP_OCI_CREATED>
                             <BP_OCI_DESCRIPTION>${env.OCI_DESCRIPTION}</BP_OCI_DESCRIPTION>
                             <BP_OCI_LICENSES>${env.OCI_LICENSES}</BP_OCI_LICENSES>
