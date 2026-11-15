@@ -37,7 +37,7 @@
 			}
 		},
 		"mrzZone": {
-			"title": "Zona de lectura automatizada",
+			"title": "Pasaporte o reverso del DNI",
 			"imgLabel": "Zona de lectura automatizada (MRZ)"
 		},
 		"noCameraError": {

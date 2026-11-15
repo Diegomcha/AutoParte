@@ -37,7 +37,7 @@
 			}
 		},
 		"mrzZone": {
-			"title": "Machine-readable zone",
+			"title": "Passport or back of ID card",
 			"imgLabel": "Machine-readable zone (MRZ)"
 		},
 		"noCameraError": {
