@@ -62,8 +62,13 @@ export default function BookingPeople({
 										<ActionIcon
 											size="xs"
 											color="red"
-											component={Link}
-											to={`/accommodations/${accommodationId}/bookings/${bookingId}/people/${person.id}/delete`}
+											onClick={(e) => {
+												e.stopPropagation();
+												e.preventDefault();
+												void navigate(
+													`/accommodations/${accommodationId}/bookings/${bookingId}/people/${person.id}/delete`
+												);
+											}}
 										>
 											<XIcon />
 										</ActionIcon>

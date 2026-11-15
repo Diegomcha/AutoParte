@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router";
 
 import {
-	ActionIcon,
 	AppShell,
 	Button,
 	Center,
@@ -11,8 +10,7 @@ import {
 	Splitter,
 	Stack,
 	Text,
-	Title,
-	Tooltip
+	Title
 } from "@mantine/core";
 
 import {
@@ -148,17 +146,15 @@ export default function ProtectedLayout({
 
 					<Group>
 						{isAdmin && (
-							<Tooltip label={tCommon(($) => $.header.admin)}>
-								<ActionIcon
-									size="36"
-									variant="outline"
-									color="orange"
-									component={Link}
-									to="/admin"
-								>
-									<WrenchIcon />
-								</ActionIcon>
-							</Tooltip>
+							<Button
+								color="orange"
+								variant="outline"
+								leftSection={<WrenchIcon size={16} />}
+								component={Link}
+								to="/admin"
+							>
+								{tCommon(($) => $.header.admin)}
+							</Button>
 						)}
 
 						<Menu
