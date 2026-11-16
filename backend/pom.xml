@@ -226,6 +226,7 @@
                         <tags>${env.IMAGE_TAGS}</tags>
                         <createdDate>${env.IMAGE_CREATED_DATE}</createdDate>
                         <env>
+                            <BP_HEALTH_CHECKER_ENABLED>true</BP_HEALTH_CHECKER_ENABLED>
                             <!-- Increases the estimated class space allocation by 20% -->
                             <BPE_DEFAULT_BPL_JVM_CLASS_ADJUSTMENT>120%</BPE_DEFAULT_BPL_JVM_CLASS_ADJUSTMENT>
 
@@ -239,6 +240,10 @@
                             <BP_OCI_VERSION>${env.OCI_VERSION}</BP_OCI_VERSION>
                             <BPE_SENTRY_RELEASE>${env.SENTRY_RELEASE}</BPE_SENTRY_RELEASE>
                         </env>
+                        <buildpacks>
+                            <buildpack>urn:cnb:builder:paketo-buildpacks/java</buildpack>
+                            <buildpack>docker.io/paketobuildpacks/health-checker@sha256:4a93591fb3d38c132bff86c1ac40ecbeeb839e77c6c51b48c85461eff3506163</buildpack>
+                        </buildpacks>
                     </image>
                 </configuration>
             </plugin>

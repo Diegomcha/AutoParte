@@ -6,7 +6,8 @@ services:
     container_name: autoparte_tunnel
     restart: unless-stopped
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     secrets:
       - cf_tunnel_token
     command: tunnel --no-autoupdate run
@@ -20,6 +21,11 @@ services:
     # This is not recommended for security reasons.
     # ports:
     #   - "80:8080"
+    healthcheck:
+      test: ["CMD", "/workspace/health-check"]
+      timeout: 0.5s
+      start_interval: 1s
+      start_period: 10s
     depends_on:
       ocr:
         condition: service_healthy
@@ -43,6 +49,9 @@ services:
 
       # Import secrets as configuration properties
       - SPRING_CONFIG_IMPORT=optional:configtree:/run/secrets/
+
+      # Configure health check
+      - THC_PATH=/actuator/health/readiness
   ocr:
     image: ghcr.io/diegomcha/autoparte_ocr:latest-cpu # Change to `latest-gpu` if you have an NVIDIA GPU and want to use it for OCR.
     container_name: autoparte_ocr
