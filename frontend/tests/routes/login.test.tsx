@@ -49,7 +49,9 @@ test("shows required-field errors without submitting incomplete credentials", as
 	fireEvent.click(screen.getByRole("button", { name: /iniciar sesión/i }));
 
 	expect(
-		await screen.findByText("El nombre de usuario es obligatorio")
+		await screen.findByText(
+			"El nombre de usuario / correo electrónico es obligatorio"
+		)
 	).toBeInTheDocument();
 	expect(
 		await screen.findByText("La contraseña es obligatoria")
@@ -66,7 +68,9 @@ test("navigates to the requested destination after successful login", async () =
 	renderLogin();
 
 	fireEvent.change(
-		screen.getByLabelText("Nombre de usuario", { selector: "input" }),
+		screen.getByLabelText("Nombre de usuario / Correo electrónico", {
+			selector: "input"
+		}),
 		{ target: { value: "ada" } }
 	);
 	fireEvent.change(screen.getByLabelText("Contraseña", { selector: "input" }), {
@@ -94,7 +98,9 @@ test("navigates to password creation when credentials are expired", async () => 
 	renderLogin();
 
 	fireEvent.change(
-		screen.getByLabelText("Nombre de usuario", { selector: "input" }),
+		screen.getByLabelText("Nombre de usuario / Correo electrónico", {
+			selector: "input"
+		}),
 		{ target: { value: "ada" } }
 	);
 	fireEvent.change(screen.getByLabelText("Contraseña", { selector: "input" }), {
@@ -119,7 +125,9 @@ test("shows a backend error on the password field", async () => {
 	renderLogin();
 
 	fireEvent.change(
-		screen.getByLabelText("Nombre de usuario", { selector: "input" }),
+		screen.getByLabelText("Nombre de usuario / Correo electrónico", {
+			selector: "input"
+		}),
 		{ target: { value: "ada" } }
 	);
 	fireEvent.change(screen.getByLabelText("Contraseña", { selector: "input" }), {

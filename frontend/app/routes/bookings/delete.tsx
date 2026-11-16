@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
+import NotificationsService from "~/services/NotificationsService";
 import Validators from "~/services/Validators";
 
 import type { Route } from "./+types/delete";
@@ -63,6 +64,7 @@ export default function DeleteBooking({
 							onSuccess: () => {
 								deletedRef.current = true;
 								close();
+								NotificationsService.success(t(($) => $.doneFeedback));
 							}
 						});
 					}}

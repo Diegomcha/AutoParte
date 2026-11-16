@@ -92,7 +92,7 @@
 			}
 		},
 		"email": {
-			"label": "Correo electrónico",
+			"label": "Correo electrónico (nombre de usuario)",
 			"errors": {
 				"invalidEmail": "El correo electrónico no es válido",
 				"emailInUse": "El correo electrónico ya está registrado"

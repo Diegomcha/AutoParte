@@ -12,16 +12,13 @@ export default function ComplexRequiredAsterisk({
 	const { t } = useTranslation("components", {
 		keyPrefix: "complexRequiredAsterisk"
 	});
-	const { t: tBookingRoute } = useTranslation("routes", {
-		keyPrefix: "bookings"
-	});
 
 	return (
 		<Tooltip label={t(($) => $.tooltips[action])}>
 			<Text
 				component="span"
 				style={{ cursor: "help" }}
-				c={tBookingRoute(($) => $[action].color)}
+				c={t(($) => $.colors[action])}
 				aria-hidden
 			>
 				{" "}

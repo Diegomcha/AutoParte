@@ -1,6 +1,7 @@
 {
 	"addressSelect": {
 		"newButton": "New address",
+		"editButton": "Edit current address",
 		"groups": {
 			"current": "Current address",
 			"booking": "Booking addresses",
@@ -36,7 +37,7 @@
 			}
 		},
 		"mrzZone": {
-			"title": "Machine-readable zone",
+			"title": "Passport or back of ID card",
 			"imgLabel": "Machine-readable zone (MRZ)"
 		},
 		"noCameraError": {
@@ -67,6 +68,10 @@
 		"tooltips": {
 			"confirm": "Required to confirm / request booking self-check-in",
 			"checkIn": "Required to register the booking check-in"
+		},
+		"colors": {
+			"confirm": "grape",
+			"checkIn": "blue"
 		}
 	},
 	"newPasswordInput": {
@@ -156,6 +161,8 @@
 		}
 	},
 	"personForm": {
+		"addedFeedback": "Traveler added",
+		"updatedFeedback": "Traveler updated",
 		"signature": {
 			"button": "View signature",
 			"notSigned": "Not signed"
@@ -198,7 +205,7 @@
 	"employeeCredsModal": {
 		"title": "Access credentials",
 		"fields": {
-			"username": "Username",
+			"username": "Username (email)",
 			"password": "Temporary password"
 		},
 		"description": "These are the employee's access credentials.",
@@ -216,8 +223,11 @@
 			"undefined": "Undefined"
 		}
 	},
-	"newAddressForm": {
-		"title": "Add new address",
+	"addressForm": {
+		"title": {
+			"add": "Add new address",
+			"edit": "Edit address"
+		},
 		"legend": "Traveler address"
 	},
 	"pdf": {

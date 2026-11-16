@@ -1,6 +1,7 @@
 {
 	"addressSelect": {
 		"newButton": "Nueva dirección",
+		"editButton": "Editar dirección actual",
 		"groups": {
 			"current": "Dirección actual",
 			"booking": "Direcciones de la reserva",
@@ -36,7 +37,7 @@
 			}
 		},
 		"mrzZone": {
-			"title": "Zona de lectura automatizada",
+			"title": "Pasaporte o reverso del DNI",
 			"imgLabel": "Zona de lectura automatizada (MRZ)"
 		},
 		"noCameraError": {
@@ -67,6 +68,10 @@
 		"tooltips": {
 			"confirm": "Requerido para poder confirmar / solicitar auto-registro de la reserva",
 			"checkIn": "Requerido para poder registrar la entrada de la reserva"
+		},
+		"colors": {
+			"confirm": "grape",
+			"checkIn": "blue"
 		}
 	},
 	"newPasswordInput": {
@@ -156,6 +161,8 @@
 		}
 	},
 	"personForm": {
+		"addedFeedback": "Viajero añadido",
+		"updatedFeedback": "Viajero actualizado",
 		"signature": {
 			"button": "Ver firma",
 			"notSigned": "No ha sido firmado"
@@ -198,7 +205,7 @@
 	"employeeCredsModal": {
 		"title": "Credenciales de acceso",
 		"fields": {
-			"username": "Nombre de usuario",
+			"username": "Nombre de usuario (correo electrónico)",
 			"password": "Contraseña temporal"
 		},
 		"description": "Estas son las credenciales de acceso del empleado.",
@@ -216,8 +223,11 @@
 			"undefined": "No definido"
 		}
 	},
-	"newAddressForm": {
-		"title": "Añadir nueva dirección",
+	"addressForm": {
+		"title": {
+			"add": "Añadir nueva dirección",
+			"edit": "Editar dirección"
+		},
 		"legend": "Dirección del viajero"
 	},
 	"pdf": {

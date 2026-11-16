@@ -13,7 +13,11 @@ import {
 	Title
 } from "@mantine/core";
 
-import { CaretRightIcon, UserCircleIcon } from "@phosphor-icons/react";
+import {
+	CaretRightIcon,
+	UserCircleIcon,
+	WrenchIcon
+} from "@phosphor-icons/react";
 import { useSuspenseQueries } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 
@@ -21,6 +25,7 @@ import BookingsSchedule from "~/components/booking/BookingsSchedule";
 import BookingsTable from "~/components/booking/BookingsTable";
 import {
 	_api,
+	_REFRESH_INTERVAL,
 	_unwrapResponse,
 	queryClient,
 	queryFactory
@@ -76,6 +81,7 @@ export default function ProtectedLayout({
 	const data = useSuspenseQueries({
 		// eslint-disable-next-line @tanstack/query/prefer-query-options -- Unique case
 		queries: filteredAccommodations.map((accommodation) => ({
+			staleTime: _REFRESH_INTERVAL,
 			queryKey: [
 				...queryFactory.accommodations.bookings.list(accommodation.id).queryKey,
 				getDateRange(view, date)
@@ -138,46 +144,54 @@ export default function ProtectedLayout({
 				<Group justify="space-between" h="100%">
 					<Title size="h2">{tCommon(($) => $.meta.name)}</Title>
 
-					<Menu
-						shadow="xs"
-						opened={accountMenuOpened}
-						onChange={setAccountMenuOpened}
-					>
-						<Menu.Target>
+					<Group>
+						{isAdmin && (
 							<Button
+								color="orange"
 								variant="outline"
-								leftSection={<UserCircleIcon size={16} />}
-								rightSection={
-									<CaretRightIcon
-										className="transition-rotate"
-										style={{
-											rotate: accountMenuOpened ? "90deg" : "0deg"
-										}}
-									/>
-								}
+								leftSection={<WrenchIcon size={16} />}
+								component={Link}
+								to="/admin"
 							>
-								{account?.username}
+								{tCommon(($) => $.header.admin)}
 							</Button>
-						</Menu.Target>
+						)}
 
-						<Menu.Dropdown>
-							{isAdmin && (
-								<>
-									<Menu.Item component={Link} to="/admin">
-										{tCommon(($) => $.header.admin)}
-									</Menu.Item>
-									<Menu.Divider />
-								</>
-							)}
-							<Menu.Label>{tCommon(($) => $.header.account.title)}</Menu.Label>
-							<Menu.Item component={Link} to="/auth/update-password">
-								{tCommon(($) => $.header.account.updatePassword)}
-							</Menu.Item>
-							<Menu.Item color="red" component={Link} to="/auth/logout">
-								{tCommon(($) => $.header.account.logout)}
-							</Menu.Item>
-						</Menu.Dropdown>
-					</Menu>
+						<Menu
+							shadow="xs"
+							opened={accountMenuOpened}
+							onChange={setAccountMenuOpened}
+						>
+							<Menu.Target>
+								<Button
+									variant="outline"
+									leftSection={<UserCircleIcon size={16} />}
+									rightSection={
+										<CaretRightIcon
+											className="transition-rotate"
+											style={{
+												rotate: accountMenuOpened ? "90deg" : "0deg"
+											}}
+										/>
+									}
+								>
+									{account?.username}
+								</Button>
+							</Menu.Target>
+
+							<Menu.Dropdown>
+								<Menu.Label>
+									{tCommon(($) => $.header.account.title)}
+								</Menu.Label>
+								<Menu.Item component={Link} to="/auth/update-password">
+									{tCommon(($) => $.header.account.updatePassword)}
+								</Menu.Item>
+								<Menu.Item color="red" component={Link} to="/auth/logout">
+									{tCommon(($) => $.header.account.logout)}
+								</Menu.Item>
+							</Menu.Dropdown>
+						</Menu>
+					</Group>
 				</Group>
 			</AppShell.Header>
 			<AppShell.Main>

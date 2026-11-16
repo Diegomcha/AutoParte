@@ -3,7 +3,7 @@
 		"name": "AutoParte"
 	},
 	"header": {
-		"admin": "Admin mode",
+		"admin": "Administration mode",
 		"account": {
 			"title": "Account",
 			"updatePassword": "Update password",

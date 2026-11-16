@@ -990,7 +990,7 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
             /** Format: uuid */
-            accountId: string;
+            accountId?: string;
             /** Format: date-time */
             timestamp: string;
             /** @enum {string} */

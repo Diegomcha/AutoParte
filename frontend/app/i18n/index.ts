@@ -3,22 +3,22 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import resourcesToBackend from "i18next-resources-to-backend";
 import { initReactI18next } from "react-i18next";
 
-import common from "./locales/es/common.json";
-import components from "./locales/es/components.json";
-import entities from "./locales/es/entities.json";
-import routes from "./locales/es/routes.json";
+import common from "./locales/en/common.json";
+import components from "./locales/en/components.json";
+import entities from "./locales/en/entities.json";
+import routes from "./locales/en/routes.json";
 
 import type { InitOptions } from "i18next";
 
 export const i18nConfig = {
-	fallbackLng: "es",
+	fallbackLng: "en",
 	supportedLngs: ["es", "en"],
 	defaultNS: "common",
 	fallbackNS: "common",
 	ns: ["common", "components", "routes", "entities"],
 	// Preload the default language resources
 	resources: {
-		es: {
+		en: {
 			common,
 			components,
 			routes,
@@ -58,16 +58,16 @@ export const lang = i18n.language as (typeof i18nConfig.supportedLngs)[number];
 
 const modulesLocaleMap = {
 	dayjs: {
-		es: () => import("dayjs/locale/es"),
-		en: () => import("dayjs/locale/en-gb")
+		en: () => import("dayjs/locale/en-gb"),
+		es: () => import("dayjs/locale/es")
 	},
 	i18nCountries: {
-		es: () => import("i18n-iso-countries/langs/es.json"),
-		en: () => import("i18n-iso-countries/langs/en.json")
+		en: () => import("i18n-iso-countries/langs/en.json"),
+		es: () => import("i18n-iso-countries/langs/es.json")
 	},
 	zxcvbn: {
-		es: () => import("@zxcvbn-ts/language-es-es"),
-		en: () => import("@zxcvbn-ts/language-en")
+		en: () => import("@zxcvbn-ts/language-en"),
+		es: () => import("@zxcvbn-ts/language-es-es")
 	}
 } satisfies Record<string, Record<SupportedLanguage, () => Promise<unknown>>>;
 

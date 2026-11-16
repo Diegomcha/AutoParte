@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
+import NotificationsService from "~/services/NotificationsService";
 import Validators from "~/services/Validators";
 
 import type { Route } from "./+types/cancel";
@@ -56,7 +57,10 @@ export default function CancelBooking({
 					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: close
+							onSuccess: () => {
+								NotificationsService.success(t(($) => $.doneFeedback));
+								close();
+							}
 						});
 					}}
 				>

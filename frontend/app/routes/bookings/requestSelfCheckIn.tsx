@@ -99,6 +99,7 @@ export default function RequestSelfCheckInForBooking({
 						onClick={() => {
 							mutate(undefined, {
 								onSuccess: () => {
+									NotificationsService.success(t(($) => $.doneFeedback));
 									stack.open("link");
 								}
 							});

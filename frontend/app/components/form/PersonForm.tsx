@@ -33,6 +33,7 @@ import DocumentScanner from "~/components/input/DocumentScanner";
 import PhoneInput, { isValidPhoneNumber } from "~/components/input/PhoneInput";
 import { queryFactory } from "~/services/Api";
 import CountryService from "~/services/CountryService";
+import NotificationsService from "~/services/NotificationsService";
 import TimeService from "~/services/TimeService";
 
 import type { PersonDtoRequest, PersonDtoResponse } from "~/@types/api";
@@ -280,6 +281,9 @@ export default function PersonForm({
 							onUpdatedPerson?.(person.id);
 							form.resetDirty();
 
+							if (!checkInMode)
+								NotificationsService.success(t(($) => $.updatedFeedback));
+
 							// Avoids race-conditions
 							onSubmit?.();
 						}
@@ -290,6 +294,9 @@ export default function PersonForm({
 						onSuccess: (created) => {
 							onCreatedPerson?.(created.id);
 							form.resetDirty();
+
+							if (!checkInMode)
+								NotificationsService.success(t(($) => $.addedFeedback));
 
 							// Avoids race-conditions
 							onSubmit?.();

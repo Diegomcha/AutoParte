@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import useStaticModalTransition from "~/hooks/useStaticModalTransition";
 import { queryClient, queryFactory } from "~/services/Api";
+import NotificationsService from "~/services/NotificationsService";
 import TimeService from "~/services/TimeService";
 import Validators from "~/services/Validators";
 
@@ -70,7 +71,10 @@ export default function CheckInBooking({
 					loading={isPending}
 					onClick={() => {
 						mutate(undefined, {
-							onSuccess: close
+							onSuccess: () => {
+								NotificationsService.success(t(($) => $.doneFeedback));
+								close();
+							}
 						});
 					}}
 				>
