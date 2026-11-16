@@ -1346,8 +1346,8 @@ const queryFactory = {
 
 					return true;
 				},
-				onSuccess: async () => {
-					await queryClient.invalidateQueries(queryFactory.auth.me());
+				onSuccess: () => {
+					queryClient.clear();
 				}
 			}),
 		logout: () =>
@@ -1361,9 +1361,8 @@ const queryFactory = {
 
 					return true;
 				},
-				onSuccess: async () => {
-					// Invalidate all queries to clear cached data after logout
-					await queryClient.invalidateQueries();
+				onSuccess: () => {
+					queryClient.clear();
 				}
 			}),
 		updatePassword: () =>

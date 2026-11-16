@@ -412,7 +412,7 @@ public class Booking extends BaseEntity {
     }
 
     private boolean hasPendingCommunicationOfType(@NonNull Communication.CommunicationType type) {
-        return this.communications.stream().anyMatch(c -> c.getType() == type && c.getStatus() == Communication.CommunicationStatus.PENDING);
+        return this.communications.stream().anyMatch(c -> c.getType() == type && (c.getStatus() == Communication.CommunicationStatus.PENDING || c.getStatus() == Communication.CommunicationStatus.SENT));
     }
 
     private void ensureBookingCanBeModified() {

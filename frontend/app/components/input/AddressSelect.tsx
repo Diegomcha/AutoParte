@@ -117,6 +117,7 @@ export default function AddressSelect({
 	});
 
 	const [openAddressForm, setOpenAddressForm] = useState(false);
+	const [editMode, setEditMode] = useState(false);
 
 	return (
 		<>
@@ -125,7 +126,7 @@ export default function AddressSelect({
 				value={_value}
 				onChange={(value) => {
 					if (value?.startsWith("$")) {
-						if (value === "$new") handleChange(null);
+						if (value === "$edit") setEditMode(true);
 						setOpenAddressForm(true);
 					} else handleChange(value);
 				}}
@@ -203,14 +204,16 @@ export default function AddressSelect({
 				}}
 			/>
 			<AddressForm
-				key={_value ?? "new"}
+				key={_value && editMode ? _value : "new"}
 				opened={openAddressForm}
 				onClose={() => {
 					setOpenAddressForm(false);
+					setEditMode(false);
 				}}
-				editAddressId={_value ?? undefined}
+				editAddressId={_value && editMode ? _value : undefined}
 				handleNewAddress={(addressId) => {
 					setOpenAddressForm(false);
+					setEditMode(false);
 					setNewAddressesCache((prev) => [...prev, addressId]);
 					handleChange(addressId);
 				}}
